@@ -5,7 +5,7 @@
       {
         "Change Type": "Addition",
         "Change Location": "AC-2",
-        "Old Content": null,
+        "Old Content": "null",
         "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
       }
     ]
