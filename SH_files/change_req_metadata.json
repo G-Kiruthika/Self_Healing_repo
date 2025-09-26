@@ -4,9 +4,9 @@
     "Change Requirement Metadata": [
       {
         "Change Type": "Addition",
-        "Change Location": "AC-2",
-        "Old Content": "* Verify successful creation of a new repository with valid details.\\n* Validate repository creation error handling when required fields are left blank.\\n* Validate repository creation error handling when using an already existing repository name.\\n* Validate repository creation error handling when using invalid characters in the repository name.",
-        "New Content": "* Verify successful creation of a new repository with valid details.\\n* Validate repository creation error handling when required fields are left blank.\\n* Validate repository creation error handling when using an already existing repository name.\\n* Validate repository creation error handling when using invalid characters in the repository name.\\n* Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
+        "Change Location": "AC-2, bullet 5",
+        "Old Content": "",
+        "New Content": "* Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
       }
     ]
   }
