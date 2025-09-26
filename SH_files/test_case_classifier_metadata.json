@@ -8,45 +8,44 @@
         "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
         "Test Case Impact Details": [
           {
-            "test_cases": [
+            "Affected Test Case ID": "",
+            "Affected Test Case Name": "Validate repository visibility is correctly set and reflected after creation",
+            "Old Test Case Steps": null,
+            "New Modified Test Case Steps": [
               {
-                "TC_ID": "",
-                "TC_Name": "Validate repository visibility settings during and after creation",
-                "Acceptance_Criteria_ID": "AC-2, bullet 5",
-                "Steps": [
-                  {
-                    "Step_ID": 1,
-                    "Step_Desc": "1. Login to GitHub with valid credentials.",
-                    "Expected_Result": "1. User is logged in."
-                  },
-                  {
-                    "Step_ID": 2,
-                    "Step_Desc": "2. Click on 'New repository' button.",
-                    "Expected_Result": "2. 'Create a new repository' page is displayed."
-                  },
-                  {
-                    "Step_ID": 3,
-                    "Step_Desc": "3. Enter repository name and description, select 'Public' visibility.",
-                    "Expected_Result": "3. Repository details are entered with 'Public' selected."
-                  },
-                  {
-                    "Step_ID": 4,
-                    "Step_Desc": "4. Click on 'Create repository' button.",
-                    "Expected_Result": "4. New repository is created and displayed in repository list."
-                  },
-                  {
-                    "Step_ID": 5,
-                    "Step_Desc": "5. Verify that the created repository is marked as 'Public'.",
-                    "Expected_Result": "5. Repository visibility is shown as 'Public'."
-                  },
-                  {
-                    "Step_ID": 6,
-                    "Step_Desc": "6. Repeat steps 2-5, but select 'Private' visibility.",
-                    "Expected_Result": "6. Repository visibility is shown as 'Private'."
-                  }
-                ]
+                "Step_ID": 1,
+                "Step_Desc": "Login to GitHub with valid credentials.",
+                "Expected_Result": "User is logged in."
+              },
+              {
+                "Step_ID": 2,
+                "Step_Desc": "Click on 'New repository' button.",
+                "Expected_Result": "'Create a new repository' page is displayed."
+              },
+              {
+                "Step_ID": 3,
+                "Step_Desc": "Enter repository name, description, and select visibility as Public.",
+                "Expected_Result": "Repository details are entered with visibility set to Public."
+              },
+              {
+                "Step_ID": 4,
+                "Step_Desc": "Click on 'Create repository' button.",
+                "Expected_Result": "New repository is created."
+              },
+              {
+                "Step_ID": 5,
+                "Step_Desc": "Verify that the created repository is visible to the public and the visibility setting is displayed as Public.",
+                "Expected_Result": "Repository is accessible publicly and visibility is shown as Public."
+              },
+              {
+                "Step_ID": 6,
+                "Step_Desc": "Repeat steps 2-5 with visibility set to Private.",
+                "Expected_Result": "Repository is accessible only to the owner/collaborators and visibility is shown as Private."
               }
-            ]
+            ],
+            "Old Expected Results": null,
+            "New Modified Expected Results": "Repository visibility is correctly set and reflected as per the selected option (Public/Private) after creation.",
+            "What changed in Test Cases Steps & Expected Steps": "New test case added to validate that repository visibility (Public/Private) is correctly applied during creation and reflected post-creation."
           }
         ]
       }
