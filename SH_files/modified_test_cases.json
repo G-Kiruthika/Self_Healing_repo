@@ -1,43 +1,42 @@
 [
   {
-    "testCaseId": "TC_001",
-    "testCaseDescription": "Verify login with valid credentials",
+    "testCaseId": "",
+    "testCaseDescription": "Validate repository visibility settings during and after creation",
     "testSteps": [
       {
         "Step_ID": "1",
-        "Step_Desc": "Navigate to login page",
-        "Expected_Result": "Login page is displayed"
+        "Step_Desc": "Login to GitHub with valid credentials.",
+        "Expected_Result": "Repository is created with the selected visibility (Public/Private) and the visibility setting is correctly reflected post-creation."
       },
       {
         "Step_ID": "2",
-        "Step_Desc": "Enter valid username and password",
-        "Expected_Result": "Credentials are entered"
+        "Step_Desc": "Click on 'New repository' button.",
+        "Expected_Result": "Repository is created with the selected visibility (Public/Private) and the visibility setting is correctly reflected post-creation."
       },
       {
         "Step_ID": "3",
-        "Step_Desc": "Click on login button",
-        "Expected_Result": "User is logged in and dashboard is displayed"
-      }
-    ]
-  },
-  {
-    "testCaseId": "TC_003",
-    "testCaseDescription": "Verify password reset functionality",
-    "testSteps": [
-      {
-        "Step_ID": "1",
-        "Step_Desc": "Navigate to password reset page",
-        "Expected_Result": "Password reset page is displayed"
+        "Step_Desc": "Enter repository name and description.",
+        "Expected_Result": "Repository is created with the selected visibility (Public/Private) and the visibility setting is correctly reflected post-creation."
       },
       {
-        "Step_ID": "2",
-        "Step_Desc": "Enter registered email address",
-        "Expected_Result": "Email address is accepted"
+        "Step_ID": "4",
+        "Step_Desc": "Select 'Public' as the visibility option.",
+        "Expected_Result": "Repository is created with the selected visibility (Public/Private) and the visibility setting is correctly reflected post-creation."
       },
       {
-        "Step_ID": "3",
-        "Step_Desc": "Click on reset password button",
-        "Expected_Result": "Password reset email is sent"
+        "Step_ID": "5",
+        "Step_Desc": "Click on 'Create repository' button.",
+        "Expected_Result": "Repository is created with the selected visibility (Public/Private) and the visibility setting is correctly reflected post-creation."
+      },
+      {
+        "Step_ID": "6",
+        "Step_Desc": "Verify that the created repository is marked as 'Public'.",
+        "Expected_Result": "Repository is created with the selected visibility (Public/Private) and the visibility setting is correctly reflected post-creation."
+      },
+      {
+        "Step_ID": "7",
+        "Step_Desc": "Repeat steps 2-6, but select 'Private' as the visibility option and verify the repository is marked as 'Private'.",
+        "Expected_Result": "Repository is created with the selected visibility (Public/Private) and the visibility setting is correctly reflected post-creation."
       }
     ]
   }
