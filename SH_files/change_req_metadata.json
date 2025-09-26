@@ -3,10 +3,10 @@
     "Story ID": "HAP-529",
     "Change Requirement Metadata": [
       {
-        "change_type": "Addition",
-        "change_location": "AC-2: Repository Creation Functionality, bullet point 5",
-        "old_content": "",
-        "new_content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
+        "Change Type": "Addition",
+        "Change Location": "AC-2",
+        "Old Content": null,
+        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
       }
     ]
   }
