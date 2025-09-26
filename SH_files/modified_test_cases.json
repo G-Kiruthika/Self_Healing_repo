@@ -1,37 +1,43 @@
 [
   {
-    "testCaseId": "",
-    "testCaseDescription": "Validate repository visibility is correctly set and reflected after creation",
+    "testCaseId": "TC_001",
+    "testCaseDescription": "Verify login with valid credentials",
     "testSteps": [
       {
-        "Step_ID": 1,
-        "Step_Desc": "Login to GitHub with valid credentials.",
-        "Expected_Result": "Repository visibility is correctly set and reflected as per the selected option (Public/Private) after creation."
+        "Step_ID": "1",
+        "Step_Desc": "Navigate to login page",
+        "Expected_Result": "Login page is displayed"
       },
       {
-        "Step_ID": 2,
-        "Step_Desc": "Click on 'New repository' button.",
-        "Expected_Result": "Repository visibility is correctly set and reflected as per the selected option (Public/Private) after creation."
+        "Step_ID": "2",
+        "Step_Desc": "Enter valid username and password",
+        "Expected_Result": "Credentials are entered"
       },
       {
-        "Step_ID": 3,
-        "Step_Desc": "Enter repository name, description, and select visibility as Public.",
-        "Expected_Result": "Repository visibility is correctly set and reflected as per the selected option (Public/Private) after creation."
+        "Step_ID": "3",
+        "Step_Desc": "Click on login button",
+        "Expected_Result": "User is logged in and dashboard is displayed"
+      }
+    ]
+  },
+  {
+    "testCaseId": "TC_003",
+    "testCaseDescription": "Verify password reset functionality",
+    "testSteps": [
+      {
+        "Step_ID": "1",
+        "Step_Desc": "Navigate to password reset page",
+        "Expected_Result": "Password reset page is displayed"
       },
       {
-        "Step_ID": 4,
-        "Step_Desc": "Click on 'Create repository' button.",
-        "Expected_Result": "Repository visibility is correctly set and reflected as per the selected option (Public/Private) after creation."
+        "Step_ID": "2",
+        "Step_Desc": "Enter registered email address",
+        "Expected_Result": "Email address is accepted"
       },
       {
-        "Step_ID": 5,
-        "Step_Desc": "Verify that the created repository is visible to the public and the visibility setting is displayed as Public.",
-        "Expected_Result": "Repository visibility is correctly set and reflected as per the selected option (Public/Private) after creation."
-      },
-      {
-        "Step_ID": 6,
-        "Step_Desc": "Repeat steps 2-5 with visibility set to Private.",
-        "Expected_Result": "Repository visibility is correctly set and reflected as per the selected option (Public/Private) after creation."
+        "Step_ID": "3",
+        "Step_Desc": "Click on reset password button",
+        "Expected_Result": "Password reset email is sent"
       }
     ]
   }
