@@ -3,22 +3,10 @@
     "Story ID": "HAP-529",
     "Change Requirement Metadata": [
       {
-        "Change Type": "Modification",
-        "Change Location": "AC-1",
-        "Old Content": "AC-1: The system shall allow users to upload CSV files containing customer data.",
-        "New Content": "AC-1: The system shall allow users to upload CSV or Excel files containing customer data."
-      },
-      {
         "Change Type": "Addition",
-        "Change Location": "AC-3",
-        "Old Content": null,
-        "New Content": "AC-3: The system shall validate the uploaded file format and display an error message for unsupported formats."
-      },
-      {
-        "Change Type": "Deletion",
         "Change Location": "AC-2",
-        "Old Content": "AC-2: The system shall restrict file uploads to a maximum size of 10MB.",
-        "New Content": null
+        "Old Content": null,
+        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
       }
     ]
   }
