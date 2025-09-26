@@ -1,1 +1,39 @@
-
+[
+  {
+    "testCaseId": "TC_001",
+    "testCaseDescription": "Verify login with valid credentials",
+    "testSteps": [
+      {
+        "Step_ID": "Step_001",
+        "Step_Desc": "Navigate to login page",
+        "Expected_Result": "Login page is displayed"
+      },
+      {
+        "Step_ID": "Step_002",
+        "Step_Desc": "Enter valid username and password",
+        "Expected_Result": "Credentials are accepted"
+      },
+      {
+        "Step_ID": "Step_003",
+        "Step_Desc": "Click on login button",
+        "Expected_Result": "User is redirected to dashboard"
+      }
+    ]
+  },
+  {
+    "testCaseId": "TC_002",
+    "testCaseDescription": "Verify login with invalid credentials",
+    "testSteps": [
+      {
+        "Step_ID": "Step_001",
+        "Step_Desc": "Navigate to login page",
+        "Expected_Result": "Login page is displayed"
+      },
+      {
+        "Step_ID": "Step_002",
+        "Step_Desc": "Enter invalid username and password",
+        "Expected_Result": "Error message is displayed"
+      }
+    ]
+  }
+]
