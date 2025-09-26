@@ -1,38 +1,37 @@
 [
   {
-    "testCaseId": "TC_001",
-    "testCaseDescription": "Verify login with valid credentials",
+    "testCaseId": "",
+    "testCaseDescription": "Validate repository visibility settings during and after creation",
     "testSteps": [
       {
-        "Step_ID": "Step_001",
-        "Step_Desc": "Navigate to login page",
-        "Expected_Result": "Login page is displayed"
+        "Step_ID": 1,
+        "Step_Desc": "1. Login to GitHub with valid credentials.",
+        "Expected_Result": "1. User is logged in."
       },
       {
-        "Step_ID": "Step_002",
-        "Step_Desc": "Enter valid username and password",
-        "Expected_Result": "Credentials are accepted"
+        "Step_ID": 2,
+        "Step_Desc": "2. Click on 'New repository' button.",
+        "Expected_Result": "2. 'Create a new repository' page is displayed."
       },
       {
-        "Step_ID": "Step_003",
-        "Step_Desc": "Click on login button",
-        "Expected_Result": "User is redirected to dashboard"
-      }
-    ]
-  },
-  {
-    "testCaseId": "TC_002",
-    "testCaseDescription": "Verify login with invalid credentials",
-    "testSteps": [
-      {
-        "Step_ID": "Step_001",
-        "Step_Desc": "Navigate to login page",
-        "Expected_Result": "Login page is displayed"
+        "Step_ID": 3,
+        "Step_Desc": "3. Enter repository name and description, select 'Public' visibility.",
+        "Expected_Result": "3. Repository details are entered with 'Public' selected."
       },
       {
-        "Step_ID": "Step_002",
-        "Step_Desc": "Enter invalid username and password",
-        "Expected_Result": "Error message is displayed"
+        "Step_ID": 4,
+        "Step_Desc": "4. Click on 'Create repository' button.",
+        "Expected_Result": "4. New repository is created and displayed in repository list."
+      },
+      {
+        "Step_ID": 5,
+        "Step_Desc": "5. Verify that the created repository is marked as 'Public'.",
+        "Expected_Result": "5. Repository visibility is shown as 'Public'."
+      },
+      {
+        "Step_ID": 6,
+        "Step_Desc": "6. Repeat steps 2-5, but select 'Private' visibility.",
+        "Expected_Result": "6. Repository visibility is shown as 'Private'."
       }
     ]
   }
