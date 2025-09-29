@@ -1,43 +1,37 @@
 [
   {
-    "testCaseId": "TC-001",
-    "testCaseDescription": "Verify user login with valid credentials",
+    "testCaseId": "",
+    "testCaseDescription": "Validate repository visibility is reflected after creation",
     "testSteps": [
       {
-        "Step_ID": "1",
-        "Step_Desc": "Navigate to login page",
-        "Expected_Result": "Login page is displayed"
+        "Step_ID": 1,
+        "Step_Desc": "1. Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
       },
       {
-        "Step_ID": "2",
-        "Step_Desc": "Enter valid username and password",
-        "Expected_Result": "Username and password fields accept input"
+        "Step_ID": 2,
+        "Step_Desc": "2. Click on 'New repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
       },
       {
-        "Step_ID": "3",
-        "Step_Desc": "Click on login button",
-        "Expected_Result": "User is redirected to the dashboard"
-      }
-    ]
-  },
-  {
-    "testCaseId": "TC-002",
-    "testCaseDescription": "Verify error message on login with invalid credentials",
-    "testSteps": [
-      {
-        "Step_ID": "1",
-        "Step_Desc": "Navigate to login page",
-        "Expected_Result": "Login page is displayed"
+        "Step_ID": 3,
+        "Step_Desc": "3. Enter repository name, description, and select visibility as 'Public'. [Test Data- Repository Name: new-repo, Description: Test repo, Visibility: Public] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
       },
       {
-        "Step_ID": "2",
-        "Step_Desc": "Enter invalid username and password",
-        "Expected_Result": "Username and password fields accept input"
+        "Step_ID": 4,
+        "Step_Desc": "4. Click on 'Create repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
       },
       {
-        "Step_ID": "3",
-        "Step_Desc": "Click on login button",
-        "Expected_Result": "Error message 'Invalid credentials' is displayed"
+        "Step_ID": 5,
+        "Step_Desc": "5. Verify that the newly created repository is marked as 'Public'. [Test Data- Repository Name: new-repo] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
+      },
+      {
+        "Step_ID": 6,
+        "Step_Desc": "6. Repeat steps 3-5 with visibility set to 'Private'. [Test Data- Repository Name: new-repo-private, Description: Test repo, Visibility: Private] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
       }
     ]
   }
