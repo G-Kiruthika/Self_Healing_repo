@@ -1,63 +1,43 @@
 [
   {
-    "testCaseId": "838",
-    "testCaseDescription": "Test Case HAP-492 TS-007 TC-001",
+    "testCaseId": "TC-001",
+    "testCaseDescription": "Verify user login with valid credentials",
     "testSteps": [
       {
         "Step_ID": "1",
-        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "User is logged in."
+        "Step_Desc": "Navigate to login page",
+        "Expected_Result": "Login page is displayed"
       },
       {
         "Step_ID": "2",
-        "Step_Desc": "Click on 'New repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "'Create a new repository' page is displayed."
+        "Step_Desc": "Enter valid username and password",
+        "Expected_Result": "Username and password fields accept input"
       },
       {
         "Step_ID": "3",
-        "Step_Desc": "Enter repository name, description, and select visibility. [Test Data- Repository Name: new-repo, Description: Test repo, Visibility: Public] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository details are entered."
-      },
-      {
-        "Step_ID": "4",
-        "Step_Desc": "Click on 'Create repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "New repository is created and displayed in repository list."
-      },
-      {
-        "Step_ID": "5",
-        "Step_Desc": "Verify that the created repository is set to Public visibility as selected during creation. [Test Data- Repository Name: new-repo, Visibility: Public] [Acceptance Criteria- AC-2, bullet 5]",
-        "Expected_Result": "Repository 'new-repo' is visible in the repository list and its visibility is set to Public."
+        "Step_Desc": "Click on login button",
+        "Expected_Result": "User is redirected to the dashboard"
       }
     ]
   },
   {
-    "testCaseId": "",
-    "testCaseDescription": "Validate Private repository visibility setting during and after creation",
+    "testCaseId": "TC-002",
+    "testCaseDescription": "Verify error message on login with invalid credentials",
     "testSteps": [
       {
         "Step_ID": "1",
-        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "User is logged in."
+        "Step_Desc": "Navigate to login page",
+        "Expected_Result": "Login page is displayed"
       },
       {
         "Step_ID": "2",
-        "Step_Desc": "Click on 'New repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "'Create a new repository' page is displayed."
+        "Step_Desc": "Enter invalid username and password",
+        "Expected_Result": "Username and password fields accept input"
       },
       {
         "Step_ID": "3",
-        "Step_Desc": "Enter repository name, description, and select visibility as Private. [Test Data- Repository Name: private-repo, Description: Test repo, Visibility: Private] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository details are entered."
-      },
-      {
-        "Step_ID": "4",
-        "Step_Desc": "Click on 'Create repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "New repository is created and displayed in repository list."
-      },
-      {
-        "Step_ID": "5",
-        "Step_Desc": "Verify that the created repository is set to Private visibility as selected during creation. [Test Data- Repository Name: private-repo, Visibility: Private] [Acceptance Criteria- AC-2, bullet 5]",
-        "Expected_Result": "Repository 'private-repo' is visible in the repository list and its visibility is set to Private."
+        "Step_Desc": "Click on login button",
+        "Expected_Result": "Error message 'Invalid credentials' is displayed"
       }
     ]
   }
