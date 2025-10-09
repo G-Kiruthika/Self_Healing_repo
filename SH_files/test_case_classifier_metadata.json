@@ -3,18 +3,57 @@
     "Story ID": "HAP-529",
     "Test Case Change Classification": [
       {
-        "Acceptance Criteria ID": "AC-2",
-        "Acceptance Criteria - Old Content": null,
+        "Acceptance Criteria ID": "AC-2, bullet 5",
+        "Acceptance Criteria - Old Content": "",
         "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
         "Test Case Impact Details": [
           {
             "Affected Test Case ID": "",
-            "Affected Test Case Name": "Validate repository visibility setting is applied and reflected post-creation",
+            "Affected Test Case Name": "",
             "Old Test Case Steps": "",
-            "New Modified Test Case Steps": "1. Login to GitHub with valid credentials.\n2. Click on 'New repository' button.\n3. Enter repository name and description.\n4. Select 'Public' visibility option.\n5. Click on 'Create repository' button.\n6. Verify that the created repository is visible as 'Public'.\n7. Repeat steps 3-6 for 'Private' visibility option and verify repository is visible as 'Private'.",
+            "New Modified Test Case Steps": "",
             "Old Expected Results": "",
-            "New Modified Expected Results": "Repository is created with the selected visibility setting and the visibility is correctly reflected post-creation.",
-            "What changed in Test Cases Steps & Expected Steps": "New test case created to validate that repository visibility settings (Public/Private) are correctly applied during creation and reflected post-creation as per new acceptance criteria."
+            "New Modified Expected Results": "",
+            "What changed in Test Cases Steps & Expected Steps": "New acceptance criteria added for validating repository visibility settings. No existing test case covers both the creation and post-creation reflection of visibility settings. A new test case is required."
+          }
+        ]
+      }
+    ],
+    "test_cases": [
+      {
+        "TC_ID": "HAP-529-NEW-001",
+        "TC_Name": "Validate repository visibility settings during and after creation",
+        "Acceptance_Criteria_ID": "AC-2, bullet 5",
+        "Steps": [
+          {
+            "Step_ID": 1,
+            "Step_Desc": "1. Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2, bullet 5]",
+            "Expected_Result": "1. User is logged in and dashboard is displayed."
+          },
+          {
+            "Step_ID": 2,
+            "Step_Desc": "2. Click 'New Repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2, bullet 5]",
+            "Expected_Result": "2. Repository creation page is displayed."
+          },
+          {
+            "Step_ID": 3,
+            "Step_Desc": "3. Enter valid repository name and description. Select 'Public' visibility. [Test Data- Repository Name: 'public-repo', Description: 'Test public repo', Visibility: Public] [Acceptance Criteria- AC-2, bullet 5]",
+            "Expected_Result": "3. Details are accepted and 'Public' is selected."
+          },
+          {
+            "Step_ID": 4,
+            "Step_Desc": "4. Click 'Create Repository'. [Test Data- N/A] [Acceptance Criteria- AC-2, bullet 5]",
+            "Expected_Result": "4. Repository is created and displayed in repository list."
+          },
+          {
+            "Step_ID": 5,
+            "Step_Desc": "5. Verify that the created repository is marked as 'Public' in its settings and UI. [Test Data- Repository Name: 'public-repo'] [Acceptance Criteria- AC-2, bullet 5]",
+            "Expected_Result": "5. Repository visibility is shown as 'Public'."
+          },
+          {
+            "Step_ID": 6,
+            "Step_Desc": "6. Repeat steps 2-5 for 'Private' visibility. [Test Data- Repository Name: 'private-repo', Description: 'Test private repo', Visibility: Private] [Acceptance Criteria- AC-2, bullet 5]",
+            "Expected_Result": "6. Repository visibility is shown as 'Private'."
           }
         ]
       }
