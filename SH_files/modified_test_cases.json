@@ -1,37 +1,37 @@
 [
   {
-    "testCaseId": "",
-    "testCaseDescription": "Validate repository visibility is reflected after creation",
+    "testCaseId": "HAP-529-NEW-001",
+    "testCaseDescription": "Validate repository visibility settings during and after creation",
     "testSteps": [
       {
         "Step_ID": 1,
-        "Step_Desc": "1. Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
+        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2, bullet 5]",
+        "Expected_Result": "User is logged in and dashboard is displayed."
       },
       {
         "Step_ID": 2,
-        "Step_Desc": "2. Click on 'New repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
+        "Step_Desc": "Click 'New Repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2, bullet 5]",
+        "Expected_Result": "Repository creation page is displayed."
       },
       {
         "Step_ID": 3,
-        "Step_Desc": "3. Enter repository name, description, and select visibility as 'Public'. [Test Data- Repository Name: new-repo, Description: Test repo, Visibility: Public] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
+        "Step_Desc": "Enter valid repository name and description. Select 'Public' visibility. [Test Data- Repository Name: 'public-repo', Description: 'Test public repo', Visibility: Public] [Acceptance Criteria- AC-2, bullet 5]",
+        "Expected_Result": "Details are accepted and 'Public' is selected."
       },
       {
         "Step_ID": 4,
-        "Step_Desc": "4. Click on 'Create repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
+        "Step_Desc": "Click 'Create Repository'. [Test Data- N/A] [Acceptance Criteria- AC-2, bullet 5]",
+        "Expected_Result": "Repository is created and displayed in repository list."
       },
       {
         "Step_ID": 5,
-        "Step_Desc": "5. Verify that the newly created repository is marked as 'Public'. [Test Data- Repository Name: new-repo] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
+        "Step_Desc": "Verify that the created repository is marked as 'Public' in its settings and UI. [Test Data- Repository Name: 'public-repo'] [Acceptance Criteria- AC-2, bullet 5]",
+        "Expected_Result": "Repository visibility is shown as 'Public'."
       },
       {
         "Step_ID": 6,
-        "Step_Desc": "6. Repeat steps 3-5 with visibility set to 'Private'. [Test Data- Repository Name: new-repo-private, Description: Test repo, Visibility: Private] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository visibility is displayed as selected (Public/Private) after creation."
+        "Step_Desc": "Repeat steps 2-5 for 'Private' visibility. [Test Data- Repository Name: 'private-repo', Description: 'Test private repo', Visibility: Private] [Acceptance Criteria- AC-2, bullet 5]",
+        "Expected_Result": "Repository visibility is shown as 'Private'."
       }
     ]
   }
