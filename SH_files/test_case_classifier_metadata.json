@@ -1,52 +1,161 @@
 [
   {
-    "Story_ID": "HAP-529",
-    "TC_ID": 241,
-    "Step_ID": 5,
-    "Change_Type": "Addition",
-    "Change_Location": "AC-2, bullet 5",
-    "Old_Content": "Visibility is set to Public.",
-    "New_Content": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
-    "Required_Update": "Add verification post-creation that repository is Public/Private as selected."
-  },
-  {
-    "Story_ID": "HAP-529",
-    "TC_ID": 241,
-    "Step_ID": 6,
-    "Change_Type": "Addition",
-    "Change_Location": "AC-2, bullet 5",
-    "Old_Content": "Repository is created and user is redirected to the new repository page.",
-    "New_Content": "Repository is created and user is redirected to the new repository page. Verify repository visibility matches selection.",
-    "Required_Update": "Add step to verify repository visibility matches selection."
-  },
-  {
-    "Story_ID": "HAP-529",
-    "TC_ID": 242,
-    "Step_ID": 5,
-    "Change_Type": "Addition",
-    "Change_Location": "AC-2, bullet 5",
-    "Old_Content": "Visibility is set to Public.",
-    "New_Content": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
-    "Required_Update": "Add verification post-creation that repository is Public/Private as selected."
-  },
-  {
-    "Story_ID": "HAP-529",
-    "TC_ID": 243,
-    "Step_ID": 5,
-    "Change_Type": "Addition",
-    "Change_Location": "AC-2, bullet 5",
-    "Old_Content": "Visibility is set to Public.",
-    "New_Content": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
-    "Required_Update": "Add verification post-creation that repository is Public/Private as selected."
-  },
-  {
-    "Story_ID": "HAP-529",
-    "TC_ID": 244,
-    "Step_ID": 5,
-    "Change_Type": "Addition",
-    "Change_Location": "AC-2, bullet 5",
-    "Old_Content": "Visibility is set to Public.",
-    "New_Content": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
-    "Required_Update": "Add verification post-creation that repository is Public/Private as selected."
+    "Story ID": "HAP-529",
+    "Change Requirement Metadata": [
+      {
+        "Change Type": "Addition",
+        "Change Location": "AC-2",
+        "Old Content": "",
+        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
+      }
+    ],
+    "Test Case Impact Analysis": [
+      {
+        "Test Case ID": 234,
+        "Test Case Title": "Test Case HAP-492 TS-001 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-1 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 235,
+        "Test Case Title": "Test Case HAP-492 TS-002 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-1 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 236,
+        "Test Case Title": "Test Case HAP-492 TS-003 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-1 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 237,
+        "Test Case Title": "Test Case HAP-492 TS-004 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-1 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 238,
+        "Test Case Title": "Test Case HAP-492 TS-005 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-1 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 239,
+        "Test Case Title": "Test Case HAP-492 TS-005 TC-002",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-1 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 240,
+        "Test Case Title": "Test Case HAP-492 TS-005 TC-003",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-1 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 241,
+        "Test Case Title": "Test Case HAP-492 TS-006 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-2 but do not validate visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 242,
+        "Test Case Title": "Test Case HAP-492 TS-007 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-2 but do not validate visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 243,
+        "Test Case Title": "Test Case HAP-492 TS-008 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-2 but do not validate visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 244,
+        "Test Case Title": "Test Case HAP-492 TS-009 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-2 but do not validate visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 245,
+        "Test Case Title": "Test Case HAP-492 TS-010 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-3 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 246,
+        "Test Case Title": "Test Case HAP-492 TS-011 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-3 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 247,
+        "Test Case Title": "Test Case HAP-492 TS-012 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-3 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 248,
+        "Test Case Title": "Test Case HAP-492 TS-013 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-4 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      },
+      {
+        "Test Case ID": 249,
+        "Test Case Title": "Test Case HAP-492 TS-014 TC-001",
+        "Impacted Steps": [],
+        "Impact Classification": "No Impact",
+        "Rationale": "Existing steps and expected results reference only AC-4 and do not cover repository visibility settings. No terminology, workflow, or expected result overlaps with the new AC-2."
+      }
+    ],
+    "New Test Cases": [
+      {
+        "id": "NEW_TC_HAP-529-AC2-001",
+        "title": "Test Case HAP-529 TS-002 TC-001 - Validate Repository Visibility Setting During Creation",
+        "Steps": [
+          {
+            "Step_ID": 1,
+            "Step_Desc": "Navigate to the repository creation page.",
+            "Expected": "Repository creation form is displayed."
+          },
+          {
+            "Step_ID": 2,
+            "Step_Desc": "Select 'Public' as the repository visibility option.",
+            "Expected": "'Public' option is selected."
+          },
+          {
+            "Step_ID": 3,
+            "Step_Desc": "Complete all required fields and submit the form to create the repository.",
+            "Expected": "Repository is created successfully."
+          },
+          {
+            "Step_ID": 4,
+            "Step_Desc": "Verify the created repository's visibility is set to 'Public'.",
+            "Expected": "Repository visibility is displayed as 'Public'."
+          },
+          {
+            "Step_ID": 5,
+            "Step_Desc": "Repeat steps 2-4 for 'Private' visibility option.",
+            "Expected": "Repository visibility is displayed as 'Private' when 'Private' is selected during creation."
+          }
+        ],
+        "Acceptance Criteria Reference": "AC-2"
+      }
+    ]
   }
 ]
