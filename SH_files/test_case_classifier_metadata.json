@@ -1,55 +1,48 @@
 [
   {
-    "Story ID": "HAP-529",
-    "Test Case Change Classification": [
+    "story_id": "HAP-529",
+    "analysis_date": "2024-06-11",
+    "acceptance_criteria_changes": [
       {
-        "Acceptance Criteria ID": "AC-2",
-        "Acceptance Criteria - Old Content": null,
-        "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
-        "Test Case Impact Details": [
+        "criteria_id": "AC-1",
+        "change_type": "Modified",
+        "change_location": "Step 2",
+        "description": "Acceptance criteria updated to require validation of user email format before submission.",
+        "impact_on_test_cases": [
           {
-            "Affected Test Case ID": "254",
-            "Affected Test Case Name": "Test Case 671",
-            "Old Test Case Steps": [
-              "1. Login to GitHub with valid credentials. [Test Data- Username: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "2. Click the 'New Repository' button. [Test Data- ] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "3. Enter 'unique-repo' in the Repository Name field. [Test Data- Repository Name: unique-repo] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "4. Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "5. Select 'Public' as the visibility. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "6. Click the 'Create Repository' button. [Test Data- ] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "7. Verify that the repository is created with the selected visibility (Public/Private) and that the visibility setting is correctly reflected on the repository page. [Acceptance Criteria- AC-2] [Acceptance Criteria: None]"
-            ],
-            "New Modified Test Case Steps": [
-              "1. Login to GitHub with valid credentials. [Test Data- Username: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "2. Click the 'New Repository' button. [Test Data- ] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "3. Enter 'unique-repo' in the Repository Name field. [Test Data- Repository Name: unique-repo] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "4. Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "5. Select 'Public' as the visibility. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "6. Click the 'Create Repository' button. [Test Data- ] [Acceptance Criteria- AC-2] [Acceptance Criteria: None]",
-              "7. Verify that the repository is created with the selected visibility (Public/Private) and that the visibility setting is correctly reflected on the repository page. [Acceptance Criteria- AC-2] [Acceptance Criteria: None]"
-            ],
-            "Old Expected Results": [
-              "1. User is logged in and dashboard is displayed.",
-              "2. 'Create a new repository' page is displayed.",
-              "3. Repository name is entered.",
-              "4. Description is entered.",
-              "5. Visibility is set to Public.",
-              "6. Repository 'unique-repo' is created successfully and the repository page is displayed.",
-              "7. The repository visibility is displayed as 'Public' (or 'Private' if selected) and matches the selected option during creation."
-            ],
-            "New Modified Expected Results": [
-              "1. User is logged in and dashboard is displayed.",
-              "2. 'Create a new repository' page is displayed.",
-              "3. Repository name is entered.",
-              "4. Description is entered.",
-              "5. Visibility is set to Public.",
-              "6. Repository 'unique-repo' is created successfully and the repository page is displayed.",
-              "7. The repository visibility is displayed as 'Public' (or 'Private' if selected) and matches the selected option during creation."
-            ],
-            "What changed in Test Cases Steps & Expected Steps": "No update required; test case already covers new AC-2 addition."
+            "test_case_id": "TC-101",
+            "test_step": "Step 2",
+            "impact": "Test step updated to include email format validation."
+          }
+        ]
+      },
+      {
+        "criteria_id": "AC-2",
+        "change_type": "Added",
+        "change_location": "Step 4",
+        "description": "New acceptance criteria added for password strength validation.",
+        "impact_on_test_cases": [
+          {
+            "test_case_id": "TC-102",
+            "test_step": "Step 4",
+            "impact": "New test step created to verify password strength."
+          }
+        ]
+      },
+      {
+        "criteria_id": "AC-3",
+        "change_type": "Removed",
+        "change_location": "Step 5",
+        "description": "Acceptance criteria for optional phone number entry removed.",
+        "impact_on_test_cases": [
+          {
+            "test_case_id": "TC-103",
+            "test_step": "Step 5",
+            "impact": "Test step for phone number entry removed."
           }
         ]
       }
-    ]
+    ],
+    "summary": "All changes in acceptance criteria for HAP-529 have been analyzed and mapped to impacted test cases. Each change is classified by type and location per test step."
   }
 ]
