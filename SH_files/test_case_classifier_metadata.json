@@ -1,153 +1,52 @@
 [
   {
-    "Story ID": "HAP-529",
-    "Change Requirement Metadata": [
-      {
-        "Change Type": "Addition",
-        "Change Location": "AC-2, bullet 5",
-        "Old Content": null,
-        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
-      }
-    ],
-    "Test Case Impact Analysis": [
-      {
-        "test_case_id": 241,
-        "test_case_title": "Test Case HAP-492 TS-006 TC-001",
-        "impacted_steps": [
-          {
-            "step_id": 5,
-            "step_desc": "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
-            "expected": "5. Visibility is set to Public.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently only verifies selection of 'Public' visibility. It does not verify that the visibility setting is correctly applied post-creation or that the repository reflects the selected option. Step and expected result should be updated to validate that the repository's visibility matches the selected option after creation. Additional step may be needed to check repository settings post-creation."
-          },
-          {
-            "step_id": 6,
-            "step_desc": "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-            "expected": "6. Repository is created and user is redirected to the new repository page.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently verifies repository creation and redirection, but does not validate that the visibility setting is correctly applied and reflected post-creation. Expected result should be updated to include verification that the repository's visibility matches the selected option."
-          }
-        ]
-      },
-      {
-        "test_case_id": 242,
-        "test_case_title": "Test Case HAP-492 TS-007 TC-001",
-        "impacted_steps": [
-          {
-            "step_id": 5,
-            "step_desc": "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
-            "expected": "5. Visibility is set to Public.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently only verifies selection of 'Public' visibility. It does not verify that the visibility setting is correctly applied post-creation or that the repository reflects the selected option. Step and expected result should be updated to validate that the repository's visibility matches the selected option after creation. Additional step may be needed to check repository settings post-creation."
-          },
-          {
-            "step_id": 6,
-            "step_desc": "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-            "expected": "6. Error message is displayed for blank repository name.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently does not verify visibility setting post-creation due to error scenario, but if repository creation is successful in other scenarios, verification of visibility setting should be included."
-          }
-        ]
-      },
-      {
-        "test_case_id": 243,
-        "test_case_title": "Test Case HAP-492 TS-008 TC-001",
-        "impacted_steps": [
-          {
-            "step_id": 5,
-            "step_desc": "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
-            "expected": "5. Visibility is set to Public.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently only verifies selection of 'Public' visibility. It does not verify that the visibility setting is correctly applied post-creation or that the repository reflects the selected option. Step and expected result should be updated to validate that the repository's visibility matches the selected option after creation. Additional step may be needed to check repository settings post-creation."
-          },
-          {
-            "step_id": 6,
-            "step_desc": "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-            "expected": "6. Error message is displayed for duplicate repository name.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently does not verify visibility setting post-creation due to error scenario, but if repository creation is successful in other scenarios, verification of visibility setting should be included."
-          }
-        ]
-      },
-      {
-        "test_case_id": 244,
-        "test_case_title": "Test Case HAP-492 TS-009 TC-001",
-        "impacted_steps": [
-          {
-            "step_id": 5,
-            "step_desc": "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
-            "expected": "5. Visibility is set to Public.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently only verifies selection of 'Public' visibility. It does not verify that the visibility setting is correctly applied post-creation or that the repository reflects the selected option. Step and expected result should be updated to validate that the repository's visibility matches the selected option after creation. Additional step may be needed to check repository settings post-creation."
-          },
-          {
-            "step_id": 6,
-            "step_desc": "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-            "expected": "6. Error message is displayed for invalid characters in repository name.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently does not verify visibility setting post-creation due to error scenario, but if repository creation is successful in other scenarios, verification of visibility setting should be included."
-          }
-        ]
-      }
-    ],
-    "unimpacted_test_cases": [
-      {
-        "test_case_id": 234,
-        "test_case_title": "Test Case HAP-492 TS-001 TC-001"
-      },
-      {
-        "test_case_id": 235,
-        "test_case_title": "Test Case HAP-492 TS-002 TC-001"
-      },
-      {
-        "test_case_id": 236,
-        "test_case_title": "Test Case HAP-492 TS-003 TC-001"
-      },
-      {
-        "test_case_id": 237,
-        "test_case_title": "Test Case HAP-492 TS-004 TC-001"
-      },
-      {
-        "test_case_id": 238,
-        "test_case_title": "Test Case HAP-492 TS-005 TC-001"
-      },
-      {
-        "test_case_id": 239,
-        "test_case_title": "Test Case HAP-492 TS-005 TC-002"
-      },
-      {
-        "test_case_id": 240,
-        "test_case_title": "Test Case HAP-492 TS-005 TC-003"
-      },
-      {
-        "test_case_id": 245,
-        "test_case_title": "Test Case HAP-492 TS-010 TC-001"
-      },
-      {
-        "test_case_id": 246,
-        "test_case_title": "Test Case HAP-492 TS-011 TC-001"
-      },
-      {
-        "test_case_id": 247,
-        "test_case_title": "Test Case HAP-492 TS-012 TC-001"
-      },
-      {
-        "test_case_id": 248,
-        "test_case_title": "Test Case HAP-492 TS-013 TC-001"
-      },
-      {
-        "test_case_id": 249,
-        "test_case_title": "Test Case HAP-492 TS-014 TC-001"
-      }
-    ]
+    "Story_ID": "HAP-529",
+    "TC_ID": 241,
+    "Step_ID": 5,
+    "Change_Type": "Addition",
+    "Change_Location": "AC-2, bullet 5",
+    "Old_Content": "Visibility is set to Public.",
+    "New_Content": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
+    "Required_Update": "Add verification post-creation that repository is Public/Private as selected."
+  },
+  {
+    "Story_ID": "HAP-529",
+    "TC_ID": 241,
+    "Step_ID": 6,
+    "Change_Type": "Addition",
+    "Change_Location": "AC-2, bullet 5",
+    "Old_Content": "Repository is created and user is redirected to the new repository page.",
+    "New_Content": "Repository is created and user is redirected to the new repository page. Verify repository visibility matches selection.",
+    "Required_Update": "Add step to verify repository visibility matches selection."
+  },
+  {
+    "Story_ID": "HAP-529",
+    "TC_ID": 242,
+    "Step_ID": 5,
+    "Change_Type": "Addition",
+    "Change_Location": "AC-2, bullet 5",
+    "Old_Content": "Visibility is set to Public.",
+    "New_Content": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
+    "Required_Update": "Add verification post-creation that repository is Public/Private as selected."
+  },
+  {
+    "Story_ID": "HAP-529",
+    "TC_ID": 243,
+    "Step_ID": 5,
+    "Change_Type": "Addition",
+    "Change_Location": "AC-2, bullet 5",
+    "Old_Content": "Visibility is set to Public.",
+    "New_Content": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
+    "Required_Update": "Add verification post-creation that repository is Public/Private as selected."
+  },
+  {
+    "Story_ID": "HAP-529",
+    "TC_ID": 244,
+    "Step_ID": 5,
+    "Change_Type": "Addition",
+    "Change_Location": "AC-2, bullet 5",
+    "Old_Content": "Visibility is set to Public.",
+    "New_Content": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
+    "Required_Update": "Add verification post-creation that repository is Public/Private as selected."
   }
 ]
