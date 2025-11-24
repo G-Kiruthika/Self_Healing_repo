@@ -1,37 +1,65 @@
 [
   {
-    "testCaseId": "HAP-529-NEW-001",
-    "testCaseDescription": "Validate repository visibility settings during and after creation",
+    "testCaseId": 241,
+    "testCaseDescription": "Verify login with valid credentials",
     "testSteps": [
       {
         "Step_ID": 1,
-        "Step_Desc": "1. Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2, bullet 5]",
-        "Expected_Result": "1. User is logged in and dashboard is displayed."
+        "Step_Desc": "Enter valid username and password",
+        "Expected_Result": "User is able to enter credentials"
       },
       {
         "Step_ID": 2,
-        "Step_Desc": "2. Click 'New Repository' button. [Test Data- N/A] [Acceptance Criteria- AC-2, bullet 5]",
-        "Expected_Result": "2. Repository creation page is displayed."
+        "Step_Desc": "Click on login button",
+        "Expected_Result": "User is redirected to dashboard"
+      }
+    ]
+  },
+  {
+    "testCaseId": 242,
+    "testCaseDescription": "Verify login with invalid credentials",
+    "testSteps": [
+      {
+        "Step_ID": 1,
+        "Step_Desc": "Enter invalid username and password",
+        "Expected_Result": "User is able to enter credentials"
       },
       {
-        "Step_ID": 3,
-        "Step_Desc": "3. Enter valid repository name and description. Select 'Public' visibility. [Test Data- Repository Name: 'public-repo', Description: 'Test public repo', Visibility: Public] [Acceptance Criteria- AC-2, bullet 5]",
-        "Expected_Result": "3. Details are accepted and 'Public' is selected."
+        "Step_ID": 2,
+        "Step_Desc": "Click on login button",
+        "Expected_Result": "Error message is displayed"
+      }
+    ]
+  },
+  {
+    "testCaseId": 243,
+    "testCaseDescription": "Verify password reset functionality",
+    "testSteps": [
+      {
+        "Step_ID": 1,
+        "Step_Desc": "Click on forgot password link",
+        "Expected_Result": "Password reset page is displayed"
       },
       {
-        "Step_ID": 4,
-        "Step_Desc": "4. Click 'Create Repository'. [Test Data- N/A] [Acceptance Criteria- AC-2, bullet 5]",
-        "Expected_Result": "4. Repository is created and displayed in repository list."
+        "Step_ID": 2,
+        "Step_Desc": "Enter registered email and submit",
+        "Expected_Result": "Password reset email is sent"
+      }
+    ]
+  },
+  {
+    "testCaseId": 244,
+    "testCaseDescription": "Verify logout functionality",
+    "testSteps": [
+      {
+        "Step_ID": 1,
+        "Step_Desc": "Click on logout button",
+        "Expected_Result": "User is logged out"
       },
       {
-        "Step_ID": 5,
-        "Step_Desc": "5. Verify that the created repository is marked as 'Public' in its settings and UI. [Test Data- Repository Name: 'public-repo'] [Acceptance Criteria- AC-2, bullet 5]",
-        "Expected_Result": "5. Repository visibility is shown as 'Public'."
-      },
-      {
-        "Step_ID": 6,
-        "Step_Desc": "6. Repeat steps 2-5 for 'Private' visibility. [Test Data- Repository Name: 'private-repo', Description: 'Test private repo', Visibility: Private] [Acceptance Criteria- AC-2, bullet 5]",
-        "Expected_Result": "6. Repository visibility is shown as 'Private'."
+        "Step_ID": 2,
+        "Step_Desc": "Verify redirection to login page",
+        "Expected_Result": "Login page is displayed"
       }
     ]
   }
