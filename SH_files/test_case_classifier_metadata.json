@@ -3,8 +3,8 @@
     "Story ID": "HAP-529",
     "Test Case Change Classification": [
       {
-        "Acceptance Criteria ID": "AC-2: Repository Creation Functionality, bullet 5",
-        "Acceptance Criteria - Old Content": "",
+        "Acceptance Criteria ID": "AC-2",
+        "Acceptance Criteria - Old Content": null,
         "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
         "Test Case Impact Details": [
           {
@@ -23,9 +23,9 @@
               "2. Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
               "3. Enter 'my-repo' in the Repository name field. [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]",
               "4. Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]",
-              "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
               "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-              "7. Verify that the repository visibility is displayed as 'Public' on the repository page."
+              "7. Verify that the repository visibility setting reflects the selected option post-creation. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]"
             ],
             "Old Expected Results": [
               "1. User is logged in.",
@@ -40,11 +40,11 @@
               "2. 'Create a new repository' page is displayed.",
               "3. Repository name is accepted.",
               "4. Description is accepted.",
-              "5. Visibility is set to Public.",
+              "5. Visibility is set to Public or Private as selected.",
               "6. Repository is created and user is redirected to the new repository page.",
-              "7. Repository page shows visibility as 'Public'."
+              "7. Repository visibility matches the selected option (Public/Private) after creation."
             ],
-            "What changed in Test Cases Steps & Expected Steps": "Added step and expected result to verify that the repository visibility is displayed as 'Public' on the repository page after creation, as per new acceptance criteria."
+            "What changed in Test Cases Steps & Expected Steps": "Test steps and expected results were updated to explicitly test both 'Public' and 'Private' visibility options during repository creation and to verify that the repository's visibility matches the selected option after creation, in alignment with the new acceptance criteria."
           },
           {
             "Affected Test Case ID": "242",
@@ -62,9 +62,8 @@
               "2. Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
               "3. Leave the Repository name field blank. [Test Data- Repository name: ''] [Acceptance Criteria- AC-2]",
               "4. Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]",
-              "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
-              "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-              "7. Verify that the repository visibility is displayed as 'Public' on the repository page."
+              "5. Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
+              "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "Old Expected Results": [
               "1. User is logged in.",
@@ -79,11 +78,10 @@
               "2. 'Create a new repository' page is displayed.",
               "3. Repository name field is empty.",
               "4. Description is accepted.",
-              "5. Visibility is set to Public.",
-              "6. Error message is displayed for blank repository name.",
-              "7. Repository page shows visibility as 'Public'."
+              "5. Visibility is set to Public or Private as selected.",
+              "6. Error message is displayed for blank repository name."
             ],
-            "What changed in Test Cases Steps & Expected Steps": "Added step and expected result to verify that the repository visibility is displayed as 'Public' on the repository page after creation, as per new acceptance criteria."
+            "What changed in Test Cases Steps & Expected Steps": "Test steps and expected results were updated to allow selection of both 'Public' and 'Private' visibility options, ensuring coverage of the new acceptance criteria."
           },
           {
             "Affected Test Case ID": "243",
@@ -101,9 +99,8 @@
               "2. Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
               "3. Enter 'my-repo' in the Repository name field (name already exists). [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]",
               "4. Enter 'Duplicate repo' in the Description field. [Test Data- Description: Duplicate repo] [Acceptance Criteria- AC-2]",
-              "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
-              "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-              "7. Verify that the repository visibility is displayed as 'Public' on the repository page."
+              "5. Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
+              "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "Old Expected Results": [
               "1. User is logged in.",
@@ -118,11 +115,10 @@
               "2. 'Create a new repository' page is displayed.",
               "3. Repository name is entered.",
               "4. Description is accepted.",
-              "5. Visibility is set to Public.",
-              "6. Error message is displayed for duplicate repository name.",
-              "7. Repository page shows visibility as 'Public'."
+              "5. Visibility is set to Public or Private as selected.",
+              "6. Error message is displayed for duplicate repository name."
             ],
-            "What changed in Test Cases Steps & Expected Steps": "Added step and expected result to verify that the repository visibility is displayed as 'Public' on the repository page after creation, as per new acceptance criteria."
+            "What changed in Test Cases Steps & Expected Steps": "Test steps and expected results were updated to allow selection of both 'Public' and 'Private' visibility options, ensuring coverage of the new acceptance criteria."
           },
           {
             "Affected Test Case ID": "244",
@@ -140,9 +136,8 @@
               "2. Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
               "3. Enter 'repo#name' in the Repository name field (contains invalid character '#'). [Test Data- Repository name: repo#name] [Acceptance Criteria- AC-2]",
               "4. Enter 'Invalid repo' in the Description field. [Test Data- Description: Invalid repo] [Acceptance Criteria- AC-2]",
-              "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
-              "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-              "7. Verify that the repository visibility is displayed as 'Public' on the repository page."
+              "5. Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
+              "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "Old Expected Results": [
               "1. User is logged in.",
@@ -157,55 +152,10 @@
               "2. 'Create a new repository' page is displayed.",
               "3. Repository name is entered.",
               "4. Description is accepted.",
-              "5. Visibility is set to Public.",
-              "6. Error message is displayed for invalid characters in repository name.",
-              "7. Repository page shows visibility as 'Public'."
+              "5. Visibility is set to Public or Private as selected.",
+              "6. Error message is displayed for invalid characters in repository name."
             ],
-            "What changed in Test Cases Steps & Expected Steps": "Added step and expected result to verify that the repository visibility is displayed as 'Public' on the repository page after creation, as per new acceptance criteria."
-          }
-        ]
-      }
-    ],
-    "New Test Cases": [
-      {
-        "TC_ID": "250",
-        "TC_Name": "Validate Private Repository Visibility Post-Creation",
-        "Acceptance_Criteria_ID": "AC-2: Repository Creation Functionality, bullet 5",
-        "Steps": [
-          {
-            "Step_ID": 1,
-            "Step_Desc": "Login to GitHub with valid credentials.",
-            "Expected_Result": "User is logged in."
-          },
-          {
-            "Step_ID": 2,
-            "Step_Desc": "Click on 'New repository' button.",
-            "Expected_Result": "'Create a new repository' page is displayed."
-          },
-          {
-            "Step_ID": 3,
-            "Step_Desc": "Enter 'private-repo' in the Repository name field.",
-            "Expected_Result": "Repository name is accepted."
-          },
-          {
-            "Step_ID": 4,
-            "Step_Desc": "Enter 'Private repo for testing' in the Description field.",
-            "Expected_Result": "Description is accepted."
-          },
-          {
-            "Step_ID": 5,
-            "Step_Desc": "Select 'Private' as the visibility option.",
-            "Expected_Result": "Visibility is set to Private."
-          },
-          {
-            "Step_ID": 6,
-            "Step_Desc": "Click 'Create repository'.",
-            "Expected_Result": "Repository is created and user is redirected to the new repository page."
-          },
-          {
-            "Step_ID": 7,
-            "Step_Desc": "Verify that the repository visibility is displayed as 'Private' on the repository page.",
-            "Expected_Result": "Repository page shows visibility as 'Private'."
+            "What changed in Test Cases Steps & Expected Steps": "Test steps and expected results were updated to allow selection of both 'Public' and 'Private' visibility options, ensuring coverage of the new acceptance criteria."
           }
         ]
       }
