@@ -1,65 +1,50 @@
 [
   {
     "testCaseId": 241,
-    "testCaseDescription": "Verify login with valid credentials",
+    "testCaseDescription": "AC-2, bullet 5",
     "testSteps": [
       {
-        "Step_ID": 1,
-        "Step_Desc": "Enter valid username and password",
-        "Expected_Result": "User is able to enter credentials"
+        "Step_ID": 5,
+        "Step_Desc": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
+        "Expected_Result": "Add verification post-creation that repository is Public/Private as selected."
       },
       {
-        "Step_ID": 2,
-        "Step_Desc": "Click on login button",
-        "Expected_Result": "User is redirected to dashboard"
+        "Step_ID": 6,
+        "Step_Desc": "Repository is created and user is redirected to the new repository page. Verify repository visibility matches selection.",
+        "Expected_Result": "Add step to verify repository visibility matches selection."
       }
     ]
   },
   {
     "testCaseId": 242,
-    "testCaseDescription": "Verify login with invalid credentials",
+    "testCaseDescription": "AC-2, bullet 5",
     "testSteps": [
       {
-        "Step_ID": 1,
-        "Step_Desc": "Enter invalid username and password",
-        "Expected_Result": "User is able to enter credentials"
-      },
-      {
-        "Step_ID": 2,
-        "Step_Desc": "Click on login button",
-        "Expected_Result": "Error message is displayed"
+        "Step_ID": 5,
+        "Step_Desc": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
+        "Expected_Result": "Add verification post-creation that repository is Public/Private as selected."
       }
     ]
   },
   {
     "testCaseId": 243,
-    "testCaseDescription": "Verify password reset functionality",
+    "testCaseDescription": "AC-2, bullet 5",
     "testSteps": [
       {
-        "Step_ID": 1,
-        "Step_Desc": "Click on forgot password link",
-        "Expected_Result": "Password reset page is displayed"
-      },
-      {
-        "Step_ID": 2,
-        "Step_Desc": "Enter registered email and submit",
-        "Expected_Result": "Password reset email is sent"
+        "Step_ID": 5,
+        "Step_Desc": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
+        "Expected_Result": "Add verification post-creation that repository is Public/Private as selected."
       }
     ]
   },
   {
     "testCaseId": 244,
-    "testCaseDescription": "Verify logout functionality",
+    "testCaseDescription": "AC-2, bullet 5",
     "testSteps": [
       {
-        "Step_ID": 1,
-        "Step_Desc": "Click on logout button",
-        "Expected_Result": "User is logged out"
-      },
-      {
-        "Step_ID": 2,
-        "Step_Desc": "Verify redirection to login page",
-        "Expected_Result": "Login page is displayed"
+        "Step_ID": 5,
+        "Step_Desc": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
+        "Expected_Result": "Add verification post-creation that repository is Public/Private as selected."
       }
     ]
   }
