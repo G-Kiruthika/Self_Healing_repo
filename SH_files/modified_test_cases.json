@@ -1,50 +1,165 @@
 [
   {
-    "testCaseId": 241,
-    "testCaseDescription": "AC-2, bullet 5",
+    "testCaseId": "241",
+    "testCaseDescription": "Test Case HAP-492 TS-006 TC-001",
     "testSteps": [
       {
+        "Step_ID": 1,
+        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "User is logged in."
+      },
+      {
+        "Step_ID": 2,
+        "Step_Desc": "Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "'Create a new repository' page is displayed."
+      },
+      {
+        "Step_ID": 3,
+        "Step_Desc": "Enter 'my-repo' in the Repository name field. [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository name is accepted."
+      },
+      {
+        "Step_ID": 4,
+        "Step_Desc": "Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Description is accepted."
+      },
+      {
         "Step_ID": 5,
-        "Step_Desc": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
-        "Expected_Result": "Add verification post-creation that repository is Public/Private as selected."
+        "Step_Desc": "Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Visibility is set to Public."
       },
       {
         "Step_ID": 6,
-        "Step_Desc": "Repository is created and user is redirected to the new repository page. Verify repository visibility matches selection.",
-        "Expected_Result": "Add step to verify repository visibility matches selection."
+        "Step_Desc": "Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository is created and user is redirected to the new repository page."
+      },
+      {
+        "Step_ID": 7,
+        "Step_Desc": "Verify that the repository visibility is displayed as 'Public' on the repository page.",
+        "Expected_Result": "Repository page shows visibility as 'Public'."
       }
     ]
   },
   {
-    "testCaseId": 242,
-    "testCaseDescription": "AC-2, bullet 5",
+    "testCaseId": "242",
+    "testCaseDescription": "Test Case HAP-492 TS-007 TC-001",
     "testSteps": [
       {
+        "Step_ID": 1,
+        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "User is logged in."
+      },
+      {
+        "Step_ID": 2,
+        "Step_Desc": "Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "'Create a new repository' page is displayed."
+      },
+      {
+        "Step_ID": 3,
+        "Step_Desc": "Leave the Repository name field blank. [Test Data- Repository name: ''] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository name field is empty."
+      },
+      {
+        "Step_ID": 4,
+        "Step_Desc": "Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Description is accepted."
+      },
+      {
         "Step_ID": 5,
-        "Step_Desc": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
-        "Expected_Result": "Add verification post-creation that repository is Public/Private as selected."
+        "Step_Desc": "Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Visibility is set to Public."
+      },
+      {
+        "Step_ID": 6,
+        "Step_Desc": "Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Error message is displayed for blank repository name."
+      },
+      {
+        "Step_ID": 7,
+        "Step_Desc": "Verify that the repository visibility is displayed as 'Public' on the repository page.",
+        "Expected_Result": "Repository page shows visibility as 'Public'."
       }
     ]
   },
   {
-    "testCaseId": 243,
-    "testCaseDescription": "AC-2, bullet 5",
+    "testCaseId": "243",
+    "testCaseDescription": "Test Case HAP-492 TS-008 TC-001",
     "testSteps": [
       {
+        "Step_ID": 1,
+        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "User is logged in."
+      },
+      {
+        "Step_ID": 2,
+        "Step_Desc": "Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "'Create a new repository' page is displayed."
+      },
+      {
+        "Step_ID": 3,
+        "Step_Desc": "Enter 'my-repo' in the Repository name field (name already exists). [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository name is entered."
+      },
+      {
+        "Step_ID": 4,
+        "Step_Desc": "Enter 'Duplicate repo' in the Description field. [Test Data- Description: Duplicate repo] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Description is accepted."
+      },
+      {
         "Step_ID": 5,
-        "Step_Desc": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
-        "Expected_Result": "Add verification post-creation that repository is Public/Private as selected."
+        "Step_Desc": "Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Visibility is set to Public."
+      },
+      {
+        "Step_ID": 6,
+        "Step_Desc": "Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Error message is displayed for duplicate repository name."
+      },
+      {
+        "Step_ID": 7,
+        "Step_Desc": "Verify that the repository visibility is displayed as 'Public' on the repository page.",
+        "Expected_Result": "Repository page shows visibility as 'Public'."
       }
     ]
   },
   {
-    "testCaseId": 244,
-    "testCaseDescription": "AC-2, bullet 5",
+    "testCaseId": "244",
+    "testCaseDescription": "Test Case HAP-492 TS-009 TC-001",
     "testSteps": [
       {
+        "Step_ID": 1,
+        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "User is logged in."
+      },
+      {
+        "Step_ID": 2,
+        "Step_Desc": "Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "'Create a new repository' page is displayed."
+      },
+      {
+        "Step_ID": 3,
+        "Step_Desc": "Enter 'repo#name' in the Repository name field (contains invalid character '#'). [Test Data- Repository name: repo#name] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Repository name is entered."
+      },
+      {
+        "Step_ID": 4,
+        "Step_Desc": "Enter 'Invalid repo' in the Description field. [Test Data- Description: Invalid repo] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Description is accepted."
+      },
+      {
         "Step_ID": 5,
-        "Step_Desc": "Visibility is set to Public. After creation, verify the repository is Public/Private as selected.",
-        "Expected_Result": "Add verification post-creation that repository is Public/Private as selected."
+        "Step_Desc": "Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Visibility is set to Public."
+      },
+      {
+        "Step_ID": 6,
+        "Step_Desc": "Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
+        "Expected_Result": "Error message is displayed for invalid characters in repository name."
+      },
+      {
+        "Step_ID": 7,
+        "Step_Desc": "Verify that the repository visibility is displayed as 'Public' on the repository page.",
+        "Expected_Result": "Repository page shows visibility as 'Public'."
       }
     ]
   }
