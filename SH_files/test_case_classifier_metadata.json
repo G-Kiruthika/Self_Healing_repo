@@ -1,73 +1,193 @@
 [
   {
     "Story ID": "HAP-529",
-    "Change Requirement Metadata": [
+    "Test Case Change Classification": [
       {
-        "Change Type": "Addition",
-        "Change Location": "AC-2",
-        "Old Content": null,
-        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
-      }
-    ],
-    "Test Case Impact Analysis": [
-      {
-        "TestCaseID": "TC-001",
-        "TestCaseName": "Create Repository - Basic Flow",
-        "OldSteps": [
-          "Navigate to the repository creation page.",
-          "Enter repository name and description.",
-          "Click 'Create' button."
-        ],
-        "NewSteps": [
-          "Navigate to the repository creation page.",
-          "Enter repository name and description.",
-          "Select repository visibility (Public/Private).",
-          "Click 'Create' button.",
-          "Verify that the repository is created with the selected visibility setting.",
-          "Check repository settings post-creation to confirm visibility matches the selected option."
-        ],
-        "OldExpectedResults": [
-          "Repository is created successfully."
-        ],
-        "NewExpectedResults": [
-          "Repository is created successfully with the selected visibility (Public/Private).",
-          "Repository settings post-creation reflect the selected visibility option."
-        ],
-        "ChangeDescription": "Steps added to select and validate repository visibility during and after creation, per new AC-2."
-      }
-    ],
-    "NewTestCases": [
-      {
-        "TestCaseID": "TC-NEW-001",
-        "TestCaseName": "Validate Repository Visibility Setting During and After Creation",
-        "Steps": [
-          "Navigate to the repository creation page.",
-          "Enter repository name and description.",
-          "Select 'Public' as repository visibility.",
-          "Click 'Create' button.",
-          "Verify that the repository is created as Public.",
-          "Navigate to repository settings and confirm visibility is set to Public.",
-          "Repeat steps 1-6 with 'Private' as repository visibility and confirm repository is Private."
-        ],
-        "ExpectedResults": [
-          "Repository is created with the selected visibility (Public/Private).",
-          "Repository settings post-creation reflect the selected visibility option."
-        ],
-        "RelatedAcceptanceCriteria": "AC-2"
-      }
-    ],
-    "TestCaseChangeSummary": [
-      {
-        "TestCaseID": "TC-001",
-        "ChangeType": "Step Addition",
-        "ChangeLocation": "Step 3, Step 5, Step 6",
-        "Description": "Added steps to select and validate repository visibility during and after creation."
-      },
-      {
-        "TestCaseID": "TC-NEW-001",
-        "ChangeType": "New Test Case",
-        "ChangeLocation": "N/A",
-        "Description": "New test case created to explicitly validate repository visibility settings as per AC-2."
+        "Acceptance Criteria ID": "AC-2",
+        "Acceptance Criteria - Old Content": null,
+        "Acceptance Criteria - Modified Content": "* Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
+        "Test Case Impact Details": [
+          {
+            "Affected Test Case ID": 241,
+            "Affected Test Case Name": "Test Case HAP-492 TS-006 TC-001",
+            "Old Test Case Steps": [
+              "<ol>",
+              "<li>Login to GitHub with valid credentials. [Test Data- Email: <a href=\"mailto:valid@email.com\">valid@email.com</a>, Password: validPassword] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'my-repo' in the Repository name field. [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]</li>",
+              "<li>Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "</ol>"
+            ],
+            "New Modified Test Case Steps": [
+              "<ol>",
+              "<li>Login to GitHub with valid credentials. [Test Data- Email: <a href=\"mailto:valid@email.com\">valid@email.com</a>, Password: validPassword] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'my-repo' in the Repository name field. [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]</li>",
+              "<li>Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "<li>Verify that the repository visibility matches the selected option after creation. [Acceptance Criteria- AC-2]</li>",
+              "</ol>"
+            ],
+            "Old Expected Results": [
+              "<ol>",
+              "<li>User is logged in.</li>",
+              "<li>'Create a new repository' page is displayed.</li>",
+              "<li>Repository name is accepted.</li>",
+              "<li>Description is accepted.</li>",
+              "<li>Visibility is set to Public.</li>",
+              "<li>Repository is created and user is redirected to the new repository page.</li>",
+              "</ol>"
+            ],
+            "New Modified Expected Results": [
+              "<ol>",
+              "<li>User is logged in.</li>",
+              "<li>'Create a new repository' page is displayed.</li>",
+              "<li>Repository name is accepted.</li>",
+              "<li>Description is accepted.</li>",
+              "<li>Visibility is set to Public or Private as selected.</li>",
+              "<li>Repository is created and user is redirected to the new repository page.</li>",
+              "<li>Repository visibility matches the selected option after creation.</li>",
+              "</ol>"
+            ],
+            "What changed in Test Cases Steps & Expected Steps": "Steps and expected results updated to validate both 'Public' and 'Private' visibility options and ensure the selected option is reflected post-creation."
+          },
+          {
+            "Affected Test Case ID": 242,
+            "Affected Test Case Name": "Test Case HAP-492 TS-007 TC-001",
+            "Old Test Case Steps": [
+              "<ol>",
+              "<li>Login to GitHub with valid credentials. [Test Data- Email: <a href=\"mailto:valid@email.com\">valid@email.com</a>, Password: validPassword] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "<li>Leave the Repository name field blank. [Test Data- Repository name: ''] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]</li>",
+              "<li>Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "</ol>"
+            ],
+            "New Modified Test Case Steps": [
+              "<ol>",
+              "<li>Login to GitHub with valid credentials. [Test Data- Email: <a href=\"mailto:valid@email.com\">valid@email.com</a>, Password: validPassword] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "<li>Leave the Repository name field blank. [Test Data- Repository name: ''] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]</li>",
+              "<li>Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "<li>Verify that the repository visibility matches the selected option after creation. [Acceptance Criteria- AC-2]</li>",
+              "</ol>"
+            ],
+            "Old Expected Results": [
+              "<ol>",
+              "<li>User is logged in.</li>",
+              "<li>'Create a new repository' page is displayed.</li>",
+              "<li>Repository name field is empty.</li>",
+              "<li>Description is accepted.</li>",
+              "<li>Visibility is set to Public.</li>",
+              "<li>Error message is displayed for blank repository name.</li>",
+              "</ol>"
+            ],
+            "New Modified Expected Results": [
+              "<ol>",
+              "<li>User is logged in.</li>",
+              "<li>'Create a new repository' page is displayed.</li>",
+              "<li>Repository name field is empty.</li>",
+              "<li>Description is accepted.</li>",
+              "<li>Visibility is set to Public or Private as selected.</li>",
+              "<li>Error message is displayed for blank repository name.</li>",
+              "<li>Repository visibility matches the selected option after creation.</li>",
+              "</ol>"
+            ],
+            "What changed in Test Cases Steps & Expected Steps": "Steps and expected results updated to validate both 'Public' and 'Private' visibility options and ensure the selected option is reflected post-creation."
+          },
+          {
+            "Affected Test Case ID": 243,
+            "Affected Test Case Name": "Test Case HAP-492 TS-008 TC-001",
+            "Old Test Case Steps": [
+              "1. Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
+              "2. Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Enter 'my-repo' in the Repository name field (name already exists). [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]",
+              "4. Enter 'Duplicate repo' in the Description field. [Test Data- Description: Duplicate repo] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
+              "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]"
+            ],
+            "New Modified Test Case Steps": [
+              "1. Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
+              "2. Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Enter 'my-repo' in the Repository name field (name already exists). [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]",
+              "4. Enter 'Duplicate repo' in the Description field. [Test Data- Description: Duplicate repo] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
+              "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "7. Verify that the repository visibility matches the selected option after creation. [Acceptance Criteria- AC-2]"
+            ],
+            "Old Expected Results": [
+              "1. User is logged in.",
+              "2. 'Create a new repository' page is displayed.",
+              "3. Repository name is entered.",
+              "4. Description is accepted.",
+              "5. Visibility is set to Public.",
+              "6. Error message is displayed for duplicate repository name."
+            ],
+            "New Modified Expected Results": [
+              "1. User is logged in.",
+              "2. 'Create a new repository' page is displayed.",
+              "3. Repository name is entered.",
+              "4. Description is accepted.",
+              "5. Visibility is set to Public or Private as selected.",
+              "6. Error message is displayed for duplicate repository name.",
+              "7. Repository visibility matches the selected option after creation."
+            ],
+            "What changed in Test Cases Steps & Expected Steps": "Steps and expected results updated to validate both 'Public' and 'Private' visibility options and ensure the selected option is reflected post-creation."
+          },
+          {
+            "Affected Test Case ID": 244,
+            "Affected Test Case Name": "Test Case HAP-492 TS-009 TC-001",
+            "Old Test Case Steps": [
+              "<ol>",
+              "<li>Login to GitHub with valid credentials. [Test Data- Email: <a href=\"mailto:valid@email.com\">valid@email.com</a>, Password: validPassword] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'repo#name' in the Repository name field (contains invalid character '#'). [Test Data- Repository name: repo#name] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'Invalid repo' in the Description field. [Test Data- Description: Invalid repo] [Acceptance Criteria- AC-2]</li>",
+              "<li>Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "</ol>"
+            ],
+            "New Modified Test Case Steps": [
+              "<ol>",
+              "<li>Login to GitHub with valid credentials. [Test Data- Email: <a href=\"mailto:valid@email.com\">valid@email.com</a>, Password: validPassword] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'repo#name' in the Repository name field (contains invalid character '#'). [Test Data- Repository name: repo#name] [Acceptance Criteria- AC-2]</li>",
+              "<li>Enter 'Invalid repo' in the Description field. [Test Data- Description: Invalid repo] [Acceptance Criteria- AC-2]</li>",
+              "<li>Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]</li>",
+              "<li>Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
+              "<li>Verify that the repository visibility matches the selected option after creation. [Acceptance Criteria- AC-2]</li>",
+              "</ol>"
+            ],
+            "Old Expected Results": [
+              "<ol>",
+              "<li>User is logged in.</li>",
+              "<li>'Create a new repository' page is displayed.</li>",
+              "<li>Repository name is entered.</li>",
+              "<li>Description is accepted.</li>",
+              "<li>Visibility is set to Public.</li>",
+              "<li>Error message is displayed for invalid characters in repository name.</li>",
+              "</ol>"
+            ],
+            "New Modified Expected Results": [
+              "<ol>",
+              "<li>User is logged in.</li>",
+              "<li>'Create a new repository' page is displayed.</li>",
+              "<li>Repository name is entered.</li>",
+              "<li>Description is accepted.</li>",
+              "<li>Visibility is set to Public or Private as selected.</li>",
+              "<li>Error message is displayed for invalid characters in repository name.</li>",
+              "<li>Repository visibility matches the selected option after creation.</li>",
+              "</ol>"
+            ],
+            "What changed in Test Cases Steps & Expected Steps": "Steps and expected results updated to validate both 'Public' and 'Private' visibility options and ensure the selected option is reflected post-creation."
+          }
+        ]
       }
     ]
   }
