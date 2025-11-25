@@ -4,89 +4,64 @@
     "Change Requirement Metadata": [
       {
         "Change Type": "Addition",
-        "Change Location": "AC-2, bullet 5",
+        "Change Location": "AC-2",
         "Old Content": null,
         "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
       }
     ],
-    "Test Case Impact Analysis": [
+    "Test Case Impact": [
       {
         "Test Case ID": 241,
-        "Title": "Test Case HAP-492 TS-006 TC-001",
         "Impacted Steps": [
           {
             "Step_ID": 6,
-            "Change Type": "Addition",
-            "Change Location": "AC-2, bullet 5",
-            "Impact": "Step currently only selects 'Public'. Does not validate post-creation visibility.",
-            "Recommendation": "Add a step after repository creation to verify the visibility setting matches the selected option (Public/Private)."
+            "Change Type": "Test Data Update",
+            "Change Location": "Step 6",
+            "Old Content": "Select 'Public' as the visibility option.",
+            "New Content": "Select both 'Public' and 'Private' as the visibility option in separate runs."
           },
           {
             "Step_ID": 7,
-            "Change Type": "Addition",
-            "Change Location": "AC-2, bullet 5",
-            "Impact": "Repository creation is validated, but not the visibility setting post-creation.",
-            "Recommendation": "Add a step to check repository settings after creation to confirm visibility."
+            "Change Type": "New Step",
+            "Change Location": "After Step 7",
+            "Old Content": null,
+            "New Content": "Verify the created repository's visibility matches the selected option (Public/Private)."
           }
         ]
       },
       {
         "Test Case ID": 242,
-        "Title": "Test Case HAP-492 TS-007 TC-001",
         "Impacted Steps": [
           {
             "Step_ID": 6,
-            "Change Type": "Addition",
-            "Change Location": "AC-2, bullet 5",
-            "Impact": "Only selection is validated, not post-creation.",
-            "Recommendation": "Add a step to verify visibility after creation."
-          },
-          {
-            "Step_ID": 7,
-            "Change Type": "Addition",
-            "Change Location": "AC-2, bullet 5",
-            "Impact": "Repository creation is validated, but not the visibility setting post-creation.",
-            "Recommendation": "Add a step to check repository settings after creation to confirm visibility."
+            "Change Type": "Test Data Update",
+            "Change Location": "Step 6",
+            "Old Content": "Select 'Public' as the visibility option.",
+            "New Content": "Select both 'Public' and 'Private' as the visibility option in separate runs."
           }
         ]
       },
       {
         "Test Case ID": 243,
-        "Title": "Test Case HAP-492 TS-008 TC-001",
         "Impacted Steps": [
           {
             "Step_ID": 5,
-            "Change Type": "Addition",
-            "Change Location": "AC-2, bullet 5",
-            "Impact": "Only selection is validated, not post-creation.",
-            "Recommendation": "Add a step to verify visibility after creation."
-          },
-          {
-            "Step_ID": 6,
-            "Change Type": "Addition",
-            "Change Location": "AC-2, bullet 5",
-            "Impact": "Repository creation is validated, but not the visibility setting post-creation.",
-            "Recommendation": "Add a step to check repository settings after creation to confirm visibility."
+            "Change Type": "Test Data Update",
+            "Change Location": "Step 5",
+            "Old Content": "Select 'Public' as the visibility option.",
+            "New Content": "Select both 'Public' and 'Private' as the visibility option in separate runs."
           }
         ]
       },
       {
         "Test Case ID": 244,
-        "Title": "Test Case HAP-492 TS-009 TC-001",
         "Impacted Steps": [
           {
             "Step_ID": 6,
-            "Change Type": "Addition",
-            "Change Location": "AC-2, bullet 5",
-            "Impact": "Only selection is validated, not post-creation.",
-            "Recommendation": "Add a step to verify visibility after creation."
-          },
-          {
-            "Step_ID": 7,
-            "Change Type": "Addition",
-            "Change Location": "AC-2, bullet 5",
-            "Impact": "Repository creation is validated, but not the visibility setting post-creation.",
-            "Recommendation": "Add a step to check repository settings after creation to confirm visibility."
+            "Change Type": "Test Data Update",
+            "Change Location": "Step 6",
+            "Old Content": "Select 'Public' as the visibility option.",
+            "New Content": "Select both 'Public' and 'Private' as the visibility option in separate runs."
           }
         ]
       }
