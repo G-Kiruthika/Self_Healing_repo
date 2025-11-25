@@ -9,61 +9,65 @@
         "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
       }
     ],
-    "Test Case Impact": [
+    "Test Case Impact Analysis": [
       {
-        "Test Case ID": 241,
-        "Impacted Steps": [
-          {
-            "Step_ID": 6,
-            "Change Type": "Test Data Update",
-            "Change Location": "Step 6",
-            "Old Content": "Select 'Public' as the visibility option.",
-            "New Content": "Select both 'Public' and 'Private' as the visibility option in separate runs."
-          },
-          {
-            "Step_ID": 7,
-            "Change Type": "New Step",
-            "Change Location": "After Step 7",
-            "Old Content": null,
-            "New Content": "Verify the created repository's visibility matches the selected option (Public/Private)."
-          }
-        ]
+        "TestCaseID": "TC-001",
+        "TestCaseName": "Create Repository - Basic Flow",
+        "OldSteps": [
+          "Navigate to the repository creation page.",
+          "Enter repository name and description.",
+          "Click 'Create' button."
+        ],
+        "NewSteps": [
+          "Navigate to the repository creation page.",
+          "Enter repository name and description.",
+          "Select repository visibility (Public/Private).",
+          "Click 'Create' button.",
+          "Verify that the repository is created with the selected visibility setting.",
+          "Check repository settings post-creation to confirm visibility matches the selected option."
+        ],
+        "OldExpectedResults": [
+          "Repository is created successfully."
+        ],
+        "NewExpectedResults": [
+          "Repository is created successfully with the selected visibility (Public/Private).",
+          "Repository settings post-creation reflect the selected visibility option."
+        ],
+        "ChangeDescription": "Steps added to select and validate repository visibility during and after creation, per new AC-2."
+      }
+    ],
+    "NewTestCases": [
+      {
+        "TestCaseID": "TC-NEW-001",
+        "TestCaseName": "Validate Repository Visibility Setting During and After Creation",
+        "Steps": [
+          "Navigate to the repository creation page.",
+          "Enter repository name and description.",
+          "Select 'Public' as repository visibility.",
+          "Click 'Create' button.",
+          "Verify that the repository is created as Public.",
+          "Navigate to repository settings and confirm visibility is set to Public.",
+          "Repeat steps 1-6 with 'Private' as repository visibility and confirm repository is Private."
+        ],
+        "ExpectedResults": [
+          "Repository is created with the selected visibility (Public/Private).",
+          "Repository settings post-creation reflect the selected visibility option."
+        ],
+        "RelatedAcceptanceCriteria": "AC-2"
+      }
+    ],
+    "TestCaseChangeSummary": [
+      {
+        "TestCaseID": "TC-001",
+        "ChangeType": "Step Addition",
+        "ChangeLocation": "Step 3, Step 5, Step 6",
+        "Description": "Added steps to select and validate repository visibility during and after creation."
       },
       {
-        "Test Case ID": 242,
-        "Impacted Steps": [
-          {
-            "Step_ID": 6,
-            "Change Type": "Test Data Update",
-            "Change Location": "Step 6",
-            "Old Content": "Select 'Public' as the visibility option.",
-            "New Content": "Select both 'Public' and 'Private' as the visibility option in separate runs."
-          }
-        ]
-      },
-      {
-        "Test Case ID": 243,
-        "Impacted Steps": [
-          {
-            "Step_ID": 5,
-            "Change Type": "Test Data Update",
-            "Change Location": "Step 5",
-            "Old Content": "Select 'Public' as the visibility option.",
-            "New Content": "Select both 'Public' and 'Private' as the visibility option in separate runs."
-          }
-        ]
-      },
-      {
-        "Test Case ID": 244,
-        "Impacted Steps": [
-          {
-            "Step_ID": 6,
-            "Change Type": "Test Data Update",
-            "Change Location": "Step 6",
-            "Old Content": "Select 'Public' as the visibility option.",
-            "New Content": "Select both 'Public' and 'Private' as the visibility option in separate runs."
-          }
-        ]
+        "TestCaseID": "TC-NEW-001",
+        "ChangeType": "New Test Case",
+        "ChangeLocation": "N/A",
+        "Description": "New test case created to explicitly validate repository visibility settings as per AC-2."
       }
     ]
   }
