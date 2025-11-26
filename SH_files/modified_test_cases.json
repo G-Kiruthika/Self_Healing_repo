@@ -1,150 +1,32 @@
 [
   {
-    "testCaseId": "241",
-    "testCaseDescription": "Test Case HAP-492 TS-006 TC-001",
+    "testCaseId": "TC_02",
+    "testCaseDescription": "Create Repository - Visibility Option",
     "testSteps": [
       {
-        "Step_ID": "1",
-        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "User is logged in."
+        "Step_ID": 1,
+        "Step_Desc": "Navigate to repository creation page",
+        "Expected_Result": "Repository creation form is displayed"
       },
       {
-        "Step_ID": "2",
-        "Step_Desc": "Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "'Create a new repository' page is displayed."
+        "Step_ID": 2,
+        "Step_Desc": "Select visibility as 'Public' or 'Private'",
+        "Expected_Result": "Visibility option is set to selected value"
       },
       {
-        "Step_ID": "3",
-        "Step_Desc": "Enter 'my-repo' in the Repository name field. [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository name is accepted."
+        "Step_ID": 3,
+        "Step_Desc": "Click 'Create'",
+        "Expected_Result": "Repository is created"
       },
       {
-        "Step_ID": "4",
-        "Step_Desc": "Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Description is accepted."
+        "Step_ID": 4,
+        "Step_Desc": "Verify repository is created with selected visibility (Public/Private)",
+        "Expected_Result": "Repository visibility matches the selected option"
       },
       {
-        "Step_ID": "5",
-        "Step_Desc": "Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Visibility is set to Public or Private as selected."
-      },
-      {
-        "Step_ID": "6",
-        "Step_Desc": "Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository is created and user is redirected to the new repository page."
-      },
-      {
-        "Step_ID": "7",
-        "Step_Desc": "Verify that the repository visibility setting reflects the selected option post-creation. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository visibility matches the selected option (Public/Private) after creation."
-      }
-    ]
-  },
-  {
-    "testCaseId": "242",
-    "testCaseDescription": "Test Case HAP-492 TS-007 TC-001",
-    "testSteps": [
-      {
-        "Step_ID": "1",
-        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "User is logged in."
-      },
-      {
-        "Step_ID": "2",
-        "Step_Desc": "Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "'Create a new repository' page is displayed."
-      },
-      {
-        "Step_ID": "3",
-        "Step_Desc": "Leave the Repository name field blank. [Test Data- Repository name: ''] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository name field is empty."
-      },
-      {
-        "Step_ID": "4",
-        "Step_Desc": "Enter 'Test repo' in the Description field. [Test Data- Description: Test repo] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Description is accepted."
-      },
-      {
-        "Step_ID": "5",
-        "Step_Desc": "Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Visibility is set to Public or Private as selected."
-      },
-      {
-        "Step_ID": "6",
-        "Step_Desc": "Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Error message is displayed for blank repository name."
-      }
-    ]
-  },
-  {
-    "testCaseId": "243",
-    "testCaseDescription": "Test Case HAP-492 TS-008 TC-001",
-    "testSteps": [
-      {
-        "Step_ID": "1",
-        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "User is logged in."
-      },
-      {
-        "Step_ID": "2",
-        "Step_Desc": "Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "'Create a new repository' page is displayed."
-      },
-      {
-        "Step_ID": "3",
-        "Step_Desc": "Enter 'my-repo' in the Repository name field (name already exists). [Test Data- Repository name: my-repo] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository name is entered."
-      },
-      {
-        "Step_ID": "4",
-        "Step_Desc": "Enter 'Duplicate repo' in the Description field. [Test Data- Description: Duplicate repo] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Description is accepted."
-      },
-      {
-        "Step_ID": "5",
-        "Step_Desc": "Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Visibility is set to Public or Private as selected."
-      },
-      {
-        "Step_ID": "6",
-        "Step_Desc": "Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Error message is displayed for duplicate repository name."
-      }
-    ]
-  },
-  {
-    "testCaseId": "244",
-    "testCaseDescription": "Test Case HAP-492 TS-009 TC-001",
-    "testSteps": [
-      {
-        "Step_ID": "1",
-        "Step_Desc": "Login to GitHub with valid credentials. [Test Data- Email: valid@email.com, Password: validPassword] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "User is logged in."
-      },
-      {
-        "Step_ID": "2",
-        "Step_Desc": "Click on 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "'Create a new repository' page is displayed."
-      },
-      {
-        "Step_ID": "3",
-        "Step_Desc": "Enter 'repo#name' in the Repository name field (contains invalid character '#'). [Test Data- Repository name: repo#name] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Repository name is entered."
-      },
-      {
-        "Step_ID": "4",
-        "Step_Desc": "Enter 'Invalid repo' in the Description field. [Test Data- Description: Invalid repo] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Description is accepted."
-      },
-      {
-        "Step_ID": "5",
-        "Step_Desc": "Select 'Public' or 'Private' as the visibility option. [Test Data- Visibility: Public/Private] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Visibility is set to Public or Private as selected."
-      },
-      {
-        "Step_ID": "6",
-        "Step_Desc": "Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-        "Expected_Result": "Error message is displayed for invalid characters in repository name."
+        "Step_ID": 5,
+        "Step_Desc": "After creation, navigate to repository settings and verify visibility",
+        "Expected_Result": "Repository settings reflect the selected visibility option"
       }
     ]
   }
