@@ -1,12 +1,12 @@
 [
   {
-    "Story ID": "HAP-529",
-    "Change Requirement Metadata": [
+    "story_id": "HAP-900",
+    "change_requirement_metadata": [
       {
-        "Change Type": "Addition",
-        "Change Location": "AC-2, bullet 5",
-        "Old Content": null,
-        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
+        "change_type": "Modification",
+        "change_location": "Scenario 2, bullet 3",
+        "old_content": "If Process Stop Code = 1, I or T then post the funds to Suspense",
+        "new_content": "If Process Stop Code = 2, I or T then post the funds to Suspense"
       }
     ]
   }
