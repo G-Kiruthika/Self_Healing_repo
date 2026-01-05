@@ -1,100 +1,56 @@
 [
   {
-    "Story ID": "HAP-529",
-    "Change Requirement Metadata": [
+    "Story ID": "HAP-900",
+    "Test Case Change Classification": [
       {
-        "Change Type": "Addition",
-        "Change Location": "AC-2, bullet 5",
-        "Old Content": null,
-        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
-      }
-    ],
-    "Test Case Impact Analysis": [
-      {
-        "test_case_id": 241,
-        "test_case_title": "Test Case HAP-492 TS-006 TC-001",
-        "impacted_steps": [
+        "Acceptance Criteria ID": "Scenario 2, bullet 3",
+        "Acceptance Criteria - Old Content": "If Process Stop Code = 1, I or T then post the funds to Suspense",
+        "Acceptance Criteria - Modified Content": "If Process Stop Code = 2, I or T then post the funds to Suspense",
+        "Test Case Impact Details": [
           {
-            "step_id": 6,
-            "step_desc": "<li>Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]</li>",
-            "expected": "<li>Visibility is set to Public.</li>",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently only checks for 'Public' selection. Needs to be updated to validate both 'Public' and 'Private' options, and to verify that the selected visibility is correctly applied and reflected after repository creation."
-          },
-          {
-            "step_id": 7,
-            "step_desc": "<li>Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
-            "expected": "<li>Repository is created and user is redirected to the new repository page.</li>",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Expected result should be updated to include verification that the repository visibility matches the selected option (Public/Private) post-creation."
-          }
-        ]
-      },
-      {
-        "test_case_id": 242,
-        "test_case_title": "Test Case HAP-492 TS-007 TC-001",
-        "impacted_steps": [
-          {
-            "step_id": 6,
-            "step_desc": "<li>Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]</li>",
-            "expected": "<li>Visibility is set to Public.</li>",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently only checks for 'Public' selection. Needs to be updated to validate both 'Public' and 'Private' options, and to verify that the selected visibility is correctly applied and reflected after repository creation."
-          },
-          {
-            "step_id": 7,
-            "step_desc": "<li>Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
-            "expected": "<li>Error message is displayed for blank repository name.</li>",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "If repository creation is attempted with a valid name, expected result should include verification that the repository visibility matches the selected option (Public/Private) post-creation."
-          }
-        ]
-      },
-      {
-        "test_case_id": 243,
-        "test_case_title": "Test Case HAP-492 TS-008 TC-001",
-        "impacted_steps": [
-          {
-            "step_id": 5,
-            "step_desc": "5. Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]",
-            "expected": "5. Visibility is set to Public.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently only checks for 'Public' selection. Needs to be updated to validate both 'Public' and 'Private' options, and to verify that the selected visibility is correctly applied and reflected after repository creation."
-          },
-          {
-            "step_id": 6,
-            "step_desc": "6. Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]",
-            "expected": "6. Error message is displayed for duplicate repository name.",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "If repository creation is successful, expected result should include verification that the repository visibility matches the selected option (Public/Private) post-creation."
-          }
-        ]
-      },
-      {
-        "test_case_id": 244,
-        "test_case_title": "Test Case HAP-492 TS-009 TC-001",
-        "impacted_steps": [
-          {
-            "step_id": 6,
-            "step_desc": "<li>Select 'Public' as the visibility option. [Test Data- Visibility: Public] [Acceptance Criteria- AC-2]</li>",
-            "expected": "<li>Visibility is set to Public.</li>",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "Step currently only checks for 'Public' selection. Needs to be updated to validate both 'Public' and 'Private' options, and to verify that the selected visibility is correctly applied and reflected after repository creation."
-          },
-          {
-            "step_id": 7,
-            "step_desc": "<li>Click 'Create repository'. [Test Data- ] [Acceptance Criteria- AC-2]</li>",
-            "expected": "<li>Error message is displayed for invalid characters in repository name.</li>",
-            "change_type": "Addition",
-            "change_location": "AC-2, bullet 5",
-            "impact": "If repository creation is successful, expected result should include verification that the repository visibility matches the selected option (Public/Private) post-creation."
+            "Affected Test Case ID": "152",
+            "Affected Test Case Name": "Test Case HAP-881 TS-001 TC-001",
+            "Old Test Case Steps": [
+              "<ol>",
+              "<li>Launch the Customer Portal application in a supported browser. [Test Data: URL: <a href=\"https://customerportal.example.com]\">https://customerportal.example.com]</a> [Acceptance Criteria: Scenario1]</li>",
+              "<li>Log in using valid customer credentials. [Test Data: Username: customer1, Password: Pass@123] [Acceptance Criteria: Scenario1]</li>",
+              "<li>Navigate to the loan dashboard. [Acceptance Criteria: Scenario1]</li>",
+              "<li>Select the HELOC loan account with Process Stop Code = 2. [Test Data: Loan Account: 123456, Process Stop Code: 2] [Acceptance Criteria: Scenario1]</li>",
+              "<li>Verify the status of the 'Make a Payment' button. [Acceptance Criteria: Scenario1]</li>",
+              "<li>Check for the ineligibility message displayed to the customer. [Acceptance Criteria: Scenario1]</li>",
+              "</ol>"
+            ],
+            "New Modified Test Case Steps": [
+              "<ol>",
+              "<li>Launch the Customer Portal application in a supported browser. [Test Data: URL: <a href=\"https://customerportal.example.com]\">https://customerportal.example.com]</a> [Acceptance Criteria: Scenario1]</li>",
+              "<li>Log in using valid customer credentials. [Test Data: Username: customer1, Password: Pass@123] [Acceptance Criteria: Scenario1]</li>",
+              "<li>Navigate to the loan dashboard. [Acceptance Criteria: Scenario1]</li>",
+              "<li>Select the HELOC loan account with Process Stop Code = 2. [Test Data: Loan Account: 123456, Process Stop Code: 2] [Acceptance Criteria: Scenario1]</li>",
+              "<li>Verify the status of the 'Make a Payment' button. [Acceptance Criteria: Scenario1]</li>",
+              "<li>Check for the ineligibility message displayed to the customer. [Acceptance Criteria: Scenario1]</li>",
+              "</ol>"
+            ],
+            "Old Expected Results": [
+              "<ol>",
+              "<li>Login page is displayed.</li>",
+              "<li>Dashboard is displayed.</li>",
+              "<li>Loan dashboard is displayed with all customer loans.</li>",
+              "<li>HELOC loan details page is displayed.</li>",
+              "<li>'Make a Payment' button is disabled.</li>",
+              "<li>An ineligibility message is displayed explaining payment cannot be made due to Process Stop Code.</li>",
+              "</ol>"
+            ],
+            "New Modified Expected Results": [
+              "<ol>",
+              "<li>Login page is displayed.</li>",
+              "<li>Dashboard is displayed.</li>",
+              "<li>Loan dashboard is displayed with all customer loans.</li>",
+              "<li>HELOC loan details page is displayed.</li>",
+              "<li>'Make a Payment' button is disabled.</li>",
+              "<li>An ineligibility message is displayed explaining payment cannot be made due to Process Stop Code.</li>",
+              "</ol>"
+            ],
+            "What changed in Test Cases Steps & Expected Steps": "Test data for Process Stop Code updated from '1' to '2' in the relevant step. No steps added or deleted; only the test data and condition are modified. All other steps and expected results remain unchanged."
           }
         ]
       }
