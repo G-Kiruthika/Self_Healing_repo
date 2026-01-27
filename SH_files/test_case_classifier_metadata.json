@@ -8,97 +8,184 @@
         "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
         "Test Case Impact Details": [
           {
-            "Affected Test Case ID": "537",
+            "Affected Test Case ID": "HAP-492 TS-007 TC-001",
             "Affected Test Case Name": "Test Case HAP-492 TS-007 TC-001",
             "Old Test Case Steps": [
+              "1. Ensure user is logged in. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "2. Click the 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Enter repository name. [Test Data- new-repo] [Acceptance Criteria- AC-2]",
+              "4. Enter description. [Test Data- Test repo] [Acceptance Criteria- AC-2]",
               "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]",
+              "6. Check the option to initialize the repository with a README. [Test Data- init_readme: true] [Acceptance Criteria- AC-2]",
+              "7. Click the 'Create repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
               "8. Verify that the new repository is created and the repository page is displayed. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "New Modified Test Case Steps": [
-              "5. Select 'Public' or 'Private' as the visibility. [Test Data- Public/Private] [Acceptance Criteria- AC-2]. Verify that the selected visibility is correctly applied during repository creation.",
-              "8. Verify that the new repository is created, the repository page is displayed, and the repository's visibility setting matches the selected option (Public/Private)."
+              "1. Ensure user is logged in. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "2. Click the 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Enter repository name. [Test Data- new-repo] [Acceptance Criteria- AC-2]",
+              "4. Enter description. [Test Data- Test repo] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2] (Verify that the selected visibility is applied during creation and reflected post-creation)",
+              "6. Check the option to initialize the repository with a README. [Test Data- init_readme: true] [Acceptance Criteria- AC-2]",
+              "7. Click the 'Create repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "8. Verify that the new repository is created and the repository page is displayed. [Test Data- ] [Acceptance Criteria- AC-2] (Verify that the repository visibility matches the selected option post-creation)"
             ],
             "Old Expected Results": [
+              "1. User is authenticated and on main page.",
+              "2. 'New repository' page is displayed.",
+              "3. Repository name is entered.",
+              "4. Description is entered.",
               "5. Visibility is set to Public.",
+              "6. README initialization is selected.",
+              "7. Repository creation is attempted.",
               "8. Repository page for 'new-repo' is displayed."
             ],
             "New Modified Expected Results": [
-              "5. Visibility is set to Public/Private as selected and reflected correctly.",
-              "8. Repository page for 'new-repo' is displayed with correct visibility (Public/Private)."
+              "1. User is authenticated and on main page.",
+              "2. 'New repository' page is displayed.",
+              "3. Repository name is entered.",
+              "4. Description is entered.",
+              "5. Visibility is set to Public and is correctly reflected after creation.",
+              "6. README initialization is selected.",
+              "7. Repository creation is attempted.",
+              "8. Repository page for 'new-repo' is displayed with correct visibility."
             ],
-            "What changed in Test Cases Steps & Expected Steps": "Steps updated to explicitly verify that the selected visibility (Public/Private) is correctly applied during repository creation and reflected post-creation."
-          }
-        ]
-      },
-      {
-        "Acceptance Criteria ID": "AC-2",
-        "Acceptance Criteria - Old Content": null,
-        "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
-        "Test Case Impact Details": [
+            "What changed in Test Cases Steps & Expected Steps": "Steps updated to explicitly verify that the selected repository visibility (Public/Private) is applied during creation and reflected post-creation."
+          },
           {
-            "Affected Test Case ID": "538",
+            "Affected Test Case ID": "HAP-492 TS-008 TC-001",
             "Affected Test Case Name": "Test Case HAP-492 TS-008 TC-001",
             "Old Test Case Steps": [
-              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]"
+              "1. Ensure user is logged in. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "2. Click the 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Leave repository name field blank. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "4. Enter description. [Test Data- Test repo] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]",
+              "6. Check the option to initialize the repository with a README. [Test Data- init_readme: true] [Acceptance Criteria- AC-2]",
+              "7. Click the 'Create repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "8. Verify that an appropriate error message is displayed indicating the repository name is required and repository is not created. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "New Modified Test Case Steps": [
-              "5. Select 'Public' or 'Private' as the visibility. [Test Data- Public/Private] [Acceptance Criteria- AC-2]. Verify that the selected visibility is correctly applied during repository creation."
+              "1. Ensure user is logged in. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "2. Click the 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Leave repository name field blank. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "4. Enter description. [Test Data- Test repo] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2] (Verify that the selected visibility is applied during creation)",
+              "6. Check the option to initialize the repository with a README. [Test Data- init_readme: true] [Acceptance Criteria- AC-2]",
+              "7. Click the 'Create repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "8. Verify that an appropriate error message is displayed indicating the repository name is required and repository is not created. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "Old Expected Results": [
-              "5. Visibility is set to Public."
+              "1. User is authenticated and on main page.",
+              "2. 'New repository' page is displayed.",
+              "3. Repository name field is blank.",
+              "4. Description is entered.",
+              "5. Visibility is set to Public.",
+              "6. README initialization is selected.",
+              "7. Repository creation is attempted.",
+              "8. Error message shown, repository is not created."
             ],
             "New Modified Expected Results": [
-              "5. Visibility is set to Public/Private as selected and reflected correctly."
+              "1. User is authenticated and on main page.",
+              "2. 'New repository' page is displayed.",
+              "3. Repository name field is blank.",
+              "4. Description is entered.",
+              "5. Visibility is set to Public.",
+              "6. README initialization is selected.",
+              "7. Repository creation is attempted.",
+              "8. Error message shown, repository is not created."
             ],
-            "What changed in Test Cases Steps & Expected Steps": "Step updated to explicitly verify that the selected visibility (Public/Private) is correctly applied during repository creation and reflected post-creation."
-          }
-        ]
-      },
-      {
-        "Acceptance Criteria ID": "AC-2",
-        "Acceptance Criteria - Old Content": null,
-        "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
-        "Test Case Impact Details": [
+            "What changed in Test Cases Steps & Expected Steps": "Step 5 updated to verify that the selected repository visibility is applied during creation."
+          },
           {
-            "Affected Test Case ID": "539",
+            "Affected Test Case ID": "HAP-492 TS-009 TC-001",
             "Affected Test Case Name": "Test Case HAP-492 TS-009 TC-001",
             "Old Test Case Steps": [
-              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]"
+              "1. Ensure user is logged in and has an existing repository named 'existing-repo'. [Test Data- existing-repo] [Acceptance Criteria- AC-2]",
+              "2. Click the 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Enter existing repository name. [Test Data- existing-repo] [Acceptance Criteria- AC-2]",
+              "4. Enter description. [Test Data- Duplicate repo] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]",
+              "6. Check the option to initialize the repository with a README. [Test Data- init_readme: true] [Acceptance Criteria- AC-2]",
+              "7. Click the 'Create repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "8. Verify that an appropriate error message is displayed indicating the repository name already exists and repository is not created. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "New Modified Test Case Steps": [
-              "5. Select 'Public' or 'Private' as the visibility. [Test Data- Public/Private] [Acceptance Criteria- AC-2]. Verify that the selected visibility is correctly applied during repository creation."
+              "1. Ensure user is logged in and has an existing repository named 'existing-repo'. [Test Data- existing-repo] [Acceptance Criteria- AC-2]",
+              "2. Click the 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Enter existing repository name. [Test Data- existing-repo] [Acceptance Criteria- AC-2]",
+              "4. Enter description. [Test Data- Duplicate repo] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2] (Verify that the selected visibility is applied during creation)",
+              "6. Check the option to initialize the repository with a README. [Test Data- init_readme: true] [Acceptance Criteria- AC-2]",
+              "7. Click the 'Create repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "8. Verify that an appropriate error message is displayed indicating the repository name already exists and repository is not created. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "Old Expected Results": [
-              "5. Visibility is set to Public."
+              "1. User is authenticated and 'existing-repo' exists.",
+              "2. 'New repository' page is displayed.",
+              "3. Repository name is entered.",
+              "4. Description is entered.",
+              "5. Visibility is set to Public.",
+              "6. README initialization is selected.",
+              "7. Repository creation is attempted.",
+              "8. Error message shown, repository is not created."
             ],
             "New Modified Expected Results": [
-              "5. Visibility is set to Public/Private as selected and reflected correctly."
+              "1. User is authenticated and 'existing-repo' exists.",
+              "2. 'New repository' page is displayed.",
+              "3. Repository name is entered.",
+              "4. Description is entered.",
+              "5. Visibility is set to Public.",
+              "6. README initialization is selected.",
+              "7. Repository creation is attempted.",
+              "8. Error message shown, repository is not created."
             ],
-            "What changed in Test Cases Steps & Expected Steps": "Step updated to explicitly verify that the selected visibility (Public/Private) is correctly applied during repository creation and reflected post-creation."
-          }
-        ]
-      },
-      {
-        "Acceptance Criteria ID": "AC-2",
-        "Acceptance Criteria - Old Content": null,
-        "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
-        "Test Case Impact Details": [
+            "What changed in Test Cases Steps & Expected Steps": "Step 5 updated to verify that the selected repository visibility is applied during creation."
+          },
           {
-            "Affected Test Case ID": "540",
+            "Affected Test Case ID": "HAP-492 TS-010 TC-001",
             "Affected Test Case Name": "Test Case HAP-492 TS-010 TC-001",
             "Old Test Case Steps": [
-              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]"
+              "1. Ensure user is logged in. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "2. Click the 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Enter invalid repository name. [Test Data- repo#name] [Acceptance Criteria- AC-2]",
+              "4. Enter description. [Test Data- Invalid name repo] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]",
+              "6. Check the option to initialize the repository with a README. [Test Data- init_readme: true] [Acceptance Criteria- AC-2]",
+              "7. Click the 'Create repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "8. Verify that an appropriate error message is displayed indicating invalid characters in the repository name and repository is not created. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "New Modified Test Case Steps": [
-              "5. Select 'Public' or 'Private' as the visibility. [Test Data- Public/Private] [Acceptance Criteria- AC-2]. Verify that the selected visibility is correctly applied during repository creation."
+              "1. Ensure user is logged in. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "2. Click the 'New repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "3. Enter invalid repository name. [Test Data- repo#name] [Acceptance Criteria- AC-2]",
+              "4. Enter description. [Test Data- Invalid name repo] [Acceptance Criteria- AC-2]",
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2] (Verify that the selected visibility is applied during creation)",
+              "6. Check the option to initialize the repository with a README. [Test Data- init_readme: true] [Acceptance Criteria- AC-2]",
+              "7. Click the 'Create repository' button. [Test Data- ] [Acceptance Criteria- AC-2]",
+              "8. Verify that an appropriate error message is displayed indicating invalid characters in the repository name and repository is not created. [Test Data- ] [Acceptance Criteria- AC-2]"
             ],
             "Old Expected Results": [
-              "5. Visibility is set to Public."
+              "1. User is authenticated and on main page.",
+              "2. 'New repository' page is displayed.",
+              "3. Repository name is entered.",
+              "4. Description is entered.",
+              "5. Visibility is set to Public.",
+              "6. README initialization is selected.",
+              "7. Repository creation is attempted.",
+              "8. Error message shown, repository is not created."
             ],
             "New Modified Expected Results": [
-              "5. Visibility is set to Public/Private as selected and reflected correctly."
+              "1. User is authenticated and on main page.",
+              "2. 'New repository' page is displayed.",
+              "3. Repository name is entered.",
+              "4. Description is entered.",
+              "5. Visibility is set to Public.",
+              "6. README initialization is selected.",
+              "7. Repository creation is attempted.",
+              "8. Error message shown, repository is not created."
             ],
-            "What changed in Test Cases Steps & Expected Steps": "Step updated to explicitly verify that the selected visibility (Public/Private) is correctly applied during repository creation and reflected post-creation."
+            "What changed in Test Cases Steps & Expected Steps": "Step 5 updated to verify that the selected repository visibility is applied during creation."
           }
         ]
       }
