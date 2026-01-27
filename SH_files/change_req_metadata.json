@@ -1,12 +1,12 @@
 [
   {
-    "story_id": "HAP-900",
-    "change_requirement_metadata": [
+    "Story ID": "HAP-900",
+    "Change Requirement Metadata": [
       {
-        "change_type": "Modification",
-        "change_location": "Scenario 2, bullet 3",
-        "old_content": "If Process Stop Code = 1, I or T then post the funds to Suspense",
-        "new_content": "If Process Stop Code = 2, I or T then post the funds to Suspense"
+        "Change Type": "Modification",
+        "Change Location": "Scenario 2 > Then > Suspense Posting Condition",
+        "Old Content": "If Process Stop Code = 1, I or T then post the funds to Suspense",
+        "New Content": "If Process Stop Code = 2, I or T then post the funds to Suspense"
       }
     ]
   }
