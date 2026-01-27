@@ -1,56 +1,59 @@
 [
   {
-    "Story ID": "HAP-900",
+    "Story ID": "HAP-529",
     "Test Case Change Classification": [
       {
-        "Acceptance Criteria ID": "Scenario 2, bullet 3",
-        "Acceptance Criteria - Old Content": "If Process Stop Code = 1, I or T then post the funds to Suspense",
-        "Acceptance Criteria - Modified Content": "If Process Stop Code = 2, I or T then post the funds to Suspense",
+        "Acceptance Criteria ID": "AC-2",
+        "Acceptance Criteria - Old Content": null,
+        "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
         "Test Case Impact Details": [
           {
-            "Affected Test Case ID": "152",
-            "Affected Test Case Name": "Test Case HAP-881 TS-001 TC-001",
-            "Old Test Case Steps": [
-              "<ol>",
-              "<li>Launch the Customer Portal application in a supported browser. [Test Data: URL: <a href=\"https://customerportal.example.com]\">https://customerportal.example.com]</a> [Acceptance Criteria: Scenario1]</li>",
-              "<li>Log in using valid customer credentials. [Test Data: Username: customer1, Password: Pass@123] [Acceptance Criteria: Scenario1]</li>",
-              "<li>Navigate to the loan dashboard. [Acceptance Criteria: Scenario1]</li>",
-              "<li>Select the HELOC loan account with Process Stop Code = 2. [Test Data: Loan Account: 123456, Process Stop Code: 2] [Acceptance Criteria: Scenario1]</li>",
-              "<li>Verify the status of the 'Make a Payment' button. [Acceptance Criteria: Scenario1]</li>",
-              "<li>Check for the ineligibility message displayed to the customer. [Acceptance Criteria: Scenario1]</li>",
-              "</ol>"
-            ],
-            "New Modified Test Case Steps": [
-              "<ol>",
-              "<li>Launch the Customer Portal application in a supported browser. [Test Data: URL: <a href=\"https://customerportal.example.com]\">https://customerportal.example.com]</a> [Acceptance Criteria: Scenario1]</li>",
-              "<li>Log in using valid customer credentials. [Test Data: Username: customer1, Password: Pass@123] [Acceptance Criteria: Scenario1]</li>",
-              "<li>Navigate to the loan dashboard. [Acceptance Criteria: Scenario1]</li>",
-              "<li>Select the HELOC loan account with Process Stop Code = 2. [Test Data: Loan Account: 123456, Process Stop Code: 2] [Acceptance Criteria: Scenario1]</li>",
-              "<li>Verify the status of the 'Make a Payment' button. [Acceptance Criteria: Scenario1]</li>",
-              "<li>Check for the ineligibility message displayed to the customer. [Acceptance Criteria: Scenario1]</li>",
-              "</ol>"
-            ],
-            "Old Expected Results": [
-              "<ol>",
-              "<li>Login page is displayed.</li>",
-              "<li>Dashboard is displayed.</li>",
-              "<li>Loan dashboard is displayed with all customer loans.</li>",
-              "<li>HELOC loan details page is displayed.</li>",
-              "<li>'Make a Payment' button is disabled.</li>",
-              "<li>An ineligibility message is displayed explaining payment cannot be made due to Process Stop Code.</li>",
-              "</ol>"
-            ],
-            "New Modified Expected Results": [
-              "<ol>",
-              "<li>Login page is displayed.</li>",
-              "<li>Dashboard is displayed.</li>",
-              "<li>Loan dashboard is displayed with all customer loans.</li>",
-              "<li>HELOC loan details page is displayed.</li>",
-              "<li>'Make a Payment' button is disabled.</li>",
-              "<li>An ineligibility message is displayed explaining payment cannot be made due to Process Stop Code.</li>",
-              "</ol>"
-            ],
-            "What changed in Test Cases Steps & Expected Steps": "Test data for Process Stop Code updated from '1' to '2' in the relevant step. No steps added or deleted; only the test data and condition are modified. All other steps and expected results remain unchanged."
+            "Affected Test Case ID": "",
+            "Affected Test Case Name": "",
+            "Old Test Case Steps": "",
+            "New Modified Test Case Steps": "",
+            "Old Expected Results": "",
+            "New Modified Expected Results": "",
+            "What changed in Test Cases Steps & Expected Steps": "No existing test case fully covers the new workflow. A new test case is required."
+          }
+        ]
+      }
+    ],
+    "New Test Cases": [
+      {
+        "TC_ID": "",
+        "TC_Name": "Validate repository visibility settings during and after creation",
+        "Acceptance_Criteria_ID": "AC-2",
+        "Steps": [
+          {
+            "Step_ID": 1,
+            "Step_Desc": "Navigate to the repository creation page.",
+            "Expected_Result": "Repository creation page is displayed."
+          },
+          {
+            "Step_ID": 2,
+            "Step_Desc": "Enter required repository details (name, description, etc.).",
+            "Expected_Result": "Repository details are entered."
+          },
+          {
+            "Step_ID": 3,
+            "Step_Desc": "Select 'Public' as the repository visibility.",
+            "Expected_Result": "Visibility is set to Public."
+          },
+          {
+            "Step_ID": 4,
+            "Step_Desc": "Complete the repository creation process.",
+            "Expected_Result": "Repository is created."
+          },
+          {
+            "Step_ID": 5,
+            "Step_Desc": "Verify that the repository is created and its visibility is set to 'Public'.",
+            "Expected_Result": "Repository visibility is displayed as 'Public'."
+          },
+          {
+            "Step_ID": 6,
+            "Step_Desc": "Repeat steps 2-5 with 'Private' as the repository visibility.",
+            "Expected_Result": "Repository visibility is displayed as 'Private'."
           }
         ]
       }
