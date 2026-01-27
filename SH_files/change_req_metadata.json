@@ -1,12 +1,24 @@
 [
   {
-    "Story ID": "HAP-900",
-    "Change Requirement Metadata": [
+    "story_id": "HAP-900",
+    "change_requirement_metadata": [
       {
-        "Change Type": "Modification",
-        "Change Location": "Scenario 2, bullet point 3",
-        "Old Content": "If Process Stop Code = 1, I or T then post the funds to Suspense",
-        "New Content": "If Process Stop Code = 2, I or T then post the funds to Suspense"
+        "change_type": "modification",
+        "change_location": "Acceptance Criteria 2",
+        "old_content": "If Process Stop Code = 1, I or T then post the funds to Suspense",
+        "new_content": "If Process Stop Code = 2, I or T then post the funds to Suspense"
+      },
+      {
+        "change_type": "addition",
+        "change_location": "Acceptance Criteria 4",
+        "old_content": "",
+        "new_content": "If the transaction is flagged as 'urgent', escalate to supervisor for manual review"
+      },
+      {
+        "change_type": "deletion",
+        "change_location": "Acceptance Criteria 5",
+        "old_content": "Notify user when funds are posted to Suspense",
+        "new_content": ""
       }
     ]
   }
