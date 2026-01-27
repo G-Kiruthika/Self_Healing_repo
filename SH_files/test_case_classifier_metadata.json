@@ -8,52 +8,97 @@
         "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
         "Test Case Impact Details": [
           {
-            "Affected Test Case ID": "",
-            "Affected Test Case Name": "",
-            "Old Test Case Steps": "",
-            "New Modified Test Case Steps": "",
-            "Old Expected Results": "",
-            "New Modified Expected Results": "",
-            "What changed in Test Cases Steps & Expected Steps": "No existing test case fully covers the new workflow. A new test case is required."
+            "Affected Test Case ID": "537",
+            "Affected Test Case Name": "Test Case HAP-492 TS-007 TC-001",
+            "Old Test Case Steps": [
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]",
+              "8. Verify that the new repository is created and the repository page is displayed. [Test Data- ] [Acceptance Criteria- AC-2]"
+            ],
+            "New Modified Test Case Steps": [
+              "5. Select 'Public' or 'Private' as the visibility. [Test Data- Public/Private] [Acceptance Criteria- AC-2]. Verify that the selected visibility is correctly applied during repository creation.",
+              "8. Verify that the new repository is created, the repository page is displayed, and the repository's visibility setting matches the selected option (Public/Private)."
+            ],
+            "Old Expected Results": [
+              "5. Visibility is set to Public.",
+              "8. Repository page for 'new-repo' is displayed."
+            ],
+            "New Modified Expected Results": [
+              "5. Visibility is set to Public/Private as selected and reflected correctly.",
+              "8. Repository page for 'new-repo' is displayed with correct visibility (Public/Private)."
+            ],
+            "What changed in Test Cases Steps & Expected Steps": "Steps updated to explicitly verify that the selected visibility (Public/Private) is correctly applied during repository creation and reflected post-creation."
           }
         ]
-      }
-    ],
-    "New Test Cases": [
+      },
       {
-        "TC_ID": "",
-        "TC_Name": "Validate repository visibility settings during and after creation",
-        "Acceptance_Criteria_ID": "AC-2",
-        "Steps": [
+        "Acceptance Criteria ID": "AC-2",
+        "Acceptance Criteria - Old Content": null,
+        "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
+        "Test Case Impact Details": [
           {
-            "Step_ID": 1,
-            "Step_Desc": "Navigate to the repository creation page.",
-            "Expected_Result": "Repository creation page is displayed."
-          },
+            "Affected Test Case ID": "538",
+            "Affected Test Case Name": "Test Case HAP-492 TS-008 TC-001",
+            "Old Test Case Steps": [
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]"
+            ],
+            "New Modified Test Case Steps": [
+              "5. Select 'Public' or 'Private' as the visibility. [Test Data- Public/Private] [Acceptance Criteria- AC-2]. Verify that the selected visibility is correctly applied during repository creation."
+            ],
+            "Old Expected Results": [
+              "5. Visibility is set to Public."
+            ],
+            "New Modified Expected Results": [
+              "5. Visibility is set to Public/Private as selected and reflected correctly."
+            ],
+            "What changed in Test Cases Steps & Expected Steps": "Step updated to explicitly verify that the selected visibility (Public/Private) is correctly applied during repository creation and reflected post-creation."
+          }
+        ]
+      },
+      {
+        "Acceptance Criteria ID": "AC-2",
+        "Acceptance Criteria - Old Content": null,
+        "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
+        "Test Case Impact Details": [
           {
-            "Step_ID": 2,
-            "Step_Desc": "Enter required repository details (name, description, etc.).",
-            "Expected_Result": "Repository details are entered."
-          },
+            "Affected Test Case ID": "539",
+            "Affected Test Case Name": "Test Case HAP-492 TS-009 TC-001",
+            "Old Test Case Steps": [
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]"
+            ],
+            "New Modified Test Case Steps": [
+              "5. Select 'Public' or 'Private' as the visibility. [Test Data- Public/Private] [Acceptance Criteria- AC-2]. Verify that the selected visibility is correctly applied during repository creation."
+            ],
+            "Old Expected Results": [
+              "5. Visibility is set to Public."
+            ],
+            "New Modified Expected Results": [
+              "5. Visibility is set to Public/Private as selected and reflected correctly."
+            ],
+            "What changed in Test Cases Steps & Expected Steps": "Step updated to explicitly verify that the selected visibility (Public/Private) is correctly applied during repository creation and reflected post-creation."
+          }
+        ]
+      },
+      {
+        "Acceptance Criteria ID": "AC-2",
+        "Acceptance Criteria - Old Content": null,
+        "Acceptance Criteria - Modified Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation.",
+        "Test Case Impact Details": [
           {
-            "Step_ID": 3,
-            "Step_Desc": "Select 'Public' as the repository visibility.",
-            "Expected_Result": "Visibility is set to Public."
-          },
-          {
-            "Step_ID": 4,
-            "Step_Desc": "Complete the repository creation process.",
-            "Expected_Result": "Repository is created."
-          },
-          {
-            "Step_ID": 5,
-            "Step_Desc": "Verify that the repository is created and its visibility is set to 'Public'.",
-            "Expected_Result": "Repository visibility is displayed as 'Public'."
-          },
-          {
-            "Step_ID": 6,
-            "Step_Desc": "Repeat steps 2-5 with 'Private' as the repository visibility.",
-            "Expected_Result": "Repository visibility is displayed as 'Private'."
+            "Affected Test Case ID": "540",
+            "Affected Test Case Name": "Test Case HAP-492 TS-010 TC-001",
+            "Old Test Case Steps": [
+              "5. Select 'Public' as the visibility. [Test Data- Public] [Acceptance Criteria- AC-2]"
+            ],
+            "New Modified Test Case Steps": [
+              "5. Select 'Public' or 'Private' as the visibility. [Test Data- Public/Private] [Acceptance Criteria- AC-2]. Verify that the selected visibility is correctly applied during repository creation."
+            ],
+            "Old Expected Results": [
+              "5. Visibility is set to Public."
+            ],
+            "New Modified Expected Results": [
+              "5. Visibility is set to Public/Private as selected and reflected correctly."
+            ],
+            "What changed in Test Cases Steps & Expected Steps": "Step updated to explicitly verify that the selected visibility (Public/Private) is correctly applied during repository creation and reflected post-creation."
           }
         ]
       }
