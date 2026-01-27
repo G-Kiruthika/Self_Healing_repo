@@ -1,12 +1,24 @@
 [
   {
-    "Story ID": "HAP-529",
-    "Change Requirement Metadata": [
+    "story_id": "HAP-529",
+    "changes": [
       {
-        "Change Type": "Addition",
-        "Change Location": "AC-2",
-        "Old Content": null,
-        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
+        "change_type": "modification",
+        "change_location": "AC-1",
+        "old_content": "User can submit the form with all required fields filled.",
+        "new_content": "User can submit the form only if all mandatory fields are completed and validated."
+      },
+      {
+        "change_type": "addition",
+        "change_location": "AC-3",
+        "old_content": "",
+        "new_content": "System displays a confirmation message upon successful submission."
+      },
+      {
+        "change_type": "deletion",
+        "change_location": "AC-2",
+        "old_content": "User receives an error message if any required field is empty.",
+        "new_content": ""
       }
     ]
   }
