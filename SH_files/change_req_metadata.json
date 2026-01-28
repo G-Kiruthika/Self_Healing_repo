@@ -1,13 +1,6 @@
 [
   {
-    "Story ID": "HAP-529",
-    "Change Requirement Metadata": [
-      {
-        "Change Type": "Addition",
-        "Change Location": "AC-2, bullet 5",
-        "Old Content": "",
-        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
-      }
-    ]
+    "Story ID": "HAP-446",
+    "Change Requirement Metadata": []
   }
 ]
