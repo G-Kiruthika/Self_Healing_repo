@@ -4,8 +4,8 @@
     "Change Requirement Metadata": [
       {
         "Change Type": "Addition",
-        "Change Location": "AC-2",
-        "Old Content": null,
+        "Change Location": "AC-2, bullet point 5",
+        "Old Content": "",
         "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
       }
     ]
