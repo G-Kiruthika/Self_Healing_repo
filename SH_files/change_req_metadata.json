@@ -1,5 +1,7 @@
 [
   {
-    "error": "Unable to retrieve the change history for the specified Jira issue 'SCRUM-74'. The issue could not be found or accessed. Please verify that the Jira ID is correct and that you have the necessary permissions to access this issue."
+    "Story ID": "SCRUM-74",
+    "Change Requirement Metadata": [],
+    "Error": "Unable to retrieve change history for Jira issue 'SCRUM-74'. The issue could not be found (404 Not Found). Please verify the Jira ID and try again."
   }
 ]
