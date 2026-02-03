@@ -1,13 +1,5 @@
 [
   {
-    "Story ID": "HAP-529",
-    "Change Requirement Metadata": [
-      {
-        "Change Type": "Addition",
-        "Change Location": "AC-2, bullet point 5",
-        "Old Content": "",
-        "New Content": "Validate repository visibility settings (Public/Private) are applied correctly during creation and reflect the selected option post-creation."
-      }
-    ]
+    "error": "Unable to retrieve the change history for the specified Jira issue 'SCRUM-74'. The issue could not be found or accessed. Please verify that the Jira ID is correct and that you have the necessary permissions to access this issue."
   }
 ]
