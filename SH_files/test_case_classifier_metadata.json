@@ -1,6 +1,101 @@
 [
   {
-    "Story ID": "",
-    "Test Case Change Classification": []
+    "Story ID": "SCRUM-74",
+    "Change Requirement Metadata": [],
+    "Error": "Unable to retrieve change history for Jira issue 'SCRUM-74'. The issue could not be found (404 Not Found). Please verify the Jira ID and try again.",
+    "Test Case Impact Analysis": [
+      {
+        "Test Case ID": "TC-001",
+        "Test Case Description": "Verify user can successfully log in with valid credentials.",
+        "Change Classification": "No Change Detected",
+        "Change Type": "None",
+        "Change Location": "None",
+        "Impact on Test Steps": [
+          {
+            "Step": 1,
+            "Description": "Navigate to login page.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 2,
+            "Description": "Enter valid username and password.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 3,
+            "Description": "Click login button.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 4,
+            "Description": "Verify successful login.",
+            "Change": "No Change"
+          }
+        ]
+      },
+      {
+        "Test Case ID": "TC-002",
+        "Test Case Description": "Verify error message is displayed for invalid credentials.",
+        "Change Classification": "No Change Detected",
+        "Change Type": "None",
+        "Change Location": "None",
+        "Impact on Test Steps": [
+          {
+            "Step": 1,
+            "Description": "Navigate to login page.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 2,
+            "Description": "Enter invalid username and/or password.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 3,
+            "Description": "Click login button.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 4,
+            "Description": "Verify error message is displayed.",
+            "Change": "No Change"
+          }
+        ]
+      },
+      {
+        "Test Case ID": "TC-003",
+        "Test Case Description": "Verify password reset functionality.",
+        "Change Classification": "No Change Detected",
+        "Change Type": "None",
+        "Change Location": "None",
+        "Impact on Test Steps": [
+          {
+            "Step": 1,
+            "Description": "Navigate to login page.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 2,
+            "Description": "Click 'Forgot Password' link.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 3,
+            "Description": "Enter registered email address.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 4,
+            "Description": "Submit password reset request.",
+            "Change": "No Change"
+          },
+          {
+            "Step": 5,
+            "Description": "Verify password reset email is received.",
+            "Change": "No Change"
+          }
+        ]
+      }
+    ]
   }
 ]
