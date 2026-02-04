@@ -409,3 +409,36 @@ class LoginPage:
         # Step 7: Verify there is NO warning about previous failed attempts (assume any such warning would be present in error_msg)
         assert "previous failures" not in error_msg.lower(), "Warning about previous failures should NOT be displayed!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_020 ---
+    def login_with_invalid_email_format_and_valid_password(self, invalid_email: str, valid_password: str):
+        """
+        TC_LOGIN_020: Attempt login with invalid email format (missing @ symbol) and valid password; verify validation error and login is prevented.
+        Steps:
+        1. Navigate to the login page
+        2. Enter invalid email format (missing @ symbol)
+        3. Enter valid password
+        4. Click Login button
+        5. Verify validation error is displayed: 'Please enter a valid email address'
+        6. Verify user remains on login page, login not attempted
+        Args:
+            invalid_email (str): Email address missing '@' symbol
+            valid_password (str): Valid password string
+        Returns:
+            bool: True if validation error is shown and login is prevented, False otherwise
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(invalid_email), "Invalid email format was not entered correctly!"
+        assert self.enter_password(valid_password), "Password was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for validation error
+        try:
+            validation_error = self.driver.find_element(*self.VALIDATION_ERROR)
+            assert validation_error.is_displayed(), "Validation error not displayed!"
+            assert "please enter a valid email address" in validation_error.text.lower(), f"Unexpected validation error: {validation_error.text}"
+        except NoSuchElementException:
+            assert False, "Validation error element not found!"
+        # Ensure user remains on login page
+        assert self.driver.current_url == self.LOGIN_URL, "User was not on login page after invalid email format!"
+        return True
