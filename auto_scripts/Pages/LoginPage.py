@@ -40,7 +40,6 @@ class LoginPage:
         password_field = self.driver.find_element(*self.PASSWORD_FIELD)
         password_field.clear()
         password_field.send_keys(password)
-        # Password field is masked by default; check type attribute
         return password_field.get_attribute("type") == "password"
 
     def click_login(self):
@@ -214,4 +213,41 @@ class LoginPage:
             still_on_login_page = self.driver.current_url == self.LOGIN_URL
             return email_error and password_error and still_on_login_page
         except NoSuchElementException:
+            return False
+
+    # --- ADDED FOR TC_LOGIN_008 ---
+    def login_without_remember_me(self, email: str, password: str):
+        """
+        TC_LOGIN_008: Login with valid credentials, leave 'Remember Me' unchecked, close and restart browser, verify user is logged out.
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid email and password
+        3. Ensure 'Remember Me' is unchecked
+        4. Click on Login button
+        5. Close and restart browser (to be handled in test, not here)
+        6. Navigate to the application
+        7. Assert user is redirected to login page (not dashboard)
+        """
+        self.go_to_login_page()
+        self.enter_email(email)
+        self.enter_password(password)
+        checkbox = self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+        if checkbox.is_selected():
+            checkbox.click()
+        self.click_login()
+        return self.is_redirected_to_dashboard()
+
+    def verify_logged_out_after_restart(self):
+        """
+        TC_LOGIN_008: After browser restart, verify user is logged out and redirected to login page.
+        This method should be called after closing and restarting the browser.
+        """
+        self.driver.get(self.LOGIN_URL)
+        time.sleep(2)
+        # User should NOT be redirected to dashboard, but see login page
+        try:
+            login_visible = self.is_login_fields_visible()
+            dashboard_visible = self.is_redirected_to_dashboard()
+            return login_visible and not dashboard_visible
+        except Exception:
             return False
