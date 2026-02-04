@@ -177,3 +177,31 @@ class LoginPage:
         except NoSuchElementException:
             assert False, "Validation error element not found!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_005 ---
+    def login_with_valid_email_and_empty_password(self, email: str):
+        """
+        TC_LOGIN_005: Attempt login with valid email and empty password; verify validation error for password is displayed.
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid email address
+        3. Leave password field empty
+        4. Click Login button
+        5. Verify validation error 'Password is required' is displayed below password field
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Email was not entered correctly!"
+        # Leave password field empty
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        password_field.clear()
+        assert password_field.get_attribute("value") == "", "Password field is not empty!"
+        self.click_login()
+        time.sleep(1)  # Wait for validation error
+        try:
+            validation_error = self.driver.find_element(*self.VALIDATION_ERROR)
+            assert validation_error.is_displayed(), "Validation error not displayed!"
+            assert "password is required" in validation_error.text.lower(), f"Unexpected validation error: {validation_error.text}"
+        except NoSuchElementException:
+            assert False, "Validation error element not found!"
+        return True
