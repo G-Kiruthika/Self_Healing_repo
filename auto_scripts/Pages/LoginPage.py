@@ -349,3 +349,63 @@ class LoginPage:
             logged_out = False
         new_driver.quit()
         return logged_out
+
+    # --- ADDED FOR TC_LOGIN_019 ---
+    def login_failed_counter_reset_workflow(self, email: str, wrong_passwords: list, correct_password: str, wrong_password_after_logout: str):
+        """
+        TC_LOGIN_019: Test login failed attempt counter reset after successful login and logout.
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid email address
+        3. Attempt login with incorrect password twice
+        4. Enter correct password and login
+        5. Logout and attempt login with incorrect password
+        6. Verify failed attempt counter is reset and no warning about previous failures
+        Args:
+            email (str): User's email address
+            wrong_passwords (list): List of two incorrect passwords
+            correct_password (str): The correct password
+            wrong_password_after_logout (str): Incorrect password to test after logout
+        Returns:
+            bool: True if failed attempt counter resets and no warning is shown, False otherwise
+        """
+        assert len(wrong_passwords) == 2, "Must provide exactly two wrong passwords for initial failed attempts."
+        # Step 1: Navigate to login page
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        # Step 2-3: Enter email and attempt login with two wrong passwords
+        for wrong_pass in wrong_passwords:
+            assert self.enter_email(email), "Email was not entered correctly!"
+            assert self.enter_password(wrong_pass), "Wrong password was not entered!"
+            self.click_login()
+            time.sleep(1)
+            error_msg = self.get_error_message()
+            assert error_msg is not None, "Expected error message not displayed after wrong password!"
+            assert "invalid email or password" in error_msg.lower(), f"Unexpected error message: {error_msg}"
+        # Step 4: Enter correct password and login
+        assert self.enter_email(email), "Email was not entered correctly!"
+        assert self.enter_password(correct_password), "Correct password was not entered!"
+        self.click_login()
+        assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard after correct login!"
+        # Step 5: Logout
+        # For demonstration, assume logout is via clicking user icon and a logout button (not shown in locators)
+        # This should be implemented as per actual application logic
+        try:
+            user_icon = self.driver.find_element(*self.USER_PROFILE_ICON)
+            user_icon.click()
+            logout_button = self.driver.find_element(By.CSS_SELECTOR, "button.logout")
+            logout_button.click()
+            time.sleep(1)
+            assert self.driver.current_url == self.LOGIN_URL, "User was not redirected to login page after logout!"
+        except Exception as e:
+            raise AssertionError(f"Logout failed: {e}")
+        # Step 6: Attempt login again with wrong password
+        assert self.enter_email(email), "Email was not entered correctly after logout!"
+        assert self.enter_password(wrong_password_after_logout), "Wrong password after logout was not entered!"
+        self.click_login()
+        time.sleep(1)
+        error_msg = self.get_error_message()
+        assert error_msg is not None, "Expected error message not displayed after wrong password post-logout!"
+        # Step 7: Verify there is NO warning about previous failed attempts (assume any such warning would be present in error_msg)
+        assert "previous failures" not in error_msg.lower(), "Warning about previous failures should NOT be displayed!"
+        return True
