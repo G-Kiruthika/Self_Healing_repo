@@ -1,58 +1,104 @@
-# Selenium test script for TC_LOGIN_017: Account Lockout after multiple failed attempts
+# Selenium Test Script for TC_LOGIN_016: Account Lockout Scenario
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from auto_scripts.Pages.LoginPage import LoginPage
+from selenium.common.exceptions import WebDriverException
 import time
+import os
+import sys
 
-# Test Data for TC_LOGIN_017
-test_email = "testuser@example.com"
-wrong_passwords = ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5"]
-correct_password = "ValidPass123!"
+# Add Pages directory to sys.path for import
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../Pages')))
+from LoginPage import LoginPage
 
-@pytest.fixture(scope="module")
-def driver():
+def get_chrome_driver():
     options = Options()
     options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    return webdriver.Chrome(options=options)
 
-def test_account_lockout(driver):
+@pytest.mark.login
+@pytest.mark.account_lockout
+class TestLoginAccountLockout:
     """
-    TC_LOGIN_017: Test account lockout after multiple failed login attempts
-    Steps:
-    1. Navigate to the login page
-    2. Enter valid email address
-    3. Enter incorrect password and attempt login (Attempt 1)
-    4. Repeat login with incorrect password (Attempts 2-4)
-    5. Attempt login with incorrect password (Attempt 5)
-    6. Attempt login with correct password (should remain locked)
+    Test Case TC_LOGIN_016: Account lockout after 5 failed login attempts.
+    Acceptance Criteria: SCRUM-91
     """
-    login_page = LoginPage(driver)
-    # Step 1: Go to login page
-    login_page.go_to_login_page()
-    assert login_page.is_login_fields_visible(), "Login fields are not visible!"
-    # Step 2: Enter valid email
-    assert login_page.enter_email(test_email), "Email was not entered correctly!"
-    # Step 3-5: Enter wrong passwords 5 times
-    locked = False
-    for idx, wrong_pwd in enumerate(wrong_passwords):
-        assert login_page.enter_password(wrong_pwd), f"Password was not entered correctly for attempt {idx+1}!"
-        login_page.click_login()
-        time.sleep(1)  # Wait for error message to appear
-        error_message = login_page.get_error_message()
-        assert error_message is not None and error_message != '', f"No error message for failed attempt {idx+1}!"
-        if idx == 4:  # After 5th failed attempt
-            locked = login_page.is_account_locked()
-            assert locked, "Account was not locked after 5 failed attempts!"
-            assert error_message == "Account locked due to multiple failed attempts", "Lockout error message not displayed!"
-    # Step 6: Attempt login with correct password (should remain locked)
-    assert login_page.enter_password(correct_password), "Password was not entered correctly for post-lockout attempt!"
-    login_page.click_login()
-    time.sleep(1)
-    error_message = login_page.get_error_message()
-    assert locked, "Account should remain locked after correct password attempt!"
-    assert error_message == "Account locked due to multiple failed attempts", "Account remains locked but correct message not displayed!"
+    @pytest.fixture(autouse=True)
+    def setup_and_teardown(self):
+        self.driver = get_chrome_driver()
+        self.driver.implicitly_wait(5)
+        self.login_page = LoginPage(self.driver)
+        yield
+        self.driver.quit()
+
+    def test_account_lockout_after_failed_attempts(self):
+        """
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid email and incorrect password, click Login (Attempt 1)
+        3. Repeat login with incorrect password (Attempts 2-4)
+        4. Attempt login with incorrect password for the 5th time
+        5. Attempt login with correct password
+        Expected:
+        - Error message after each failed attempt
+        - After 5th attempt, account is locked, lockout message is displayed
+        - Login is blocked even with correct password, lockout message persists
+        """
+        # Test Data
+        email = "testuser@example.com"
+        wrong_passwords = [
+            "WrongPass1",
+            "WrongPass2",
+            "WrongPass3",
+            "WrongPass4",
+            "WrongPass5"
+        ]
+        correct_password = "ValidPass123!"
+        expected_lockout = "Account has been locked due to multiple failed login attempts. Please try again after 30 minutes or reset your password"
+
+        # Step 1: Navigate to login page
+        self.login_page.go_to_login_page()
+        assert self.login_page.is_login_fields_visible(), "Login page is not displayed."
+
+        # Step 2: Attempt 1 - invalid password
+        assert self.login_page.enter_email(email), "Email was not entered correctly on attempt 1!"
+        assert self.login_page.enter_password(wrong_passwords[0]), "Password was not entered/masked correctly on attempt 1!"
+        self.login_page.click_login()
+        time.sleep(1)
+        error_message = self.login_page.get_error_message()
+        assert error_message is not None, "No error message displayed after 1st failed attempt!"
+        assert "error" in error_message.lower(), f"Unexpected error message after 1st failed attempt: {error_message}"
+        assert self.driver.current_url == self.login_page.LOGIN_URL, "User should remain on login page after failed attempt!"
+
+        # Step 3: Attempts 2-4
+        for i in range(1, 4):
+            assert self.login_page.enter_email(email), f"Email was not entered correctly on attempt {i+1}!"
+            assert self.login_page.enter_password(wrong_passwords[i]), f"Password was not entered/masked correctly on attempt {i+1}!"
+            self.login_page.click_login()
+            time.sleep(1)
+            error_message = self.login_page.get_error_message()
+            assert error_message is not None, f"No error message displayed after {i+1} failed attempt!"
+            assert "error" in error_message.lower(), f"Unexpected error message after {i+1} failed attempt: {error_message}"
+            assert self.driver.current_url == self.login_page.LOGIN_URL, "User should remain on login page after failed attempt!"
+
+        # Step 4: 5th attempt - lockout
+        assert self.login_page.enter_email(email), "Email was not entered correctly on 5th attempt!"
+        assert self.login_page.enter_password(wrong_passwords[4]), "Password was not entered/masked correctly on 5th attempt!"
+        self.login_page.click_login()
+        time.sleep(1)
+        error_message = self.login_page.get_error_message()
+        assert error_message is not None, "No error message displayed after 5th failed attempt!"
+        assert expected_lockout.lower() in error_message.lower(), f"Expected lockout message not found: {error_message}"
+        assert self.driver.current_url == self.login_page.LOGIN_URL, "User should remain on login page after lockout!"
+
+        # Step 5: Attempt login with correct password (should still be locked)
+        assert self.login_page.enter_email(email), "Email was not entered correctly after lockout!"
+        assert self.login_page.enter_password(correct_password), "Password was not entered/masked correctly after lockout!"
+        self.login_page.click_login()
+        time.sleep(1)
+        error_message = self.login_page.get_error_message()
+        assert error_message is not None, "No error message displayed after login attempt during lockout!"
+        assert expected_lockout.lower() in error_message.lower(), f"Lockout message not displayed after login attempt with correct password: {error_message}"
+        assert self.driver.current_url == self.login_page.LOGIN_URL, "User should remain on login page during lockout!"
