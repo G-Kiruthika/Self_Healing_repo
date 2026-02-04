@@ -2,11 +2,13 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
+import time
 
 class LoginPage:
     LOGIN_URL = "https://app.example.com/login"
     EMAIL_FIELD = (By.ID, "login-email")
     PASSWORD_FIELD = (By.ID, "login-password")
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
     LOGIN_BUTTON = (By.ID, "login-submit")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
@@ -56,7 +58,6 @@ class LoginPage:
 
     def is_session_token_created(self):
         """Verify user session is created and profile is displayed."""
-        # Implementation may vary based on how session token is exposed
         cookies = self.driver.get_cookies()
         session_token = next((cookie for cookie in cookies if 'session' in cookie['name'].lower()), None)
         user_profile_visible = False
@@ -152,3 +153,40 @@ class LoginPage:
             return ("Email is required" in error_text) and still_on_login_page
         except NoSuchElementException:
             return False
+
+    # --- ADDED FOR TC_LOGIN_007 ---
+    def check_remember_me_checkbox(self):
+        """
+        TC_LOGIN_007: Check the 'Remember Me' checkbox on the login page.
+        Returns True if checkbox is checked after click.
+        """
+        checkbox = self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+        if not checkbox.is_selected():
+            checkbox.click()
+        return checkbox.is_selected()
+
+    def login_with_remember_me(self, email: str, password: str):
+        """
+        TC_LOGIN_007: Perform login with 'Remember Me' checked.
+        Steps:
+        1. Navigate to login page
+        2. Enter valid credentials
+        3. Check 'Remember Me'
+        4. Click login
+        """
+        self.go_to_login_page()
+        self.enter_email(email)
+        self.enter_password(password)
+        self.check_remember_me_checkbox()
+        self.click_login()
+        return self.is_redirected_to_dashboard()
+
+    def verify_remembered_session(self):
+        """
+        TC_LOGIN_007: After browser restart, verify user is still logged in and redirected to dashboard without login prompt.
+        This method assumes cookies/session are restored externally if needed.
+        """
+        self.driver.get(self.LOGIN_URL)
+        # Wait for possible redirect
+        time.sleep(2)
+        return self.is_redirected_to_dashboard()
