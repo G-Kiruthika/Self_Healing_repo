@@ -5,3 +5,4 @@ class ProfilePage:
 
     async def click_profile(self):
         await self.user_profile_icon.click()
+ Pass

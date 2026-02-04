@@ -5,3 +5,4 @@ class SettingsPage:
 
     async def open_settings(self):
         await self.settings_menu.click()
+ Pass
