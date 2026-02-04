@@ -283,3 +283,27 @@ class LoginPage:
             time.sleep(2)
             return True
         return False
+
+    # --- ADDED FOR TC_LOGIN_010 ---
+    def forgot_password_workflow(self, email: str):
+        """
+        TC_LOGIN_010: Complete Forgot Password workflow.
+        Steps:
+        1. Navigate to the password recovery page via Forgot Password link
+        2. Enter registered email address
+        3. Click on the Submit button
+        4. Check for success message
+        """
+        self.go_to_login_page()
+        assert self.is_forgot_password_link_visible(), "Forgot Password link not visible."
+        self.click_forgot_password_link()
+        # Assuming navigation to PasswordRecoveryPage is successful
+        from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
+        recovery_page = PasswordRecoveryPage(self.driver)
+        assert recovery_page.is_loaded(), "Password Recovery page did not load."
+        assert recovery_page.is_email_input_visible(), "Email input not visible on recovery page."
+        recovery_page.enter_email(email)
+        assert recovery_page.is_submit_button_visible(), "Submit button not visible on recovery page."
+        recovery_page.submit_recovery()
+        assert recovery_page.is_success_message_displayed(), "Success message not displayed after password recovery."
+        return True

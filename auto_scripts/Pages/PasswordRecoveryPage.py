@@ -4,7 +4,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
 
 class PasswordRecoveryPage:
-    PASSWORD_RECOVERY_URL = "https://app.example.com/password-recovery"
+    PASSWORD_RECOVERY_URL = "https://app.example.com/forgot-password"
     EMAIL_INPUT = (By.ID, "recovery-email")
     SUBMIT_BUTTON = (By.ID, "recovery-submit")
     SUCCESS_MESSAGE = (By.CSS_SELECTOR, "div.recovery-success")
@@ -68,3 +68,14 @@ class PasswordRecoveryPage:
         Returns True if both are visible.
         """
         return self.is_email_input_visible() and self.is_submit_button_visible()
+
+    # --- ADDED FOR TC_LOGIN_010 ---
+    def check_password_reset_email_received(self, email: str):
+        """
+        TC_LOGIN_010: Step 4 - Check email inbox for password reset link.
+        Note: This is a placeholder for integration with email checking service.
+        Returns True if password reset email is received with valid reset link.
+        """
+        # In a real implementation, integrate with a test email inbox or use a mock service
+        # For now, raise NotImplementedError to indicate this step is external
+        raise NotImplementedError("Email inbox check for password reset link must be implemented in the test harness or with an external email service.")
