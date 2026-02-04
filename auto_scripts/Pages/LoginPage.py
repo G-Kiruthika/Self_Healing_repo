@@ -73,3 +73,18 @@ class LoginPage:
             return error_element.is_displayed() and expected_message in error_element.text
         except NoSuchElementException:
             return False
+
+    # --- ADDED FOR TC_LOGIN_002 ---
+    def login_with_invalid_credentials(self, email: str, password: str):
+        """
+        Perform login with invalid credentials and check for error message.
+        Steps:
+        1. Enter invalid email.
+        2. Enter password.
+        3. Click login.
+        4. Assert error message is displayed and user is not redirected.
+        """
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login()
+        return self.is_error_message_displayed("Invalid email or password") and not self.is_redirected_to_dashboard()
