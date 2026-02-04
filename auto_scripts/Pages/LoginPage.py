@@ -152,3 +152,28 @@ class LoginPage:
         assert "invalid email or password" in error_message.lower(), f"Unexpected error message: {error_message}"
         assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after failed login!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_004 ---
+    def login_with_empty_email_and_valid_password(self, password: str):
+        """
+        TC_LOGIN_004: Attempt login with empty email and valid password; verify validation error for email is displayed.
+        Steps:
+        1. Navigate to the login page
+        2. Leave email field empty
+        3. Enter valid password
+        4. Click Login button
+        5. Verify validation error 'Email is required' is displayed below email field
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email("") is True, "Email field is not empty!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for validation error
+        try:
+            validation_error = self.driver.find_element(*self.VALIDATION_ERROR)
+            assert validation_error.is_displayed(), "Validation error not displayed!"
+            assert "email is required" in validation_error.text.lower(), f"Unexpected validation error: {validation_error.text}"
+        except NoSuchElementException:
+            assert False, "Validation error element not found!"
+        return True
