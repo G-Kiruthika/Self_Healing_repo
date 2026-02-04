@@ -313,3 +313,25 @@ class LoginPage:
         if error_message:
             assert "invalid" not in error_message.lower(), f"Unexpected error message: {error_message}"
         return True
+
+    # --- ADDED FOR TC_LOGIN_011 ---
+    def login_with_254_char_email(self, email: str, password: str):
+        """
+        TC_LOGIN_011: Enter email address at maximum allowed length (254 characters), valid password, and attempt login.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter email address at maximum allowed length (254 characters) [Test Data: Email: a123456789012345678901234567890123456789012345678901234567890123@b123456789012345678901234567890123456789012345678901234567890123.c123456789012345678901234567890123456789012345678901234567890123.d123456789012345678901234567890123456789012345678.com]
+        3. Enter valid password [Test Data: Password: ValidPass123!]
+        4. Click on the Login button
+        5. Verify email is accepted and entered, password is entered and masked, login attempt is processed without validation error.
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert len(email) == 254, f"Email length is not 254, got {len(email)}"
+        assert self.enter_email(email), "Email was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for response
+        error_message = self.get_error_message()
+        assert not error_message, f"Unexpected error message: {error_message}"
+        return True
