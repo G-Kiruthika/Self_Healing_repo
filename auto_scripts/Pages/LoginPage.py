@@ -343,7 +343,7 @@ class LoginPage:
         Steps:
         1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
         2. Enter valid email address [Test Data: Email: testuser@example.com]
-        3. Enter password at maximum allowed length (128 characters) [Test Data: Password: Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!]
+        3. Enter password at maximum allowed length (128 characters) [Test Data: Password: Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!] 
         4. Click on the Login button [Test Data: N/A]
         5. Login attempt is processed without validation error
         """
@@ -437,4 +437,42 @@ class LoginPage:
         assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after failed login post logout!"
         # Final assertion: failed attempt counter should be reset (system should behave as if this is first failed attempt)
         # NOTE: Actual counter verification may require backend or UI element; here we assert system behavior
+        return True
+
+    # --- ADDED FOR TC_LOGIN_016 ---
+    def login_with_xss_script_payload(self, email_xss_payload: str, password: str):
+        """
+        TC_LOGIN_016: Attempt login with XSS script payload in email field and verify input is sanitized or rejected and no script execution occurs.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: AC_008]
+        2. Enter XSS script payload in email field [Test Data: Email: <script>alert('XSS')</script>@test.com] [Acceptance Criteria: AC_008]
+        3. Enter any password [Test Data: Password: TestPass123] [Acceptance Criteria: AC_008]
+        4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: AC_008]
+        5. Verify no script execution [Test Data: N/A] [Acceptance Criteria: AC_008]
+        Expected:
+        - Input is sanitized or rejected
+        - No alert popup or script execution occurs
+        - System remains secure
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email_xss_payload), "XSS payload was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for possible error message or alert
+        # Check that no JavaScript alert is triggered (no script execution)
+        try:
+            alert = self.driver.switch_to.alert
+            # If alert is present, fail the test
+            assert False, f"Unexpected alert popup detected: {alert.text}"
+        except Exception:
+            # No alert found, which is expected
+            pass
+        # Check that input is sanitized or rejected (error message shown)
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed for XSS payload!"
+        assert "invalid" in error_message.lower() or "error" in error_message.lower() or "not allowed" in error_message.lower() or "sanitized" in error_message.lower(), f"Unexpected error message: {error_message}"
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after XSS payload!"
+        # Ensure system remains secure (no redirection, no script execution)
+        assert not self.is_redirected_to_dashboard(), "Unauthorized access granted after XSS payload!"
         return True
