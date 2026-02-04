@@ -150,9 +150,9 @@ class LoginPage:
         return True
 
     # --- ADDED FOR TC_LOGIN_020 ---
-    def login_invalid_email_format(self, email: str, password: str, expected_validation: str = "Please enter a valid email address"):
+    def login_invalid_email_format(self, invalid_email: str, password: str):
         """
-        TC_LOGIN_020: Attempt login with invalid email format (missing @ symbol) and verify validation error.
+        TC_LOGIN_020: Attempt login with email missing '@' symbol and verify validation error.
         Steps:
         1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
         2. Enter email in invalid format (missing @ symbol) [Test Data: Email: testuserexample.com]
@@ -162,17 +162,17 @@ class LoginPage:
         """
         self.go_to_login_page()
         assert self.is_login_fields_visible(), "Login fields are not visible!"
-        assert self.enter_email(email), "Invalid email was not entered correctly!"
+        assert self.enter_email(invalid_email), "Invalid email was not entered correctly!"
         assert self.enter_password(password), "Password was not entered/masked correctly!"
         self.click_login()
-        # Wait for validation error to appear
+        # Wait for validation error
         time.sleep(0.5)
-        validation_error = None
         try:
-            validation_elem = self.driver.find_element(*self.VALIDATION_ERROR)
-            if validation_elem.is_displayed():
-                validation_error = validation_elem.text.strip()
+            validation_error_elem = self.driver.find_element(*self.VALIDATION_ERROR)
+            assert validation_error_elem.is_displayed(), "Validation error element is not displayed!"
+            error_text = validation_error_elem.text.strip()
+            assert "valid email" in error_text.lower(), f"Expected validation error for invalid email, got: {error_text}"
+            assert error_text == "Please enter a valid email address", f"Unexpected error message: {error_text}"
         except NoSuchElementException:
-            pass
-        assert validation_error == expected_validation, f"Expected validation error '{expected_validation}', got: '{validation_error}'"
+            raise AssertionError("Validation error for invalid email not found!")
         return True
