@@ -225,3 +225,27 @@ class LoginPage:
                 assert "Warning: Account will be locked after 2 more failed attempts" in error_message, \
                     f"Expected warning message not found on third attempt: {error_message}"
         return True
+
+    # --- ADDED FOR TC_LOGIN_004 ---
+    def login_invalid_credentials_valid_username_invalid_password(self, valid_email: str, invalid_password: str):
+        """
+        TC_LOGIN_004: Attempt login with valid username and invalid password, expect error and remain on login page.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: AC_002_Invalid_Credentials]
+        2. Enter valid username [Test Data: Username: testuser@example.com] [Acceptance Criteria: AC_002_Invalid_Credentials]
+        3. Enter invalid password [Test Data: Password: WrongPass@123] [Acceptance Criteria: AC_002_Invalid_Credentials]
+        4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: AC_002_Invalid_Credentials]
+        5. Verify error message is displayed: 'Invalid username or password' and user remains on login page
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(valid_email), "Valid username was not entered correctly!"
+        assert self.enter_password(invalid_password), "Invalid password was not entered/masked correctly!"
+        self.click_login()
+        # Wait for error message
+        time.sleep(1)
+        error_message = self.get_error_message()
+        assert error_message is not None, "Error message not displayed for invalid credentials!"
+        assert "invalid username or password" in error_message.lower(), f"Expected error message 'Invalid username or password', got: {error_message}"
+        assert self.driver.current_url == self.LOGIN_URL, "User did not remain on the login page after invalid login!"
+        return True
