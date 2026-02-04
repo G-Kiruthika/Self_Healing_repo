@@ -423,3 +423,35 @@ class LoginPage:
         xss_prevented = not alert_triggered
         # All must be true: input masked, login fails, error shown, XSS prevented
         return email_accepted and password_masked and error_displayed and still_on_login_page and is_masked and xss_prevented
+
+    # --- ADDED FOR TC_LOGIN_015 ---
+    def login_with_sql_injection_in_password(self, email: str = "testuser@example.com", sql_payload: str = "' OR '1'='1"):
+        """
+        TC_LOGIN_015: Attempt login with valid email and SQL injection payload in password field.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter valid email address [Test Data: Email: testuser@example.com]
+        3. Enter SQL injection payload in password field [Test Data: Password: ' OR '1'='1]
+        4. Click on the Login button
+        Acceptance Criteria: SCRUM-91
+        Expected:
+            - Input is masked and entered
+            - Login fails with error message
+            - SQL injection is prevented
+            - No unauthorized access
+        Returns True if all criteria are met
+        """
+        self.go_to_login_page()
+        email_accepted = self.enter_email(email)
+        password_masked = self.enter_password(sql_payload)
+        self.click_login()
+        # Check for error message and that login fails
+        error_displayed = self.is_error_message_displayed()
+        still_on_login_page = self.driver.current_url == self.LOGIN_URL
+        # Check that password field remains masked
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        is_masked = password_field.get_attribute("type") == "password"
+        # Ensure no unauthorized access (not redirected to dashboard)
+        unauthorized_access = not self.is_redirected_to_dashboard()
+        # All must be true: input masked, login fails, error shown, SQLi prevented
+        return email_accepted and password_masked and error_displayed and still_on_login_page and is_masked and unauthorized_access
