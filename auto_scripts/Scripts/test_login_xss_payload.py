@@ -1,79 +1,75 @@
-# Selenium Test Script for TC_LOGIN_016: XSS Script Payload in Email Field
-import pytest
+# Selenium Test Script for TC_LOGIN_016 (XSS payload in email field)
+import unittest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import NoAlertPresentException, WebDriverException
+from selenium.common.exceptions import NoAlertPresentException
 import time
-import os
 import sys
+import os
 
-# Ensure the Pages directory is in the path for import
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../Pages')))
+# Add Pages directory to path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Pages')))
 from LoginPage import LoginPage
 
-@pytest.fixture(scope="module")
-def driver():
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--window-size=1920,1080')
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(5)
-    yield driver
-    driver.quit()
+class TestLoginXSSPayload(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        cls.driver = webdriver.Chrome(options=chrome_options)
+        cls.driver.implicitly_wait(10)
+        cls.login_page = LoginPage(cls.driver)
 
-def test_login_with_xss_script_payload(driver):
-    """
-    TC_LOGIN_016: Attempt login with XSS script payload in email field and verify input is sanitized or rejected and no script execution occurs.
-    Steps:
-    1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: AC_008]
-    2. Enter XSS script payload in email field [Test Data: Email: <script>alert('XSS')</script>@test.com] [Acceptance Criteria: AC_008]
-    3. Enter any password [Test Data: Password: TestPass123] [Acceptance Criteria: AC_008]
-    4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: AC_008]
-    5. Verify no script execution [Test Data: N/A] [Acceptance Criteria: AC_008]
-    Expected:
-    - Input is sanitized or rejected
-    - No alert popup or script execution occurs
-    - System remains secure
-    """
-    login_page = LoginPage(driver)
-    email_xss_payload = "<script>alert('XSS')</script>@test.com"
-    password = "TestPass123"
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.quit()
 
-    # Step 1: Navigate to the login page
-    login_page.go_to_login_page()
-    assert driver.current_url.startswith(LoginPage.LOGIN_URL), "Did not navigate to login page!"
+    def test_login_with_xss_script_payload(self):
+        """
+        TC_LOGIN_016: Attempt login with XSS script payload in email field and verify input is sanitized or rejected and no script execution occurs.
+        Steps:
+        1. Navigate to the login page
+        2. Enter XSS script payload in email field
+        3. Enter any password
+        4. Click on the Login button
+        5. Verify no script execution
+        Expected:
+        - Input is sanitized or rejected
+        - No alert popup or script execution occurs
+        - System remains secure
+        """
+        email_xss_payload = "<script>alert('XSS')</script>@test.com"
+        password = "TestPass123"
 
-    # Step 2: Enter XSS script payload in email field
-    assert login_page.enter_email(email_xss_payload), "XSS payload was not entered correctly!"
+        self.login_page.go_to_login_page()
+        self.assertTrue(self.login_page.is_login_fields_visible(), "Login fields are not visible!")
+        self.assertTrue(self.login_page.enter_email(email_xss_payload), "XSS payload was not entered correctly!")
+        self.assertTrue(self.login_page.enter_password(password), "Password was not entered/masked correctly!")
+        self.login_page.click_login()
+        time.sleep(1)  # Wait for possible error message or alert
 
-    # Step 3: Enter any password
-    assert login_page.enter_password(password), "Password was not entered/masked correctly!"
+        # Check that no JavaScript alert is triggered (no script execution)
+        alert_present = False
+        try:
+            alert = self.driver.switch_to.alert
+            _ = alert.text  # Access text to trigger exception if not present
+            alert_present = True
+        except Exception:
+            alert_present = False
+        self.assertFalse(alert_present, "Unexpected alert popup detected (possible XSS execution)!")
 
-    # Step 4: Click on the Login button
-    login_page.click_login()
-    time.sleep(1)  # Wait for possible error message or alert
+        # Check that input is sanitized or rejected (error message shown)
+        error_message = self.login_page.get_error_message()
+        self.assertIsNotNone(error_message, "No error message displayed for XSS payload!")
+        self.assertTrue(
+            "invalid" in error_message.lower() or "error" in error_message.lower() or "not allowed" in error_message.lower() or "sanitized" in error_message.lower(),
+            f"Unexpected error message: {error_message}"
+        )
+        self.assertEqual(self.driver.current_url, self.login_page.LOGIN_URL, "User is not on login page after XSS payload!")
+        # Ensure system remains secure (no redirection, no script execution)
+        self.assertFalse(self.login_page.is_redirected_to_dashboard(), "Unauthorized access granted after XSS payload!")
 
-    # Step 5: Verify no script execution (no alert popup)
-    try:
-        alert = driver.switch_to.alert
-        alert_text = alert.text
-        alert.dismiss()
-        pytest.fail(f"Unexpected alert popup detected: {alert_text}")
-    except (NoAlertPresentException, WebDriverException):
-        # No alert found, which is expected
-        pass
-
-    # Check that input is sanitized or rejected (error message shown)
-    error_message = login_page.get_error_message()
-    assert error_message is not None, "No error message displayed for XSS payload!"
-    assert (
-        "invalid" in error_message.lower() or
-        "error" in error_message.lower() or
-        "not allowed" in error_message.lower() or
-        "sanitized" in error_message.lower()
-    ), f"Unexpected error message: {error_message}"
-
-    # Ensure user is not redirected to dashboard
-    assert driver.current_url == LoginPage.LOGIN_URL, "User is not on login page after XSS payload!"
-    assert not login_page.is_redirected_to_dashboard(), "Unauthorized access granted after XSS payload!"
+if __name__ == "__main__":
+    unittest.main()
