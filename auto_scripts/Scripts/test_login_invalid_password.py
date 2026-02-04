@@ -31,6 +31,7 @@ def test_tc_login_003_valid_email_invalid_password(driver):
         5. Verify error message displayed: 'Invalid email or password'
         6. Verify user remains on login page (not authenticated)
     Acceptance Criteria: AC_002
+    Traceability: PageClass=LoginPage, testCaseId=120
     """
     login_page = LoginPage(driver)
 
