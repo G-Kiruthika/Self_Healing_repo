@@ -161,3 +161,27 @@ class LoginPage:
         except NoSuchElementException:
             pass
         return None
+
+    # --- ADDED FOR TC_LOGIN_003 ---
+    def login_with_invalid_credentials(self, email: str, password: str):
+        """
+        TC_LOGIN_003: Attempt login with invalid username and valid password; verify error message and user remains on login page.
+        Steps:
+        1. Navigate to the login page
+        2. Enter invalid username
+        3. Enter valid password
+        4. Click Login button
+        5. Verify error message is displayed: 'Invalid username or password'
+        6. Verify user remains on login page (not authenticated)
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Invalid username was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for error message
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed!"
+        assert "invalid username or password" in error_message.lower(), f"Unexpected error message: {error_message}"
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after failed login!"
+        return True
