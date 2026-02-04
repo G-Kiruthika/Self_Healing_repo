@@ -370,3 +370,46 @@ class LoginPage:
         not_redirected = self.driver.current_url == self.LOGIN_URL
         unauthorized_access = not self.is_redirected_to_dashboard()
         return error_displayed and not_redirected and unauthorized_access
+
+    # --- ADDED FOR TC_LOGIN_014 ---
+    def login_with_xss_in_password_field(self, email: str = "testuser@example.com", xss_payload: str = "<script>alert('XSS')</script>"):
+        """
+        TC_LOGIN_014: Attempt login with valid email and XSS script payload in password field.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter valid email address [Test Data: Email: testuser@example.com]
+        3. Enter XSS script payload in password field [Test Data: Password: <script>alert('XSS')</script>]
+        4. Click on the Login button
+        Acceptance Criteria: SCRUM-91
+        Expected:
+            - Input is masked and entered
+            - Login fails safely
+            - Script is NOT executed (no alert popup)
+            - XSS attack is prevented
+        Returns True if all criteria are met
+        """
+        self.go_to_login_page()
+        email_accepted = self.enter_email(email)
+        password_masked = self.enter_password(xss_payload)
+        self.click_login()
+        # Check for error message and that login fails
+        error_displayed = self.is_error_message_displayed()
+        still_on_login_page = self.driver.current_url == self.LOGIN_URL
+        # Check that password field remains masked
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        is_masked = password_field.get_attribute("type") == "password"
+        # Check that no alert is triggered (XSS not executed)
+        alert_triggered = False
+        try:
+            alert = self.driver.switch_to.alert
+            alert_text = alert.text
+            # If alert exists and matches XSS payload, XSS is NOT prevented
+            if "XSS" in alert_text:
+                alert_triggered = True
+                alert.dismiss()
+        except Exception:
+            # No alert present, which is correct
+            pass
+        xss_prevented = not alert_triggered
+        # All must be true: input masked, login fails, error shown, XSS prevented
+        return email_accepted and password_masked and error_displayed and still_on_login_page and is_masked and xss_prevented
