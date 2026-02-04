@@ -348,3 +348,25 @@ class LoginPage:
         login_success = self.is_redirected_to_dashboard()
         login_error = self.is_error_message_displayed()
         return email_accepted and password_masked and (login_success or login_error)
+
+    # --- ADDED FOR TC_LOGIN_013 ---
+    def login_with_sql_injection(self, email: str = "admin'--", password: str = "anything"): 
+        """
+        TC_LOGIN_013: Attempt login with SQL injection payload in email field.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter SQL injection payload in email field [Test Data: Email: admin'--]
+        3. Enter any password [Test Data: Password: anything]
+        4. Click on the Login button
+        Expected: Login fails with error message, SQL injection is prevented, no unauthorized access granted.
+        Acceptance Criteria: SCRUM-91
+        """
+        self.go_to_login_page()
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login()
+        # Assert login fails, error message is displayed, and user is not redirected
+        error_displayed = self.is_error_message_displayed()
+        not_redirected = self.driver.current_url == self.LOGIN_URL
+        unauthorized_access = not self.is_redirected_to_dashboard()
+        return error_displayed and not_redirected and unauthorized_access
