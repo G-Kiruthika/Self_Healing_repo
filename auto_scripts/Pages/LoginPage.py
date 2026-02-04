@@ -117,3 +117,47 @@ class LoginPage:
         assert self.is_session_token_created(), "User session was not created!"
         # Additional validation for session persistence can be added here if required
         return True
+
+    # --- ADDED FOR TC_LOGIN_017 ---
+    def login_account_lock_workflow(self, email: str, wrong_passwords: list, correct_password: str):
+        """
+        TC_LOGIN_017: Account lock after multiple failed login attempts.
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid email address
+        3. Enter incorrect password and attempt login (Attempt 1)
+        4. Repeat login with incorrect password (Attempts 2-5)
+        5. After 5th failed attempt, verify account is locked and error message is displayed
+        6. Attempt login with correct password, verify login is prevented (account remains locked)
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Email was not entered correctly!"
+        for idx, pwd in enumerate(wrong_passwords):
+            assert self.enter_password(pwd), f"Password was not entered correctly for attempt {idx+1}!"
+            self.click_login()
+            time.sleep(1)  # Wait for error message
+            error_message = self.get_error_message()
+            assert error_message is not None, f"No error message displayed for failed attempt {idx+1}!"
+            if idx < 4:
+                assert "incorrect" in error_message.lower(), f"Unexpected error message for attempt {idx+1}: {error_message}"
+            else:
+                assert "account locked" in error_message.lower(), f"Account lock message not displayed after 5th attempt: {error_message}"
+        # Attempt login with correct password after lock
+        assert self.enter_password(correct_password), "Correct password not entered after lock!"
+        self.click_login()
+        time.sleep(1)
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed after attempting login post-lock!"
+        assert "account locked" in error_message.lower(), f"Account remains locked error not displayed: {error_message}"
+        return True
+
+    def get_error_message(self):
+        """Fetch error message displayed on login page."""
+        try:
+            error_elem = self.driver.find_element(*self.ERROR_MESSAGE)
+            if error_elem.is_displayed():
+                return error_elem.text.strip()
+        except NoSuchElementException:
+            pass
+        return None
