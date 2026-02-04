@@ -11,6 +11,7 @@ class LoginPage:
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
@@ -107,3 +108,24 @@ class LoginPage:
         error_displayed = self.is_error_message_displayed("Invalid email or password")
         still_on_login_page = self.driver.current_url == self.LOGIN_URL
         return error_displayed and still_on_login_page
+
+    # --- ADDED FOR TC_LOGIN_005 ---
+    def login_with_email_and_empty_password(self, email: str):
+        """
+        TC_LOGIN_005: Attempt login with valid email and empty password, expect 'Password is required' validation error.
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid email address
+        3. Leave password field empty
+        4. Click on the Login button
+        5. Assert validation error 'Password is required' is displayed below password field
+        """
+        self.go_to_login_page()
+        self.enter_email(email)
+        self.enter_password("")  # Leave password empty
+        self.click_login()
+        try:
+            validation_error = self.driver.find_element(*self.VALIDATION_ERROR)
+            return validation_error.is_displayed() and "Password is required" in validation_error.text
+        except NoSuchElementException:
+            return False
