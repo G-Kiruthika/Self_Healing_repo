@@ -244,3 +244,50 @@ class LoginPage:
         except NoSuchElementException:
             assert False, "Validation error elements not found!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_007 ---
+    def remember_me_session_persistence(self, email: str, password: str, driver_factory):
+        """
+        TC_LOGIN_007: End-to-end test for 'Remember Me' session persistence after browser restart.
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid email and password
+        3. Check the 'Remember Me' checkbox
+        4. Click Login button
+        5. Verify user is logged in and redirected to dashboard
+        6. Save session cookies, quit browser, start new browser
+        7. Load cookies, navigate to app, verify user is still logged in (no login prompt)
+        Args:
+            email (str): User email
+            password (str): User password
+            driver_factory (Callable): Function to generate a new WebDriver instance
+        Returns:
+            bool: True if session persists, False otherwise
+        """
+        # Step 1-5: Login with remember me
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Email was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        assert self.check_remember_me(), "Remember Me checkbox was not checked!"
+        self.click_login()
+        assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard!"
+        assert self.is_session_token_created(), "User session was not created!"
+        # Step 6: Save cookies
+        cookies = self.driver.get_cookies()
+        # Step 7: Close and restart browser
+        self.driver.quit()
+        new_driver = driver_factory()
+        new_driver.get(self.LOGIN_URL)
+        for cookie in cookies:
+            new_driver.add_cookie(cookie)
+        new_driver.get(self.LOGIN_URL)
+        # Step 8: Verify user is still logged in
+        try:
+            dashboard_header = new_driver.find_element(*self.DASHBOARD_HEADER)
+            user_icon = new_driver.find_element(*self.USER_PROFILE_ICON)
+            session_persistent = dashboard_header.is_displayed() and user_icon.is_displayed()
+        except Exception:
+            session_persistent = False
+        new_driver.quit()
+        return session_persistent
