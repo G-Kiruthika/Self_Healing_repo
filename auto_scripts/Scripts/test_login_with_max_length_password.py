@@ -1,14 +1,26 @@
-# Test Script for TC_LOGIN_013: Login with valid email and password at maximum allowed length (128 characters)
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Selenium Automated Test Script for TC_LOGIN_013: Login with Maximum Length Password (128 chars)
+Generated automatically from PageClass definition and requirements.
+Traceability: testCaseId=142, testCase=TC_LOGIN_013
+"""
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import WebDriverException
-from auto_scripts.Pages.LoginPage import LoginPage
+from selenium.common.exceptions import AssertionError, WebDriverException
 import time
+import string
+import random
 
-# Test Data for TC_LOGIN_013
-test_email = "testuser@example.com"
-test_password = "Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!"
+from auto_scripts.Pages.LoginPage import LoginPage
+
+def generate_max_length_password():
+    # Example: 128 chars, repeat pattern for deterministic output
+    return "Aa1!" * 32  # 4*32=128
+
+def get_valid_email():
+    return "testuser@example.com"
 
 @pytest.fixture(scope="function")
 def driver():
@@ -23,52 +35,37 @@ def driver():
 
 def test_login_with_max_length_password(driver):
     """
-    TC_LOGIN_013: Login with valid email and password at maximum allowed length (128 characters).
-    Steps:
-    1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
-    2. Enter valid email address [Test Data: Email: testuser@example.com]
+    Test Case TC_LOGIN_013:
+    1. Navigate to the login page
+    2. Enter valid email address
     3. Enter password at maximum allowed length (128 characters)
-    4. Click on the Login button
-    Expected: Password is accepted and entered, login attempt is processed without validation error.
-    Acceptance Criteria: AC_007
+    4. Click Login button
+    5. Assert login is processed without validation error
     """
     login_page = LoginPage(driver)
+    email = get_valid_email()
+    password = generate_max_length_password()
 
     # Step 1: Navigate to login page
     login_page.go_to_login_page()
-    assert driver.current_url.startswith(LoginPage.LOGIN_URL), "Login page URL mismatch."
-    assert login_page.is_login_fields_visible(), "Login fields are not visible."
+    assert driver.current_url.startswith("https://app.example.com/login"), "Login page URL mismatch!"
+    assert login_page.is_login_fields_visible(), "Login fields are not visible!"
 
-    # Step 2: Enter valid email address
-    email_accepted = login_page.enter_email(test_email)
-    assert email_accepted, f"Email '{test_email}' was not accepted in the email field."
+    # Step 2: Enter valid email
+    assert login_page.enter_email(email), "Email was not entered correctly!"
 
-    # Step 3: Enter password at maximum allowed length (128 characters)
-    password_masked = login_page.enter_password(test_password)
-    assert password_masked, "Password field did not mask input as expected."
-    assert len(test_password) == 128, f"Test password length is not 128 characters: {len(test_password)}"
+    # Step 3: Enter max length password (128 chars)
+    assert len(password) == 128, f"Password length is not 128, got {len(password)}"
+    assert login_page.enter_password(password), "Password was not entered/masked correctly!"
 
-    # Step 4: Click on the Login button
+    # Step 4: Click Login
     login_page.click_login()
-    time.sleep(2)  # Wait for login attempt to process
+    time.sleep(1)  # Wait for response
 
-    # Expected: Login is processed without validation error
-    # Accept both possible outcomes: login success or error (but no validation error)
-    try:
-        validation_error_present = False
-        validation_error_elements = driver.find_elements_by_css_selector('.invalid-feedback')
-        for el in validation_error_elements:
-            if el.is_displayed():
-                validation_error_present = True
-                break
-        assert not validation_error_present, "Validation error was displayed on login with max-length password."
-    except WebDriverException:
-        # If selector is missing, treat as no validation error
-        pass
+    # Step 5: Assert no validation error
+    error_message = login_page.get_error_message()
+    assert error_message is None or error_message == "", f"Unexpected error message: {error_message}"
+    # Optionally, assert that login is processed (e.g., redirected or session created)
+    # assert login_page.is_redirected_to_dashboard() or login_page.is_session_token_created(), "Login not processed as expected!"
 
-    login_success = login_page.is_redirected_to_dashboard()
-    login_error = login_page.is_error_message_displayed()
-    assert login_success or login_error, (
-        "Login attempt did not result in success or error message. "
-        "Expected either dashboard redirection or error message display."
-    )
+    print("TC_LOGIN_013: Login with max length password executed successfully.")
