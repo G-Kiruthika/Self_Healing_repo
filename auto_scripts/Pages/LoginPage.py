@@ -69,21 +69,21 @@ class LoginPage:
         return session_token is not None and user_profile_visible
 
     # --- ADDED FOR TC_LOGIN_001 ---
-    def login_with_valid_credentials(self, email: str, password: str):
+    def login_successful(self, email: str, password: str):
         """
-        TC_LOGIN_001: Perform login with valid credentials and verify successful login and session creation.
+        TC_LOGIN_001: End-to-end login workflow with valid credentials.
         Steps:
         1. Navigate to the login page
-        2. Enter valid username in the username field
-        3. Enter valid password in the password field
-        4. Click on the Login button
-        5. Verify user session is created and user details are displayed
-        Acceptance Criteria: AC_001_Successful_Login
+        2. Enter valid username
+        3. Enter valid password
+        4. Click Login button
+        5. Verify user session is created and user is redirected to dashboard
         """
         self.go_to_login_page()
-        email_entered = self.enter_email(email)
-        password_masked = self.enter_password(password)
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Username was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
         self.click_login()
-        redirected = self.is_redirected_to_dashboard()
-        session_created = self.is_session_token_created()
-        return email_entered and password_masked and redirected and session_created
+        assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard!"
+        assert self.is_session_token_created(), "User session was not created!"
+        return True
