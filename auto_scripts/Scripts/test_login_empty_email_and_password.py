@@ -1,5 +1,5 @@
-# Selenium test for TC_LOGIN_006: Both email and password fields empty
-import unittest
+# Test Script for TC_LOGIN_006: Attempt login with both email and password fields empty
+import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
@@ -7,48 +7,41 @@ import time
 import sys
 import os
 
-# Ensure PageClass is importable
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Pages')))
-from LoginPage import LoginPage
+# Import the LoginPage PageClass
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from Pages.LoginPage import LoginPage
 
-class TestLoginEmptyEmailAndPassword(unittest.TestCase):
+@pytest.fixture(scope="function")
+def driver():
+    options = Options()
+    options.add_argument('--headless')  # comment out if you want to see browser
+    options.add_argument('--disable-gpu')
+    options.add_argument('--window-size=1920,1080')
+    driver = webdriver.Chrome(options=options)
+    driver.implicitly_wait(5)
+    yield driver
+    driver.quit()
+
+def test_login_with_empty_email_and_empty_password(driver):
     """
-    TestCase ID: TC_LOGIN_006
-    Description: Attempt login with both email and password fields empty, expect validation errors 'Email is required' and 'Password is required'.
-    Acceptance Criteria: Both error messages are displayed, and user remains on login page.
+    TC_LOGIN_006: Attempt login with both email and password fields empty; verify validation errors for both fields are displayed.
+    Steps:
+    1. Navigate to the login page
+    2. Leave both email and password fields empty
+    3. Click Login button
+    4. Verify validation errors 'Email is required' and 'Password is required' are displayed
+    5. User remains on login page, login not attempted
     """
-    def setUp(self):
-        chrome_options = Options()
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        self.driver = webdriver.Chrome(options=chrome_options)
-        self.driver.implicitly_wait(5)
-        self.login_page = LoginPage(self.driver)
-
-    def test_login_with_empty_email_and_empty_password(self):
-        self.login_page.go_to_login_page()
-        # Leave both fields empty and click login
-        self.login_page.enter_email("")
-        self.login_page.enter_password("")
-        self.login_page.click_login()
-        # Check for both validation errors
-        try:
-            validation_errors = self.driver.find_elements(*self.login_page.VALIDATION_ERROR)
-            error_texts = [e.text for e in validation_errors if e.is_displayed()]
-            email_error = any("Email is required" in text for text in error_texts)
-            password_error = any("Password is required" in text for text in error_texts)
-            still_on_login_page = self.driver.current_url == self.login_page.LOGIN_URL
-        except NoSuchElementException:
-            email_error = False
-            password_error = False
-            still_on_login_page = False
-        self.assertTrue(email_error, "Validation error for missing email not displayed!")
-        self.assertTrue(password_error, "Validation error for missing password not displayed!")
-        self.assertTrue(still_on_login_page, "User was redirected away from login page!")
-
-    def tearDown(self):
-        self.driver.quit()
-
-if __name__ == "__main__":
-    unittest.main()
+    login_page = LoginPage(driver)
+    result = login_page.login_with_empty_email_and_empty_password()
+    assert result is True, "TC_LOGIN_006 failed: Validation errors not displayed as expected or user was not prevented from logging in."
+    # Additional explicit validation for traceability
+    assert driver.current_url == LoginPage.LOGIN_URL, "User is not on login page after submitting empty credentials!"
+    # Check both validation errors are present
+    try:
+        errors = driver.find_elements(*LoginPage.VALIDATION_ERROR)
+        error_texts = [e.text.lower() for e in errors if e.is_displayed()]
+        assert any("email is required" in t for t in error_texts), "Email required validation error not displayed!"
+        assert any("password is required" in t for t in error_texts), "Password required validation error not displayed!"
+    except NoSuchElementException:
+        pytest.fail("Validation error elements not found!")
