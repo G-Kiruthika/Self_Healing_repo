@@ -200,3 +200,28 @@ class LoginPage:
         assert "invalid username or password" in error_message.lower(), f"Expected error message 'Invalid username or password', got: {error_message}"
         assert self.driver.current_url == self.LOGIN_URL, "User did not remain on the login page after invalid login!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_018 ---
+    def login_three_failed_attempts_warning(self, email: str, wrong_passwords: list):
+        """
+        TC_LOGIN_018: Attempt login with incorrect password three times, verify warning after third attempt.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: AC_009]
+        2. Enter valid email address [Test Data: Email: testuser@example.com] [Acceptance Criteria: AC_009]
+        3. Attempt login with incorrect password three times [Test Data: Password: WrongPass1, WrongPass2, WrongPass3] [Acceptance Criteria: AC_009]
+        4. Verify warning message after third attempt [Acceptance Criteria: AC_009]
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        for idx, wrong_password in enumerate(wrong_passwords, 1):
+            assert self.enter_email(email), f"Email was not entered correctly for attempt {idx}!"
+            assert self.enter_password(wrong_password), f"Wrong password was not entered correctly for attempt {idx}!"
+            self.click_login()
+            time.sleep(1)
+            error_message = self.get_error_message()
+            assert error_message is not None, f"No error message displayed for attempt {idx}!"
+            assert self.driver.current_url == self.LOGIN_URL, f"User is not on login page after failed attempt {idx}!"
+            if idx == 3:
+                assert "Warning: Account will be locked after 2 more failed attempts" in error_message, \
+                    f"Expected warning message not found on third attempt: {error_message}"
+        return True
