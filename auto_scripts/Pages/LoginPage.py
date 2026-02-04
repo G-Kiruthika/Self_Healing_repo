@@ -176,3 +176,27 @@ class LoginPage:
         except NoSuchElementException:
             raise AssertionError("Validation error for invalid email not found!")
         return True
+
+    # --- ADDED FOR TC_LOGIN_003 ---
+    def login_invalid_credentials(self, invalid_email: str, valid_password: str):
+        """
+        TC_LOGIN_003: Attempt login with invalid username and valid password, expect error and stay on login page.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: AC_002_Invalid_Credentials]
+        2. Enter invalid username [Test Data: Username: invaliduser@example.com] [Acceptance Criteria: AC_002_Invalid_Credentials]
+        3. Enter valid password [Test Data: Password: Test@1234] [Acceptance Criteria: AC_002_Invalid_Credentials]
+        4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: AC_002_Invalid_Credentials]
+        5. Verify error message is displayed: 'Invalid username or password' and user remains on login page
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(invalid_email), "Invalid username was not entered correctly!"
+        assert self.enter_password(valid_password), "Password was not entered/masked correctly!"
+        self.click_login()
+        # Wait for error message
+        time.sleep(1)
+        error_message = self.get_error_message()
+        assert error_message is not None, "Error message not displayed for invalid credentials!"
+        assert "invalid username or password" in error_message.lower(), f"Expected error message 'Invalid username or password', got: {error_message}"
+        assert self.driver.current_url == self.LOGIN_URL, "User did not remain on the login page after invalid login!"
+        return True
