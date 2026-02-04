@@ -327,3 +327,30 @@ class LoginPage:
         login_success = self.is_redirected_to_dashboard()
         login_error = self.is_error_message_displayed()
         return email_accepted and password_masked and (login_success or login_error)
+
+    # --- ADDED FOR TC_LOGIN_012 ---
+    def login_with_128_char_password(self, email: str, password: str):
+        """
+        TC_LOGIN_012: Test login with a valid email and a password of 128 characters.
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid email address
+        3. Enter password with 128 characters
+        4. Click on the Login button
+        Acceptance Criteria:
+        - Login page is displayed
+        - Email is entered
+        - Password is masked and accepted
+        - System processes the login attempt appropriately
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible."
+        email_accepted = self.enter_email(email)
+        password_masked = self.enter_password(password)
+        assert email_accepted, "Email was not accepted."
+        assert password_masked, "Password is not masked."
+        self.click_login()
+        # Accept both possible outcomes: login success or error
+        login_success = self.is_redirected_to_dashboard()
+        login_error = self.is_error_message_displayed()
+        return email_accepted and password_masked and (login_success or login_error)
