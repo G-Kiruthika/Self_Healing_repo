@@ -1,57 +1,59 @@
-# Test Script for TC_LOGIN_003: Invalid Login Credentials
+# Test script for TC_LOGIN_003: Invalid login credentials
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from auto_scripts.Pages.LoginPage import LoginPage
+from selenium.common.exceptions import WebDriverException
 import time
+import os
+import sys
 
-@pytest.fixture(scope='function')
+# Ensure Pages directory is importable
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../Pages')))
+from LoginPage import LoginPage
+
+@pytest.fixture(scope="module")
 def driver():
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
-    options.add_argument('--no-sandbox')
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
+    options.add_argument('--window-size=1920,1080')
+    try:
+        driver = webdriver.Chrome(options=options)
+        driver.implicitly_wait(10)
+        yield driver
+    finally:
+        driver.quit()
 
-def test_login_with_invalid_credentials(driver):
+def test_login_invalid_credentials(driver):
     """
-    TC_LOGIN_003: Attempt login with invalid username and valid password;
-    verify error message and user remains on login page.
+    TC_LOGIN_003: Attempt login with invalid username and valid password, expect error and stay on login page.
     Steps:
-        1. Navigate to the login page
-        2. Enter invalid username
-        3. Enter valid password
-        4. Click Login button
-        5. Verify error message is displayed: 'Invalid username or password'
-        6. Verify user remains on login page (not authenticated)
+    1. Navigate to the login page
+    2. Enter invalid username
+    3. Enter valid password
+    4. Click Login button
+    5. Verify error message is displayed: 'Invalid username or password' and user remains on login page
     """
-    # Test Data
-    invalid_email = 'invaliduser@example.com'
-    valid_password = 'Test@1234'
     login_page = LoginPage(driver)
-
-    # Step 1: Navigate to the login page
+    invalid_email = "invaliduser@example.com"
+    valid_password = "Test@1234"
+    
+    # 1. Navigate to the login page
     login_page.go_to_login_page()
-    assert driver.current_url == LoginPage.LOGIN_URL, "Login page URL mismatch!"
     assert login_page.is_login_fields_visible(), "Login fields are not visible!"
-
-    # Step 2: Enter invalid username
+    
+    # 2. Enter invalid username
     assert login_page.enter_email(invalid_email), "Invalid username was not entered correctly!"
-
-    # Step 3: Enter valid password
+    
+    # 3. Enter valid password
     assert login_page.enter_password(valid_password), "Password was not entered/masked correctly!"
-
-    # Step 4: Click Login button
+    
+    # 4. Click Login button
     login_page.click_login()
     time.sleep(1)  # Wait for error message
-
-    # Step 5: Verify error message is displayed
+    
+    # 5. Verify error message is displayed and user remains on login page
     error_message = login_page.get_error_message()
-    assert error_message is not None, "No error message displayed!"
-    assert "invalid username or password" in error_message.lower(), f"Unexpected error message: {error_message}"
-
-    # Step 6: Verify user remains on login page (not authenticated)
-    assert driver.current_url == LoginPage.LOGIN_URL, "User is not on login page after failed login!"
+    assert error_message is not None, "Error message not displayed for invalid credentials!"
+    assert "invalid username or password" in error_message.lower(), f"Expected error message 'Invalid username or password', got: {error_message}"
+    assert driver.current_url == login_page.LOGIN_URL, "User did not remain on the login page after invalid login!"
