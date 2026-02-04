@@ -1,58 +1,65 @@
-# Selenium test script for TC_LOGIN_002: Login with Remember Me
-import pytest
+# Selenium Test Script for TC_LOGIN_002: Login with Remember Me
+import unittest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from auto_scripts.Pages.LoginPage import LoginPage
+from selenium.common.exceptions import NoSuchElementException
 import time
+import sys
+import os
 
-@pytest.fixture(scope='module')
-def driver():
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
+# Adjust the path to import the LoginPage
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Pages')))
+from LoginPage import LoginPage
 
-def test_login_with_remember_me(driver):
+class TestLoginWithRememberMe(unittest.TestCase):
     """
     Test Case: TC_LOGIN_002
-    Description: End-to-end login workflow with Remember Me checked.
+    Description: End-to-end login workflow with Remember Me checkbox.
     Steps:
-      1. Navigate to the login page
-      2. Enter valid username
-      3. Enter valid password
-      4. Check the Remember Me checkbox
-      5. Click on the Login button
-      6. Verify user is authenticated, redirected to dashboard, and session is persisted
+        1. Navigate to the login page
+        2. Enter valid username
+        3. Enter valid password
+        4. Check Remember Me checkbox
+        5. Click Login button
+        6. Verify user session is created, user is redirected to dashboard, and session is persisted
     """
-    login_page = LoginPage(driver)
-    email = 'testuser@example.com'
-    password = 'Test@1234'
+    @classmethod
+    def setUpClass(cls):
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        cls.driver = webdriver.Chrome(options=chrome_options)
+        cls.driver.implicitly_wait(10)
+        cls.login_page = LoginPage(cls.driver)
 
-    # Step 1: Navigate to the login page
-    login_page.go_to_login_page()
-    assert login_page.is_login_fields_visible(), "Login fields are not visible!"
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.quit()
 
-    # Step 2: Enter valid username
-    assert login_page.enter_email(email), "Username was not entered correctly!"
+    def test_login_with_remember_me(self):
+        email = "testuser@example.com"
+        password = "Test@1234"
+        # Step 1: Navigate to the login page
+        self.login_page.go_to_login_page()
+        self.assertTrue(self.login_page.is_login_fields_visible(), "Login fields are not visible!")
 
-    # Step 3: Enter valid password
-    assert login_page.enter_password(password), "Password was not entered/masked correctly!"
+        # Step 2: Enter valid username
+        self.assertTrue(self.login_page.enter_email(email), "Username was not entered correctly!")
 
-    # Step 4: Check the Remember Me checkbox
-    assert login_page.check_remember_me(), "Remember Me checkbox was not selected!"
+        # Step 3: Enter valid password
+        self.assertTrue(self.login_page.enter_password(password), "Password was not entered/masked correctly!")
 
-    # Step 5: Click on the Login button
-    login_page.click_login()
+        # Step 4: Check Remember Me checkbox
+        self.assertTrue(self.login_page.check_remember_me(), "Remember Me checkbox was not selected!")
 
-    # Step 6: Verify user is authenticated, redirected to dashboard, and session is persisted
-    assert login_page.is_redirected_to_dashboard(), "User was not redirected to dashboard!"
-    assert login_page.is_session_token_created(), "User session was not created!"
+        # Step 5: Click Login button
+        self.login_page.click_login()
 
-    # (Optional) Pause to visually verify if running non-headless
-    # time.sleep(2)
+        # Step 6: Verify user session is created, user is redirected to dashboard, and session is persisted
+        self.assertTrue(self.login_page.is_redirected_to_dashboard(), "User was not redirected to dashboard!")
+        self.assertTrue(self.login_page.is_session_token_created(), "User session was not created!")
+        # Additional validation for session persistence can be added here
 
-    print("TC_LOGIN_002: Login with Remember Me - PASSED")
+if __name__ == "__main__":
+    unittest.main()
