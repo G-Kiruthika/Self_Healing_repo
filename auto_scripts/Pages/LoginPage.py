@@ -329,25 +329,35 @@ class LoginPage:
         return email_accepted and password_masked and (login_success or login_error)
 
     # --- ADDED FOR TC_LOGIN_012 ---
-    def login_with_128_char_password(self, email: str, password: str):
+    def login_with_email_exceeding_max_length(self, email: str):
         """
-        TC_LOGIN_012: Login with valid email and password with 128 characters.
+        TC_LOGIN_012: Attempt to enter email address exceeding maximum length (255+ characters) and verify validation.
         Steps:
         1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
-        2. Enter valid email address [Test Data: Email: testuser@example.com]
-        3. Enter password with 128 characters [Test Data: Password: Aa1!Bb2@Cc3#Dd4$Ee5%Ff6^Gg7&Hh8*Ii9(Jj0)Kk1!Ll2@Mm3#Nn4$Oo5%Pp6^Qq7&Rr8*Ss9(Tt0)Uu1!Vv2@Ww3#Xx4$Yy5%Zz6^Aa7&Bb8*Cc9(Dd0)Ee1!Ff2@Gg3#Hh4$]
-        4. Click on the Login button
-        Acceptance Criteria: SCRUM-91
-        Expected: Password is masked and accepted. System processes the login attempt appropriately.
+        2. Attempt to enter email address exceeding maximum length (255+ characters)
+        3. Verify validation message
+        Acceptance Criteria: AC_007
+        Expected: Email field either truncates input or shows validation error 'Email exceeds maximum length' or input is truncated.
         """
         self.go_to_login_page()
-        email_accepted = self.enter_email(email)
-        password_masked = self.enter_password(password)
+        email_field = self.driver.find_element(*self.EMAIL_FIELD)
+        email_field.clear()
+        email_field.send_keys(email)
+        actual_value = email_field.get_attribute("value")
+        is_truncated = len(actual_value) <= 255
+        # Try to submit login to trigger validation
         self.click_login()
-        # Accept both possible outcomes: login success or error
-        login_success = self.is_redirected_to_dashboard()
-        login_error = self.is_error_message_displayed()
-        return email_accepted and password_masked and (login_success or login_error)
+        validation_error_msg = None
+        try:
+            validation_error = self.driver.find_element(*self.VALIDATION_ERROR)
+            if validation_error.is_displayed():
+                validation_error_msg = validation_error.text
+        except NoSuchElementException:
+            pass
+        error_message_displayed = False
+        if validation_error_msg:
+            error_message_displayed = "Email exceeds maximum length" in validation_error_msg or "maximum length" in validation_error_msg.lower()
+        return is_truncated or error_message_displayed
 
     # --- ADDED FOR TC_LOGIN_013 ---
     def login_with_sql_injection(self, email: str = "admin'--", password: str = "anything"): 
