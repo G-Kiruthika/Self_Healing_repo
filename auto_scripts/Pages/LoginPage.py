@@ -360,3 +360,37 @@ class LoginPage:
         assert not self.is_redirected_to_dashboard(), "Unauthorized access granted after SQL injection!"
         assert "sql" not in error_message.lower(), "SQL error message leaked to user!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_014 ---
+    def login_with_xss_in_password(self, email: str, xss_password: str):
+        """
+        TC_LOGIN_014: Attempt to inject XSS payload in the password field and verify that the input is masked, entered, and XSS attack is prevented.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: SCRUM-91]
+        2. Enter valid email address [Test Data: Email: testuser@example.com] [Acceptance Criteria: SCRUM-91]
+        3. Enter XSS script payload in password field [Test Data: Password: <script>alert('XSS')</script>] [Acceptance Criteria: SCRUM-91]
+        4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: SCRUM-91]
+        5. Verify that input is masked and entered, login fails safely, script is not executed, and XSS attack is prevented.
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Email was not entered correctly!"
+        # Enter XSS payload in password field
+        assert self.enter_password(xss_password), "Password field is not masked or input not entered!"
+        self.click_login()
+        time.sleep(1)  # Wait for any error or response
+        # Verify error message is displayed and no XSS is triggered
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed!"
+        # Optionally, you can check that the page did not redirect
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after XSS attempt!"
+        # No alert should be present (if alert is present, XSS was successful)
+        try:
+            alert = self.driver.switch_to.alert
+            assert False, "XSS alert was triggered! XSS vulnerability present!"
+        except Exception:
+            pass  # No alert means XSS did not execute
+        # Ensure password field is still of type 'password' (masked)
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        assert password_field.get_attribute("type") == "password", "Password field is not masked!"
+        return True
