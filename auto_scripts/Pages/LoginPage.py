@@ -307,3 +307,23 @@ class LoginPage:
         recovery_page.submit_recovery()
         assert recovery_page.is_success_message_displayed(), "Success message not displayed after password recovery."
         return True
+
+    # --- ADDED FOR TC_LOGIN_011 ---
+    def login_with_max_length_email(self, email: str, password: str):
+        """
+        TC_LOGIN_011: Login with email address of maximum valid length (254 characters) and valid password.
+        Steps:
+        1. Navigate to the login page
+        2. Enter email address with 254 characters
+        3. Enter valid password
+        4. Click on the Login button
+        5. Assert email is accepted and displayed, password is masked, and login is processed (success if registered, error if not)
+        """
+        self.go_to_login_page()
+        email_accepted = self.enter_email(email)
+        password_masked = self.enter_password(password)
+        self.click_login()
+        # Accept both possible outcomes: login success or error
+        login_success = self.is_redirected_to_dashboard()
+        login_error = self.is_error_message_displayed()
+        return email_accepted and password_masked and (login_success or login_error)
