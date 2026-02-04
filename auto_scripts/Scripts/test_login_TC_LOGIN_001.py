@@ -1,4 +1,4 @@
-# Selenium Test Script for TC_LOGIN_001 - Login Workflow
+# Selenium Test Script for LoginPage TC_LOGIN_001
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -18,37 +18,40 @@ def driver():
 
 def test_TC_LOGIN_001_successful_login(driver):
     """
-    Test Case: TC_LOGIN_001 - End-to-end login workflow for valid credentials.
+    TC_LOGIN_001: End-to-end login workflow with valid credentials.
     Steps:
     1. Navigate to the login page
-    2. Enter valid username
-    3. Enter valid password
-    4. Click Login
-    5. Verify user session is created and user is redirected to dashboard
+    2. Enter valid email address in the email field
+    3. Enter valid password in the password field
+    4. Click on the Login button
+    5. Verify user is logged in (dashboard is displayed with user profile information)
+    Acceptance Criteria: AC_001
     """
     # Test Data
-    email = 'testuser@example.com'
-    password = 'Test@1234'
+    email = "testuser@example.com"
+    password = "ValidPass123!"
 
     login_page = LoginPage(driver)
-
-    # Step 1: Navigate to the login page
     login_page.go_to_login_page()
-    assert login_page.is_login_fields_visible(), "Login page is not displayed with username and password fields"
 
-    # Step 2: Enter valid username
-    assert login_page.enter_email(email), f"Username '{email}' was not entered successfully in the field"
+    # Step 1: Login page is displayed with email and password fields
+    assert login_page.is_login_fields_visible(), "Login fields are not visible on the login page."
+
+    # Step 2: Enter valid email address
+    assert login_page.enter_email(email), f"Failed to enter email: {email}"
 
     # Step 3: Enter valid password
-    assert login_page.enter_password(password), "Password is not masked or not entered successfully"
+    assert login_page.enter_password(password), "Failed to enter password or password is not masked."
 
-    # Step 4: Click Login
+    # Optional: Check 'Remember Me' if required
+    # assert login_page.check_remember_me(), "Failed to check 'Remember Me' checkbox."
+
+    # Step 4: Click on the Login button
     login_page.click_login()
-    time.sleep(2)  # Wait for possible redirect
-    assert login_page.is_redirected_to_dashboard(), "User is not authenticated or not redirected to dashboard/home page"
 
-    # Step 5: Verify user session is created
-    assert login_page.is_session_token_created(), "User session is not active or user details are not displayed"
-
-    # Optional: Call the dedicated workflow method for traceability
-    assert login_page.login_and_verify(email, password), "End-to-end login workflow failed"
+    # Step 5: User is successfully authenticated and redirected to dashboard
+    assert login_page.is_redirected_to_dashboard(), "User was not redirected to dashboard after login."
+    assert login_page.is_session_token_created(), "Session token not created or user profile not visible after login."
+    
+    # Optionally, print success message
+    print("TC_LOGIN_001: Login workflow completed successfully.")
