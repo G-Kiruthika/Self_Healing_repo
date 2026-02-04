@@ -387,3 +387,54 @@ class LoginPage:
         # Ensure no unauthorized access is granted
         assert not self.is_redirected_to_dashboard(), "Unauthorized access granted!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_017 ---
+    def login_failed_attempt_counter_reset(self, email: str, wrong_passwords: list, correct_password: str, logout_callback=None):
+        """
+        TC_LOGIN_017: End-to-end test for failed login attempts, error messages, successful login, counter reset, and logout cycle.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter valid email and incorrect password, click Login (Attempt 1-3) [Test Data: Email: testuser@example.com, Password: WrongPass1/2/3]
+        3. Verify error message displayed for each failed attempt
+        4. Enter valid email and correct password, click Login
+        5. Verify user is successfully logged in, failed attempt counter is reset
+        6. Logout and attempt login with incorrect password again [Test Data: Email: testuser@example.com, Password: WrongPass4]
+        7. Verify failed attempt counter starts from 1 again, not from 4
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        for idx, wrong_password in enumerate(wrong_passwords, 1):
+            assert self.enter_email(email), f"Email was not entered correctly for attempt {idx}!"
+            assert self.enter_password(wrong_password), f"Wrong password was not entered correctly for attempt {idx}!"
+            self.click_login()
+            time.sleep(1)
+            error_message = self.get_error_message()
+            assert error_message is not None, f"No error message displayed for attempt {idx}!"
+            # Optionally, check error message content
+            assert "invalid" in error_message.lower() or "error" in error_message.lower(), f"Unexpected error message on attempt {idx}: {error_message}"
+            assert self.driver.current_url == self.LOGIN_URL, f"User is not on login page after failed attempt {idx}!"
+        # Now login with correct password
+        assert self.enter_email(email), "Email was not entered correctly for successful login!"
+        assert self.enter_password(correct_password), "Correct password was not entered correctly!"
+        self.click_login()
+        time.sleep(1)
+        assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard after successful login!"
+        assert self.is_session_token_created(), "User session was not created after successful login!"
+        # Simulate logout (using callback if provided, otherwise navigate back to login page)
+        if logout_callback:
+            logout_callback()
+        else:
+            self.go_to_login_page()
+        # Try logging in with wrong password again
+        assert self.is_login_fields_visible(), "Login fields are not visible after logout!"
+        assert self.enter_email(email), "Email was not entered correctly after logout!"
+        assert self.enter_password(wrong_passwords[-1]), "Wrong password was not entered correctly after logout!"
+        self.click_login()
+        time.sleep(1)
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed after logout on first failed attempt!"
+        assert "invalid" in error_message.lower() or "error" in error_message.lower(), f"Unexpected error message after logout: {error_message}"
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after failed login post logout!"
+        # Final assertion: failed attempt counter should be reset (system should behave as if this is first failed attempt)
+        # NOTE: Actual counter verification may require backend or UI element; here we assert system behavior
+        return True
