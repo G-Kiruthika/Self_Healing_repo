@@ -129,3 +129,26 @@ class LoginPage:
             return validation_error.is_displayed() and "Password is required" in validation_error.text
         except NoSuchElementException:
             return False
+
+    # --- ADDED FOR TC_LOGIN_004 ---
+    def login_with_empty_email_and_valid_password(self, password: str):
+        """
+        TC_LOGIN_004: Attempt login with empty email and valid password, expect 'Email is required' validation error.
+        Steps:
+        1. Navigate to the login page
+        2. Leave email field empty
+        3. Enter valid password
+        4. Click on the Login button
+        5. Assert validation error 'Email is required' is displayed below email field and login is prevented
+        """
+        self.go_to_login_page()
+        self.enter_email("")  # Leave email empty
+        self.enter_password(password)
+        self.click_login()
+        try:
+            validation_error = self.driver.find_element(*self.VALIDATION_ERROR)
+            error_text = validation_error.text if validation_error.is_displayed() else ""
+            still_on_login_page = self.driver.current_url == self.LOGIN_URL
+            return ("Email is required" in error_text) and still_on_login_page
+        except NoSuchElementException:
+            return False
