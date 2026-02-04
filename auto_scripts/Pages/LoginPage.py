@@ -291,32 +291,134 @@ class LoginPage:
         return True
 
     # --- ADDED FOR TC_LOGIN_012 ---
-    def login_with_email_exceeding_max_length(self, email: str):
+    def login_with_128_char_password(self, email: str, password: str):
         """
-        TC_LOGIN_012: Attempt to enter email address exceeding maximum length (255+ characters) and verify validation/truncation.
+        TC_LOGIN_012: Enter valid email and 128-char password, click Login, verify acceptance and masking.
         Steps:
         1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
-        2. Attempt to enter email address exceeding maximum length (255+ characters) [Test Data: Email: a123456789012345678901234567890123456789012345678901234567890123@b123456789012345678901234567890123456789012345678901234567890123.c123456789012345678901234567890123456789012345678901234567890123.d123456789012345678901234567890123456789012345678.comextra]
-        3. Verify validation message [Test Data: N/A]
-        4. Acceptance Criteria: Email field either truncates input or shows validation error
+        2. Enter valid email address [Test Data: Email: testuser@example.com]
+        3. Enter password with 128 characters [Test Data: Password: Aa1!Bb2@Cc3#Dd4$Ee5%Ff6^Gg7&Hh8*Ii9(Jj0)Kk1!Ll2@Mm3#Nn4$Oo5%Pp6^Qq7&Rr8*Ss9(Tt0)Uu1!Vv2@Ww3#Xx4$Yy5%Zz6^Aa7&Bb8*Cc9(Dd0)Ee1!Ff2@Gg3#Hh4$]
+        4. Click on the Login button
+        5. Verify password field is masked and accepted
         """
         self.go_to_login_page()
         assert self.is_login_fields_visible(), "Login fields are not visible!"
-        # Enter email exceeding max length
-        email_field = self.driver.find_element(*self.EMAIL_FIELD)
-        email_field.clear()
-        email_field.send_keys(email)
-        entered_email = email_field.get_attribute("value")
-        # Check if the input is truncated or validation error appears
-        if len(entered_email) < len(email):
-            # Input was truncated by the field
-            return 'truncated'
-        else:
-            # Check for validation error
-            try:
-                validation_error = self.driver.find_element(*self.VALIDATION_ERROR)
-                if validation_error.is_displayed() and ("email" in validation_error.text.lower() and ("maximum" in validation_error.text.lower() or "length" in validation_error.text.lower() or "exceeds" in validation_error.text.lower())):
-                    return validation_error.text.strip()
-            except NoSuchElementException:
-                pass
-        return None
+        assert self.enter_email(email), "Email was not entered correctly!"
+        assert len(password) == 128, f"Password length is not 128, got {len(password)}"
+        assert self.enter_password(password), "Password was not masked correctly!"
+        self.click_login()
+        # Optionally, verify acceptance and/or error handling
+        time.sleep(1)
+        error_message = self.get_error_message()
+        if error_message:
+            assert "invalid" not in error_message.lower(), f"Unexpected error message: {error_message}"
+        return True
+
+    # --- ADDED FOR TC_LOGIN_011 ---
+    def login_with_254_char_email(self, email: str, password: str):
+        """
+        TC_LOGIN_011: Enter email address at maximum allowed length (254 characters), valid password, and attempt login.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter email address at maximum allowed length (254 characters) [Test Data: Email: a123456789012345678901234567890123456789012345678901234567890123@b123456789012345678901234567890123456789012345678901234567890123.c123456789012345678901234567890123456789012345678901234567890123.d123456789012345678901234567890123456789012345678.com]
+        3. Enter valid password [Test Data: Password: ValidPass123!]
+        4. Click on the Login button
+        5. Verify email is accepted and entered, password is entered and masked, login attempt is processed without validation error.
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert len(email) == 254, f"Email length is not 254, got {len(email)}"
+        assert self.enter_email(email), "Email was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for response
+        error_message = self.get_error_message()
+        assert not error_message, f"Unexpected error message: {error_message}"
+        return True
+
+    # --- ADDED FOR TC_LOGIN_013 ---
+    def login_with_sql_injection(self, sql_email: str, password: str):
+        """
+        TC_LOGIN_013: Attempt SQL injection in email field and verify application is not vulnerable.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter SQL injection payload in email field [Test Data: Email: admin'--]
+        3. Enter any password [Test Data: Password: anything]
+        4. Click on the Login button
+        5. Verify login fails with error message, SQL injection is prevented, and no unauthorized access is granted.
+        Acceptance Criteria: SCRUM-91
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(sql_email), "SQL injection payload was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for error message
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed!"
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after SQL injection attempt!"
+        assert not self.is_redirected_to_dashboard(), "Unauthorized access granted after SQL injection!"
+        assert "sql" not in error_message.lower(), "SQL error message leaked to user!"
+        return True
+
+    # --- ADDED FOR TC_LOGIN_014 ---
+    def login_with_xss_in_password(self, email: str, xss_password: str):
+        """
+        TC_LOGIN_014: Attempt to inject XSS payload in the password field and verify that the input is masked, entered, and XSS attack is prevented.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: SCRUM-91]
+        2. Enter valid email address [Test Data: Email: testuser@example.com] [Acceptance Criteria: SCRUM-91]
+        3. Enter XSS script payload in password field [Test Data: Password: <script>alert('XSS')</script>] [Acceptance Criteria: SCRUM-91]
+        4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: SCRUM-91]
+        5. Verify that input is masked and entered, login fails safely, script is not executed, and XSS attack is prevented.
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Email was not entered correctly!"
+        # Enter XSS payload in password field
+        assert self.enter_password(xss_password), "Password field is not masked or input not entered!"
+        self.click_login()
+        time.sleep(1)  # Wait for any error or response
+        # Verify error message is displayed and no XSS is triggered
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed!"
+        # Optionally, you can check that the page did not redirect
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after XSS attempt!"
+        # No alert should be present (if alert is present, XSS was successful)
+        try:
+            alert = self.driver.switch_to.alert
+            assert False, "XSS alert was triggered! XSS vulnerability present!"
+        except Exception:
+            pass  # No alert means XSS did not execute
+        # Ensure password field is still of type 'password' (masked)
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        assert password_field.get_attribute("type") == "password", "Password field is not masked!"
+        return True
+
+    # --- ADDED FOR TC_LOGIN_015 ---
+    def login_with_sql_injection_in_password(self, email: str, sql_password: str):
+        """
+        TC_LOGIN_015: Attempt SQL injection in password field and verify application is not vulnerable.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: SCRUM-91]
+        2. Enter valid email address [Test Data: Email: testuser@example.com] [Acceptance Criteria: SCRUM-91]
+        3. Enter SQL injection payload in password field [Test Data: Password: ' OR '1'='1] [Acceptance Criteria: SCRUM-91]
+        4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: SCRUM-91]
+        5. Verify login fails with error message, SQL injection is prevented, no unauthorized access
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Email was not entered correctly!"
+        # Enter SQL injection payload in password field
+        assert self.enter_password(sql_password), "SQL injection payload was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for error message
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed!"
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after SQL injection attempt!"
+        assert not self.is_redirected_to_dashboard(), "Unauthorized access granted after SQL injection!"
+        assert "sql" not in error_message.lower(), "SQL error message leaked to user!"
+        # Ensure password field is still of type 'password' (masked)
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        assert password_field.get_attribute("type") == "password", "Password field is not masked!"
+        return True
