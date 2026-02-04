@@ -249,3 +249,53 @@ class LoginPage:
         assert "invalid username or password" in error_message.lower(), f"Expected error message 'Invalid username or password', got: {error_message}"
         assert self.driver.current_url == self.LOGIN_URL, "User did not remain on the login page after invalid login!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_007 ---
+    def login_empty_fields_validation(self):
+        """
+        TC_LOGIN_007: Validate login with both username and password fields left empty.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: AC_003_Empty_Fields_Validation]
+        2. Leave username field empty [Test Data: Username: (empty)] [Acceptance Criteria: AC_003_Empty_Fields_Validation]
+        3. Leave password field empty [Test Data: Password: (empty)] [Acceptance Criteria: AC_003_Empty_Fields_Validation]
+        4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: AC_003_Empty_Fields_Validation]
+        5. Verify validation errors are displayed: 'Username is required' and 'Password is required'.
+        6. Verify login is not processed, user remains on login page and is not authenticated.
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        # Leave both fields empty
+        email_field = self.driver.find_element(*self.EMAIL_FIELD)
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        email_field.clear()
+        password_field.clear()
+        assert email_field.get_attribute("value") == "", "Username field is not empty!"
+        assert password_field.get_attribute("value") == "", "Password field is not empty!"
+        self.click_login()
+        time.sleep(0.5)
+        # Check for validation errors
+        validation_errors = []
+        try:
+            error_elems = self.driver.find_elements(*self.VALIDATION_ERROR)
+            for elem in error_elems:
+                if elem.is_displayed():
+                    validation_errors.append(elem.text.strip())
+        except NoSuchElementException:
+            pass
+        # Accept either combined or separate messages
+        assert any("username is required".lower() in err.lower() for err in validation_errors), \
+            f"Validation error for empty username not found! Errors: {validation_errors}"
+        assert any("password is required".lower() in err.lower() for err in validation_errors), \
+            f"Validation error for empty password not found! Errors: {validation_errors}"
+        # Verify login is not processed
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after empty field validation!"
+        # Optionally check user is not authenticated by checking session/cookie/profile icon
+        cookies = self.driver.get_cookies()
+        session_token = next((cookie for cookie in cookies if 'session' in cookie['name'].lower()), None)
+        assert session_token is None, "Session token should not be created for empty fields!"
+        try:
+            user_icon = self.driver.find_element(*self.USER_PROFILE_ICON)
+            assert not user_icon.is_displayed(), "User profile icon should not be displayed for unauthenticated user!"
+        except Exception:
+            pass
+        return True
