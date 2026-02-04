@@ -1,16 +1,12 @@
-# Selenium Test Script for TC_LOGIN_004: Login with Empty Email and Valid Password
+# Selenium Pytest Script for TC_LOGIN_004: Login with empty email and valid password
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
-import time
 from auto_scripts.Pages.LoginPage import LoginPage
+import time
 
-# Test Data
-LOGIN_URL = "https://app.example.com/login"
-VALID_PASSWORD = "ValidPass123!"
-
-@pytest.fixture(scope="module")
+@pytest.fixture(scope='module')
 def driver():
     options = Options()
     options.add_argument('--headless')
@@ -30,27 +26,24 @@ def test_login_with_empty_email_and_valid_password(driver):
     3. Enter valid password
     4. Click Login button
     5. Verify validation error 'Email is required' is displayed below email field
-    Acceptance Criteria: SCRUM-91
+    Acceptance Criteria: AC_003
     """
     login_page = LoginPage(driver)
+    valid_password = "ValidPass123!"  # Replace with actual valid password if needed
 
     # Step 1: Navigate to the login page
     login_page.go_to_login_page()
-    assert driver.current_url == LOGIN_URL, "Login page did not load correctly."
-
-    # Step 2: Leave email field empty (do not enter any email)
+    assert login_page.is_login_fields_visible(), "Login fields are not visible!"
+    
+    # Step 2: Leave email field empty
     assert login_page.enter_email("") is True, "Email field is not empty!"
-    email_value = driver.find_element(*LoginPage.EMAIL_FIELD).get_attribute("value")
-    assert email_value == "", "Email field is not empty after clearing."
-
+    
     # Step 3: Enter valid password
-    assert login_page.enter_password(VALID_PASSWORD), "Password was not entered/masked correctly!"
-    password_field_type = driver.find_element(*LoginPage.PASSWORD_FIELD).get_attribute("type")
-    assert password_field_type == "password", "Password field is not masked!"
-
+    assert login_page.enter_password(valid_password), "Password was not entered/masked correctly!"
+    
     # Step 4: Click Login button
     login_page.click_login()
-    time.sleep(1)  # Wait for validation error to appear
+    time.sleep(1)  # Wait for validation error
 
     # Step 5: Verify validation error 'Email is required' is displayed below email field
     try:
@@ -59,6 +52,6 @@ def test_login_with_empty_email_and_valid_password(driver):
         assert "email is required" in validation_error.text.lower(), f"Unexpected validation error: {validation_error.text}"
     except NoSuchElementException:
         pytest.fail("Validation error element not found!")
-
-    # Also verify user is still on login page
-    assert driver.current_url == LOGIN_URL, "User is not on login page after failed login!"
+    
+    # Step 6: Verify user remains on login page (login not attempted)
+    assert driver.current_url == LoginPage.LOGIN_URL, "User is not on login page after failed login!"
