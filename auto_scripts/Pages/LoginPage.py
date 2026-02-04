@@ -88,3 +88,22 @@ class LoginPage:
         self.enter_password(password)
         self.click_login()
         return self.is_error_message_displayed("Invalid email or password") and not self.is_redirected_to_dashboard()
+
+    # --- ADDED FOR TC_LOGIN_003 ---
+    def login_with_valid_email_and_invalid_password(self, email: str, wrong_password: str):
+        """
+        Perform login with valid email and invalid password for TC_LOGIN_003.
+        Steps:
+        1. Navigate to login page
+        2. Enter valid email address
+        3. Enter incorrect password
+        4. Click Login button
+        5. Assert error message 'Invalid email or password' is displayed and user remains on login page
+        """
+        self.go_to_login_page()
+        self.enter_email(email)
+        self.enter_password(wrong_password)
+        self.click_login()
+        error_displayed = self.is_error_message_displayed("Invalid email or password")
+        still_on_login_page = self.driver.current_url == self.LOGIN_URL
+        return error_displayed and still_on_login_page
