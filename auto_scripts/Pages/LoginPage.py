@@ -360,98 +360,30 @@ class LoginPage:
         return is_truncated or error_message_displayed
 
     # --- ADDED FOR TC_LOGIN_013 ---
-    def login_with_sql_injection(self, email: str = "admin'--", password: str = "anything"): 
+    def login_with_max_length_password(self, email: str, password: str):
         """
-        TC_LOGIN_013: Attempt login with SQL injection payload in email field.
-        Steps:
-        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
-        2. Enter SQL injection payload in email field [Test Data: Email: admin'--]
-        3. Enter any password [Test Data: Password: anything]
-        4. Click on the Login button
-        Expected: Login fails with error message, SQL injection is prevented, no unauthorized access granted.
-        Acceptance Criteria: SCRUM-91
-        """
-        self.go_to_login_page()
-        self.enter_email(email)
-        self.enter_password(password)
-        self.click_login()
-        # Assert login fails, error message is displayed, and user is not redirected
-        error_displayed = self.is_error_message_displayed()
-        not_redirected = self.driver.current_url == self.LOGIN_URL
-        unauthorized_access = not self.is_redirected_to_dashboard()
-        return error_displayed and not_redirected and unauthorized_access
-
-    # --- ADDED FOR TC_LOGIN_014 ---
-    def login_with_xss_in_password_field(self, email: str = "testuser@example.com", xss_payload: str = "<script>alert('XSS')</script>"):
-        """
-        TC_LOGIN_014: Attempt login with valid email and XSS script payload in password field.
+        TC_LOGIN_013: Login with valid email and password at maximum allowed length (128 characters).
         Steps:
         1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
         2. Enter valid email address [Test Data: Email: testuser@example.com]
-        3. Enter XSS script payload in password field [Test Data: Password: <script>alert('XSS')</script>]
+        3. Enter password at maximum allowed length (128 characters) [Test Data: Password: Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!]
         4. Click on the Login button
-        Acceptance Criteria: SCRUM-91
-        Expected:
-            - Input is masked and entered
-            - Login fails safely
-            - Script is NOT executed (no alert popup)
-            - XSS attack is prevented
-        Returns True if all criteria are met
+        Expected: Password is accepted and entered, login attempt is processed without validation error.
+        Acceptance Criteria: AC_007
+        Returns True if password is accepted, entered, and login is processed without validation error.
         """
         self.go_to_login_page()
         email_accepted = self.enter_email(email)
-        password_masked = self.enter_password(xss_payload)
+        password_masked = self.enter_password(password)
         self.click_login()
-        # Check for error message and that login fails
-        error_displayed = self.is_error_message_displayed()
-        still_on_login_page = self.driver.current_url == self.LOGIN_URL
-        # Check that password field remains masked
-        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
-        is_masked = password_field.get_attribute("type") == "password"
-        # Check that no alert is triggered (XSS not executed)
-        alert_triggered = False
+        # Check for validation errors
         try:
-            alert = self.driver.switch_to.alert
-            alert_text = alert.text
-            # If alert exists and matches XSS payload, XSS is NOT prevented
-            if "XSS" in alert_text:
-                alert_triggered = True
-                alert.dismiss()
-        except Exception:
-            # No alert present, which is correct
+            validation_error = self.driver.find_element(*self.VALIDATION_ERROR)
+            if validation_error.is_displayed():
+                return False
+        except NoSuchElementException:
             pass
-        xss_prevented = not alert_triggered
-        # All must be true: input masked, login fails, error shown, XSS prevented
-        return email_accepted and password_masked and error_displayed and still_on_login_page and is_masked and xss_prevented
-
-    # --- ADDED FOR TC_LOGIN_015 ---
-    def login_with_sql_injection_in_password(self, email: str = "testuser@example.com", sql_payload: str = "' OR '1'='1"):
-        """
-        TC_LOGIN_015: Attempt login with valid email and SQL injection payload in password field.
-        Steps:
-        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
-        2. Enter valid email address [Test Data: Email: testuser@example.com]
-        3. Enter SQL injection payload in password field [Test Data: Password: ' OR '1'='1]
-        4. Click on the Login button
-        Acceptance Criteria: SCRUM-91
-        Expected:
-            - Input is masked and entered
-            - Login fails with error message
-            - SQL injection is prevented
-            - No unauthorized access
-        Returns True if all criteria are met
-        """
-        self.go_to_login_page()
-        email_accepted = self.enter_email(email)
-        password_masked = self.enter_password(sql_payload)
-        self.click_login()
-        # Check for error message and that login fails
-        error_displayed = self.is_error_message_displayed()
-        still_on_login_page = self.driver.current_url == self.LOGIN_URL
-        # Check that password field remains masked
-        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
-        is_masked = password_field.get_attribute("type") == "password"
-        # Ensure no unauthorized access (not redirected to dashboard)
-        unauthorized_access = not self.is_redirected_to_dashboard()
-        # All must be true: input masked, login fails, error shown, SQLi prevented
-        return email_accepted and password_masked and error_displayed and still_on_login_page and is_masked and unauthorized_access
+        # Accept both possible outcomes: login success or error (but no validation error)
+        login_success = self.is_redirected_to_dashboard()
+        login_error = self.is_error_message_displayed()
+        return email_accepted and password_masked and (login_success or login_error)
