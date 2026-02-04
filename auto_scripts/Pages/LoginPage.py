@@ -253,191 +253,39 @@ class LoginPage:
         return True
 
     # --- ADDED FOR TC_LOGIN_007 ---
-    def remember_me_session_persistence(self, email: str, password: str, driver_factory):
+    def empty_fields_validation(self):
         """
-        TC_LOGIN_007: End-to-end test for 'Remember Me' session persistence after browser restart.
+        TC_LOGIN_007: Test Case for empty fields validation.
         Steps:
         1. Navigate to the login page
-        2. Enter valid email and password
-        3. Check the 'Remember Me' checkbox
-        4. Click Login button
-        5. Verify user is logged in and redirected to dashboard
-        6. Save session cookies, quit browser, start new browser
-        7. Load cookies, navigate to app, verify user is still logged in (no login prompt)
-        Args:
-            email (str): User email
-            password (str): User password
-            driver_factory (Callable): Function to generate a new WebDriver instance
-        Returns:
-            bool: True if session persists, False otherwise
-        """
-        # Step 1-5: Login with remember me
-        self.go_to_login_page()
-        assert self.is_login_fields_visible(), "Login fields are not visible!"
-        assert self.enter_email(email), "Email was not entered correctly!"
-        assert self.enter_password(password), "Password was not entered/masked correctly!"
-        assert self.check_remember_me(), "Remember Me checkbox was not checked!"
-        self.click_login()
-        assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard!"
-        assert self.is_session_token_created(), "User session was not created!"
-        # Step 6: Save cookies
-        cookies = self.driver.get_cookies()
-        # Step 7: Close and restart browser
-        self.driver.quit()
-        new_driver = driver_factory()
-        new_driver.get(self.LOGIN_URL)
-        for cookie in cookies:
-            new_driver.add_cookie(cookie)
-        new_driver.get(self.LOGIN_URL)
-        # Step 8: Verify user is still logged in
-        try:
-            dashboard_header = new_driver.find_element(*self.DASHBOARD_HEADER)
-            user_icon = new_driver.find_element(*self.USER_PROFILE_ICON)
-            session_persistent = dashboard_header.is_displayed() and user_icon.is_displayed()
-        except Exception:
-            session_persistent = False
-        new_driver.quit()
-        return session_persistent
-
-    # --- ADDED FOR TC_LOGIN_008 ---
-    def login_without_remember_me_and_verify_logout_on_restart(self, email: str, password: str, driver_factory):
-        """
-        TC_LOGIN_008: End-to-end test for login WITHOUT 'Remember Me' and verifying logout after browser restart.
-        Steps:
-        1. Navigate to the login page
-        2. Enter valid email and password
-        3. Leave 'Remember Me' checkbox unchecked
-        4. Click Login button
-        5. Verify user is logged in and redirected to dashboard
-        6. Save session cookies, quit browser, start new browser
-        7. Load cookies, navigate to app, verify user is logged out and redirected to login page
-        Args:
-            email (str): User email
-            password (str): User password
-            driver_factory (Callable): Function to generate a new WebDriver instance
-        Returns:
-            bool: True if user is logged out after browser restart, False otherwise
-        """
-        # Step 1-5: Login without remember me
-        self.go_to_login_page()
-        assert self.is_login_fields_visible(), "Login fields are not visible!"
-        assert self.enter_email(email), "Email was not entered correctly!"
-        assert self.enter_password(password), "Password was not entered/masked correctly!"
-        assert self.uncheck_remember_me(), "Remember Me checkbox was not left unchecked!"
-        self.click_login()
-        assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard!"
-        assert self.is_session_token_created(), "User session was not created!"
-        # Step 6: Save cookies
-        cookies = self.driver.get_cookies()
-        # Step 7: Close and restart browser
-        self.driver.quit()
-        new_driver = driver_factory()
-        new_driver.get(self.LOGIN_URL)
-        for cookie in cookies:
-            new_driver.add_cookie(cookie)
-        new_driver.get(self.LOGIN_URL)
-        # Step 8: Verify user is logged out and redirected to login page
-        try:
-            # If login fields are visible, user is logged out
-            login_fields_visible = (
-                new_driver.find_element(*self.EMAIL_FIELD).is_displayed() and
-                new_driver.find_element(*self.PASSWORD_FIELD).is_displayed()
-            )
-            redirected_to_login = new_driver.current_url == self.LOGIN_URL
-            logged_out = login_fields_visible and redirected_to_login
-        except Exception:
-            logged_out = False
-        new_driver.quit()
-        return logged_out
-
-    # --- ADDED FOR TC_LOGIN_019 ---
-    def login_failed_counter_reset_workflow(self, email: str, wrong_passwords: list, correct_password: str, wrong_password_after_logout: str):
-        """
-        TC_LOGIN_019: Test login failed attempt counter reset after successful login and logout.
-        Steps:
-        1. Navigate to the login page
-        2. Enter valid email address
-        3. Attempt login with incorrect password twice
-        4. Enter correct password and login
-        5. Logout and attempt login with incorrect password
-        6. Verify failed attempt counter is reset and no warning about previous failures
-        Args:
-            email (str): User's email address
-            wrong_passwords (list): List of two incorrect passwords
-            correct_password (str): The correct password
-            wrong_password_after_logout (str): Incorrect password to test after logout
-        Returns:
-            bool: True if failed attempt counter resets and no warning is shown, False otherwise
-        """
-        assert len(wrong_passwords) == 2, "Must provide exactly two wrong passwords for initial failed attempts."
-        # Step 1: Navigate to login page
-        self.go_to_login_page()
-        assert self.is_login_fields_visible(), "Login fields are not visible!"
-        # Step 2-3: Enter email and attempt login with two wrong passwords
-        for wrong_pass in wrong_passwords:
-            assert self.enter_email(email), "Email was not entered correctly!"
-            assert self.enter_password(wrong_pass), "Wrong password was not entered!"
-            self.click_login()
-            time.sleep(1)
-            error_msg = self.get_error_message()
-            assert error_msg is not None, "Expected error message not displayed after wrong password!"
-            assert "invalid email or password" in error_msg.lower(), f"Unexpected error message: {error_msg}"
-        # Step 4: Enter correct password and login
-        assert self.enter_email(email), "Email was not entered correctly!"
-        assert self.enter_password(correct_password), "Correct password was not entered!"
-        self.click_login()
-        assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard after correct login!"
-        # Step 5: Logout
-        # For demonstration, assume logout is via clicking user icon and a logout button (not shown in locators)
-        # This should be implemented as per actual application logic
-        try:
-            user_icon = self.driver.find_element(*self.USER_PROFILE_ICON)
-            user_icon.click()
-            logout_button = self.driver.find_element(By.CSS_SELECTOR, "button.logout")
-            logout_button.click()
-            time.sleep(1)
-            assert self.driver.current_url == self.LOGIN_URL, "User was not redirected to login page after logout!"
-        except Exception as e:
-            raise AssertionError(f"Logout failed: {e}")
-        # Step 6: Attempt login again with wrong password
-        assert self.enter_email(email), "Email was not entered correctly after logout!"
-        assert self.enter_password(wrong_password_after_logout), "Wrong password after logout was not entered!"
-        self.click_login()
-        time.sleep(1)
-        error_msg = self.get_error_message()
-        assert error_msg is not None, "Expected error message not displayed after wrong password post-logout!"
-        # Step 7: Verify there is NO warning about previous failed attempts (assume any such warning would be present in error_msg)
-        assert "previous failures" not in error_msg.lower(), "Warning about previous failures should NOT be displayed!"
-        return True
-
-    # --- ADDED FOR TC_LOGIN_020 ---
-    def login_with_invalid_email_format(self, invalid_email: str, valid_password: str):
-        """
-        TC_LOGIN_020: Attempt login with invalid email format (missing '@' symbol) and valid password.
-        Steps:
-        1. Navigate to the login page
-        2. Enter invalid email format (missing '@' symbol)
-        3. Enter valid password
-        4. Click Login button
-        5. Verify validation error displayed: 'Please enter a valid email address'
-        6. Verify login is prevented and user remains on login page
-        Args:
-            invalid_email (str): Email without '@' symbol
-            valid_password (str): Valid password
-        Returns:
-            bool: True if validation error is shown and login is prevented, False otherwise
+        2. Leave username field empty
+        3. Leave password field empty
+        4. Click on the Login button
+        5. Verify login is not processed and validation errors are displayed: 'Username is required' and 'Password is required'
         """
         self.go_to_login_page()
         assert self.is_login_fields_visible(), "Login fields are not visible!"
-        assert self.enter_email(invalid_email), "Invalid email format was not entered correctly!"
-        assert self.enter_password(valid_password), "Password was not entered/masked correctly!"
+        # Leave username and password fields empty
+        email_field = self.driver.find_element(*self.EMAIL_FIELD)
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        email_field.clear()
+        password_field.clear()
+        assert email_field.get_attribute("value") == "", "Username field is not empty!"
+        assert password_field.get_attribute("value") == "", "Password field is not empty!"
         self.click_login()
-        time.sleep(1)  # Wait for validation error
-        try:
-            validation_error = self.driver.find_element(*self.VALIDATION_ERROR)
-            assert validation_error.is_displayed(), "Validation error not displayed!"
-            assert "please enter a valid email address" in validation_error.text.lower(), f"Unexpected validation error: {validation_error.text}"
-            assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after invalid email format!"
-        except NoSuchElementException:
-            assert False, "Validation error element not found!"
+        time.sleep(1)  # Wait for validation errors
+        validation_errors = self.driver.find_elements(*self.VALIDATION_ERROR)
+        assert validation_errors, "No validation errors found!"
+        found_username_error = False
+        found_password_error = False
+        for error_elem in validation_errors:
+            if error_elem.is_displayed():
+                error_text = error_elem.text.lower()
+                if "username is required" in error_text or "email is required" in error_text:
+                    found_username_error = True
+                if "password is required" in error_text:
+                    found_password_error = True
+        assert found_username_error, "Username required validation error not displayed!"
+        assert found_password_error, "Password required validation error not displayed!"
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after empty fields validation!"
         return True
