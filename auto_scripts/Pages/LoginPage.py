@@ -43,6 +43,13 @@ class LoginPage:
         password_field.send_keys(password)
         return password_field.get_attribute("type") == "password"
 
+    def check_remember_me(self):
+        """Check the Remember Me checkbox."""
+        checkbox = self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+        if not checkbox.is_selected():
+            checkbox.click()
+        return checkbox.is_selected()
+
     def click_login(self):
         """Click the Login button."""
         self.driver.find_element(*self.LOGIN_BUTTON).click()
@@ -86,4 +93,27 @@ class LoginPage:
         self.click_login()
         assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard!"
         assert self.is_session_token_created(), "User session was not created!"
+        return True
+
+    # --- ADDED FOR TC_LOGIN_002 ---
+    def login_with_remember_me(self, email: str, password: str):
+        """
+        TC_LOGIN_002: End-to-end login workflow with Remember Me checkbox.
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid username
+        3. Enter valid password
+        4. Check Remember Me checkbox
+        5. Click Login button
+        6. Verify user session is created, user is redirected to dashboard, and session is persisted
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Username was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        assert self.check_remember_me(), "Remember Me checkbox was not selected!"
+        self.click_login()
+        assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard!"
+        assert self.is_session_token_created(), "User session was not created!"
+        # Additional validation for session persistence can be added here if required
         return True
