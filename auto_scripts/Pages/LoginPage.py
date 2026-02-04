@@ -190,3 +190,28 @@ class LoginPage:
         # Wait for possible redirect
         time.sleep(2)
         return self.is_redirected_to_dashboard()
+
+    # --- ADDED FOR TC_LOGIN_006 ---
+    def login_with_empty_email_and_empty_password(self):
+        """
+        TC_LOGIN_006: Attempt login with both email and password fields empty. Expect validation errors for both fields and login prevented.
+        Steps:
+        1. Navigate to the login page
+        2. Leave both email and password fields empty
+        3. Click on the Login button
+        4. Verify validation errors: 'Email is required' and 'Password is required'
+        5. Verify user remains on login page, login not attempted
+        """
+        self.go_to_login_page()
+        self.enter_email("")  # Leave email empty
+        self.enter_password("")  # Leave password empty
+        self.click_login()
+        try:
+            validation_errors = self.driver.find_elements(*self.VALIDATION_ERROR)
+            error_texts = [el.text for el in validation_errors if el.is_displayed()]
+            email_error = any("Email is required" in txt for txt in error_texts)
+            password_error = any("Password is required" in txt for txt in error_texts)
+            still_on_login_page = self.driver.current_url == self.LOGIN_URL
+            return email_error and password_error and still_on_login_page
+        except NoSuchElementException:
+            return False
