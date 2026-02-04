@@ -4,7 +4,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
 
 class LoginPage:
-    LOGIN_URL = "https://example-ecommerce.com/login"
+    LOGIN_URL = "https://app.example.com/login"
     EMAIL_FIELD = (By.ID, "login-email")
     PASSWORD_FIELD = (By.ID, "login-password")
     LOGIN_BUTTON = (By.ID, "login-submit")
@@ -25,12 +25,20 @@ class LoginPage:
         password_visible = self.driver.find_element(*self.PASSWORD_FIELD).is_displayed()
         return email_visible and password_visible
 
-    def enter_credentials(self, email: str, password: str):
-        """Enter email and password."""
-        self.driver.find_element(*self.EMAIL_FIELD).clear()
-        self.driver.find_element(*self.EMAIL_FIELD).send_keys(email)
-        self.driver.find_element(*self.PASSWORD_FIELD).clear()
-        self.driver.find_element(*self.PASSWORD_FIELD).send_keys(password)
+    def enter_email(self, email: str):
+        """Enter email address in the email field."""
+        email_field = self.driver.find_element(*self.EMAIL_FIELD)
+        email_field.clear()
+        email_field.send_keys(email)
+        return email_field.get_attribute("value") == email
+
+    def enter_password(self, password: str):
+        """Enter password in the password field."""
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        password_field.clear()
+        password_field.send_keys(password)
+        # Password field is masked by default; check type attribute
+        return password_field.get_attribute("type") == "password"
 
     def click_login(self):
         """Click the Login button."""
@@ -44,6 +52,19 @@ class LoginPage:
             return dashboard_header.is_displayed() and user_icon.is_displayed()
         except Exception:
             return False
+
+    def is_session_token_created(self):
+        """Verify user session is created and profile is displayed."""
+        # Implementation may vary based on how session token is exposed
+        cookies = self.driver.get_cookies()
+        session_token = next((cookie for cookie in cookies if 'session' in cookie['name'].lower()), None)
+        user_profile_visible = False
+        try:
+            user_icon = self.driver.find_element(*self.USER_PROFILE_ICON)
+            user_profile_visible = user_icon.is_displayed()
+        except Exception:
+            pass
+        return session_token is not None and user_profile_visible
 
     def is_error_message_displayed(self, expected_message: str = "Invalid email or password"):
         """Verify if error message is displayed after invalid login."""
