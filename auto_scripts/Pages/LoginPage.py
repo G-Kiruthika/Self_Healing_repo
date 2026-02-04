@@ -148,3 +148,31 @@ class LoginPage:
         assert "account locked" in error_message.lower(), f"Expected account locked message after correct password, got: {error_message}"
         assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after locked account attempt!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_020 ---
+    def login_invalid_email_format(self, email: str, password: str, expected_validation: str = "Please enter a valid email address"):
+        """
+        TC_LOGIN_020: Attempt login with invalid email format (missing @ symbol) and verify validation error.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter email in invalid format (missing @ symbol) [Test Data: Email: testuserexample.com]
+        3. Enter valid password [Test Data: Password: ValidPass123!]
+        4. Click on the Login button
+        5. Validation error 'Please enter a valid email address' is displayed
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email), "Invalid email was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        self.click_login()
+        # Wait for validation error to appear
+        time.sleep(0.5)
+        validation_error = None
+        try:
+            validation_elem = self.driver.find_element(*self.VALIDATION_ERROR)
+            if validation_elem.is_displayed():
+                validation_error = validation_elem.text.strip()
+        except NoSuchElementException:
+            pass
+        assert validation_error == expected_validation, f"Expected validation error '{expected_validation}', got: '{validation_error}'"
+        return True
