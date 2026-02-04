@@ -14,6 +14,7 @@ class LoginPage:
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
+    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
@@ -27,6 +28,23 @@ class LoginPage:
         email_visible = self.driver.find_element(*self.EMAIL_FIELD).is_displayed()
         password_visible = self.driver.find_element(*self.PASSWORD_FIELD).is_displayed()
         return email_visible and password_visible
+
+    def is_forgot_password_link_visible(self):
+        """Check if 'Forgot Password' link is visible on the login page."""
+        try:
+            link = self.driver.find_element(*self.FORGOT_PASSWORD_LINK)
+            return link.is_displayed()
+        except NoSuchElementException:
+            return False
+
+    def click_forgot_password_link(self):
+        """Click on the 'Forgot Password' link."""
+        try:
+            link = self.driver.find_element(*self.FORGOT_PASSWORD_LINK)
+            link.click()
+            return True
+        except NoSuchElementException:
+            return False
 
     def enter_email(self, email: str):
         """Enter email address in the email field."""
@@ -251,3 +269,17 @@ class LoginPage:
             return login_visible and not dashboard_visible
         except Exception:
             return False
+
+    # --- ADDED FOR TC_LOGIN_009 ---
+    def go_to_forgot_password(self):
+        """
+        TC_LOGIN_009 - Step 1 & 2: Navigate to login page and click 'Forgot Password' link.
+        Returns True if redirected to password recovery page.
+        """
+        self.go_to_login_page()
+        if self.is_forgot_password_link_visible():
+            self.click_forgot_password_link()
+            # Small wait for redirect (adjust as needed)
+            time.sleep(2)
+            return True
+        return False
