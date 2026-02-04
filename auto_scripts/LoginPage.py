@@ -1,1 +1,1 @@
-class LoginPage: pass
+class LoginPage: passed

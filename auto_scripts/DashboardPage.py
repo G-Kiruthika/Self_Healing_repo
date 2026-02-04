@@ -1,1 +1,1 @@
-class Dashboard: pass
+class Dashboard: passed
