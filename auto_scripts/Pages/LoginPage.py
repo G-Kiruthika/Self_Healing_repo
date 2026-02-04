@@ -205,3 +205,42 @@ class LoginPage:
         except NoSuchElementException:
             assert False, "Validation error element not found!"
         return True
+
+    # --- ADDED FOR TC_LOGIN_006 ---
+    def login_with_empty_email_and_empty_password(self):
+        """
+        TC_LOGIN_006: Attempt login with both email and password fields empty; verify validation errors for both fields are displayed.
+        Steps:
+        1. Navigate to the login page
+        2. Leave both email and password fields empty
+        3. Click Login button
+        4. Verify validation errors 'Email is required' and 'Password is required' are displayed
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        # Leave both fields empty
+        email_field = self.driver.find_element(*self.EMAIL_FIELD)
+        email_field.clear()
+        assert email_field.get_attribute("value") == "", "Email field is not empty!"
+        password_field = self.driver.find_element(*self.PASSWORD_FIELD)
+        password_field.clear()
+        assert password_field.get_attribute("value") == "", "Password field is not empty!"
+        self.click_login()
+        time.sleep(1)  # Wait for validation errors
+        try:
+            validation_errors = self.driver.find_elements(*self.VALIDATION_ERROR)
+            assert validation_errors, "No validation errors found!"
+            found_email_error = False
+            found_password_error = False
+            for error_elem in validation_errors:
+                if error_elem.is_displayed():
+                    error_text = error_elem.text.lower()
+                    if "email is required" in error_text:
+                        found_email_error = True
+                    if "password is required" in error_text:
+                        found_password_error = True
+            assert found_email_error, "Email required validation error not displayed!"
+            assert found_password_error, "Password required validation error not displayed!"
+        except NoSuchElementException:
+            assert False, "Validation error elements not found!"
+        return True
