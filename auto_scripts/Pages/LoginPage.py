@@ -358,3 +358,32 @@ class LoginPage:
         assert error_message is None or error_message == "", f"Unexpected error message: {error_message}"
         # Optionally, verify login is processed (not rejected for length)
         return True
+
+    # --- ADDED FOR TC_LOGIN_014 ---
+    def login_with_sql_injection_payload(self, email_payload: str, password: str):
+        """
+        TC_LOGIN_014: Attempt login with SQL injection payload in email field and verify security.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: AC_008]
+        2. Enter SQL injection payload in email field [Test Data: Email: admin'--] [Acceptance Criteria: AC_008]
+        3. Enter any password [Test Data: Password: anything] [Acceptance Criteria: AC_008]
+        4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: AC_008]
+        5. Verify system security [Test Data: N/A] [Acceptance Criteria: AC_008]
+        Expected:
+        - Login fails with error message
+        - SQL injection is prevented
+        - No unauthorized access granted, system remains secure
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(email_payload), "SQL injection payload was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for error message
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed!"
+        assert "invalid" in error_message.lower() or "error" in error_message.lower(), f"Unexpected error message: {error_message}"
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after failed login!"
+        # Ensure no unauthorized access is granted
+        assert not self.is_redirected_to_dashboard(), "Unauthorized access granted!"
+        return True
