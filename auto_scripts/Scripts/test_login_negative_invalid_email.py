@@ -1,44 +1,42 @@
-# Test Script: test_login_negative_invalid_email.py
-# Test Case: TC_LOGIN_002 - Invalid Email, Valid Password
+# Test Case: TC_LOGIN_002 - Negative Login with Invalid Email
+# Traceability: SCRUM-91 | testCaseId: 117
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from auto_scripts.Pages.LoginPage import LoginPage
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope='function')
 def driver():
     options = Options()
     options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--window-size=1920,1080')
     driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(10)
     yield driver
     driver.quit()
 
-def test_invalid_email_valid_password(driver):
+def test_login_with_invalid_email(driver):
     """
-    TC_LOGIN_002: Attempt login with invalid email and valid password.
+    Test Case ID: 117
+    Title: TC_LOGIN_002 - Negative Login with Invalid Email
+    Acceptance Criteria: SCRUM-91
     Steps:
-      1. Navigate to the login page
-      2. Enter invalid email address
-      3. Enter valid password (masked)
-      4. Click on the Login button
-      5. Verify error message and that user remains on login page
+        1. Navigate to the login page [URL: https://app.example.com/login]
+        2. Enter invalid email address [Email: invaliduser@example.com]
+        3. Enter valid password [Password: ValidPass123!]
+        4. Click on the Login button
+    Expected Result:
+        - Error message 'Invalid email or password' is displayed
+        - User remains on login page (not redirected to dashboard)
     """
     login_page = LoginPage(driver)
-    # Step 1: Navigate to login page
     login_page.go_to_login_page()
     assert login_page.is_login_fields_visible(), "Login fields are not visible."
-    # Step 2 & 3: Enter credentials
-    invalid_email = "invaliduser@example.com"
-    valid_password = "ValidPass123!"
-    login_page.enter_credentials(invalid_email, valid_password)
-    # Step 3: Password should be masked
-    assert login_page.is_password_masked(), "Password field is not masked."
-    # Step 4: Click login
+    assert login_page.enter_email("invaliduser@example.com"), "Email not entered correctly."
+    assert login_page.enter_password("ValidPass123!"), "Password not entered or not masked."
     login_page.click_login()
-    # Step 5: Error message is displayed
-    assert login_page.is_error_message_displayed("Invalid email or password"), "Error message not displayed for invalid login."
-    # Step 6: User remains on login page
-    assert login_page.is_on_login_page(), "User is not on the login page after failed login."
+    assert login_page.is_error_message_displayed("Invalid email or password"), (
+        "Expected error message 'Invalid email or password' not displayed."
+    )
+    assert not login_page.is_redirected_to_dashboard(), "User should not be redirected to dashboard after invalid login."
