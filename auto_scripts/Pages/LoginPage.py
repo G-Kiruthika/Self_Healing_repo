@@ -335,3 +335,28 @@ class LoginPage:
         error_message = self.get_error_message()
         assert not error_message, f"Unexpected error message: {error_message}"
         return True
+
+    # --- ADDED FOR TC_LOGIN_013 ---
+    def login_with_sql_injection(self, sql_email: str, password: str):
+        """
+        TC_LOGIN_013: Attempt SQL injection in email field and verify application is not vulnerable.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter SQL injection payload in email field [Test Data: Email: admin'--]
+        3. Enter any password [Test Data: Password: anything]
+        4. Click on the Login button
+        5. Verify login fails with error message, SQL injection is prevented, and no unauthorized access is granted.
+        Acceptance Criteria: SCRUM-91
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(sql_email), "SQL injection payload was not entered correctly!"
+        assert self.enter_password(password), "Password was not entered/masked correctly!"
+        self.click_login()
+        time.sleep(1)  # Wait for error message
+        error_message = self.get_error_message()
+        assert error_message is not None, "No error message displayed!"
+        assert self.driver.current_url == self.LOGIN_URL, "User is not on login page after SQL injection attempt!"
+        assert not self.is_redirected_to_dashboard(), "Unauthorized access granted after SQL injection!"
+        assert "sql" not in error_message.lower(), "SQL error message leaked to user!"
+        return True
