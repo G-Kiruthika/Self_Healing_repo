@@ -133,5 +133,23 @@ class TestCartAddZeroQuantity(unittest.TestCase):
         error_displayed = self.cart_page.add_product_with_zero_quantity_and_check_error(product_id)
         self.assertTrue(error_displayed, "Error message should be displayed when adding product with zero quantity.")
 
+class TestCartAccessDenied(unittest.TestCase):
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.cart_page = CartPage(self.driver)
+
+    def tearDown(self):
+        self.driver.quit()
+
+    def test_access_cart_as_other_user_denied(self):
+        """
+        TC_CART_009: Authenticate as User A and attempt to access User B's cart. Access denied; error message returned.
+        """
+        user_id = 'userA'
+        cart_id = 'cart_of_userB'
+        self.cart_page.access_cart_as_user(user_id, cart_id)
+        access_denied = self.cart_page.validate_access_denied()
+        self.assertTrue(access_denied, "Access denied error message should be displayed when User A attempts to access User B's cart.")
+
 if __name__ == '__main__':
     unittest.main()
