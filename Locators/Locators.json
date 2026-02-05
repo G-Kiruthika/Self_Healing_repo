@@ -1,0 +1,8 @@
+{
+  "Cart": {
+    "cart_api_url": "https://example-ecommerce.com/api/cart",
+    "cart_button": "#cart-btn",
+    "add_to_cart_button": ".add-to-cart",
+    "cart_item_list": "#cart-items"
+  }
+}
