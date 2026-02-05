@@ -227,3 +227,30 @@ def test_TC_SCRUM_96_009_product_search_api_negative():
     """
     product_search_api = ProductSearchAPIPage()
     product_search_api.run_search_for_nonexistent_term_and_validate('nonexistentproduct12345')
+
+# TC-SCRUM-96-007: Profile Update & DB Verification Automation Test
+from auto_scripts.Pages.ProfilePage import ProfilePage
+
+def test_TC_SCRUM_96_007_profile_update_and_db_verification():
+    """
+    Test Case TC-SCRUM-96-007: Profile Update & DB Verification
+    Steps:
+    1. Sign in as a valid user and obtain authentication token [Test Data: {"email": "update@example.com", "password": "Pass123!"}]
+    2. Send PUT request to /api/users/profile with updated username [Test Data: {"username": "updatedUsername"}]
+    3. Verify updated information is persisted in database [Query: SELECT username FROM users WHERE email='update@example.com']
+    Acceptance Criteria: AC-003
+    """
+    email = "update@example.com"
+    password = "Pass123!"
+    new_username = "updatedUsername"
+    db_config = {
+        "host": "localhost",
+        "user": "dbuser",
+        "password": "dbpass",
+        "database": "ecommerce_db"
+    }
+    profile_page = ProfilePage(None)  # No driver needed for API test
+    results = profile_page.full_update_profile_workflow(email, password, new_username, db_config)
+    assert results["token"], "Authentication token not received."
+    assert results["updated_profile"]["username"] == new_username, f"Username not updated, got: {results['updated_profile']['username']}"
+    assert results["db_verified"] is True, "Database verification failed for updated username."
