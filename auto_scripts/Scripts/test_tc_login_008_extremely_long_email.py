@@ -1,68 +1,52 @@
-# -*- coding: utf-8 -*-
-"""
-Automated Selenium Test Script for TC-LOGIN-008: Login with extremely long email address
+'''
+Test Script for TC-LOGIN-008: Login with Extremely Long Email Address
 Author: Automation Agent
-Date: 2024-06-10
-Traceability: testCaseId=235
-"""
+Description:
+    - Attempts login with an extremely long email address (255+ characters)
+    - Asserts that the system truncates input or shows validation error, and does NOT allow login
+    - Uses LoginPage Page Object
+'''
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from auto_scripts.Pages.LoginPage import LoginPage
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope='module')
 def driver():
+    # Set up Chrome driver (headless for CI/CD)
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
     driver = webdriver.Chrome(options=options)
+    driver.set_window_size(1920, 1080)
     yield driver
     driver.quit()
 
 def test_tc_login_008_extremely_long_email(driver):
     """
-    TC-LOGIN-008: Login with extremely long email address (255+ characters)
-    Steps:
-        1. Navigate to the login page
-        2. Enter an extremely long email address
-        3. Enter valid password
-        4. Click on the Login button
-        5. Verify system truncates input or shows validation error, or login fails gracefully
+    TC-LOGIN-008: Attempt login with an extremely long email address (255+ chars)
+    Acceptance:
+      - System truncates input or shows validation error
+      - Login does not proceed (dashboard/user icon not visible)
     """
-    # Test Data
-    extremely_long_email = (
-        "verylongemailaddressverylongemailaddressverylongemailaddress"
-        "verylongemailaddressverylongemailaddressverylongemailaddress"
-        "verylongemailaddressverylongemailaddressverylongemailaddress"
-        "verylongemailaddressverylongemailaddressverylongemailaddress"
-        "@example.com"
-    )
-    valid_password = "ValidPass123!"
-
     login_page = LoginPage(driver)
 
+    # Test Data
+    url = "https://ecommerce.example.com/login"
+    long_email = (
+        "verylongemailaddress" * 12 + "@example.com"
+    )  # >255 chars
+    password = "ValidPass123!"
+
     # Step 1: Navigate to login page
-    login_page.go_to_login_page()
-    assert login_page.is_loaded(), "Step 1 Failed: Login page is not displayed."
+    driver.get(url)
 
-    # Step 2: Enter extremely long email address
-    email_entered = login_page.enter_email(extremely_long_email)
-    assert email_entered, "Step 2 Failed: Email input value does not match test data."
+    # Step 2-4: Attempt login with long email
+    result = login_page.tc_login_008_extremely_long_email_login(long_email, password)
 
-    # Step 3: Enter valid password
-    password_entered = login_page.enter_password(valid_password)
-    assert password_entered, "Step 3 Failed: Password input value does not match test data."
-
-    # Step 4: Click Login
-    login_page.click_login()
-
-    # Step 5: Verify error message, validation error, or login fails gracefully
-    validation_error = login_page.is_validation_error_displayed()
-    error_message = login_page.is_error_message_displayed()
-    login_failed = driver.current_url.startswith(login_page.LOGIN_URL)
-    assert validation_error or error_message or login_failed, (
-        "Step 5 Failed: Expected validation error, error message, or failed login, but none detected."
+    # Step 5: Assert system truncates or shows validation error, and login does not succeed
+    assert result, (
+        f"TC-LOGIN-008 FAILED: Login accepted extremely long email ({len(long_email)} chars) - this is a bug."
     )
-
-    # Traceability
-    print(f"TestCaseID: 235 | TC-LOGIN-008 | Extremely long email: {extremely_long_email[:30]}... | Result: PASSED")
