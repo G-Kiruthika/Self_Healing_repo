@@ -152,3 +152,20 @@ class TestLogin:
         resend_option = login_page.click_resend_verification()
         assert error_displayed, "Unverified account error message not displayed."
         assert resend_option, "Resend verification option not available or not clickable."
+
+    def test_TC_LOGIN_013_max_length_password(self, driver):
+        """
+        Test Case TC_LOGIN_013: Login with maximum allowed password length (128 characters)
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter valid username [Test Data: Username: testuser@example.com]
+        3. Enter password with maximum allowed length (128 characters) [Test Data: Password: Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!]
+        4. Click on the Login button
+        5. Verify login is processed and dashboard/user icon is displayed
+        Acceptance Criteria: AC_006
+        """
+        login_page = LoginPage(driver)
+        username = "testuser@example.com"
+        max_length_password = "Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!"
+        result = login_page.tc_login_013_max_length_password_login(username, max_length_password)
+        assert result, "Max password length login test failed: Login attempt not processed as expected."
