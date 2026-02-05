@@ -85,3 +85,19 @@ class TestLoginFunctionality:
         except Exception as e:
             print(f"TC_LOGIN_004 failed: {e}")
             raise
+
+    def test_TC_SCRUM_115_002(self):
+        """Test Case TC-SCRUM-115-002: Invalid login, error handling, and field state verification"""
+        try:
+            self.login_page.perform_invalid_login_and_verify(
+                username='invaliduser@example.com',
+                password='ValidPass123!',
+                expected_error='Invalid username or password. Please try again.'
+            )
+            print("TC-SCRUM-115-002 passed: Invalid login handled, error message and field state verified.")
+        except AssertionError as e:
+            print(f"TC-SCRUM-115-002 failed (assertion): {e}")
+            raise
+        except Exception as e:
+            print(f"TC-SCRUM-115-002 failed: {e}")
+            raise
