@@ -103,10 +103,51 @@ class UserSignupPage:
         self.verify_user_in_db(email, username, password)
         self.logger.info("Signup flow completed successfully.")
 
-# Example usage for test case TC-SCRUM-96-001
+    # --- TC-SCRUM-96-002: Duplicate Email User Signup Test ---
+    def tc_scrum_96_002_duplicate_email_signup(self):
+        """
+        Implements TC-SCRUM-96-002:
+        1. Create user with email testuser@example.com
+        2. Attempt to create another user with same email, expect HTTP 409 and error message
+        3. Verify only one user record exists in DB
+        Returns: dict with results for each step
+        """
+        results = {}
+        # Step 1: Create initial user
+        username1 = "user1"
+        email = "testuser@example.com"
+        password1 = "Pass123!"
+        response1 = self.signup_user(username1, email, password1)
+        results['step1_status'] = response1.status_code
+        results['step1_success'] = response1.status_code == 201
+        results['step1_response'] = response1.json() if response1.status_code == 201 else response1.text
+
+        # Step 2: Attempt duplicate user creation
+        username2 = "user2"
+        password2 = "Pass456!"
+        payload2 = {
+            "username": username2,
+            "email": email,
+            "password": password2
+        }
+        response2 = requests.post(self.SIGNUP_URL, json=payload2)
+        results['step2_status'] = response2.status_code
+        results['step2_success'] = response2.status_code == 409
+        results['step2_error_message'] = None
+        if response2.status_code == 409:
+            try:
+                error_json = response2.json()
+                results['step2_error_message'] = error_json.get('message', error_json)
+            except Exception:
+                results['step2_error_message'] = response2.text
+        # Step 3: Verify only one record exists in simulated DB
+        count = sum(1 for user in self._simulated_db.values() if user['email'] == email)
+        results['step3_db_count'] = count
+        results['step3_success'] = count == 1
+        return results
+
+# Example usage for test case TC-SCRUM-96-002
 if __name__ == "__main__":
     page = UserSignupPage()
-    test_username = "testuser123"
-    test_email = "testuser@example.com"
-    test_password = "SecurePass123!"
-    page.run_signup_flow(test_username, test_email, test_password)
+    results = page.tc_scrum_96_002_duplicate_email_signup()
+    print(results)
