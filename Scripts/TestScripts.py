@@ -70,3 +70,27 @@ async def test_cart_005():
     assert error_json.get("error"), "Error message not returned when adding product with excessive quantity"
     assert not error_json.get("added"), "Product should not be added to cart when quantity exceeds stock"
     print("TC_CART_005 passed: System returns error, product not added when quantity exceeds stock.")
+
+@pytest.mark.asyncio
+async def test_cart_010():
+    """
+    Test Case TC_CART_010
+    Steps:
+    1. Attempt to add a product to cart with quantity zero.
+       [Test Data: { "product_id": "12345", "quantity": 0 }]
+    Expected:
+    1. System returns error; product not added.
+    """
+    import requests
+    # Assume user and cart already exist, using dummy JWT and cart ID for demonstration
+    jwt_token = "dummy_jwt_token"
+    cart_id = "dummy_cart_id"
+    ADD_PRODUCT_API_URL = f"https://example-ecommerce.com/api/cart/{cart_id}/add"
+    add_payload = {"product_id": "12345", "quantity": 0}
+    add_headers = {"Authorization": f"Bearer {jwt_token}", "Content-Type": "application/json"}
+    add_resp = requests.post(ADD_PRODUCT_API_URL, json=add_payload, headers=add_headers, timeout=10)
+    assert add_resp.status_code == 400, f"Expected error for zero quantity, got: {add_resp.status_code}"
+    error_json = add_resp.json()
+    assert error_json.get("error"), "Error message not returned when adding product with zero quantity"
+    assert not error_json.get("added"), "Product should not be added to cart when quantity is zero"
+    print("TC_CART_010 passed: System returns error, product not added when quantity is zero.")
