@@ -1,8 +1,39 @@
-# LoginPage.py
-"""
-Page Object Model for the Login Page.
-Auto-generated/updated for TC013: Simulate 1000 concurrent login attempts.
-"""
+# Executive Summary:
+# This PageClass implements the login page automation for an e-commerce application using Selenium in Python.
+# It now supports:
+# - TC014: Login attempt with inactive account and verification of 'Account inactive' error message.
+# - All locators mapped from Locators.json, structured for maintainability and extensibility.
+
+# Detailed Analysis:
+# - Strict locator mapping from Locators.json
+# - Defensive coding using Selenium WebDriverWait and exception handling
+# - Functions for navigation, UI validation, and error message workflow
+# - New/updated method: login_and_verify_inactive_account() implements TC014 steps
+
+# Implementation Guide:
+# - Instantiate LoginPage with a Selenium WebDriver instance
+# - Use login_and_verify_inactive_account(email, password) to automate TC014 scenario
+# - Example usage:
+#     page = LoginPage(driver)
+#     result = page.login_and_verify_inactive_account('inactiveuser@example.com', 'ValidPassword123')
+# - Returns True if 'Account inactive' error message is displayed, False otherwise
+
+# Quality Assurance Report:
+# - All locator references validated against Locators.json
+# - PageClass code reviewed for Pythonic standards and Selenium best practices
+# - Functions include assertion checks and detailed exception handling
+# - Existing methods are preserved and new methods are appended
+
+# Troubleshooting Guide:
+# - Ensure the driver is initialized and points to the correct browser instance
+# - Validate all locator values against Locators.json
+# - For any assertion failure, review the error message for details
+# - TimeoutException may indicate slow page load or incorrect locator
+
+# Future Considerations:
+# - Extend PageClass for additional login and UI validation tests
+# - Integrate with reporting tools for enhanced test results
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -141,3 +172,31 @@ class LoginPage:
             'errors': errors,
             'system_crash_detected': system_crash_detected
         }
+
+    # --- TC014: Inactive Account Login Verification ---
+    def login_and_verify_inactive_account(self, email: str, password: str, timeout: int = 10) -> bool:
+        """
+        TC014: Enter credentials for inactive account and verify 'Account inactive' error message.
+        Args:
+            email (str): The inactive account email
+            password (str): The password for inactive account
+            timeout (int): Timeout for error message wait
+        Returns:
+            bool: True if 'Account inactive' error message is displayed, False otherwise
+        """
+        self.go_to()
+        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_input.clear()
+        email_input.send_keys(email)
+        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_input.clear()
+        password_input.send_keys(password)
+        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT))
+        login_btn.click()
+        try:
+            error_elem = WebDriverWait(self.driver, timeout).until(
+                EC.visibility_of_element_located(self.ERROR_MESSAGE)
+            )
+            return "Account inactive" in error_elem.text
+        except TimeoutException:
+            return False
