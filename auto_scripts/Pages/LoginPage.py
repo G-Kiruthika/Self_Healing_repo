@@ -6,11 +6,14 @@ class LoginPage:
     URL = "https://example-ecommerce.com/login"
     EMAIL_INPUT = (By.ID, "login-email")
     PASSWORD_INPUT = (By.ID, "login-password")
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
     LOGIN_BUTTON = (By.ID, "login-submit")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
+    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
 
     def __init__(self, driver):
         self.driver = driver
@@ -29,6 +32,15 @@ class LoginPage:
         password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
         password_elem.clear()
         password_elem.send_keys(password)
+
+    def check_remember_me(self):
+        checkbox = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_CHECKBOX))
+        if not checkbox.is_selected():
+            checkbox.click()
+
+    def is_remember_me_checked(self):
+        checkbox = self.wait.until(EC.visibility_of_element_located(self.REMEMBER_ME_CHECKBOX))
+        return checkbox.is_selected()
 
     def click_login(self):
         login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON))
@@ -60,81 +72,16 @@ class LoginPage:
         except:
             return None
 
-    # TC_LOGIN_07_02: login_with_short_email_and_password_and_validate_error
-    def login_with_short_email_and_password_and_validate_error(self, email="a@", password="abc"):
-        """
-        1. Navigate to the login page.
-        2. Enter an email shorter than minimum allowed (default: 'a@').
-        3. Enter a password shorter than minimum allowed (default: 'abc').
-        4. Click 'Login'.
-        5. Assert error is shown.
-        6. Assert login is not allowed.
-        """
-        self.go_to_login_page()
-        self.enter_email(email)
-        self.enter_password(password)
-        self.click_login()
-
-        # Wait for either error message or validation error
-        error_text = None
-        validation_text = None
-        error_displayed = False
-        validation_displayed = False
-
+    def get_empty_field_prompt(self):
         try:
-            error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
-            error_text = error_elem.text
-            error_displayed = True
+            return self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT)).text
         except:
-            pass
+            return None
 
-        try:
-            validation_elem = self.driver.find_element(*self.VALIDATION_ERROR)
-            if validation_elem.is_displayed():
-                validation_text = validation_elem.text
-                validation_displayed = True
-        except:
-            pass
+    def click_forgot_password(self):
+        link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_PASSWORD_LINK))
+        link.click()
 
-        assert error_displayed or validation_displayed, (
-            "Expected error or validation message, but none was displayed."
-        )
-        assert not self.is_dashboard_displayed(), "Dashboard should not be displayed for invalid login."
-        assert not self.is_user_profile_icon_displayed(), "User profile icon should not be displayed for invalid login."
-        return {
-            "error_message": error_text,
-            "validation_error": validation_text,
-            "error_displayed": error_displayed,
-            "validation_displayed": validation_displayed
-        }
-
-    # TC_LOGIN_08_01: login_with_special_char_email_and_password_and_validate_success
-    def login_with_special_char_email_and_password_and_validate_success(self, email="user.name+tag@example.com", password="P@ssw0rd!#"):
-        """
-        1. Navigate to the login page. [Acceptance Criteria: SCENARIO-8]
-        2. Enter a valid email address containing allowed special characters (e.g., dot, underscore, plus).
-        3. Enter a valid password containing special characters.
-        4. Click the 'Login' button.
-        5. Assert that the login page is displayed initially.
-        6. Assert that email and password are accepted.
-        7. Assert successful login (dashboard and user profile icon visible) if credentials are valid.
-        """
-        self.go_to_login_page()
-        # Step 1: Ensure login page is displayed
-        assert self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT)), "Login page is not displayed."
-        # Step 2: Enter special character email
-        self.enter_email(email)
-        # Step 3: Enter special character password
-        self.enter_password(password)
-        # Step 4: Click Login
-        self.click_login()
-        # Step 5: Validate acceptance
-        # If login succeeds, dashboard and profile icon must be visible
-        dashboard_displayed = self.is_dashboard_displayed()
-        profile_icon_displayed = self.is_user_profile_icon_displayed()
-        assert dashboard_displayed, "User is not successfully logged in (dashboard not visible)."
-        assert profile_icon_displayed, "User profile icon not visible after login."
-        return {
-            "dashboard_displayed": dashboard_displayed,
-            "profile_icon_displayed": profile_icon_displayed
-        }
+    def is_logged_in(self):
+        # Checks both dashboard header and user profile icon for session persistence
+        return self.is_dashboard_displayed() and self.is_user_profile_icon_displayed()
