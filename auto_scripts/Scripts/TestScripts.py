@@ -75,3 +75,14 @@ class TestLoginFunctionality:
         except Exception as e:
             print(f"TC-SCRUM-115-001 failed: {e}")
             raise
+
+    def test_TC_LOGIN_004(self):
+        """Test Case TC_LOGIN_004: Empty fields should display validation error"""
+        try:
+            error_message = self.login_page.tc_login_004_empty_fields_flow()
+            assert error_message is not None, "Validation error message not displayed for empty fields."
+            assert 'Username and password are required' in error_message, f"Unexpected validation error: {error_message}"
+            print("TC_LOGIN_004 passed: Validation error displayed for empty fields.")
+        except Exception as e:
+            print(f"TC_LOGIN_004 failed: {e}")
+            raise
