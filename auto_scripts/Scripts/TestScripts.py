@@ -180,10 +180,12 @@ class TestLogin:
         5. Enter registered email address and submit.
         6. Assert confirmation message for password reset is displayed.
         """
+        login_page = LoginPage(driver)
         password_recovery_page = PasswordRecoveryPage(driver)
-        result = password_recovery_page.execute_tc_login_012_forgot_password_flow(email="user@example.com")
-        assert result["login_page_displayed"], "Login page should be displayed."
-        assert result["password_reset_page_displayed"], "Password reset page should be displayed."
-        assert result["reset_email_sent"], "Password reset email should be sent."
-        if result["error_message"]:
-            print(f"Error during forgot password flow: {result['error_message']}")
+        login_page.go_to()
+        assert login_page.is_displayed(), "Login page should be displayed."
+        login_page.click_forgot_password()
+        assert password_recovery_page.is_displayed(), "Password recovery page should be displayed."
+        password_recovery_page.enter_email("user@example.com")
+        password_recovery_page.submit()
+        assert password_recovery_page.is_reset_confirmation_displayed(), "Password reset confirmation message should be displayed."
