@@ -9,6 +9,7 @@ class LoginPage:
     REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
     LOGIN_SUBMIT_BUTTON = (By.ID, "login-submit")
     FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
+    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
     EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
@@ -64,3 +65,10 @@ class LoginPage:
         error_msg = self.get_error_message()
         assert error_msg == expected_error, f"Expected error '{expected_error}', got '{error_msg}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login."
+
+    def click_forgot_username(self):
+        """
+        Clicks the 'Forgot Username' link on the login page to initiate the username recovery workflow.
+        """
+        forgot_username_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
+        forgot_username_link.click()
