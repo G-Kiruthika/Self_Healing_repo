@@ -170,7 +170,7 @@ class TestLogin:
         result = login_page.tc_login_013_max_length_password_login(username, max_length_password)
         assert result, "Max password length login test failed: Login attempt not processed as expected."
 
-    def test_TC_LOGIN_014_special_char_username(self, driver):
+    def test_TC_LOGIN_014_special_character_username(self, driver):
         """
         Test Case TC_LOGIN_014: Login with Username Containing Special Characters
         Steps:
@@ -178,9 +178,11 @@ class TestLogin:
             2. Enter username with special characters [Test Data: Username: test.user+tag@example.com]
             3. Enter valid password [Test Data: Password: ValidPass123!]
             4. Click on the Login button
-            5. Validate system response: username is accepted and login is processed correctly (dashboard header and profile icon visible)
-        Acceptance Criteria: AC_007
+            5. Assert that the system processes the login correctly (no validation error or error message, redirected to dashboard)
         """
         login_page = LoginPage(driver)
-        result = login_page.tc_login_014_special_char_username_login()
-        assert result, "Special character username login test failed: Username not accepted or login not processed correctly."
+        result = login_page.tc_login_014_special_character_username_login(
+            special_username="test.user+tag@example.com",
+            valid_password="ValidPass123!"
+        )
+        assert result, "Special character username login test failed: Login attempt not processed as expected."
