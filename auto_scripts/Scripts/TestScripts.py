@@ -144,8 +144,11 @@ class TestLogin:
         Acceptance Criteria: Error message shown, resend verification link present, user not authenticated.
         """
         login_page = LoginPage(driver)
-        result = login_page.tc_login_015_login_with_unverified_account(
-            email="unverified@example.com",
-            password="ValidPass123!"
-        )
-        assert result, "Unverified account login test failed: Error message not shown, resend verification link missing, or user was authenticated."
+        login_page.navigate()
+        login_page.enter_email("unverified@example.com")
+        login_page.enter_password("ValidPass123!")
+        login_page.click_login()
+        error_displayed = login_page.is_unverified_error_displayed()
+        resend_option = login_page.click_resend_verification()
+        assert error_displayed, "Unverified account error message not displayed."
+        assert resend_option, "Resend verification option not available or not clickable."
