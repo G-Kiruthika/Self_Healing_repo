@@ -64,21 +64,25 @@ def test_TC_SCRUM_96_002_duplicate_email_signup():
     signup_page = UserSignupPage()
     signup_page.signup_duplicate_email_test()
 
-# TC-LOGIN-016: Test login with unregistered email
-from auto_scripts.Pages.LoginPage import LoginPage
+# TC-SCRUM-96-003: Invalid Email Signup Automation Test
+from auto_scripts.Pages.UserSignupPage import UserSignupPage
 
-def test_TC_LOGIN_016_login_with_unregistered_email(driver):
+def test_TC_SCRUM_96_003_invalid_email_signup(driver, db_connection):
     """
-    Test Case TC_LOGIN_016: Test login with unregistered email
+    Test Case TC-SCRUM-96-003: Invalid Email Signup Automation
     Steps:
-    1. Navigate to the login page.
-    2. Enter unregistered email and valid password.
-    3. Click the 'Login' button.
-    Expected:
-    - Error message for unregistered email is shown.
-    - Login is not successful.
+    1. Send POST request to /api/users/signup with invalid email format (username: testuser, email: invalidemail, password: Pass123!)
+    2. Validate HTTP 400 response and error messaging
+    3. Perform equivalent UI flow and check for error message
+    4. Query database to confirm no user record was created
     """
-    login_page = LoginPage(driver)
-    error_message, login_success = login_page.login_with_unregistered_email_tc_login_016(email="unknown@example.com", password="ValidPass123")
-    assert error_message is not None, "No error message displayed for unregistered email."
-    assert login_success is False, "Login succeeded with unregistered email, expected failure."
+    signup_page = UserSignupPage(driver)
+    result = signup_page.signup_with_invalid_email_and_validate(
+        invalid_email="invalidemail",
+        username="testuser",
+        password="Pass123!",
+        db_connection=db_connection
+    )
+    assert result["db_user_count"] == 0, f"User with invalid email should not be created. Found {result['db_user_count']} records."
+    assert "invalid email" in result["ui_error_message"].lower() or "email format" in result["ui_error_message"].lower(), f"Expected email format error in UI, got: {result['ui_error_message']}"
+    assert "invalid email" in result["api_response"].lower() or "email format" in result["api_response"].lower(), f"Expected email format error in API response, got: {result['api_response']}"
