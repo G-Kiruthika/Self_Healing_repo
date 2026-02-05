@@ -161,3 +161,17 @@ class TestLogin:
         result = login_page.execute_tc002_invalid_email_workflow('invaliduser@example.com', 'ValidPassword123')
         assert result['error_message'] == 'Invalid email or password', f"Expected error message not displayed. Actual: {result['error_message']}"
         assert result['login_unsuccessful'], "Login should not be successful with invalid email."
+
+    def test_tc_login_009_special_characters(self, driver):
+        """
+        Test Case TC_LOGIN_009:
+        1. Navigate to the login page.
+        2. Enter email and password containing special characters (email: 'user+test@example.com', password: 'P@$$w0rd!').
+        3. Click the 'Login' button.
+        4. Verify fields accept special character input.
+        5. Verify login succeeds if credentials are valid.
+        """
+        login_page = LoginPage(driver)
+        result = login_page.execute_tc_login_009_special_characters('user+test@example.com', 'P@$$w0rd!')
+        assert result['fields_accept_special_chars'], "Fields should accept special character input."
+        assert result['login_success'], f"Login should succeed with valid credentials. Error: {result.get('error_message', '')}"
