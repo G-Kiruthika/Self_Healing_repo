@@ -109,3 +109,48 @@ class TestLogin:
         login_page = LoginPage(driver_factory())
         result = login_page.test_remember_me_session_persistence(driver_factory)
         assert result, "TC_LOGIN_008 failed: Session was not persisted after browser restart or dashboard/user icon not displayed."
+
+    def test_remember_me_session_not_persisted_tc_login_009(self, driver_factory):
+        """
+        TC_LOGIN_009: Remember Me Unchecked, Session Not Persisted
+        Steps:
+        1. Navigate to the login page (URL: https://ecommerce.example.com/login)
+        2. Enter valid username and password (Username: testuser@example.com, Password: ValidPass123!)
+        3. Ensure Remember Me checkbox is unchecked
+        4. Click on the Login button and close browser
+        5. Reopen browser and navigate to the website
+        6. Verify user is redirected to login page (session not persisted)
+        """
+        # Step 1: Open browser and navigate to login page
+        driver1 = driver_factory()
+        login_page1 = LoginPage(driver1)
+        login_page1.load()
+        assert login_page1.is_displayed(), "Login page is not displayed"
+        # Step 2: Enter valid username and password
+        login_page1.enter_email("testuser@example.com")
+        login_page1.enter_password("ValidPass123!")
+        # Step 3: Ensure Remember Me checkbox is unchecked
+        login_page1.set_remember_me(False)
+        # Step 4: Click login
+        login_page1.click_login()
+        # Wait for dashboard to load
+        assert login_page1.is_dashboard_displayed(), "Dashboard not displayed after login"
+        # Step 4b: Close browser
+        driver1.quit()
+        # Step 5: Reopen browser and navigate to the website
+        driver2 = driver_factory()
+        login_page2 = LoginPage(driver2)
+        login_page2.load()
+        # Step 6: Verify user is redirected to login page (session not persisted)
+        is_dashboard = False
+        try:
+            is_dashboard = login_page2.is_dashboard_displayed()
+        except Exception:
+            is_dashboard = False
+        is_login = False
+        try:
+            is_login = login_page2.is_displayed()
+        except Exception:
+            is_login = False
+        driver2.quit()
+        assert is_login and not is_dashboard, "Session persisted or login page not displayed after browser restart with Remember Me unchecked"
