@@ -85,3 +85,19 @@ class LoginPage:
     def is_logged_in(self):
         # Checks both dashboard header and user profile icon for session persistence
         return self.is_dashboard_displayed() and self.is_user_profile_icon_displayed()
+
+    def is_min_length_accepted(self, email, password):
+        """
+        Enters the provided email and password, clicks login, and checks if minimum length is accepted.
+        Returns True if no validation or error message is shown after login attempt; False otherwise.
+        """
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login()
+        # Check for validation or error messages
+        validation_error = self.get_validation_error()
+        error_message = self.get_error_message()
+        if validation_error or error_message:
+            return False
+        # Optionally, check if dashboard is displayed
+        return self.is_dashboard_displayed()
