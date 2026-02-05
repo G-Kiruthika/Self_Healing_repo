@@ -4,7 +4,7 @@
 CartPage Page Object
 
 This class models the Cart page for automation using Selenium WebDriver.
-It is designed to validate cart operations including adding products with quantity exceeding stock.
+It is designed to validate cart operations including adding products with quantity exceeding stock and handling invalid product IDs.
 """
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -71,3 +71,24 @@ class CartPage:
                 return None
         except NoSuchElementException:
             return None
+
+    def add_product_with_invalid_id(self, product_id: str, quantity: int):
+        """
+        Attempts to add a product to the cart with an invalid product ID and checks for error.
+        :param product_id: str, invalid product ID to test
+        :param quantity: int, quantity to add
+        :return: bool, True if invalid product error appears, False otherwise
+        """
+        try:
+            product_input = self.driver.find_element(By.ID, self.locators['product_id_input']['value'])
+            product_input.clear()
+            product_input.send_keys(product_id)
+            quantity_input = self.driver.find_element(By.ID, self.locators['quantity_input']['value'])
+            quantity_input.clear()
+            quantity_input.send_keys(str(quantity))
+            add_button = self.driver.find_element(By.ID, self.locators['add_to_cart_button']['value'])
+            add_button.click()
+            error_elem = self.driver.find_element(By.XPATH, self.locators['invalid_product_error_message']['value'])
+            return error_elem.is_displayed()
+        except NoSuchElementException:
+            return False
