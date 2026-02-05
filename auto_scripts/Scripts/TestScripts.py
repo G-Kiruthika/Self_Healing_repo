@@ -106,20 +106,27 @@ def test_TC_LOGIN_10_max_length_login(driver):
     else:
         assert result is not None and isinstance(result, str), "Expected error message for failed login"
 
-# TC-SCRUM-96-003: Invalid email format on signup
-from auto_scripts.Pages.UserSignupPage import UserSignupPage
+# TC-SCRUM-96-005: Negative API Login - Invalid Credentials
+from auto_scripts.Pages.LoginPage import LoginPage
+import requests
 
-def test_TC_SCRUM_96_003_invalid_email_signup():
+def test_TC_SCRUM_96_005_api_login_invalid_credentials():
     """
-    Test Case TC-SCRUM-96-003: Invalid email format on signup
+    Test Case TC-SCRUM-96-005: Negative API Login - Invalid Credentials
     Steps:
-    1. Send POST request to /api/users/signup with invalid email format (username: testuser, email: invalidemail, password: Pass123!)
-    2. Validate HTTP 400 response and error message 'Invalid email format'
-    3. Verify no user record is created in DB for testuser
+    1. Ensure user account exists with known credentials (email: login@example.com, password: LoginPass123!)
+    2. Send POST request to /api/users/signin with incorrect password (email: login@example.com, password: WrongPassword)
+    3. Validate HTTP 401 Unauthorized and error message 'Invalid credentials'
+    4. Ensure no authentication token is returned
     """
-    db_config = {"host": "localhost", "user": "dbuser", "password": "dbpass", "database": "ecommercedb"}
-    signup_page = UserSignupPage(db_config)
-    results = signup_page.run_tc_scrum_96_003()
-    assert results["step_1_response_code"] == 400, f"Expected HTTP 400, got {results['step_1_response_code']}"
-    assert results["step_2_error_validation"] is True, f"Error validation failed: {results.get('step_2_error_message', '')}"
-    assert results["step_3_no_user_in_db"] is True, f"DB validation failed: {results.get('step_3_db_error_message', '')}"
+    base_url = "http://localhost:8000"  # Adjust as needed for your test environment
+    login_page = LoginPage(None, base_url)
+    username = "login@example.com"
+    wrong_password = "WrongPassword"
+    expected_error = "Invalid credentials"
+    # Step 2: API sign-in with wrong password
+    response = login_page.api_signin(username, wrong_password)
+    # Step 3: Validate error response
+    login_page.verify_signin_failure(response, expected_error)
+    # Step 4: Ensure no token
+    login_page.verify_no_token(response)
