@@ -65,17 +65,16 @@ class TestLoginFunctionality:
 
     def test_tc_login_002_invalid_login_flow(self):
         """
-        TC-LOGIN-002: Invalid login scenario
+        TC-LOGIN-002: Invalid login flow
         Steps:
-        1. Navigate to login page
-        2. Enter invalid email and password
-        3. Click Login button
-        4. Verify error message is displayed and user remains on login page
-        Test Data:
-            email: 'invaliduser@example.com'
-            password: 'SomePassword123'
+        1. Navigate to the login page
+        2. Enter an unregistered or invalid email address
+        3. Enter any password
+        4. Click on the Login button
+        5. Verify error message: 'Invalid email or password'
+        6. Verify user remains on login page
         """
         email = 'invaliduser@example.com'
         password = 'SomePassword123'
         result = self.login_page.tc_login_002_invalid_login_flow(email, password)
-        assert result, 'Invalid login scenario failed: Error message not shown or user did not remain on login page.'
+        assert result, 'Invalid login flow failed: error message or login page validation did not meet criteria.'
