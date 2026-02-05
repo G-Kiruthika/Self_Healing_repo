@@ -115,3 +115,18 @@ class TestLogin:
         password = "ValidPass123!"
         result = login_page.tc_login_010_login_with_max_length_username(username, password)
         assert result, "Max username length login test failed: Login attempt not processed as expected."
+
+    def test_TC_LOGIN_012_min_length_username(self, driver):
+        """
+        Test Case TC_LOGIN_012: Login with minimum allowed username length (3 characters)
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter username with minimum allowed length (3 characters) [Test Data: Username: abc]
+        3. Enter valid password [Test Data: Password: ValidPass123!]
+        4. Click on the Login button
+        5. Verify login is processed and dashboard/user icon is displayed
+        Acceptance Criteria: AC_006
+        """
+        login_page = LoginPage(driver)
+        result = login_page.tc_login_012_min_length_username_login()
+        assert result, "Min username length login test failed: Login attempt not processed as expected."
