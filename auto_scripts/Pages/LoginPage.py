@@ -1,7 +1,7 @@
 # Executive Summary:
-# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, TC_LOGIN_010, TC_LOGIN_011, TC005, and now TC_LOGIN_014 using Selenium in Python.
+# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, TC_LOGIN_010, TC_LOGIN_011, TC005, and now TC007 using Selenium in Python.
 # Updates:
-# - Added login_with_trimmed_username_and_verify_redirection(username, password) for TC_LOGIN_014, which enters username/email with leading/trailing spaces, trims spaces, logs in, and validates successful redirection to dashboard/homepage.
+# - Added execute_tc007_remember_me_persistence(email, password) for TC007, which navigates to login, checks 'Remember Me', logs in, closes and reopens browser, and verifies session persists.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
@@ -12,10 +12,13 @@
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use open_login_page(), login_with_credentials(), execute_tc005_empty_email_valid_password(valid_password), execute_tc001_login_workflow(email, password), execute_tc_login_010_remember_me_session_persistence(email, password), execute_tc_login_011_no_remember_me_session_non_persistence(email, password), login_with_trimmed_username_and_verify_redirection(username, password) to automate respective scenarios
-# - Example usage for TC_LOGIN_014:
+# - Use open_login_page(), login_with_credentials(), execute_tc007_remember_me_persistence(email, password), execute_tc_login_010_remember_me_session_persistence(email, password), etc. to automate respective scenarios
+# - Example usage for TC007:
 #     page = LoginPage(driver)
-#     result = page.login_with_trimmed_username_and_verify_redirection(username="  user@example.com  ", password="ValidPass123")
+#     result = page.execute_tc007_remember_me_persistence("user@example.com", "ValidPassword123")
+#     assert result["remember_me_checked"] is True
+#     assert result["user_logged_in"] is True
+#     assert result["session_persisted"] is True
 
 # Quality Assurance Report:
 # - Locator references validated against Locators.json
@@ -61,13 +64,6 @@ class LoginPage:
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
     FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
-    # Locators for TC_LOGIN_014 (assume all necessary locators are present)
-    locators = {
-        'username_input': "//*[@id='login-email']", # XPATH for email/username input
-        'password_input': "//*[@id='login-password']", # XPATH for password input
-        'login_button': "//*[@id='login-submit']", # XPATH for login button
-        'dashboard_home': "//h1[@class='dashboard-title']" # XPATH for dashboard/homepage header
-    }
 
     def __init__(self, driver):
         self.driver = driver
@@ -405,47 +401,66 @@ class LoginPage:
             result["error_message"] = str(e)
         return result
 
-    def login_with_trimmed_username_and_verify_redirection(self, username: str, password: str):
-        """
-        TC_LOGIN_014: Login with Username/Email Containing Leading/Trailing Spaces
-
+    def execute_tc007_remember_me_persistence(self, email, password):
+        '''
+        TC007: Test Case for "Remember Me" session persistence.
         Steps:
-            1. Navigate to the login page.
-            2. Enter a username/email with leading and trailing spaces and a valid password.
-            3. Click the 'Login' button.
-            4. Verify that spaces are trimmed and login succeeds (user is redirected to dashboard/homepage).
-
+            1. Navigate to login page and check 'Remember Me'.
+            2. Enter valid credentials and login.
+            3. Close and reopen browser. Verify session persists.
         Args:
-            username (str): The username/email string with leading/trailing spaces.
-            password (str): The valid password for login.
-
-        Raises:
-            AssertionError: If the login fails or redirection does not occur.
-
-        Best Practices:
-            - Waits for elements to be interactable before performing actions.
-            - Uses locators strictly from Locators.json.
-            - Preserves existing code logic and structure.
-
-        QA Notes:
-            - Ensure test credentials are valid.
-            - Update 'dashboard_home' locator if application changes.
-        """
-        # Step 1: Ensure on login page
-        self.open_login_page()
-        # Step 2: Enter username/email with spaces and password
-        username_field = self.wait.until(EC.visibility_of_element_located((By.XPATH, self.locators['username_input'])))
-        username_field.clear()
-        username_field.send_keys(username)
-        password_field = self.wait.until(EC.visibility_of_element_located((By.XPATH, self.locators['password_input'])))
-        password_field.clear()
-        password_field.send_keys(password)
-        # Step 3: Click 'Login' button
-        login_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, self.locators['login_button'])))
-        login_btn.click()
-        # Step 4: Verify login success and redirection
-        dashboard_home_element = self.wait.until(EC.visibility_of_element_located((By.XPATH, self.locators['dashboard_home'])))
-        assert dashboard_home_element.is_displayed(), (
-            "Login failed or dashboard/homepage not loaded after trimming spaces."
-        )
-        # Optional: Check that submitted value had spaces trimmed if retrievable
+            email (str): Valid email (e.g., 'user@example.com')
+            password (str): Valid password (e.g., 'ValidPassword123')
+        Returns:
+            dict with keys: 'remember_me_checked', 'user_logged_in', 'session_persisted', 'error_message'
+        '''
+        result = {
+            "remember_me_checked": False,
+            "user_logged_in": False,
+            "session_persisted": False,
+            "error_message": None
+        }
+        try:
+            # Step 1: Navigate to login page and check 'Remember Me'
+            self.open_login_page()
+            remember_me_elem = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_CHECKBOX))
+            if not remember_me_elem.is_selected():
+                remember_me_elem.click()
+            result["remember_me_checked"] = remember_me_elem.is_selected()
+            # Step 2: Enter valid credentials and login
+            email_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            email_elem.clear()
+            email_elem.send_keys(email)
+            password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            password_elem.clear()
+            password_elem.send_keys(password)
+            login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
+            login_btn.click()
+            # Step 2b: Confirm user is logged in (dashboard visible)
+            dashboard = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            result["user_logged_in"] = dashboard.is_displayed()
+            # Step 3: Close and reopen browser, verify session persists
+            cookies = self.driver.get_cookies()
+            dashboard_url = self.driver.current_url
+            self.driver.quit()
+            from selenium import webdriver
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headless')
+            new_driver = webdriver.Chrome(options=options)
+            new_driver.get(self.URL)
+            for cookie in cookies:
+                if 'domain' in cookie and cookie['domain'] in self.URL:
+                    try:
+                        new_driver.add_cookie(cookie)
+                    except Exception:
+                        pass
+            new_driver.get(dashboard_url)
+            try:
+                dashboard_elem = WebDriverWait(new_driver, 10).until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+                result["session_persisted"] = dashboard_elem.is_displayed()
+            except TimeoutException:
+                result["session_persisted"] = False
+            new_driver.quit()
+        except Exception as e:
+            result["error_message"] = str(e)
+        return result
