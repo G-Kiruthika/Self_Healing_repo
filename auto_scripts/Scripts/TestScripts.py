@@ -48,14 +48,25 @@ import pytest
 def test_TC_SCRUM96_009_product_search_api_edge_case():
     ...
 # TC-SCRUM96_010: Product Search API Special Character, SQL Injection, DB Integrity, Log Validation Test
-from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
+from auto_scripts.Pages.ProductSpecialCharAndInjectionTestPage import ProductSpecialCharAndInjectionTestPage
 import requests
 import pymysql
 import os
 import datetime
 
 def test_TC_SCRUM96_010_product_search_special_char_sql_injection_db_log():
-    ...
+    db_config = {"host": "localhost", "user": "dbuser", "password": "dbpass", "database": "ecommercedb"}
+    log_config = {"log_file_path": "/var/log/app/application.log"}
+    page = ProductSpecialCharAndInjectionTestPage(db_config, log_config)
+    product_data = {"name": "C++ Programming Book", "description": "Learn C++ programming", "price": 49.99}
+    injection_string = "' OR '1'='1"
+    results = page.run_tc_scrum96_010(product_data, injection_string)
+    assert results["step_1_insert_pass"], f"Step 1 failed: {results.get('step_1_insert_error', '')}"
+    assert results["step_2_api_search_pass"], f"Step 2 failed: {results.get('step_2_api_search_error', '')}"
+    assert results["step_3_injection_response_pass"], f"Step 3 failed: {results.get('step_3_injection_response_error', '')}"
+    assert results["step_4_db_integrity_pass"], f"Step 4 failed: {results.get('step_4_db_integrity_error', '')}"
+    assert results["step_5_log_detection_pass"], f"Step 5 failed: {results.get('step_5_log_detection_error', '')}"
+    print("TC_SCRUM96_010 results:", results)
 
 # TC-SCRUM96_004: End-to-End Registration, Login, JWT Validation, Protected Endpoint Test
 from auto_scripts.Pages.LoginPage import LoginPage
