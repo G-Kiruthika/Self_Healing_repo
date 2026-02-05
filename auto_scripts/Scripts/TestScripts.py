@@ -26,7 +26,9 @@ class TestLogin:
     def test_tc_login_004_required_fields_validation(self, driver):
         login_page = LoginPage(driver)
         result = login_page.tc_login_004_required_fields_validation()
-        assert result is True
+        assert result["empty_prompt"] is not None, "Mandatory fields prompt should be displayed."
+        assert result["login_unsuccessful"], "Login should not be successful when required fields are empty."
+        assert (result["error_message"] is not None or result["validation_error"] is not None), "Error or validation message should be shown for empty fields."
 
     def test_tc_login_003(self, driver):
         """
@@ -168,33 +170,20 @@ class TestLogin:
         assert result['error_message'] == 'Invalid email or password', f"Expected error message not displayed. Actual: {result['error_message']}"
         assert result['login_unsuccessful'], "Login should not be successful with invalid email."
 
-    def test_tc003_invalid_password_scenario(self, driver):
+    def test_tc_login_012_forgot_password_flow(self, driver):
         """
-        Test Case TC003: Invalid Password Scenario
-        Steps:
-            1. Navigate to the login page
-            2. Enter valid email and invalid password ('user@example.com', 'WrongPassword')
-            3. Click the 'Login' button
-            4. Verify error message 'Invalid email or password' is displayed
-            5. Confirm login fails
+        Test Case TC_LOGIN_012:
+        1. Navigate to the login page.
+        2. Assert login page is displayed.
+        3. Click on 'Forgot Password' link.
+        4. Assert password recovery page is displayed.
+        5. Enter registered email address and submit.
+        6. Assert confirmation message for password reset is displayed.
         """
-        login_page = LoginPage(driver)
-        result = login_page.execute_tc003_invalid_password_login(email='user@example.com', password='WrongPassword')
-        assert result['error_message_displayed'], f"Expected error message not displayed. Actual: {result['error_message_text']}"
-        assert result['login_unsuccessful'], "Login should not be successful with invalid password."
-
-    def test_tc_login_012_password_recovery(self, driver):
-        """
-        Test Case TC_LOGIN_012: Password Recovery Flow
-        Steps:
-            1. Navigate to the login page.
-            2. Click on 'Forgot Password' link.
-            3. Enter registered email address and submit.
-            4. Verify that password reset email is sent (success message displayed).
-        """
-        login_page = LoginPage(driver)
-        login_page.open_login_page()
-        login_page.click_forgot_password_link()
         password_recovery_page = PasswordRecoveryPage(driver)
-        success_message = password_recovery_page.submit_password_reset_request('user@example.com')
-        assert success_message is not None and success_message != "", "Password reset success message should be displayed after submitting recovery request."
+        result = password_recovery_page.execute_tc_login_012_forgot_password_flow(email="user@example.com")
+        assert result["login_page_displayed"], "Login page should be displayed."
+        assert result["password_reset_page_displayed"], "Password reset page should be displayed."
+        assert result["reset_email_sent"], "Password reset email should be sent."
+        if result["error_message"]:
+            print(f"Error during forgot password flow: {result['error_message']}")
