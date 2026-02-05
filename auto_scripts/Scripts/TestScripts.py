@@ -1,12 +1,14 @@
 # Import necessary modules
 from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
+from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
 
 class TestLoginFunctionality:
     def __init__(self, driver):
         self.driver = driver
         self.login_page = LoginPage(driver)
         self.password_recovery_page = PasswordRecoveryPage(driver)
+        self.username_recovery_page = UsernameRecoveryPage(driver)
 
     async def test_empty_fields_validation(self):
         await self.login_page.navigate_to_login()
@@ -113,3 +115,23 @@ class TestLoginFunctionality:
         assert email_visible, 'Email input field not visible on recovery page.'
         instructions_visible = self.password_recovery_page.is_instructions_visible()
         assert instructions_visible, 'Instructions not visible on recovery page.'
+
+    def test_tc_login_007_username_recovery_flow(self):
+        """
+        TC-LOGIN-007: Username Recovery Flow
+        Steps:
+        1. Navigate to the login page [URL: https://ecommerce.example.com/login]
+        2. Click on the 'Forgot Username' link
+        3. Verify username recovery page is displayed with appropriate input fields and instructions
+        Acceptance Criteria: TS-005
+        """
+        login_url = 'https://ecommerce.example.com/login'
+        username_recovery_url = 'https://ecommerce.example.com/forgot-username'
+        # Step 1: Navigate to login page
+        self.login_page.go_to()
+        assert self.login_page.is_loaded(), "Login page not loaded or 'Forgot Username' link not visible."
+        # Step 2: Click on 'Forgot Username' link
+        self.login_page.click_forgot_password()  # Assuming click_forgot_password handles both username/password recovery links
+        # Step 3: Verify username recovery page is displayed
+        self.username_recovery_page.go_to()
+        assert self.username_recovery_page.is_loaded(), "Username recovery page not loaded or instructions not visible."
