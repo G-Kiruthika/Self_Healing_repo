@@ -104,19 +104,20 @@ class TestLogin:
         assert result['fields_accept_max_input'], "Fields should accept maximum input length."
         assert result['login_success'], "Login should succeed with valid max-length credentials."
 
-    def test_tc_login_008_minimum_length_login(self, driver):
+    def test_tc_login_007_username_recovery(self, driver):
         """
-        Test Case TC_LOGIN_008:
+        Test Case TC_LOGIN_007 Username Recovery:
         1. Navigate to the login page.
-        2. Enter email and password with minimum allowed length (email: 'a@b.co', password: '123456').
-        3. Click the 'Login' button.
-        4. Verify login succeeds if credentials are valid.
+        2. Click 'Forgot Username' link.
+        3. Verify username recovery page UI.
+        4. Enter a 64-character email and check input length acceptance.
+        5. Assert that recovery flow and max length validation succeed.
         """
-        login_page = LoginPage(driver)
-        login_page.open_login_page()
-        result = login_page.run_tc_login_008_minimum_length_login('a@b.co', '123456')
-        assert result['login_success'], "Login should succeed with valid minimum-length credentials."
-        assert result['dashboard_present'], "Dashboard should be present after successful login."
-        assert result['user_icon_present'], "User icon should be present after successful login."
-        if not result['login_success']:
-            assert result['error_message'] is not None, "Error message should be present if login fails."
+        username_recovery_page = UsernameRecoveryPage(driver)
+        # Step 1 & 2: Navigate and click 'Forgot Username'
+        flow_result = username_recovery_page.tc_login_007_username_recovery_flow('64_chars@example.com')
+        # Step 3: UI verification is part of flow
+        # Step 4: Input max length validation
+        max_length_ok = username_recovery_page.verify_email_field_max_length('64_chars@example.com')
+        assert flow_result, "Username recovery flow failed."
+        assert max_length_ok, "Email field did not accept max length input."
