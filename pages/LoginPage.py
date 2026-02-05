@@ -281,3 +281,29 @@ class LoginPage:
         results['error_message_text'] = error_msg if error_msg else validation_msg
         results['login_prevented'] = not self.is_user_logged_in()
         return results
+
+    # TC-SCRUM-96-007 Step 1: Sign in as a valid user and obtain authentication token
+    def login_and_get_token_api(self, email, password):
+        """
+        Signs in via API and returns authentication token.
+        Args:
+            email (str): User email
+            password (str): User password
+        Returns:
+            str: Authentication token if successful
+        Raises:
+            RuntimeError: If login fails or token not found
+        """
+        import requests
+        url = "https://example-ecommerce.com/api/auth/login"
+        payload = {"email": email, "password": password}
+        try:
+            response = requests.post(url, json=payload, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            token = data.get("token")
+            if not token:
+                raise RuntimeError("Authentication token not found in response.")
+            return token
+        except requests.exceptions.RequestException as e:
+            raise RuntimeError(f"API login failed: {e}")
