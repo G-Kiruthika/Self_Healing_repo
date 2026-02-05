@@ -67,9 +67,9 @@ class TestLogin:
         error_message = login_page.login_with_empty_username('ValidPass123!')
         assert 'Username is required' in error_message, f"Expected validation error not found. Got: {error_message}"
 
-    def test_empty_password_validation_tc_login_006(self, driver):
+    def test_login_empty_password_tc_login_006(self, driver):
         """
-        TC_LOGIN_006: Empty Password Validation
+        TC_LOGIN_006: Login with valid username and empty password
         Steps:
         1. Navigate to the login page
         2. Enter valid username (testuser@example.com)
@@ -78,5 +78,5 @@ class TestLogin:
         5. Verify validation error 'Password is required' is displayed
         """
         login_page = LoginPage(driver)
-        result = login_page.test_empty_password_validation_tc_login_006()
-        assert result, "TC_LOGIN_006 failed: Validation error 'Password is required' not displayed after empty password submission"
+        result = login_page.test_login_empty_password_validation()
+        assert result, "TC_LOGIN_006 failed: Validation error not displayed or incorrect after empty password submission"
