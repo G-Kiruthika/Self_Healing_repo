@@ -135,19 +135,19 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    def test_tc014_login_inactive_account(self):
+    def test_tc014_login_inactive_account_error(self):
         """
         Test Case TC014:
-        1. Navigate to login page.
-        2. Enter credentials for inactive account (inactiveuser@example.com / ValidPassword123).
-        3. Submit login form.
-        4. Assert error message 'Account inactive' is displayed.
+        Attempt login with an inactive account and verify error message.
+        Acceptance Criteria:
+        - When attempting to login with an inactive account (e.g., 'inactiveuser@example.com', 'ValidPassword123'),
+          the error message 'Account inactive' is displayed and user remains on the login page.
         """
         driver = webdriver.Chrome()
         page = LoginPage(driver)
         try:
-            result = page.login_inactive_account()
-            self.assertTrue(result, "TC014 failed: 'Account inactive' error message not displayed.")
+            result = page.login_and_verify_inactive_account('inactiveuser@example.com', 'ValidPassword123')
+            self.assertTrue(result, "TC014 failed: 'Account inactive' error message not displayed or user not on login page.")
         finally:
             driver.quit()
 
