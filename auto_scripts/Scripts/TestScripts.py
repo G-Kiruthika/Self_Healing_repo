@@ -107,3 +107,42 @@ def test_TC_SCRUM96_004_registration_login_jwt_profile():
     assert "accountStatus" in profile_data, "accountStatus missing in profile response"
     assert "password" not in profile_data, "Password should not be present in profile response"
     print("TC_SCRUM96_004 registration, login, JWT validation, profile access test PASSED.")
+
+# TC-SCRUM-96-006: User Profile API Sensitive Data Exposure Test
+from auto_scripts.Pages.LoginPage import LoginPage
+from auto_scripts.Pages.ProfilePage import ProfilePage
+import pytest
+
+def test_TC_SCRUM_96_006_user_profile_api_sensitive_data_exposure():
+    """
+    Test Case TC-SCRUM-96-006: Validate user profile API does not expose sensitive data
+    Steps:
+    1. Sign in as a valid user and obtain authentication token
+    2. Send GET request to /api/users/profile with authentication token
+    3. Verify sensitive information is not exposed
+    """
+    email = "profile@example.com"
+    password = "Pass123!"
+    # Step 1: Obtain JWT token
+    login_page = LoginPage(None)
+    jwt_token = login_page.login_and_get_jwt(email, password)
+    assert jwt_token is not None, "JWT token not obtained"
+
+    # Step 2: Fetch profile using API
+    profile_page = ProfilePage(None)
+    profile_json = profile_page.fetch_profile_api(jwt_token)
+    assert profile_json is not None, "Profile API did not return data"
+
+    # Step 3: Validate sensitive information is not exposed
+    assert "password" not in profile_json, "Password should not be present in profile response"
+    assert "ssn" not in profile_json, "SSN should not be present in profile response"
+    assert "creditCard" not in profile_json, "Credit card should not be present in profile response"
+    assert "token" not in profile_json, "Token should not be present in profile response"
+    assert "secret" not in profile_json, "Secret should not be present in profile response"
+    # Validate required fields
+    assert "userId" in profile_json, "userId missing in profile response"
+    assert "username" in profile_json, "username missing in profile response"
+    assert "email" in profile_json, "email missing in profile response"
+    # Validate field types and formats
+    profile_page.validate_profile_response(profile_json)
+    print("TC-SCRUM-96-006 user profile API sensitive data exposure test PASSED.")
