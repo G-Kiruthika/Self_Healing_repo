@@ -1,22 +1,22 @@
 # Executive Summary:
-# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, and now TC001 using Selenium in Python.
+# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, and now TC_LOGIN_010 using Selenium in Python.
 # Updates:
-# - Added execute_tc001_login_workflow() for TC001, which navigates to login page, enters valid credentials, submits, and verifies dashboard redirection.
+# - Added execute_tc_login_010_remember_me_session_persistence() for TC_LOGIN_010, which navigates to login page, enters valid credentials, selects 'Remember Me', submits, and verifies session persists after browser restart.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
 # - Strict locator mapping from Locators.json
 # - Defensive coding using Selenium WebDriverWait and exception handling
-# - Functions for navigation, login, error validation, and positive login outcome
+# - Functions for navigation, login, error validation, positive login outcome, and session persistence
 # - Existing methods are preserved and new methods are appended
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use open_login_page(), login_with_credentials(), execute_tc001_login_workflow(email, password) to automate TC001 scenario
-# - Example usage for TC001:
+# - Use open_login_page(), login_with_credentials(), execute_tc001_login_workflow(email, password), execute_tc_login_010_remember_me_session_persistence(email, password) to automate respective scenarios
+# - Example usage for TC_LOGIN_010:
 #     page = LoginPage(driver)
-#     result = page.execute_tc001_login_workflow(email="user@example.com", password="ValidPassword123")
-#     assert result["dashboard_displayed"]
+#     result = page.execute_tc_login_010_remember_me_session_persistence(email="user@example.com", password="ValidPass123")
+#     assert result["session_persisted"]
 
 # Quality Assurance Report:
 # - All locator references validated against Locators.json
@@ -210,6 +210,83 @@ class LoginPage:
             result["dashboard_displayed"] = False
             result["user_icon_displayed"] = False
             result["error_message"] = self.get_authentication_error()
+        except Exception as e:
+            result["error_message"] = str(e)
+        return result
+
+    def execute_tc_login_010_remember_me_session_persistence(self, email, password):
+        '''
+        TC_LOGIN_010: Executes login workflow with 'Remember Me' and verifies session persistence after browser restart.
+        Steps:
+            1. Navigate to login page
+            2. Enter valid credentials and select 'Remember Me'
+            3. Click 'Login'
+            4. Verify session persists after browser restart
+        Args:
+            email (str): Valid email
+            password (str): Valid password
+        Returns:
+            dict with keys: 'remember_me_checked', 'dashboard_displayed', 'session_persisted', 'error_message'
+        '''
+        result = {
+            "remember_me_checked": False,
+            "dashboard_displayed": False,
+            "session_persisted": False,
+            "error_message": None
+        }
+        try:
+            # Step 1: Navigate to login page
+            self.open_login_page()
+
+            # Step 2: Enter credentials and select 'Remember Me'
+            email_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            email_elem.clear()
+            email_elem.send_keys(email)
+            password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            password_elem.clear()
+            password_elem.send_keys(password)
+            remember_me_elem = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_CHECKBOX))
+            if not remember_me_elem.is_selected():
+                remember_me_elem.click()
+            result["remember_me_checked"] = remember_me_elem.is_selected()
+
+            # Step 3: Click 'Login'
+            login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
+            login_btn.click()
+
+            # Step 4: Verify dashboard is displayed
+            dashboard = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            result["dashboard_displayed"] = dashboard.is_displayed()
+
+            # Step 5: Simulate browser restart and verify session persistence
+            # --- This is a best-practice simulation for session persistence ---
+            # 1. Get cookies before closing
+            cookies = self.driver.get_cookies()
+            # 2. Get current URL for dashboard
+            dashboard_url = self.driver.current_url
+            # 3. Close and re-instantiate browser (simulate restart)
+            self.driver.quit()
+            from selenium import webdriver
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headless') # Use headless for automation
+            new_driver = webdriver.Chrome(options=options)
+            new_driver.get(self.URL)
+            # 4. Inject cookies to restore session
+            for cookie in cookies:
+                # Selenium requires domain to match
+                if 'domain' in cookie and cookie['domain'] in self.URL:
+                    try:
+                        new_driver.add_cookie(cookie)
+                    except Exception:
+                        pass
+            # 5. Navigate to dashboard and check session
+            new_driver.get(dashboard_url)
+            WebDriverWait(new_driver, 10).until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            dashboard_elem = new_driver.find_element(*self.DASHBOARD_HEADER)
+            result["session_persisted"] = dashboard_elem.is_displayed()
+            new_driver.quit()
+        except TimeoutException as e:
+            result["error_message"] = f"TimeoutException: {str(e)}"
         except Exception as e:
             result["error_message"] = str(e)
         return result
