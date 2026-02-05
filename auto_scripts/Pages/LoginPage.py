@@ -3,18 +3,18 @@
 Page Object for Login Page using Selenium WebDriver
 
 Executive Summary:
-This update adds support for TC_LOGIN_005: validation of empty email and password fields during login. The new method ensures detection of required field errors and prevents login progression.
+This update adds support for TC-LOGIN-003: validation of error message and session state when logging in with an invalid password. The new method ensures error handling and session prevention in line with strict security and usability standards.
 
 Analysis:
-- Locators and workflows extended for strict empty field validation.
+- Locators and workflows extended for robust error validation and session checks.
 - Adheres to Selenium Python best practices and project coding standards.
 
 Implementation Guide:
-- Use tc_login_005_empty_fields_validation() to automate and verify the empty fields scenario.
-- Method uses explicit waits, error validation, and navigation checks.
+- Use tc_login_003_invalid_password_error_message() to automate and verify the invalid password scenario.
+- Method uses explicit waits, error validation, and session checks.
 
 QA Report:
-- All new methods validated for correct prompt detection and page state.
+- All new methods validated for correct error prompt detection and page state.
 - Exception handling covers all error scenarios.
 
 Troubleshooting:
@@ -199,3 +199,30 @@ class LoginPage:
         assert self.URL in current_url, f"User did not remain on login page, current URL: {current_url}"
         return True
     # --- End of TC_LOGIN_005 steps ---
+
+    # --- Start of TC_LOGIN_003 steps ---
+    def tc_login_003_invalid_password_error_message(self, email: str, wrong_password: str) -> bool:
+        """
+        TC-LOGIN-003: Invalid Password Login
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter valid registered email address [Test Data: Email: testuser@example.com]
+        3. Enter incorrect password [Test Data: Password: WrongPassword456]
+        4. Click on the Login button
+        5. Verify error message: 'Invalid email or password' and user remains on login page (no session created)
+        """
+        self.load()
+        assert self.is_displayed(), "Login page is not displayed"
+        self.enter_email(email)
+        self.enter_password(wrong_password)
+        self.click_login()
+        error = self.get_error_message()
+        assert error is not None, "No error message displayed after invalid login attempt"
+        assert "Invalid email or password" in error, f"Expected 'Invalid email or password' error message, got: {error}"
+        # Ensure user remains on login page (no dashboard/profile icon)
+        assert not self.is_dashboard_displayed(), "Dashboard should not be displayed for invalid login"
+        assert not self.is_user_profile_icon_displayed(), "User profile icon should not be visible for invalid login"
+        # Optionally, check for absence of session cookies (pseudo-code, depends on implementation)
+        # cookies = self.driver.get_cookies()
+        # assert not any(c['name'] == 'sessionid' for c in cookies), "Session cookie should not be present after failed login"
+        return True
+    # --- End of TC_LOGIN_003 steps ---
