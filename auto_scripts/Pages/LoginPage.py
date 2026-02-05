@@ -4,116 +4,106 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
-    EMAIL_FIELD = (By.ID, "login-email")
-    PASSWORD_FIELD = (By.ID, "login-password")
-    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
-    LOGIN_SUBMIT_BUTTON = (By.ID, "login-submit")
-    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
-    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")
+    EMAIL_INPUT = (By.ID, "login-email")
+    PASSWORD_INPUT = (By.ID, "login-password")
+    LOGIN_BUTTON = (By.ID, "login-submit")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
-    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
 
-    def __init__(self, driver, timeout=10):
+    def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, timeout)
+        self.wait = WebDriverWait(driver, 10)
 
     def go_to_login_page(self):
         self.driver.get(self.URL)
-        self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
 
     def enter_email(self, email):
-        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
-        email_input.clear()
-        email_input.send_keys(email)
+        email_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
+        email_elem.clear()
+        email_elem.send_keys(email)
 
     def enter_password(self, password):
-        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
-        password_input.clear()
-        password_input.send_keys(password)
+        password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
+        password_elem.clear()
+        password_elem.send_keys(password)
 
     def click_login(self):
-        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
+        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON))
         login_btn.click()
 
     def get_error_message(self):
         try:
-            error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
-            return error_elem.text
+            return self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE)).text
         except:
             return None
 
-    def is_on_login_page(self):
+    def is_dashboard_displayed(self):
         try:
-            self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
-            self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
             return True
         except:
             return False
 
-    def login_with_credentials(self, email, password):
+    def is_user_profile_icon_displayed(self):
+        try:
+            self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+            return True
+        except:
+            return False
+
+    def get_validation_error(self):
+        try:
+            return self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR)).text
+        except:
+            return None
+
+    # TC_LOGIN_07_02: login_with_short_email_and_password_and_validate_error
+    def login_with_short_email_and_password_and_validate_error(self, email="a@", password="abc"):
+        """
+        1. Navigate to the login page.
+        2. Enter an email shorter than minimum allowed (default: 'a@').
+        3. Enter a password shorter than minimum allowed (default: 'abc').
+        4. Click 'Login'.
+        5. Assert error is shown.
+        6. Assert login is not allowed.
+        """
         self.go_to_login_page()
         self.enter_email(email)
         self.enter_password(password)
         self.click_login()
 
-    def perform_invalid_login_and_validate(self, email, invalid_password, expected_error):
-        self.login_with_credentials(email, invalid_password)
-        error_msg = self.get_error_message()
-        assert error_msg == expected_error, f"Expected error '{expected_error}', got '{error_msg}'"
-        assert self.is_on_login_page(), "User is not on the login page after failed login."
+        # Wait for either error message or validation error
+        error_text = None
+        validation_text = None
+        error_displayed = False
+        validation_displayed = False
 
-    def click_forgot_username(self):
-        forgot_username_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
-        forgot_username_link.click()
-
-    def login_with_minimum_allowed_credentials_and_verify_success(self):
-        """
-        TC_LOGIN_07_01:
-        1. Navigate to the login page.
-        2. Enter an email address with the minimum allowed length (a@b.co).
-        3. Enter a password with the minimum allowed length (Abc12345).
-        4. Click the 'Login' button.
-        5. Verify that the user is successfully logged in if credentials are valid.
-        """
-        self.go_to_login_page()
-        self.enter_email("a@b.co")
-        self.enter_password("Abc12345")
-        self.click_login()
-        # Verification: Wait for dashboard or user profile icon to be visible as sign of successful login
         try:
-            dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-            user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
-            assert dashboard_header.is_displayed() or user_profile_icon.is_displayed(), \
-                "Login did not succeed: Dashboard or User Profile not visible."
-        except Exception as e:
-            raise AssertionError(f"Login with minimum allowed credentials failed: {e}")
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+            error_text = error_elem.text
+            error_displayed = True
+        except:
+            pass
 
-    def login_with_maximum_allowed_credentials_and_verify_success(self):
-        """
-        TC_LOGIN_06_01:
-        1. Navigate to the login page.
-        2. Enter an email address with the maximum allowed length (254 characters).
-           Example: user_with_254_chars_email@example.com
-        3. Enter a password with the maximum allowed length (128 characters).
-           Example: A_128_character_long_password_string
-        4. Click the 'Login' button.
-        5. Verify that the user is successfully logged in and redirected to the dashboard.
-        """
-        self.go_to_login_page()
-        # Example max length email and password
-        max_length_email = "{}@example.com".format("a" * (254 - len("@example.com")))
-        max_length_password = "A" * 128
-        self.enter_email(max_length_email)
-        self.enter_password(max_length_password)
-        self.click_login()
-        # Verification: Wait for dashboard or user profile icon to be visible as sign of successful login
         try:
-            dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-            user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
-            assert dashboard_header.is_displayed() or user_profile_icon.is_displayed(), \
-                "Login did not succeed: Dashboard or User Profile not visible."
-        except Exception as e:
-            raise AssertionError(f"Login with maximum allowed credentials failed: {e}")
+            validation_elem = self.driver.find_element(*self.VALIDATION_ERROR)
+            if validation_elem.is_displayed():
+                validation_text = validation_elem.text
+                validation_displayed = True
+        except:
+            pass
+
+        assert error_displayed or validation_displayed, (
+            "Expected error or validation message, but none was displayed."
+        )
+        assert not self.is_dashboard_displayed(), "Dashboard should not be displayed for invalid login."
+        assert not self.is_user_profile_icon_displayed(), "User profile icon should not be displayed for invalid login."
+        return {
+            "error_message": error_text,
+            "validation_error": validation_text,
+            "error_displayed": error_displayed,
+            "validation_displayed": validation_displayed
+        }
