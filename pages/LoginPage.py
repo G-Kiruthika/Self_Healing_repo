@@ -63,6 +63,15 @@ class LoginPage:
         except TimeoutException:
             return None
 
+    def get_validation_error_message(self):
+        try:
+            error = WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located(self.validation_error)
+            )
+            return error.text
+        except TimeoutException:
+            return None
+
     def get_password_field_value(self):
         try:
             password_input = self.driver.find_element(*self.password_field)
@@ -229,4 +238,46 @@ class LoginPage:
         except Exception as ex:
             lockout_result['exception'] = str(ex)
         results['lockout_attempt'] = lockout_result
+        return results
+
+    # TC_LOGIN_08_02: Login attempt with disallowed special characters in email and password
+    def login_with_disallowed_special_characters_tc_login_08_02(self, email="user,name@example.com", password="pass word"):
+        """
+        Implements TC_LOGIN_08_02:
+        1. Navigate to login page
+        2. Enter email with disallowed special characters (e.g., spaces, commas)
+        3. Enter password with disallowed special characters (e.g., spaces)
+        4. Click 'Login'
+        5. Verify error message is shown and login is prevented
+        Args:
+            email (str): Email with disallowed characters
+            password (str): Password with disallowed characters
+        Returns:
+            dict: Results of each step for validation
+        """
+        results = {}
+        # Step 1: Open login page
+        self.open_login_page()
+        results['login_page_opened'] = self.is_on_login_page()
+        # Step 2: Enter email with disallowed characters
+        self.enter_email(email)
+        email_value = WebDriverWait(self.driver, 5).until(
+            EC.presence_of_element_located(self.email_field)
+        ).get_attribute("value")
+        results['email_entered'] = (email_value == email)
+        # Step 3: Enter password with disallowed characters
+        self.enter_password(password)
+        password_value = WebDriverWait(self.driver, 5).until(
+            EC.presence_of_element_located(self.password_field)
+        ).get_attribute("value")
+        results['password_entered'] = (password_value == password)
+        # Step 4: Click 'Login'
+        self.click_login()
+        time.sleep(1)  # Wait for error/validation message
+        # Step 5: Check for error message and validate login is prevented
+        error_msg = self.get_error_message()
+        validation_msg = self.get_validation_error_message()
+        results['error_message_displayed'] = error_msg is not None or validation_msg is not None
+        results['error_message_text'] = error_msg if error_msg else validation_msg
+        results['login_prevented'] = not self.is_user_logged_in()
         return results
