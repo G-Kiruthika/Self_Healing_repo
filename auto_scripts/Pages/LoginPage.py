@@ -144,3 +144,57 @@ class LoginPage:
             error_displayed,
             user_stays
         ])
+
+    # --- TC-LOGIN-001 Test Steps Implementation ---
+    def tc_login_001_valid_login_flow(self, url: str = "https://ecommerce.example.com/login", email: str = "testuser@example.com", password: str = "ValidPass123!"):
+        """
+        TC-LOGIN-001: Positive login scenario
+        Steps:
+        1. Navigate to the e-commerce website login page [Test Data: URL]
+        2. Enter valid registered email address in the email field [Test Data: Email]
+        3. Enter correct password in the password field [Test Data: Password]
+        4. Click on the Login button
+        5. Verify user is successfully authenticated and redirected to the dashboard/home page
+        6. Verify user session is established (user name in header, session cookie set)
+        Acceptance Criteria: TS-001
+        """
+        # Step 1: Navigate to login page
+        self.driver.get(url)
+        login_page_displayed = self.is_login_page_displayed()
+        if not login_page_displayed:
+            return False
+        # Step 2: Enter valid registered email
+        email_entered = self.enter_email(email)
+        # Step 3: Enter correct password
+        password_entered = self.enter_password(password)
+        # Step 4: Click on the Login button
+        self.click_login()
+        # Step 5: Wait for dashboard/home page
+        try:
+            dashboard_visible = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            user_profile_visible = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+        except Exception:
+            return False
+        # Step 6: Verify session (user name in header and session cookie set)
+        user_name_displayed = False
+        session_cookie_set = False
+        try:
+            user_name_elem = self.driver.find_element(*self.USER_PROFILE_ICON)
+            user_name_displayed = user_name_elem.is_displayed() and len(user_name_elem.text) > 0
+        except NoSuchElementException:
+            user_name_displayed = False
+        # Check for session cookie (example: 'sessionid')
+        cookies = self.driver.get_cookies()
+        for cookie in cookies:
+            if cookie.get('name') == 'sessionid' and cookie.get('value'):
+                session_cookie_set = True
+                break
+        return all([
+            login_page_displayed,
+            email_entered,
+            password_entered,
+            dashboard_visible,
+            user_profile_visible,
+            user_name_displayed,
+            session_cookie_set
+        ])
