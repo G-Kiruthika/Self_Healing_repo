@@ -161,16 +161,16 @@ class ProductSearchAPIPage:
 
 #
 # Executive Summary:
-# ProductSearchAPIPage.py is now fully updated for TC_SCRUM96_008. It supports DB insertion of test products, case-insensitive search validation, and strict response validation for all query variants. Existing code is preserved and new logic is appended per Python/Selenium best practices.
+# ProductSearchAPIPage.py is fully updated for TC-SCRUM-96-009 and TC_SCRUM96_008. It supports DB insertion, case-insensitive search validation, strict response validation for all query variants, and non-existent product search validation. Existing code is preserved and new logic is appended per Python/Selenium best practices.
 #
 # Analysis:
 # Existing search and schema validation methods are reused. New methods added for DB setup and multi-case query validation. No breaking changes.
+# TC-SCRUM-96-009 method search_nonexistent_product_and_validate covers all acceptance criteria: HTTP 200, empty array, no error field.
 #
 # Implementation Guide:
 # 1. Instantiate ProductSearchAPIPage with session and db_config.
-# 2. Use tc_scrum96_008_full_workflow(products, 'laptop') to run the test case end-to-end.
-#    - products: List of dicts, e.g. [{"productId": 101, "name": "Laptop Pro", ...}, {"productId": 102, "Laptop Air", ...}]
-#    - db_config: Dict with DB connection params.
+# 2. Use search_nonexistent_product_and_validate() for TC-SCRUM-96-009.
+# 3. Use tc_scrum96_008_full_workflow(products, 'laptop') for TC_SCRUM96_008.
 #
 # Quality Assurance Report:
 # - All test steps are strictly validated with assertions.
@@ -181,6 +181,7 @@ class ProductSearchAPIPage:
 # - If DB insertion fails, check db_config and DB schema.
 # - If products are not returned for all queries, verify API case-insensitive logic and DB data.
 # - If schema validation fails, check backend API response format.
+# - If search_nonexistent_product_and_validate fails, check API response format and error handling.
 #
 # Future Considerations:
 # - Extend product schema validation as API evolves.
