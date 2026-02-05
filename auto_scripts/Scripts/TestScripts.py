@@ -59,3 +59,18 @@ class TestLogin:
         assert result["empty_prompt"] is not None, "Mandatory fields prompt should be displayed."
         assert result["login_unsuccessful"], "Login should not be successful when required fields are empty."
         assert (result["error_message"] is not None or result["validation_error"] is not None), "Error or validation message should be shown for empty fields."
+
+    def test_tc_login_006(self, driver):
+        """
+        Test Case TC_LOGIN_006:
+        1. Navigate to the login page.
+        2. Enter valid email and leave password field empty. (email: 'user@example.com', password: '')
+        3. Click the 'Login' button.
+        4. Verify error message for required password is shown.
+        5. Verify login is not successful.
+        """
+        login_page = LoginPage(driver)
+        login_page.open_login_page()
+        result = login_page.validate_required_password_error_tc_login_006('user@example.com')
+        assert result["password_error"] is not None and result["password_error"] != "", "Password required error message should be displayed."
+        assert result["login_unsuccessful"], "Login should not be successful when password is empty."
