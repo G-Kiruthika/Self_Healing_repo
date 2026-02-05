@@ -3,7 +3,7 @@ import re
 
 class UserRegistrationAPIPage:
     REGISTER_API_URL = "https://example-ecommerce.com/api/users/register"
-    LOGIN_API_URL = "https://example-ecommerce.com/api/users/login"
+    LOGIN_API_URL = "https://example-ecommerce.com/api/auth/login"
     DB_SIMULATION = {}
     DB_EMAIL_SIM = {}
     ...
@@ -32,3 +32,14 @@ class UserRegistrationAPIPage:
         jwt_token = login_resp.json().get("token")
         assert jwt_token, "JWT token not found in login response."
         return {"status_code": reg_resp.status_code, "response": response_json, "jwt_token": jwt_token}
+
+    # --- TC_SCRUM96_007 additions ---
+    def tc_scrum96_007_register_and_login(self, user_data):
+        """
+        Implements TC_SCRUM96_007 Step 1: Register and login a test user to obtain valid JWT authentication token.
+        Args:
+            user_data (dict): {"username", "email", "password", "firstName", "lastName"}
+        Returns:
+            dict: {"status_code": int, "response": dict, "jwt_token": str}
+        """
+        return self.tc_scrum96_004_register_user_and_get_jwt(user_data)
