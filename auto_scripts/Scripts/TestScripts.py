@@ -24,43 +24,17 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    def test_tc_login_07_remember_me_session_persistence(self):
+    def test_tc017_invalid_login_error_accessibility(self):
         """
-        Test Case TC_LOGIN_07:
-        1. Navigate to login page.
-        2. Enter valid registered email and password.
-        3. Check 'Remember Me' option.
-        4. Click 'Login' button.
-        5. Close and reopen browser, revisit site, verify session persists.
+        Test Case TC017:
+        1. Trigger error message by invalid login (user@example.com / WrongPassword).
+        2. Verify error message is displayed in clear text and accessible to screen readers (ARIA attributes).
         """
-        # Step 1: Start browser and navigate to login page
         driver = webdriver.Chrome()
-        locators = {
-            # Example locator mapping, update as needed
-            'login_username_input': {'by': 'ID', 'value': 'username'},
-            'login_password_input': {'by': 'ID', 'value': 'password'},
-            'remember_me_checkbox': {'by': 'ID', 'value': 'rememberMe'},
-            'login_button': {'by': 'ID', 'value': 'loginBtn'},
-            'login_error_message': {'by': 'ID', 'value': 'errorMsg'},
-            'dashboard_header': {'by': 'ID', 'value': 'dashboardHeader'},
-            'url': 'http://your-app-url/login'
-        }
-        page = LoginPage(driver, locators)
+        page = LoginPage(driver)
         try:
-            # Step 2: Enter valid credentials
-            page.enter_username('user1@example.com')
-            page.enter_password('ValidPassword123')
-            # Step 3: Check 'Remember Me'
-            page.check_remember_me()
-            # Step 4: Click 'Login'
-            page.click_login()
-            # Step 5: Close and reopen browser, revisit site, verify session persists
-            driver.quit()
-            driver = webdriver.Chrome()
-            page = LoginPage(driver, locators)
-            driver.get(locators['url'])
-            session_persisted = page.verify_session_persistence()
-            self.assertTrue(session_persisted, "TC_LOGIN_07 failed: Session did not persist after browser restart.")
+            result = page.tc017_invalid_login_error_accessibility('user@example.com', 'WrongPassword')
+            self.assertTrue(result, "TC017 failed: Error message not displayed in clear text or not accessible to screen readers.")
         finally:
             driver.quit()
 
