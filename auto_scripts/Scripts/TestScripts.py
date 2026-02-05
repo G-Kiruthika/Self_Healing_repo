@@ -3,11 +3,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
-from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
 
 class TestLoginPage(unittest.TestCase):
     # Existing test methods...
-    ...
+    # ...
     def test_tc_login_06_empty_email_and_password_error(self):
         """
         Test Case TC_LOGIN_06:
@@ -24,8 +23,6 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    # ...other existing test methods...
-
     def test_tc_login_002_remember_me_checkbox_absence(self):
         """
         Test Case TC_LOGIN_002:
@@ -41,40 +38,24 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    def test_tc_login_003_forgot_username_workflow(self):
+    def test_tc_login_01_end_to_end_login_and_dashboard_verification(self):
         """
-        Test Case TC_LOGIN_003:
-        1. Navigate to the login screen.
-        2. Click on 'Forgot Username' link.
-        3. Follow the instructions to recover username.
-        4. Validate username is retrieved.
+        Test Case TC_LOGIN_01:
+        1. Navigate to login page
+        2. Enter valid email ('user1@example.com')
+        3. Enter valid password ('ValidPassword123')
+        4. Click login
+        5. Verify dashboard is displayed
         """
         driver = webdriver.Chrome()
-        login_page = LoginPage(driver)
-        username_recovery_page = UsernameRecoveryPage(driver)
+        page = LoginPage(driver)
         try:
-            # Step 1: Navigate to login page
-            login_page.go_to_login_page()
-            self.assertTrue(login_page.is_on_login_page(), "Login page not displayed.")
-
-            # Step 2: Click 'Forgot Username' link
-            login_page.click_forgot_username()
-
-            # Step 3: Validate instructions are displayed
-            self.assertTrue(username_recovery_page.is_instructions_displayed(), "Username recovery instructions not displayed.")
-
-            # Step 4: Enter recovery email (example email used)
-            recovery_email = "testuser@example.com"
-            username_recovery_page.enter_recovery_email(recovery_email)
-
-            # Step 5: Submit recovery
-            username_recovery_page.submit_recovery()
-
-            # Step 6: Validate success message and username retrieval
-            success_msg = username_recovery_page.get_success_message()
-            self.assertIsNotNone(success_msg, "Success message not displayed after username recovery.")
-            recovered_username = username_recovery_page.get_recovered_username()
-            self.assertIsNotNone(recovered_username, "Recovered username not displayed.")
+            results = page.login_and_validate_dashboard_tc_login_01(email="user1@example.com", password="ValidPassword123")
+            self.assertTrue(results.get('login_page_opened'), "Login page did not open.")
+            self.assertTrue(results.get('email_entered'), "Email was not entered.")
+            self.assertTrue(results.get('password_entered'), "Password was not entered.")
+            self.assertTrue(results.get('login_clicked'), "Login button was not clicked.")
+            self.assertTrue(results.get('dashboard_displayed'), "Dashboard was not displayed after login.")
         finally:
             driver.quit()
 
