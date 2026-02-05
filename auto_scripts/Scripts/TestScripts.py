@@ -4,7 +4,6 @@ from auto_scripts.Pages.ForgotPasswordPage import ForgotPasswordPage
 from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
 from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
 from auto_scripts.Pages.ResetPasswordPage import ResetPasswordPage
-from auto_scripts.Pages.DashboardPage import DashboardPage
 from selenium.webdriver.common.by import By
 import pytest
 
@@ -123,18 +122,15 @@ class TestLogin:
         assert flow_result, "Username recovery flow failed."
         assert max_length_ok, "Email field did not accept max length input."
 
-    def test_tc001_login_and_dashboard_redirect(self, driver):
+    def test_tc001_login_workflow(self, driver):
         """
-        Test Case TC001:
-        1. Navigate to the login page.
-        2. Enter a valid email and password.
-        3. Click the 'Login' button.
-        4. Verify dashboard is displayed.
+        Test Case TC001: Valid Login Workflow
+        Steps:
+            1. Navigate to the login page
+            2. Enter valid email and password ('user@example.com', 'ValidPassword123')
+            3. Click the 'Login' button
+            4. Verify dashboard is displayed
         """
         login_page = LoginPage(driver)
-        dashboard_page = DashboardPage(driver)
-        login_page.navigate_to_login()
-        login_page.enter_email('user@example.com')
-        login_page.enter_password('ValidPassword123')
-        login_page.click_login()
-        assert dashboard_page.is_dashboard_displayed(), "Dashboard was not displayed after login."
+        result = login_page.execute_tc001_login_workflow('user@example.com', 'ValidPassword123')
+        assert result['dashboard_displayed'], f"Dashboard not displayed. Error: {result.get('error_message', '')}"
