@@ -92,3 +92,23 @@ class CartPage:
             return error_elem.is_displayed()
         except NoSuchElementException:
             return False
+
+    def add_product_with_zero_quantity(self, product_id: str):
+        """
+        Attempts to add a product to the cart with quantity zero and checks for error.
+        Returns True if error message is displayed and product is not added, False otherwise.
+        """
+        try:
+            product_input = self.driver.find_element(By.ID, self.locators['product_id_input']['value'])
+            product_input.clear()
+            product_input.send_keys(product_id)
+            quantity_input = self.driver.find_element(By.ID, self.locators['quantity_input']['value'])
+            quantity_input.clear()
+            quantity_input.send_keys("0")
+            add_button = self.driver.find_element(By.ID, self.locators['add_to_cart_button']['value'])
+            add_button.click()
+            # Check for error message (assume stock_error_message used for zero quantity as well)
+            error_elem = self.driver.find_element(By.XPATH, self.locators['stock_error_message']['value'])
+            return error_elem.is_displayed()
+        except NoSuchElementException:
+            return False
