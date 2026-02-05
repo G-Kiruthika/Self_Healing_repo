@@ -4,7 +4,6 @@
 import unittest
 from selenium import webdriver
 from auto_scripts.Pages.LoginPage import LoginPage
-from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
 
 class TestLoginPage(unittest.TestCase):
     # Existing test methods...
@@ -23,19 +22,50 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    def test_tc_login_012_password_recovery_flow(self):
+    def test_tc010_login_attempts_with_lockout(self):
         """
-        Test Case TC_LOGIN_012 (Password Recovery):
-        1. Navigate to login page.
-        2. Click on 'Forgot Password' link.
-        3. Enter registered email and submit (use 'user@example.com').
-        4. Assert password reset email is sent.
+        Test Case TC010:
+        1. Attempt login with invalid password 5 times.
+        2. Attempt login with correct credentials after lockout.
+        3. Assert error messages and lockout behavior as per the test case and PageClass implementation.
         """
         driver = webdriver.Chrome()
-        page = PasswordRecoveryPage(driver)
+        page = LoginPage(driver)
         try:
-            result = page.tc_login_012_password_recovery_flow('user@example.com')
-            self.assertTrue(result, "TC_LOGIN_012 failed: Password recovery flow did not complete successfully.")
+            # Call the PageClass method for TC010
+            result = page.login_attempts_with_lockout_tc010()
+            # Validate returned results
+            self.assertIsInstance(result, dict, "TC010 failed: Result should be a dictionary.")
+            self.assertIn("invalid_attempts", result, "TC010 failed: Missing invalid_attempts key.")
+            self.assertEqual(result["invalid_attempts"], 5, "TC010 failed: Should have 5 invalid attempts.")
+            self.assertIn("lockout_triggered", result, "TC010 failed: Missing lockout_triggered key.")
+            self.assertTrue(result["lockout_triggered"], "TC010 failed: Lockout was not triggered after 5 invalid attempts.")
+            self.assertIn("lockout_message", result, "TC010 failed: Missing lockout_message key.")
+            self.assertTrue("locked out" in result["lockout_message"].lower(), "TC010 failed: Lockout message not shown.")
+            self.assertIn("valid_login_after_lockout", result, "TC010 failed: Missing valid_login_after_lockout key.")
+            self.assertFalse(result["valid_login_after_lockout"], "TC010 failed: Valid login should not succeed during lockout.")
+            self.assertIn("valid_login_message", result, "TC010 failed: Missing valid_login_message key.")
+            self.assertTrue("locked out" in result["valid_login_message"].lower(), "TC010 failed: Lockout message should appear when trying correct credentials after lockout.")
+        finally:
+            driver.quit()
+
+    def test_tc_login_01_valid_login(self):
+        """
+        Test Case TC_LOGIN_01:
+        1. Navigate to the login page.
+        2. Enter a valid registered email address ('user1@example.com').
+        3. Enter a valid password ('ValidPassword123').
+        4. Click on the 'Login' button.
+        5. Assert user is successfully logged in and redirected to the dashboard.
+        """
+        driver = webdriver.Chrome()
+        page = LoginPage(driver)
+        try:
+            page.go_to_login_page()
+            page.enter_email('user1@example.com')
+            page.enter_password('ValidPassword123')
+            page.click_login()
+            self.assertTrue(page.is_dashboard_displayed(), "TC_LOGIN_01 failed: Dashboard not displayed after valid login.")
         finally:
             driver.quit()
 
