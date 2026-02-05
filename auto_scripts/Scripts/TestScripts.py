@@ -101,3 +101,23 @@ class TestLogin:
             assert reset_password_page.verify_success_message(), "Password reset success message not displayed."
         except Exception as e:
             pytest.fail(f"Exception occurred in forgot password flow: {e}")
+
+    def test_TC_SCRUM_115_003_account_lockout(self, driver):
+        """
+        Test Case TC-SCRUM-115-003: Account lockout after multiple failed login attempts
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid username
+        3. Enter incorrect password
+        4. Click Login
+        5. Repeat steps 2-4 for 5 times
+        6. Verify error message after each failed attempt
+        7. After final attempt, verify account lockout message is displayed
+        """
+        login_page = LoginPage(driver)
+        result = login_page.tc_scrum_115_003_account_lockout(
+            username='validuser@example.com',
+            wrong_password='WrongPassword456!',
+            attempt_count=5
+        )
+        assert result is True, "Account lockout mechanism did not work as expected after multiple failed login attempts."
