@@ -13,22 +13,16 @@ class LoginPage:
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
     FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
+    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")  # ADDED for TC_LOGIN_007
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
 
     def navigate_to_login(self):
-        """
-        Step 1: Navigate to the e-commerce website login page.
-        Acceptance Criteria: Login page is displayed with email and password fields.
-        """
         self.driver.get(self.LOGIN_URL)
         return self.is_login_page_displayed()
 
     def is_login_page_displayed(self):
-        """
-        Checks if login page elements are visible.
-        """
         try:
             email_visible = self.driver.find_element(*self.EMAIL_INPUT).is_displayed()
             password_visible = self.driver.find_element(*self.PASSWORD_INPUT).is_displayed()
@@ -37,10 +31,6 @@ class LoginPage:
             return False
 
     def click_forgot_password(self):
-        """
-        Step 2: Click on 'Forgot Password' link
-        Acceptance Criteria: User is redirected to password recovery page.
-        """
         try:
             link = self.driver.find_element(*self.FORGOT_PASSWORD_LINK)
             link.click()
@@ -48,21 +38,25 @@ class LoginPage:
         except NoSuchElementException:
             return False
 
+    def click_forgot_username(self):
+        """
+        Step 2: Click on 'Forgot Username' link
+        Acceptance Criteria: User is redirected to username recovery page
+        """
+        try:
+            link = self.driver.find_element(*self.FORGOT_USERNAME_LINK)
+            link.click()
+            return True
+        except NoSuchElementException:
+            return False
+
     def enter_email(self, email: str):
-        """
-        Step 2: Enter valid registered email address in the email field.
-        Acceptance Criteria: Email is accepted and displayed in the field.
-        """
         email_field = self.driver.find_element(*self.EMAIL_INPUT)
         email_field.clear()
         email_field.send_keys(email)
         return email_field.get_attribute("value") == email
 
     def enter_password(self, password: str):
-        """
-        Step 3: Enter correct password in the password field.
-        Acceptance Criteria: Password is masked and accepted.
-        """
         password_field = self.driver.find_element(*self.PASSWORD_INPUT)
         password_field.clear()
         password_field.send_keys(password)
@@ -70,17 +64,10 @@ class LoginPage:
         return is_masked and password_field.get_attribute("value") == password
 
     def click_login(self):
-        """
-        Step 4: Click on the Login button.
-        Acceptance Criteria: User is successfully authenticated and redirected to the dashboard/home page.
-        """
         self.driver.find_element(*self.LOGIN_BUTTON).click()
         return self.is_dashboard_displayed()
 
     def is_dashboard_displayed(self):
-        """
-        Checks if dashboard/home page is displayed after login.
-        """
         try:
             header_visible = self.driver.find_element(*self.DASHBOARD_HEADER).is_displayed()
             profile_visible = self.driver.find_element(*self.USER_PROFILE_ICON).is_displayed()
@@ -89,10 +76,6 @@ class LoginPage:
             return False
 
     def verify_user_session(self):
-        """
-        Step 5: Verify user session is established.
-        Acceptance Criteria: User name is displayed in the header and session cookie is set.
-        """
         try:
             profile_icon = self.driver.find_element(*self.USER_PROFILE_ICON)
             session_cookie = None
@@ -234,10 +217,6 @@ class LoginPage:
 
     # --- Start of TC_LOGIN_005 steps ---
     def leave_email_and_password_empty(self):
-        """
-        Step 2 & 3: Leave email and password fields empty
-        Acceptance Criteria: Email and Password fields remain empty
-        """
         email_field = self.driver.find_element(*self.EMAIL_INPUT)
         password_field = self.driver.find_element(*self.PASSWORD_INPUT)
         email_field.clear()
@@ -245,20 +224,12 @@ class LoginPage:
         return email_field.get_attribute("value") == "" and password_field.get_attribute("value") == ""
 
     def click_login_and_verify_required_errors(self):
-        """
-        Step 4: Click on Login button and verify validation errors
-        Acceptance Criteria: 'Email is required' and 'Password is required' errors displayed
-        """
         self.driver.find_element(*self.LOGIN_BUTTON).click()
         email_error = self.is_validation_error_displayed("Email is required")
         password_error = self.is_validation_error_displayed("Password is required")
         return email_error and password_error
 
     def verify_login_prevented_empty_fields(self):
-        """
-        Step 5: Verify login is prevented and user remains on login page
-        Acceptance Criteria: User cannot proceed with login, remains on login page
-        """
         current_url = self.driver.current_url
         on_login_page = current_url.startswith(self.LOGIN_URL)
         dashboard_visible = self.is_dashboard_displayed()
@@ -267,34 +238,32 @@ class LoginPage:
 
     # --- Start of TC_SCRUM74_005 steps ---
     def tc_scrum74_005_leave_email_empty_and_login(self, password: str):
-        """
-        TC_SCRUM74_005 Steps:
-        1. Navigate to the login page
-        2. Leave email/username field empty
-        3. Enter valid password
-        4. Click on the Login button
-        5. Validation error displayed: 'Email/Username is required'
-        """
         self.navigate_to_login()
         self.leave_email_field_empty()
         self.enter_valid_password(password)
         self.click_login_button()
-        # Strict validation for error message
         return self.is_validation_error_displayed("Email/Username is required")
     # --- End of TC_SCRUM74_005 steps ---
 
     # --- Start of TC_LOGIN_006 steps ---
     def tc_login_006_forgot_password_flow(self, email: str):
-        """
-        TC_LOGIN_006 Steps:
-        1. Navigate to the login page
-        2. Click on 'Forgot Password' link
-        3. Enter registered email address
-        4. Click on 'Send Reset Link' button
-        5. Verify password reset email is received (delegated to PasswordRecoveryPage)
-        """
         self.navigate_to_login()
         self.click_forgot_password()
-        # The rest of the flow continues in PasswordRecoveryPage
         return True
     # --- End of TC_LOGIN_006 steps ---
+
+    # --- Start of TC_LOGIN_007 steps ---
+    def tc_login_007_forgot_username_flow(self, email: str):
+        """
+        TC_LOGIN_007 Steps:
+        1. Navigate to the login page
+        2. Click on 'Forgot Username' link
+        3. Enter registered email address
+        4. Click on 'Send Username' button
+        5. Verify username recovery email is received (delegated to UsernameRecoveryPage)
+        """
+        self.navigate_to_login()
+        self.click_forgot_username()
+        # The rest of the flow continues in UsernameRecoveryPage
+        return True
+    # --- End of TC_LOGIN_007 steps ---
