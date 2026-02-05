@@ -85,7 +85,7 @@ class TestLogin:
             assert recovery_page.verify_success_message(), "Success message not displayed or reset link not sent."
 
             # Step 5: Email verification placeholder
-            # In a real test, retrieve the reset link from the email. Here, simulate navigation to ResetPasswordPage.
+            # In a real test, retrieve the reset link from the email. Here, simulate navigation to the reset page with a test token.
             # For demonstration, assume we can directly navigate to the reset page with a test token.
             reset_token = "dummy-reset-token"  # Placeholder for the actual token from email
             reset_url = f"https://your-app-url/reset-password/{reset_token}"
@@ -121,3 +121,23 @@ class TestLogin:
             attempt_count=5
         )
         assert result is True, "Account lockout mechanism did not work as expected after multiple failed login attempts."
+
+    def test_TC_LOGIN_008_forgot_password_unregistered_email(self, driver):
+        """
+        Test Case TC_LOGIN_008: Forgot Password with Unregistered Email
+        Steps:
+        1. Navigate to the login page
+        2. Click on 'Forgot Password' link
+        3. Enter unregistered email address ('unregistered@example.com')
+        4. Click Submit
+        5. Verify generic message: 'If email exists, reset link will be sent'
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate_to_login()
+        assert login_page.is_login_page_displayed(), "Login page is not displayed."
+
+        login_page.click_forgot_password()
+        recovery_page = PasswordRecoveryPage(driver)
+        assert recovery_page.is_loaded(), "Password Recovery page is not loaded"
+        result = recovery_page.tc_login_008_forgot_password_unregistered_email('unregistered@example.com')
+        assert result is True, "Generic message not displayed after submitting unregistered email or flow failed."
