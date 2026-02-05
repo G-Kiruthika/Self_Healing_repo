@@ -149,16 +149,15 @@ class TestLogin:
         assert result['dashboard_displayed'], "Dashboard should be displayed after login."
         assert result['session_persisted'], f"Session should persist after browser restart. Error: {result.get('error_message', '')}"
 
-    def test_tc_login_011_no_remember_me_session_non_persistence(self, driver):
+    def test_tc002_invalid_email_valid_password(self, driver):
         """
-        Test Case TC_LOGIN_011:
+        Test Case TC002:
         1. Navigate to the login page.
-        2. Enter valid credentials WITHOUT selecting 'Remember Me' (email: 'user@example.com', password: 'ValidPass123').
+        2. Enter invalid email and valid password ('invaliduser@example.com', 'ValidPassword123').
         3. Click the 'Login' button.
-        4. Verify dashboard is displayed.
-        5. Simulate browser restart and verify session does NOT persist.
+        4. Assert error message 'Invalid email or password' is displayed and login fails.
         """
         login_page = LoginPage(driver)
-        result = login_page.execute_tc_login_011_no_remember_me_session_non_persistence('user@example.com', 'ValidPass123')
-        assert result['dashboard_displayed'], "Dashboard should be displayed after login."
-        assert result['session_persisted'] is False, f"Session should NOT persist after browser restart. Error: {result.get('error_message', '')}"
+        result = login_page.execute_tc002_invalid_email_workflow('invaliduser@example.com', 'ValidPassword123')
+        assert result['error_message'] == 'Invalid email or password', f"Expected error message not displayed. Actual: {result['error_message']}"
+        assert result['login_unsuccessful'], "Login should not be successful with invalid email."
