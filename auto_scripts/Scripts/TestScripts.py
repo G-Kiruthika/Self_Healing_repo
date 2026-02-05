@@ -97,12 +97,10 @@ class TestLogin:
         1. Navigate to the login page.
         2. Enter email and password with maximum allowed length (email: '64_chars@example.com', password: 'A'*128).
         3. Click the 'Login' button.
-        4. Assert fields accept max length and login succeeds if credentials are valid.
+        4. Verify that fields accept maximum input and login succeeds if credentials are valid.
         """
         login_page = LoginPage(driver)
         login_page.open_login_page()
-        email = '64_chars@example.com'
-        password = 'A' * 128
-        result = login_page.tc_login_007_max_length_login(email, password)
-        assert result['fields_accept_max_length'], "Email and password fields should accept maximum allowed length."
-        assert result['login_success'], f"Login should succeed if credentials are valid. Error: {result.get('error_message', '')}"
+        result = login_page.test_max_length_login_tc_login_007('64_chars@example.com', 'A'*128)
+        assert result['fields_accept_max_input'], "Fields should accept maximum input length."
+        assert result['login_success'], "Login should succeed with valid max-length credentials."
