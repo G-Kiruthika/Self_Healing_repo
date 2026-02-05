@@ -133,19 +133,19 @@ class TestLogin:
 
     def test_TC_LOGIN_015_unverified_account(self, driver):
         """
-        Test Case TC-LOGIN-015: Login with Unverified Account
+        Test Case TC-LOGIN-015: Login Attempt with Unverified Account
         Steps:
             1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
             2. Enter email of an unverified account [Test Data: Email: unverified@example.com]
             3. Enter correct password [Test Data: Password: ValidPass123!]
             4. Click on the Login button
-            5. Verify error message is displayed: 'Please verify your email address before logging in.'
+            5. Verify error message: 'Please verify your email address before logging in.'
             6. Verify user remains on login page with option to resend verification email
-        Acceptance Criteria: TS-013
+        Acceptance Criteria: Error message shown, resend verification link present, user not authenticated.
         """
         login_page = LoginPage(driver)
-        result = login_page.tc_login_015_unverified_account_login(
+        result = login_page.tc_login_015_login_with_unverified_account(
             email="unverified@example.com",
             password="ValidPass123!"
         )
-        assert result, "Unverified account login test failed: Error message not shown, user authenticated, or resend verification option missing."
+        assert result, "Unverified account login test failed: Error message not shown, resend verification link missing, or user was authenticated."
