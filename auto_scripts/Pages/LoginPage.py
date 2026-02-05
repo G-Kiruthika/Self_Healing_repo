@@ -2,14 +2,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-# New imports for cross-browser and mobile support
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.edge.options import Options as EdgeOptions
-# For Safari, no options required for desktop
-# For mobile emulation (Chrome), use ChromeOptions.mobile_emulation
-
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
     EMAIL_FIELD = (By.ID, "login-email")
@@ -106,72 +98,53 @@ class LoginPage:
         assert dashboard_header.is_displayed(), "Dashboard header is not displayed after login."
         assert user_profile_icon.is_displayed(), "User profile icon is not displayed after login."
 
-    # --- NEW METHOD FOR CROSS-BROWSER AND MOBILE LOGIN ---
-    @staticmethod
-    def get_webdriver(browser_type):
+    def tc_login_08_remember_me_not_checked(self, email="user1@example.com", password="ValidPassword123", driver_factory=None):
         """
-        Returns a Selenium WebDriver instance for the specified browser.
-        Supported browser_type: 'chrome', 'firefox', 'safari', 'edge', 'mobile_chrome'
-        """
-        if browser_type == "chrome":
-            options = ChromeOptions()
-            options.add_argument("--window-size=1920,1080")
-            return webdriver.Chrome(options=options)
-        elif browser_type == "firefox":
-            options = FirefoxOptions()
-            options.add_argument("--width=1920")
-            options.add_argument("--height=1080")
-            return webdriver.Firefox(options=options)
-        elif browser_type == "edge":
-            options = EdgeOptions()
-            options.add_argument("--window-size=1920,1080")
-            return webdriver.Edge(options=options)
-        elif browser_type == "safari":
-            # Safari driver must be enabled and running on MacOS
-            return webdriver.Safari()
-        elif browser_type == "mobile_chrome":
-            options = ChromeOptions()
-            mobile_emulation = {
-                "deviceName": "iPhone X"
-            }
-            options.add_experimental_option("mobileEmulation", mobile_emulation)
-            return webdriver.Chrome(options=options)
-        else:
-            raise ValueError(f"Unsupported browser_type: {browser_type}")
+        Test Case TC_LOGIN_08:
+        1. Navigate to the login page.
+        2. Enter a valid registered email and password.
+        3. Ensure 'Remember Me' is NOT checked.
+        4. Click on the 'Login' button.
+        5. Close and reopen the browser, revisit the site, and verify the user is logged out and redirected to the login page.
 
-    @classmethod
-    def login_on_multiple_browsers(cls, browsers, email, password, timeout=10):
-        """
-        Attempts login on multiple browsers/devices.
         Args:
-            browsers (list): List of browser types ['chrome', 'firefox', 'safari', 'edge', 'mobile_chrome']
-            email (str): Login email
-            password (str): Login password
-            timeout (int): WebDriverWait timeout
-        Returns:
-            dict: Results for each browser/device
+            email (str): Valid registered email.
+            password (str): Valid password.
+            driver_factory (callable): Function that returns a new WebDriver instance. Required for browser restart simulation.
         """
-        results = {}
-        for browser in browsers:
-            driver = None
-            try:
-                driver = cls.get_webdriver(browser)
-                login_page = cls(driver, timeout)
-                login_page.login_with_credentials(email, password)
-                # Check for dashboard header and user profile icon
-                dashboard_header = login_page.wait.until(EC.visibility_of_element_located(cls.DASHBOARD_HEADER))
-                user_profile_icon = login_page.wait.until(EC.visibility_of_element_located(cls.USER_PROFILE_ICON))
-                success = dashboard_header.is_displayed() and user_profile_icon.is_displayed()
-                results[browser] = {
-                    "success": success,
-                    "error": None if success else "Dashboard or user profile not visible after login"
-                }
-            except Exception as e:
-                results[browser] = {
-                    "success": False,
-                    "error": str(e)
-                }
-            finally:
-                if driver is not None:
-                    driver.quit()
-        return results
+        assert driver_factory is not None, "A driver_factory callable must be provided to reopen the browser."
+
+        # Step 1: Navigate to login page
+        self.go_to_login_page()
+        assert self.is_on_login_page(), "Login page is not displayed."
+
+        # Step 2: Enter valid credentials
+        self.enter_email(email)
+        self.enter_password(password)
+
+        # Step 3: Ensure 'Remember Me' is NOT checked
+        remember_me_elem = self.wait.until(EC.visibility_of_element_located(self.REMEMBER_ME_CHECKBOX))
+        if remember_me_elem.is_selected():
+            remember_me_elem.click()  # Uncheck if checked
+        assert not remember_me_elem.is_selected(), "'Remember Me' checkbox should NOT be selected."
+
+        # Step 4: Click Login
+        self.click_login()
+        dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+        user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+        assert dashboard_header.is_displayed(), "Dashboard header is not displayed after login."
+        assert user_profile_icon.is_displayed(), "User profile icon is not displayed after login."
+
+        # Step 5: Close and reopen browser, revisit site
+        self.driver.quit()
+        new_driver = driver_factory()
+        try:
+            new_wait = WebDriverWait(new_driver, 10)
+            new_driver.get(self.URL)
+            # Should be redirected to login page (not logged in)
+            email_field = new_wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            password_field = new_wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            assert email_field.is_displayed(), "Email field is not displayed after reopening browser. User may still be logged in."
+            assert password_field.is_displayed(), "Password field is not displayed after reopening browser. User may still be logged in."
+        finally:
+            new_driver.quit()
