@@ -49,5 +49,61 @@ class TestLoginPage(unittest.TestCase):
             except Exception:
                 pass
 
+    def test_tc020_login_across_browsers(self):
+        """
+        Test Case TC020:
+        Attempt login on Chrome, Firefox, Safari, Edge, and mobile browsers.
+        Test Data: user@example.com / ValidPassword123
+        Acceptance Criteria: Login works as expected on all supported browsers/devices.
+        """
+        email = "user@example.com"
+        password = "ValidPassword123"
+        browsers = {}
+        try:
+            # Desktop browsers
+            try:
+                browsers['chrome'] = webdriver.Chrome()
+            except Exception:
+                pass
+            try:
+                browsers['firefox'] = webdriver.Firefox()
+            except Exception:
+                pass
+            try:
+                browsers['edge'] = webdriver.Edge()
+            except Exception:
+                pass
+            try:
+                browsers['safari'] = webdriver.Safari()
+            except Exception:
+                pass
+            mobile_caps = None
+            try:
+                from appium import webdriver as appium_webdriver
+                mobile_caps = {
+                    'android': {
+                        'platformName': 'Android',
+                        'deviceName': 'Android Emulator',
+                        'browserName': 'Chrome'
+                    },
+                    'ios': {
+                        'platformName': 'iOS',
+                        'deviceName': 'iPhone Simulator',
+                        'browserName': 'Safari'
+                    }
+                }
+            except ImportError:
+                pass
+            page = LoginPage(None)
+            results = page.login_across_browsers(email=email, password=password, browsers=browsers, mobile_caps=mobile_caps)
+            for browser_device, result in results.items():
+                self.assertTrue(result, f"Login failed on {browser_device}")
+        finally:
+            for driver in browsers.values():
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+
 if __name__ == "__main__":
     unittest.main()
