@@ -1,23 +1,23 @@
 # Executive Summary:
-# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, TC_LOGIN_010, TC_LOGIN_011, TC005, and now TC_LOGIN_016 using Selenium in Python.
+# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, TC_LOGIN_010, TC_LOGIN_011, TC005, TC_LOGIN_016, and now TC_LOGIN_017 using Selenium in Python.
 # Updates:
-# - Added execute_tc_login_016_unregistered_email_valid_password(email, password) for TC_LOGIN_016, which enters unregistered email, valid password, clicks login, validates error message for unregistered email, and confirms login fails.
+# - Added execute_tc_login_017_password_masking(password) for TC_LOGIN_017, which enters a password and verifies the password field input type is 'password' (masked).
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
+# - Existing methods are preserved and new method is appended.
 
 # Detailed Analysis:
-# - Strict locator mapping from Locators.json
+# - Strict locator mapping from Locators.json (password field: By.ID, 'login-password')
 # - Defensive coding using Selenium WebDriverWait and exception handling
-# - Functions for navigation, login, error validation, positive login outcome, and session persistence/non-persistence
+# - Functions for navigation, login, error validation, positive login outcome, session persistence/non-persistence, and password masking verification
 # - Existing methods are preserved and new method is appended
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use open_login_page(), login_with_credentials(), execute_tc_login_016_unregistered_email_valid_password(email, password), execute_tc005_empty_email_valid_password(valid_password), execute_tc001_login_workflow(email, password), execute_tc_login_010_remember_me_session_persistence(email, password), execute_tc_login_011_no_remember_me_session_non_persistence(email, password) to automate respective scenarios
-# - Example usage for TC_LOGIN_016:
+# - Use open_login_page(), login_with_credentials(), execute_tc_login_017_password_masking(password) to automate respective scenarios
+# - Example usage for TC_LOGIN_017:
 #     page = LoginPage(driver)
-#     result = page.execute_tc_login_016_unregistered_email_valid_password(email="unknown@example.com", password="ValidPass123")
-#     assert result["error_message"] is not None
-#     assert result["login_unsuccessful"] is True
+#     result = page.execute_tc_login_017_password_masking(password="ValidPass123")
+#     assert result["is_masked"] is True
 
 # Quality Assurance Report:
 # - Locator references validated against Locators.json
@@ -30,10 +30,12 @@
 # - Validate all locator values against Locators.json
 # - For any assertion failure, review the error message for details
 # - TimeoutException may indicate slow page load or incorrect locator
+# - If 'is_masked' returns False, inspect the input field type in the UI
 
 # Future Considerations:
 # - Extend PageClass for additional login scenarios and UI validation tests
 # - Integrate with reporting tools for enhanced test results
+# - Consider dynamic locator strategies if application changes
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -432,5 +434,32 @@ class LoginPage:
                 result["error_message"] = None
             result["login_unsuccessful"] = self.is_login_unsuccessful()
         except Exception as e:
+            result["error_message"] = str(e)
+        return result
+
+    # ---- New method appended for TC_LOGIN_017 ----
+    def execute_tc_login_017_password_masking(self, password):
+        '''
+        TC_LOGIN_017: Verifies that entering a password in the password field displays the password as masked (input type='password').
+        Steps:
+            1. Navigate to the login page
+            2. Enter password in the password field
+            3. Verify the password field input type is 'password'
+        Args:
+            password (str): Password to enter (e.g., 'ValidPass123')
+        Returns:
+            dict with keys: 'is_masked', 'input_type', 'error_message'
+        '''
+        result = {"is_masked": None, "input_type": None, "error_message": None}
+        try:
+            self.open_login_page()
+            password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            password_elem.clear()
+            password_elem.send_keys(password)
+            input_type = password_elem.get_attribute("type")
+            result["input_type"] = input_type
+            result["is_masked"] = (input_type == "password")
+        except Exception as e:
+            result["is_masked"] = False
             result["error_message"] = str(e)
         return result
