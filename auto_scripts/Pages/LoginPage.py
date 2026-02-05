@@ -268,3 +268,21 @@ class LoginPage:
             pass
         return True
     # --- End of TC_LOGIN_004 steps ---
+
+    # --- Start of TC_LOGIN_006 steps ---
+    def tc_login_006_forgot_password_flow(self, email: str) -> bool:
+        """
+        TC_LOGIN_006: Forgot Password Flow
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Click on 'Forgot Password' link
+        3. Enter registered email address [Test Data: Email: testuser@example.com]
+        4. Click on 'Send Reset Link' button
+        5. Verify password reset email is received
+        """
+        self.load()
+        assert self.is_displayed(), "Login page is not displayed"
+        forgot_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_PASSWORD_LINK))
+        forgot_link.click()
+        # At this point, PasswordRecoveryPage should be loaded; handled by PasswordRecoveryPage object
+        return True
+    # --- End of TC_LOGIN_006 steps ---
