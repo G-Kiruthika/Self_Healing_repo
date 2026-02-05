@@ -49,3 +49,20 @@ class TestLogin:
             sql_injection_password="' OR '1'='1' --"
         )
         assert result, "SQL injection prevention test failed: Unauthorized access or improper error handling."
+
+    def test_TC_LOGIN_009_forgot_username_flow(self, driver):
+        """
+        Test Case TC_LOGIN_009: Forgot Username Flow
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Click on 'Forgot Username' link [Test Data: N/A]
+        3. Enter registered email address [Test Data: Email: testuser@example.com]
+        4. Click on Submit button [Test Data: N/A]
+        5. Success message displayed and username reminder email sent
+        """
+        username_recovery_page = UsernameRecoveryPage(driver)
+        try:
+            result = username_recovery_page.tc_login_009_forgot_username_flow(email="testuser@example.com")
+            assert result, "Forgot Username flow failed: Success message not displayed or incorrect."
+        except AssertionError as e:
+            pytest.fail(str(e))
