@@ -86,3 +86,22 @@ def test_TC_SCRUM_96_003_invalid_email_signup(driver, db_connection):
     assert result["db_user_count"] == 0, f"User with invalid email should not be created. Found {result['db_user_count']} records."
     assert "invalid email" in result["ui_error_message"].lower() or "email format" in result["ui_error_message"].lower(), f"Expected email format error in UI, got: {result['ui_error_message']}"
     assert "invalid email" in result["api_response"].lower() or "email format" in result["api_response"].lower(), f"Expected email format error in API response, got: {result['api_response']}"
+
+# TC012: XSS payload in email field
+from auto_scripts.Pages.LoginPage import LoginPage
+
+def test_TC012_xss_payload_in_email_field(driver):
+    """
+    Test Case TC012
+    Steps:
+    1. Navigate to the login page.
+    2. Enter XSS payload in email field: <script>alert('xss')</script>
+    3. Click the 'Login' button.
+    Expected:
+    - Application does not execute script; error message or input sanitized.
+    """
+    login_page = LoginPage(driver)
+    error_message, validation_error = login_page.test_xss_payload_in_email_field_tc012()
+    assert error_message is not None or validation_error is not None, "Expected error or validation message for XSS payload."
+    assert "script" not in error_message.lower() if error_message else True, "XSS script should not be executed or returned."
+    assert "script" not in validation_error.lower() if validation_error else True, "XSS script should not be executed or returned."
