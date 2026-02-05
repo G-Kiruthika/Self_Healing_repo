@@ -30,14 +30,11 @@ class TestProductSearch(unittest.TestCase):
 
     def test_product_search_api(self):
         keyword = "laptop"
-        # Send product search request via API
         response_json = self.product_search_page.send_product_search_request(keyword)
-        # Validate the response
         self.assertTrue(self.product_search_page.validate_search_response(response_json, keyword), "API response validation failed for product search.")
 
     def test_product_search_ui(self):
         keyword = "laptop"
-        # Perform product search via UI
         product_names = self.product_search_page.search_product_ui(keyword)
         self.assertTrue(len(product_names) > 0, "No products displayed in UI for keyword 'laptop'.")
 
@@ -74,10 +71,32 @@ class TestCartExceedStock(unittest.TestCase):
         product_id = '12345'
         quantity = 101
         add_result = self.cart_page.add_product_to_cart(product_id, quantity)
-        # Expect operation may succeed (button click), but error should be shown
         error_message = self.cart_page.get_stock_error_message()
         self.assertIsNotNone(error_message, "Stock exceeded error message should be displayed when adding quantity greater than available stock.")
         self.assertIn('stock exceeded', error_message.lower(), "Error message should indicate stock exceeded.")
+
+class TestCartDeleteAndVerify(unittest.TestCase):
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.driver.get('http://your-app-url/cart')
+        self.cart_page = CartPage(self.driver)
+
+    def tearDown(self):
+        self.driver.quit()
+
+    def test_delete_cart_and_verify_absence(self):
+        """
+        TC_CART_007: Delete shopping cart for a user, then query for deleted cart. Assert the cart and all associated products are deleted and the cart is not found.
+        """
+        cart_id = 'test_cart_007'
+        # Step 1: Delete cart
+        delete_result = self.cart_page.delete_cart(cart_id)
+        self.assertTrue(delete_result, "Cart deletion action should be performed.")
+        # Step 2: Query for deleted cart
+        cart_present = self.cart_page.is_cart_present(cart_id)
+        not_found_msg = self.cart_page.is_cart_not_found_message_displayed()
+        self.assertFalse(cart_present, "Cart should not be present after deletion.")
+        self.assertTrue(not_found_msg, "'Cart not found' message should be displayed after deletion.")
 
 if __name__ == '__main__':
     unittest.main()
