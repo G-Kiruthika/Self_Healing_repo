@@ -1,59 +1,48 @@
-# Selenium Page Object for LoginPage
+import time
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class LoginPage:
-    LOGIN_URL = "https://ecommerce.example.com/login"
-    EMAIL_INPUT = (By.ID, "login-email")
-    PASSWORD_INPUT = (By.ID, "login-password")
-    LOGIN_BUTTON = (By.ID, "login-submit")
-    ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
-    VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
-    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
-    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
-    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
-    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
-    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")  # Added for TC-LOGIN-007
-
-    def __init__(self, driver: WebDriver):
+    def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(self.driver, 10)
+        self.url = "https://ecommerce.example.com/login"
+        self.email_input_locator = (By.ID, "email")
+        self.password_input_locator = (By.ID, "password")
+        self.login_button_locator = (By.ID, "loginBtn")
+        self.error_message_locator = (By.CSS_SELECTOR, ".error-message")
 
-    def navigate_to_login(self, url: str = None):
-        target_url = url if url else self.LOGIN_URL
-        self.driver.get(target_url)
-        return self.is_login_page_displayed()
+    def navigate(self):
+        self.driver.get(self.url)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(self.email_input_locator)
+        )
 
-    def is_login_page_displayed(self):
+    def enter_email(self, email):
+        email_input = WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(self.email_input_locator)
+        )
+        email_input.clear()
+        email_input.send_keys(email)
+
+    def enter_password(self, password):
+        password_input = WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(self.password_input_locator)
+        )
+        password_input.clear()
+        password_input.send_keys(password)
+
+    def click_login(self):
+        login_button = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(self.login_button_locator)
+        )
+        login_button.click()
+
+    def get_error_message(self):
         try:
-            email_visible = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
-            password_visible = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
-            forgot_password_visible = self.wait.until(EC.visibility_of_element_located(self.FORGOT_PASSWORD_LINK))
-            forgot_username_visible = self.wait.until(EC.visibility_of_element_located(self.FORGOT_USERNAME_LINK))
-            return email_visible.is_displayed() and password_visible.is_displayed() and forgot_password_visible.is_displayed() and forgot_username_visible.is_displayed()
-        except (NoSuchElementException, TimeoutException):
-            return False
-
-    def click_forgot_password(self):
-        try:
-            forgot_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_PASSWORD_LINK))
-            forgot_link.click()
-            return True
-        except (NoSuchElementException, TimeoutException):
-            return False
-
-    def click_forgot_username(self):
-        """
-        Click on the 'Forgot Username' link to navigate to the Username Recovery page.
-        """
-        try:
-            forgot_username_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
-            forgot_username_link.click()
-            return True
-        except (NoSuchElementException, TimeoutException):
-            return False
-
-    # ... [Other existing methods remain unchanged] ...
+            error_element = WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located(self.error_message_locator)
+            )
+            return error_element.text
+        except Exception:
+            return None
