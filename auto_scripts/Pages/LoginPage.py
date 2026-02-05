@@ -323,3 +323,23 @@ class LoginPage:
         assert "invalid username or password" in error_message.lower(), f"Expected error message 'Invalid username or password', got: {error_message}"
         assert self.driver.current_url == self.LOGIN_URL, "User did not remain on the login page after invalid login!"
         return True
+
+    # --- ADDED FOR TC_SCRUM-74_003 ---
+    def login_special_characters_username(self, special_username: str, valid_password: str):
+        """
+        TC_SCRUM-74_003: Login with username containing special characters (dots, underscores, hyphens) and verify successful authentication and dashboard redirection.
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://application.com/login] [Acceptance Criteria: AC-001]
+        2. Enter valid username containing special characters (dots, underscores, hyphens) [Test Data: Username: test.user_name-123@example.com] [Acceptance Criteria: AC-001]
+        3. Enter valid password in the password field [Test Data: Password: ValidPass123!] [Acceptance Criteria: AC-001]
+        4. Click on the Login button [Test Data: Button: Login] [Acceptance Criteria: AC-001]
+        5. Verify successful login and redirection [Test Data: Expected: User dashboard displayed] [Acceptance Criteria: AC-001]
+        """
+        self.go_to_login_page()
+        assert self.is_login_fields_visible(), "Login fields are not visible!"
+        assert self.enter_email(special_username), "Username with special characters was not entered correctly!"
+        assert self.enter_password(valid_password), "Password was not entered/masked correctly!"
+        self.click_login()
+        assert self.is_redirected_to_dashboard(), "User was not redirected to dashboard!"
+        assert self.is_session_token_created(), "User session was not created!"
+        return True
