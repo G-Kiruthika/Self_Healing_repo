@@ -154,22 +154,18 @@ class TestLoginPage(unittest.TestCase):
     def test_tc015_password_masking_and_copy_paste_restriction(self):
         """
         Test Case TC015:
-        1. Enter password and verify field masking. [Test Data: ValidPassword123] [Acceptance Criteria: 11]
-        2. Attempt to copy and paste password from/to field. [Test Data: -] [Acceptance Criteria: 11]
-        Expected:
-        1. Password input is masked (e.g., bullets or asterisks).
-        2. Copy-paste is disabled or restricted as per security policy.
+        1. Enter password and verify field masking.
+        2. Attempt to copy and paste password from/to field.
+        Acceptance Criteria:
+        - Password input is masked (e.g., bullets or asterisks).
+        - Copy-paste is disabled or restricted as per security policy.
         """
         driver = webdriver.Chrome()
         page = LoginPage(driver)
         try:
-            driver.get(page.URL)
-            # Step 1: Enter password and verify masking
-            driver.find_element(*page.PASSWORD_FIELD).clear()
-            driver.find_element(*page.PASSWORD_FIELD).send_keys('ValidPassword123')
-            self.assertTrue(page.is_password_masked(), "TC015 failed: Password field is not masked.")
-            # Step 2: Attempt copy-paste and verify restriction
-            self.assertTrue(page.is_copy_paste_disabled_on_password(), "TC015 failed: Copy-paste is not disabled/restricted on password field.")
+            page.enter_password('ValidPassword123')
+            self.assertTrue(page.is_password_field_masked(), "TC015 failed: Password field is not masked.")
+            self.assertTrue(page.is_copy_paste_restricted_on_password(), "TC015 failed: Copy-paste restriction not enforced on password field.")
         finally:
             driver.quit()
 
