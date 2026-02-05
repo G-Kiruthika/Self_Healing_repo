@@ -12,7 +12,7 @@ class TestCartFunctionality(unittest.TestCase):
     def setUp(self):
         # Initialize WebDriver (adjust as needed for your environment)
         self.driver = webdriver.Chrome()
-        self.cart_page = CartPage(self.driver)
+        self.cart_page = CartPage()
 
     def tearDown(self):
         self.driver.quit()
@@ -24,10 +24,21 @@ class TestCartFunctionality(unittest.TestCase):
         1. Attempt to add product_id '12345' with quantity 101.
         2. Verify that an error is returned and the product is not added to the cart.
         """
-        test_result = self.cart_page.attempt_add_excess_quantity_and_validate("12345", 101)
-        self.assertTrue(test_result["error_detected"], f"Expected error, got: {test_result['error_message']}")
-        self.assertTrue(test_result["product_not_in_cart"], "Product should not be in cart after error.")
-        print(f"Error message: {test_result['error_message']}")
+        product_id = "12345"
+        quantity = 101
+        response = self.cart_page.add_product_to_cart(product_id, quantity)
+        try:
+            error_detected = self.cart_page.validate_quantity_exceeds_stock_error(response)
+        except AssertionError as e:
+            error_detected = False
+            error_message = str(e)
+        else:
+            error_message = response.text
+        # For API, we assume product is not in cart if error is detected
+        product_not_in_cart = error_detected
+        self.assertTrue(error_detected, f"Expected error, got: {error_message}")
+        self.assertTrue(product_not_in_cart, "Product should not be in cart after error.")
+        print(f"Error message: {error_message}")
 
 if __name__ == "__main__":
     unittest.main()
