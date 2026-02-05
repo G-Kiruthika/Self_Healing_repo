@@ -251,3 +251,21 @@ class LoginPage:
         dashboard_visible = self.is_dashboard_displayed()
         return on_login_page and not dashboard_visible
     # --- End of TC_LOGIN_005 steps ---
+
+    # --- Start of TC_SCRUM74_005 steps ---
+    def tc_scrum74_005_leave_email_empty_and_login(self, password: str):
+        """
+        TC_SCRUM74_005 Steps:
+        1. Navigate to the login page
+        2. Leave email/username field empty
+        3. Enter valid password
+        4. Click on the Login button
+        5. Validation error displayed: 'Email/Username is required'
+        """
+        self.navigate_to_login()
+        self.leave_email_field_empty()
+        self.enter_valid_password(password)
+        self.click_login_button()
+        # Strict validation for error message
+        return self.is_validation_error_displayed("Email/Username is required")
+    # --- End of TC_SCRUM74_005 steps ---
