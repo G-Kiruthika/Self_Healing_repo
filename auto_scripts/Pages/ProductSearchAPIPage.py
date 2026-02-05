@@ -5,6 +5,7 @@ import pymysql
 class ProductSearchAPIPage:
     """
     Page class for interacting with the Product Search API endpoint.
+    Implements TC_SCRUM96_008: DB insertion, case-insensitive search validation, and strict response validation for all query variants.
     """
 
     BASE_URL = "https://your-api-domain.com"  # Replace with actual API base URL
@@ -133,20 +134,17 @@ class ProductSearchAPIPage:
             base_search_term (str): The search term (e.g., 'laptop').
             expected_product_ids (list): List of expected product IDs to validate in response.
         """
-        variants = [base_search_term.lower(), base_search_term.upper(), base_search_term.title()]  # e.g., 'laptop', 'LAPTOP', 'Laptop'
-        # Also add a mixed case variant if needed
+        variants = [base_search_term.lower(), base_search_term.upper(), base_search_term.title()]
         if base_search_term != "LaPtOp":
             variants.append("LaPtOp")
         for variant in variants:
             response = self.search_products(variant)
             self.validate_status_code(response, 200)
             response_json = response.json()
-            # Validate all expected products are returned
             products = response_json.get("products", [])
             returned_ids = [p.get("productId") for p in products]
             for expected_id in expected_product_ids:
                 assert expected_id in returned_ids, f"Product ID {expected_id} not found in results for query '{variant}'. Returned IDs: {returned_ids}"
-            # Optionally, validate product schema
             self.validate_product_schema(response_json)
 
     def tc_scrum96_008_full_workflow(self, products, base_search_term):
