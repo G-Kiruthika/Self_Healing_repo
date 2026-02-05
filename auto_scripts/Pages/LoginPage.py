@@ -147,3 +147,24 @@ class LoginPage:
         border = self.driver.execute_script("return arguments[0].style.border;", email_elem)
         bg_color = self.driver.execute_script("return arguments[0].style.backgroundColor;", email_elem)
         return border == "2px solid red" and bg_color == "#ffe6e6"
+
+    # --- Start of TC_SCRUM74_004 steps ---
+    def tc_scrum74_004_invalid_password_flow(self, email: str, wrong_password: str) -> bool:
+        """
+        TC_SCRUM74_004 Steps:
+        1. Navigate to the login page
+        2. Enter valid registered email
+        3. Enter incorrect password
+        4. Click on the Login button
+        5. Validate error message 'Invalid password'
+        """
+        self.load()
+        assert self.is_displayed(), "Login page is not displayed"
+        self.enter_email(email)
+        self.enter_password(wrong_password)
+        self.click_login()
+        error = self.get_error_message()
+        assert error is not None, "No error message displayed after invalid login attempt"
+        assert "Invalid password" in error, f"Expected 'Invalid password' error message, got: {error}"
+        return True
+    # --- End of TC_SCRUM74_004 steps ---
