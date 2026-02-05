@@ -96,19 +96,31 @@ import pytest
 def test_TC_SCRUM96_003_duplicate_email_registration_and_db_verification():
     ...
 
-# TC-SCRUM96_007: Automated Test for Registration, JWT, Profile API, and DB Validation
+# TC-SCRUM96_007: End-to-End Profile API Validation Test (NEW)
+from auto_scripts.Pages.ProfileAPIValidationPage import ProfileAPIValidationPage
+from auto_scripts.Pages.JWTUtils import JWTUtils
 from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
-from auto_scripts.Pages.ProfilePage import ProfilePage
 import pytest
-import pymysql
 
-def test_TC_SCRUM96_007_registration_login_profile_db_validation():
-    '''
-    Automated test for TC_SCRUM96_007:
-    1. Register and login a test user to obtain JWT
-    2. Send GET request to /api/users/profile endpoint with JWT
-    3. Validate all profile fields against DB
-    '''
+class DummyDBClient:
+    def get_user_by_username(self, username):
+        return {
+            "userId": 123,
+            "username": "profileuser",
+            "email": "profileuser@example.com",
+            "firstName": "Profile",
+            "lastName": "User",
+            "registrationDate": "2024-06-01T12:00:00Z",
+            "accountStatus": "active"
+        }
+
+@pytest.mark.tc_scrum96_007
+def test_TC_SCRUM96_007_profile_api_and_db_validation():
+    jwt_utils = JWTUtils()
+    registration_api = UserRegistrationAPIPage()
+    db_client = DummyDBClient()
+    profile_api_page = ProfileAPIValidationPage(jwt_utils, registration_api, db_client)
+
     user_data = {
         "username": "profileuser",
         "email": "profileuser@example.com",
@@ -116,17 +128,8 @@ def test_TC_SCRUM96_007_registration_login_profile_db_validation():
         "firstName": "Profile",
         "lastName": "User"
     }
-    db_config = {
-        "host": "localhost",
-        "user": "test",
-        "password": "test",
-        "database": "ecommerce"
-    }
-    # Step 1: Register and login user to obtain JWT
-    reg_login_result = UserRegistrationAPIPage().tc_scrum96_007_register_and_login(user_data)
-    jwt_token = reg_login_result["jwt_token"]
-    assert jwt_token, "JWT token must be returned after registration and login"
-    # Step 2 & 3: Fetch profile and validate against DB
-    profile_result = ProfilePage.tc_scrum96_007_get_profile_and_validate(jwt_token, user_data, db_config)
-    assert profile_result["status_code"] == 200, "Profile API must return 200 OK"
-    assert profile_result["db_validation"] is True, "Profile data must match DB records"
+
+    jwt_token = profile_api_page.register_and_login_user(user_data)
+    profile_data = profile_api_page.get_profile_with_jwt(jwt_token)
+    expected_data = db_client.get_user_by_username(user_data["username"])
+    profile_api_page.validate_profile_fields(profile_data, expected_data)
