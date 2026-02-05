@@ -217,3 +217,18 @@ class TestLogin:
             attempts=5,
             lock_message="Your account is locked"
         )
+
+    def test_tc_login_014_spaces_trim_and_login(self, driver):
+        """
+        Test Case TC_LOGIN_014: Leading/Trailing Spaces Trim and Login Success
+        Steps:
+            1. Navigate to the login page.
+            2. Enter email/username with leading/trailing spaces and valid password ('  user@example.com  ', 'ValidPass123').
+            3. Click the 'Login' button.
+            4. Verify that spaces are trimmed and login succeeds, redirecting to dashboard.
+        """
+        login_page = LoginPage(driver)
+        result = login_page.execute_tc_login_014_spaces_trim_and_login('  user@example.com  ', 'ValidPass123')
+        assert result['spaces_trimmed'], "Spaces should be trimmed from the email/username field."
+        assert result['login_successful'], "Login should succeed after trimming spaces."
+        assert result['dashboard_displayed'], "User should be redirected to dashboard/homepage after successful login."
