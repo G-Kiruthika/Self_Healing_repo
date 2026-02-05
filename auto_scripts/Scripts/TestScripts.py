@@ -24,19 +24,22 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    def test_tc019_login_with_special_unicode(self):
+    def test_tc019_login_with_unicode_and_special_characters(self):
         """
         Test Case TC019:
-        1. Enter valid email and password containing special characters and Unicode.
-           [Test Data: üser+name@example.com / P@sswørd!🔒]
-        2. Click 'Login' button.
-        3. Verify that fields accept input and login succeeds if credentials are valid.
+        1. Navigate to login page.
+        2. Enter valid email and password containing special characters and Unicode (e.g., 'üser+name@example.com' / 'P@sswørd!🔒').
+        3. Verify that the fields accept input.
+        4. Submit login.
+        5. Assert that login is successful (dashboard and user profile icon are displayed).
         """
         driver = webdriver.Chrome()
         page = LoginPage(driver)
+        email = "üser+name@example.com"
+        password = "P@sswørd!🔒"
         try:
-            result = page.login_with_special_unicode('üser+name@example.com', 'P@sswørd!🔒')
-            self.assertTrue(result, "TC019 failed: Fields did not accept special/Unicode input or login did not succeed.")
+            result = page.login_with_unicode_and_special_characters(email, password)
+            self.assertTrue(result, "TC019 failed: Unicode/special character login unsuccessful or fields did not accept input.")
         finally:
             driver.quit()
 
