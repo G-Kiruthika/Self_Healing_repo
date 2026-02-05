@@ -135,16 +135,16 @@ class TestLogin:
         result = login_page.execute_tc001_login_workflow('user@example.com', 'ValidPassword123')
         assert result['dashboard_displayed'], f"Dashboard not displayed. Error: {result.get('error_message', '')}"
 
-    def test_tc_login_010_remember_me_session_persistence(self, driver):
+    def test_tc002_invalid_login_workflow(self, driver):
         """
-        Test Case TC_LOGIN_010:
-        1. Navigate to the login page.
-        2. Enter valid credentials and select 'Remember Me'.
-        3. Click the 'Login' button.
-        4. Verify session persists after browser restart.
+        Test Case TC002: Invalid Login Workflow
+        Steps:
+            1. Navigate to the login page
+            2. Enter invalid email and valid password ('invaliduser@example.com', 'ValidPassword123')
+            3. Click the 'Login' button
+            4. Verify error message 'Invalid email or password' is displayed, login fails
         """
         login_page = LoginPage(driver)
-        result = login_page.execute_tc_login_010_remember_me_session_persistence('user@example.com', 'ValidPass123')
-        assert result['remember_me_checked'], "'Remember Me' checkbox should be selected."
-        assert result['dashboard_displayed'], "Dashboard should be displayed after login."
-        assert result['session_persisted'], f"Session should persist after browser restart. Error: {result.get('error_message', '')}"
+        result = login_page.execute_tc002_invalid_login_workflow('invaliduser@example.com', 'ValidPassword123')
+        assert result['error_message'] == 'Invalid email or password', f"Expected error message not shown. Got: {result['error_message']}"
+        assert result['login_failed'], "Login should fail for invalid credentials."
