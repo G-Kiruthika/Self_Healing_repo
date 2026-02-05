@@ -37,6 +37,17 @@ class LoginPage:
         password_input.clear()
         password_input.send_keys(password)
 
+    def ensure_remember_me_unchecked(self):
+        """
+        Ensures the 'Remember Me' checkbox is NOT checked.
+        """
+        checkbox = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(self.remember_me_checkbox)
+        )
+        if checkbox.is_selected():
+            checkbox.click()
+        assert not checkbox.is_selected(), "'Remember Me' checkbox should be unchecked."
+
     def click_login(self):
         login_btn = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(self.login_button)
@@ -59,6 +70,88 @@ class LoginPage:
         except NoSuchElementException:
             return None
 
+    def is_user_logged_in(self):
+        """
+        Checks if dashboard header and user profile icon are visible (indicating user is logged in).
+        """
+        try:
+            dashboard = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(self.dashboard_header)
+            )
+            profile_icon = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(self.user_profile_icon)
+            )
+            return dashboard.is_displayed() and profile_icon.is_displayed()
+        except TimeoutException:
+            return False
+
+    def is_on_login_page(self):
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(self.email_field)
+            )
+            WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(self.password_field)
+            )
+            return True
+        except TimeoutException:
+            return False
+
+    def login_with_credentials(self, email, password):
+        self.open_login_page()
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login()
+
+    def login_without_remember_me_and_validate_session(self, email, password, driver_factory):
+        """
+        Implements TC_LOGIN_08:
+        1. Open login page
+        2. Enter valid email and password
+        3. Ensure 'Remember Me' is NOT checked
+        4. Click login
+        5. Validate user is logged in
+        6. Close and reopen browser, revisit site
+        7. Validate user is logged out and redirected to login page
+        Args:
+            email (str): User email
+            password (str): User password
+            driver_factory (callable): Function to instantiate a new WebDriver
+        Returns:
+            dict: Results of each step for validation
+        """
+        results = {}
+        # Step 1: Open login page
+        self.open_login_page()
+        results['login_page_opened'] = self.is_on_login_page()
+        # Step 2: Enter credentials
+        self.enter_email(email)
+        self.enter_password(password)
+        results['credentials_entered'] = True
+        # Step 3: Ensure 'Remember Me' is NOT checked
+        self.ensure_remember_me_unchecked()
+        results['remember_me_unchecked'] = True
+        # Step 4: Click Login
+        self.click_login()
+        time.sleep(2)  # Wait for login to complete
+        # Step 5: Validate user is logged in
+        results['user_logged_in'] = self.is_user_logged_in()
+        # Step 6: Close and reopen browser, revisit site
+        self.driver.quit()
+        new_driver = driver_factory()
+        new_driver.get(self.login_url)
+        # Step 7: Validate user is logged out (should see login page)
+        try:
+            WebDriverWait(new_driver, 10).until(
+                EC.visibility_of_element_located(self.email_field)
+            )
+            results['user_logged_out_after_reopen'] = True
+        except TimeoutException:
+            results['user_logged_out_after_reopen'] = False
+        # Clean up
+        new_driver.quit()
+        return results
+
     # TC006: Test login with valid email, empty password, check error message and login failure
     def login_with_valid_email_and_empty_password_tc006(self, email="user@example.com"):
         """
@@ -74,19 +167,15 @@ class LoginPage:
         results = {}
         self.open_login_page()
         results['page_opened'] = self.driver.current_url == self.login_url
-
         self.enter_email(email)
         # Leave password field empty (do not call enter_password)
         password_value = self.get_password_field_value()
         results['password_empty'] = (password_value == "" or password_value is None)
-
         self.click_login()
         time.sleep(1)  # Short wait for error message to appear
-
         error_msg = self.get_error_message()
         results['error_message_displayed'] = (error_msg == "Password required")
         results['login_failed'] = results['error_message_displayed']
-
         # Return details for validation
         return results
 
