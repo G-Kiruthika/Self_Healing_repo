@@ -1,12 +1,7 @@
-# Selenium Test Script for TC_LOGIN_004 - Login with Empty Password
+# Selenium Test Script for TC_LOGIN_004: Login with Empty Password Field
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 from auto_scripts.Pages.LoginPage import LoginPage
 
 @pytest.fixture(scope='module')
@@ -20,35 +15,32 @@ def driver():
     yield driver
     driver.quit()
 
-def test_TC_LOGIN_004_empty_password(driver):
+def test_login_empty_password(driver):
     """
-    Test Case ID: TC_LOGIN_004
-    Description: Verify that login is prevented when password field is empty.
+    Test Case: TC_LOGIN_004
+    Description: Verify that attempting to login with an empty password field displays the correct validation error and prevents login.
     Steps:
-        1. Navigate to the login page
-        2. Enter valid registered email
-        3. Leave password field empty
-        4. Click on the Login button
-        5. Verify login is prevented and validation error is shown
-    Acceptance Criteria:
-        - Password field remains empty
-        - Validation error displayed: 'Password is required'
-        - User remains on login page
+      1. Navigate to the login page
+      2. Enter valid registered email
+      3. Leave password field empty
+      4. Click on the Login button
+      5. Verify login is prevented and user remains on login page
+    Acceptance Criteria: Validation error 'Password is required' is displayed and user is not authenticated.
     """
     login_page = LoginPage(driver)
 
     # Step 1: Navigate to the login page
-    assert login_page.navigate_to_login(), "Login page is not displayed."
+    assert login_page.navigate_to_login(), "Login page should be displayed"
 
     # Step 2: Enter valid registered email
-    valid_email = "testuser@example.com"
-    assert login_page.enter_email(valid_email), f"Email '{valid_email}' not accepted in email field."
+    email = "testuser@example.com"
+    assert login_page.enter_email(email), f"Email '{email}' should be accepted in the field"
 
     # Step 3: Leave password field empty
-    assert login_page.leave_password_field_empty(), "Password field is not empty after clearing."
+    assert login_page.leave_password_field_empty(), "Password field should remain empty"
 
     # Step 4: Click on the Login button
-    assert login_page.click_login_button_for_empty_password(), "Validation error 'Password is required' was not displayed."
+    assert login_page.click_login_with_empty_password(), "Validation error 'Password is required' should be displayed"
 
     # Step 5: Verify login is prevented and user remains on login page
-    assert login_page.verify_login_prevented_for_empty_password(), "User was able to proceed with login or did not remain on login page."
+    assert login_page.verify_login_prevented_for_empty_password(), "User should not be able to proceed and must remain on login page"
