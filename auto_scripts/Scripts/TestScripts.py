@@ -130,3 +130,22 @@ class TestLogin:
         login_page = LoginPage(driver)
         result = login_page.tc_login_012_min_length_username_login()
         assert result, "Min username length login test failed: Login attempt not processed as expected."
+
+    def test_TC_LOGIN_015_unverified_account(self, driver):
+        """
+        Test Case TC-LOGIN-015: Login with Unverified Account
+        Steps:
+            1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+            2. Enter email of an unverified account [Test Data: Email: unverified@example.com]
+            3. Enter correct password [Test Data: Password: ValidPass123!]
+            4. Click on the Login button
+            5. Verify error message is displayed: 'Please verify your email address before logging in.'
+            6. Verify user remains on login page with option to resend verification email
+        Acceptance Criteria: TS-013
+        """
+        login_page = LoginPage(driver)
+        result = login_page.tc_login_015_unverified_account_login(
+            email="unverified@example.com",
+            password="ValidPass123!"
+        )
+        assert result, "Unverified account login test failed: Error message not shown, user authenticated, or resend verification option missing."
