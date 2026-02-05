@@ -1,51 +1,80 @@
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import requests
+import pymysql
 
 class ProfilePage:
-    def __init__(self, page):
-        self.page = page
-        self.user_profile_icon = page.locator('#profile-icon')
+    """
+    Page Object for User Profile workflows, including profile update via PUT request and database verification.
+    """
+    URL = "https://example-ecommerce.com/profile"
+    PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")  # From LoginPage locators
+    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")  # For post-login verification
 
-    async def click_profile(self):
-        await self.user_profile_icon.click()
+    def __init__(self, driver, timeout=10):
+        self.driver = driver
+        self.wait = WebDriverWait(driver, timeout)
 
-    def get_profile_info(self, base_url, token):
+    def go_to_profile_page(self):
         """
-        Sends GET request to /api/users/profile with authentication token.
-        Returns response JSON and status code.
+        Navigates to the Profile page after login.
         """
-        headers = {
-            'Authorization': f'Bearer {token}',
-            'Accept': 'application/json'
+        self.driver.get(self.URL)
+        self.wait.until(EC.visibility_of_element_located(self.PROFILE_ICON))
+
+    @staticmethod
+    def sign_in_and_get_token(email, password):
+        """
+        Signs in via API and returns authentication token.
+        """
+        api_url = "https://example-ecommerce.com/api/users/login"
+        payload = {"email": email, "password": password}
+        response = requests.post(api_url, json=payload)
+        assert response.status_code == 200, f"Login failed: {response.text}"
+        data = response.json()
+        assert "token" in data, "No token returned in login response"
+        return data["token"]
+
+    @staticmethod
+    def update_profile_put(token, username):
+        """
+        Sends PUT request to update profile username. Returns response.
+        """
+        api_url = "https://example-ecommerce.com/api/users/profile"
+        headers = {"Authorization": f"Bearer {token}"}
+        payload = {"username": username}
+        response = requests.put(api_url, json=payload, headers=headers)
+        assert response.status_code == 200, f"Profile update failed: {response.text}"
+        data = response.json()
+        assert data.get("username") == username, f"Returned username mismatch: {data}"
+        return data
+
+    @staticmethod
+    def verify_username_in_db(db_connection, email, expected_username):
+        """
+        Verifies the updated username in the database.
+        """
+        query = f"SELECT username FROM users WHERE email='{email}'"
+        cursor = db_connection.cursor()
+        cursor.execute(query)
+        result = cursor.fetchone()
+        assert result is not None, f"No user found for email {email}"
+        actual_username = result[0]
+        assert actual_username == expected_username, f"Expected username '{expected_username}', got '{actual_username}'"
+        return actual_username
+
+    def full_profile_update_workflow(self, email, password, new_username, db_connection):
+        """
+        Complete workflow:
+        1. Sign in and get token
+        2. Send PUT request to update username
+        3. Verify DB persistence
+        """
+        token = self.sign_in_and_get_token(email, password)
+        api_result = self.update_profile_put(token, new_username)
+        db_username = self.verify_username_in_db(db_connection, email, new_username)
+        return {
+            "api_result": api_result,
+            "db_username": db_username
         }
-        response = requests.get(f"{base_url}/api/users/profile", headers=headers)
-        return response.json(), response.status_code
-
-    def validate_sensitive_info_not_exposed(self, response_json):
-        """
-        Validates that sensitive information (like 'password') is NOT in the response.
-        Returns True if not present, False otherwise.
-        """
-        sensitive_fields = ['password', 'pass', 'pwd', 'secret']
-        for field in sensitive_fields:
-            if field in response_json:
-                return False
-        return True
-
-    def validate_profile_response_schema(self, response_json):
-        """
-        Validates the response contains only expected fields: userId, username, email.
-        Returns True if schema matches, False otherwise.
-        """
-        expected_fields = {'userId', 'username', 'email'}
-        response_fields = set(response_json.keys())
-        # Ensure all expected fields are present
-        if not expected_fields.issubset(response_fields):
-            return False
-        # Ensure no unexpected fields (except allowed ones)
-        allowed_fields = expected_fields
-        extra_fields = response_fields - allowed_fields
-        # If extra fields do not include sensitive info, it's okay (for extensibility)
-        sensitive_fields = {'password', 'pass', 'pwd', 'secret'}
-        if sensitive_fields & extra_fields:
-            return False
-        return True
