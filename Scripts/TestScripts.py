@@ -35,6 +35,28 @@ class TestCartDuplicateSignup(unittest.TestCase):
         # Optional: print results for debug
         print('TC_CART_003 Results:', results)
 
+    def test_cart_add_excess_quantity_tc_cart_005(self):
+        """
+        Test Case TC_CART_005:
+        Attempt to add a product to cart with quantity greater than available stock.
+        Test Data: { "product_id": "12345", "quantity": 101 }
+        Acceptance Criteria: System returns error; product not added.
+        """
+        self.driver.get('https://example-ecommerce.com/product/12345')
+        # Attempt to add product with excessive quantity
+        try:
+            quantity_input = self.driver.find_element_by_id('quantity')
+            quantity_input.clear()
+            quantity_input.send_keys('101')
+            add_to_cart_button = self.driver.find_element_by_id('add-to-cart')
+            add_to_cart_button.click()
+            # Check for error message
+            error_message = self.driver.find_element_by_id('cart-error').text
+            self.assertIsNotNone(error_message, 'Error message should be displayed for excessive quantity.')
+            self.assertIn('not added', error_message.lower(), 'Error message should mention product not added.')
+        except Exception as e:
+            self.fail(f'Exception occurred while testing excessive quantity add: {str(e)}')
+
     def tearDown(self):
         self.driver.quit()
 
