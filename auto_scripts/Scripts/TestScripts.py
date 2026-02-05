@@ -62,7 +62,60 @@ import requests
 import pytest
 
 def test_TC_SCRUM96_004_registration_login_jwt_profile():
-    ...
+    """
+    Test Case TC_SCRUM96_004: End-to-End Registration, Login, JWT Validation, Protected Endpoint Test
+    Steps:
+    1. Register a test user account via POST /api/users/register
+    2. Login via /api/auth/login and extract JWT
+    3. Decode and validate JWT claims
+    4. Access protected endpoint /api/users/profile
+    """
+    # Step 1: Register user
+    registration_api = UserRegistrationAPIPage()
+    user_data = {
+        "username": "logintest",
+        "email": "logintest@example.com",
+        "password": "ValidPass123!",
+        "firstName": "Login",
+        "lastName": "Test"
+    }
+    registration_response = registration_api.register_user(user_data)
+    assert registration_response.status_code == 201 or registration_response.status_code == 200, f"Registration failed: {registration_response.text}"
+
+    # Step 2: Login and extract JWT
+    login_api = LoginPage()
+    credentials = {
+        "username": "logintest",
+        "password": "ValidPass123!"
+    }
+    login_response = login_api.login_user(credentials)
+    assert login_response.status_code == 200, f"Login failed: {login_response.text}"
+    login_json = login_response.json()
+    jwt_token = login_json.get("accessToken") or login_json.get("jwt")
+    refresh_token = login_json.get("refreshToken")
+    token_type = login_json.get("tokenType")
+    user_details = {
+        "userId": login_json.get("userId"),
+        "username": login_json.get("username"),
+        "email": login_json.get("email")
+    }
+    assert jwt_token is not None, "JWT token missing in login response"
+    assert token_type == "Bearer", f"Token type mismatch: {token_type}"
+    assert user_details["username"] == "logintest", f"Username mismatch: {user_details['username']}"
+    assert user_details["email"] == "logintest@example.com", f"Email mismatch: {user_details['email']}"
+
+    # Step 3: Decode and validate JWT
+    jwt_utils = JWTUtils()
+    payload = jwt_utils.decode_jwt(jwt_token)
+    assert jwt_utils.validate_jwt_claims(payload, expected_username="logintest", expiration_seconds=86400), "JWT claims validation failed"
+
+    # Step 4: Access protected endpoint
+    profile_api = ProfilePage()
+    profile_response = profile_api.get_profile(jwt_token)
+    assert profile_response.status_code == 200, f"Profile endpoint failed: {profile_response.text}"
+    profile_json = profile_response.json()
+    assert profile_json.get("username") == "logintest", f"Profile username mismatch: {profile_json.get('username')}"
+    assert profile_json.get("email") == "logintest@example.com", f"Profile email mismatch: {profile_json.get('email')}"
 
 # TC_SCRUM96_002: Duplicate Username Registration and DB Verification Test
 from PageClasses.UserRegistrationAPIPage import UserRegistrationAPIPage
