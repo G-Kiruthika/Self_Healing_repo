@@ -72,5 +72,24 @@ class TestCartFunctionality(unittest.TestCase):
         self.assertTrue(found, f"Product {product_id} with quantity {quantity} not found in cart after sign out/in.")
         print(f"Cart contents after re-login: {cart_contents}")
 
+    def test_TC_CART_007_delete_cart(self):
+        """
+        TC_CART_007: Delete shopping cart and verify deletion.
+        Steps:
+        1. Delete shopping cart for a user. [Test Data: { "cart_id": "<cart_id>" }]
+        2. Query for deleted cart. [Test Data: { "cart_id": "<cart_id>" }]
+        Expected:
+        1. Cart and all associated products are deleted.
+        2. Cart is not found.
+        """
+        cart_id = "test_cart_007"  # Replace with actual test data as needed
+        # Step 1: Delete shopping cart
+        deleted = self.cart_page.delete_cart(cart_id)
+        self.assertTrue(deleted, f"Cart {cart_id} was not deleted successfully.")
+        # Step 2: Query for deleted cart
+        not_found = self.cart_page.verify_cart_deleted(cart_id)
+        self.assertTrue(not_found, f"Cart {cart_id} still exists after deletion.")
+        print(f"Cart {cart_id} deletion verified: {not_found}")
+
 if __name__ == "__main__":
     unittest.main()
