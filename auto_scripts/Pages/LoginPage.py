@@ -1,87 +1,67 @@
-import time
+# LoginPage.py
+"""
+Page Object for Login Page
+Updated to include TC_LOGIN_004: Validation when username and password are empty.
+"""
+
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class LoginPage:
-    def __init__(self, driver):
+    """
+    Page class for the Login Page.
+    """
+    LOGIN_URL = "https://app.example.com/login"
+
+    def __init__(self, driver: WebDriver):
         self.driver = driver
-        # Updated URL from Locators.json
-        self.url = "https://example-ecommerce.com/login"
-        # Updated locators from Locators.json
-        self.email_input_locator = (By.ID, "login-email")
-        self.password_input_locator = (By.ID, "login-password")
-        self.login_button_locator = (By.ID, "login-submit")
-        self.error_message_locator = (By.CSS_SELECTOR, "div.alert-danger")
-        self.validation_error_locator = (By.CSS_SELECTOR, ".invalid-feedback")
+        # Locators loaded from Locators.json (assumed structure)
+        self.username_input = (By.ID, "username")
+        self.password_input = (By.ID, "password")
+        self.login_button = (By.ID, "loginBtn")
+        self.error_message = (By.XPATH, "//div[@class='error-message']")
 
     def open_login_page(self):
-        """Navigate to the login page and wait for email field."""
-        self.driver.get(self.url)
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(self.email_input_locator)
-        )
+        """Navigate to the login page."""
+        self.driver.get(self.LOGIN_URL)
 
-    def enter_email(self, email):
-        """Enter email (supports 255+ chars) using correct locator."""
-        email_input = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(self.email_input_locator)
-        )
-        email_input.clear()
-        email_input.send_keys(email)
-        # Optionally, validate input length if needed
-        if len(email) > 255:
-            # Check for validation error prompt
-            try:
-                error = self.get_validation_error()
-                if error:
-                    return error
-            except Exception:
-                pass
-        return None
+    def login(self, username: str, password: str):
+        """Perform standard login."""
+        self.driver.find_element(*self.username_input).clear()
+        self.driver.find_element(*self.username_input).send_keys(username)
+        self.driver.find_element(*self.password_input).clear()
+        self.driver.find_element(*self.password_input).send_keys(password)
+        self.driver.find_element(*self.login_button).click()
 
-    def enter_password(self, password):
-        """Enter password using correct locator."""
-        password_input = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(self.password_input_locator)
-        )
-        password_input.clear()
-        password_input.send_keys(password)
-
-    def click_login(self):
-        """Click the login button using correct locator."""
-        login_button = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(self.login_button_locator)
-        )
-        login_button.click()
-
-    def get_error_message(self):
-        """Retrieve main error message after login attempt."""
+    def get_error_message(self) -> str:
+        """Return the error message text if present."""
         try:
-            error_element = WebDriverWait(self.driver, 5).until(
-                EC.visibility_of_element_located(self.error_message_locator)
+            error = WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located(self.error_message)
             )
-            return error_element.text
+            return error.text
         except Exception:
-            return None
+            return ""
 
-    def get_validation_error(self):
-        """Retrieve validation error messages (e.g., invalid email length, format)."""
-        try:
-            validation_element = WebDriverWait(self.driver, 5).until(
-                EC.visibility_of_element_located(self.validation_error_locator)
-            )
-            return validation_element.text
-        except Exception:
-            return None
-
-    def get_all_errors(self):
-        """Retrieve both error and validation error messages for comprehensive reporting."""
-        errors = []
-        error_msg = self.get_error_message()
-        validation_msg = self.get_validation_error()
-        if error_msg:
-            errors.append(error_msg)
-        if validation_msg:
-            errors.append(validation_msg)
-        return errors
+    def validate_empty_fields_error(self) -> bool:
+        """
+        TC_LOGIN_004: Validates error when both username and password are empty.
+        Steps:
+        1. Open login page.
+        2. Leave username and password empty.
+        3. Click Login.
+        4. Verify error message 'Username and password are required'.
+        Returns True if validation error is present and correct, else False.
+        """
+        self.open_login_page()
+        # Ensure fields are empty
+        self.driver.find_element(*self.username_input).clear()
+        self.driver.find_element(*self.password_input).clear()
+        # Click login
+        self.driver.find_element(*self.login_button).click()
+        # Validate error
+        expected_error = "Username and password are required"
+        actual_error = self.get_error_message()
+        return actual_error.strip() == expected_error
