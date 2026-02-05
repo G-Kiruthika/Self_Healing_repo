@@ -201,18 +201,19 @@ class TestLogin:
         password_recovery_page.enter_email_and_submit('user@example.com')
         assert password_recovery_page.is_success_message_displayed(), "Password reset success message should be displayed after submitting recovery request."
 
-    def test_tc_login_013_account_lockout(self, driver):
+    def test_tc_login_013_account_lock_throttling(self, driver):
         """
-        Test Case TC_LOGIN_013: Account Lockout After Multiple Failed Login Attempts
+        Test Case TC_LOGIN_013: Account Lock/Throttling After Multiple Failed Login Attempts
         Steps:
             1. Navigate to the login page.
-            2. Enter incorrect password for a valid email multiple times (email: 'user@example.com', password: 'WrongPass456', attempts: 5).
-            3. Assert that after threshold attempts, the account is locked or login is throttled, and error messages are validated.
+            2. Attempt login 5 times with incorrect password for valid email.
+            3. Validate that lock/throttle message appears.
+            4. Assert login is unsuccessful after lockout.
         """
         login_page = LoginPage(driver)
-        result = login_page.execute_tc_login_013_account_lockout('user@example.com', 'WrongPass456', 5)
-        assert result['locked_or_throttled'] is True, f"Account should be locked or login throttled. Error: {result['final_error_message']}"
-        assert any(word in result['final_error_message'].lower() for word in ['locked', 'throttle', 'too many']), f"Final error message should indicate lockout or throttling. Message: {result['final_error_message']}"
-        assert result['login_unsuccessful'] is True, "Login should not be successful after lockout/throttling."
-        assert result['attempts'] == 5, "There should be 5 login attempts."
-        assert isinstance(result['all_error_messages'], list) and len(result['all_error_messages']) == 5, "Error messages list should have 5 entries."
+        login_page.attempt_login_multiple_times_and_check_lock(
+            email="user@example.com",
+            wrong_password="WrongPass456",
+            attempts=5,
+            lock_message="Your account is locked"
+        )
