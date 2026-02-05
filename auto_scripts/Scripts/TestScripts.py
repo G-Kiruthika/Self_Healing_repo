@@ -92,7 +92,6 @@ from auto_scripts.Pages.UserSignupPage import UserSignupPage
 from auto_scripts.Pages.LoginPage import LoginPage
 import requests
 
-
 def test_TC_SCRUM_96_004_login_and_jwt_validation(driver):
     """
     Executive Summary:
@@ -151,3 +150,22 @@ def test_TC_SCRUM_96_004_login_and_jwt_validation(driver):
     import datetime
     exp_time = datetime.datetime.fromtimestamp(validated_payload["exp"])
     assert exp_time > datetime.datetime.utcnow(), "Token has expired."
+
+# TC016: Session Timeout Automation Test
+from auto_scripts.Pages.LoginPage import LoginPage
+
+def test_TC016_session_timeout_logout(driver):
+    """
+    Test Case TC016: Session Timeout
+    Steps:
+    1. Login and remain inactive for session timeout duration.
+       [Test Data: user@example.com / ValidPassword123]
+    2. Verify user is automatically logged out after timeout.
+    Acceptance Criteria: User is redirected to login page or session expired message is shown.
+    """
+    email = "user@example.com"
+    password = "ValidPassword123"
+    login_page = LoginPage(driver)
+    login_page.login_with_credentials(email, password)
+    # Simulate inactivity and verify logout
+    assert login_page.wait_for_session_timeout_and_verify_logout(timeout_duration=900), "User was not logged out after session timeout."
