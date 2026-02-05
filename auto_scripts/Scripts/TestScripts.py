@@ -1,5 +1,6 @@
 # Existing content of TestScripts.py
 # ... (existing test methods)
+
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,24 +10,125 @@ class TestLoginPage(unittest.TestCase):
     # Existing test methods...
     ...
     def test_tc_login_06_empty_email_and_password_error(self):
-        ...
+        """
+        Test Case TC_LOGIN_06:
+        1. Navigate to login page.
+        2. Leave both email and password fields empty.
+        3. Click 'Login' button.
+        4. Verify error messages 'Email is required' and 'Password is required' are displayed. User remains on login page.
+        """
+        driver = webdriver.Chrome()
+        page = LoginPage(driver)
+        try:
+            result = page.tc_login_06_empty_email_and_password_error()
+            self.assertTrue(result, "TC_LOGIN_06 failed: Expected error messages not displayed or user not on login page.")
+        finally:
+            driver.quit()
+
     def test_tc_login_07_remember_me_session_persistence(self):
-        ...
-    def test_tc_login_08_remember_me_not_checked(self):
+        """
+        Test Case TC_LOGIN_07:
+        1. Navigate to login page.
+        2. Enter valid registered email and password.
+        3. Check the 'Remember Me' option.
+        4. Click on the 'Login' button.
+        5. Close and reopen the browser, revisit the site, and verify session persists.
+        """
+        driver = webdriver.Chrome()
+        page = LoginPage(driver)
+        try:
+            page.login_with_remember_me_and_validate_session(
+                username='user1@example.com',
+                password='ValidPassword123',
+                home_url='https://example-ecommerce.com/',
+                user_profile_locator=(By.CSS_SELECTOR, '.user-profile-name')
+            )
+        finally:
+            try:
+                driver.quit()
+            except Exception:
+                pass
+
+    def test_tc020_login_across_browsers(self):
+        """
+        Test Case TC020:
+        Attempt login on Chrome, Firefox, Safari, Edge, and mobile browsers.
+        Test Data: user@example.com / ValidPassword123
+        Acceptance Criteria: Login works as expected on all supported browsers/devices.
+        """
+        email = "user@example.com"
+        password = "ValidPassword123"
+        browsers = {}
+        try:
+            # Desktop browsers
+            try:
+                browsers['chrome'] = webdriver.Chrome()
+            except Exception:
+                pass
+            try:
+                browsers['firefox'] = webdriver.Firefox()
+            except Exception:
+                pass
+            try:
+                browsers['edge'] = webdriver.Edge()
+            except Exception:
+                pass
+            try:
+                browsers['safari'] = webdriver.Safari()
+            except Exception:
+                pass
+            mobile_caps = None
+            try:
+                from appium import webdriver as appium_webdriver
+                mobile_caps = {
+                    'android': {
+                        'platformName': 'Android',
+                        'deviceName': 'Android Emulator',
+                        'browserName': 'Chrome'
+                    },
+                    'ios': {
+                        'platformName': 'iOS',
+                        'deviceName': 'iPhone Simulator',
+                        'browserName': 'Safari'
+                    }
+                }
+            except ImportError:
+                pass
+            page = LoginPage(None)
+            results = page.login_across_browsers(email=email, password=password, browsers=browsers, mobile_caps=mobile_caps)
+            for browser_device, result in results.items():
+                self.assertTrue(result, f"Login failed on {browser_device}")
+        finally:
+            for driver in browsers.values():
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+
+    def test_tc_login_08_remember_me_session_not_persistent(self):
         """
         Test Case TC_LOGIN_08:
         1. Navigate to login page.
         2. Enter valid registered email and password.
         3. Ensure 'Remember Me' is NOT checked.
         4. Click on the 'Login' button.
-        5. Close and reopen the browser, revisit the site, and verify the user is logged out and redirected to the login page.
+        5. Close and reopen the browser, revisit the site, and verify user is logged out and redirected to the login page.
         """
         def driver_factory():
             return webdriver.Chrome()
         driver = webdriver.Chrome()
         page = LoginPage(driver)
         try:
-            page.tc_login_08_remember_me_not_checked(email="user1@example.com", password="ValidPassword123", driver_factory=driver_factory)
+            results = page.login_without_remember_me_and_validate_session(
+                email='user1@example.com',
+                password='ValidPassword123',
+                driver_factory=driver_factory
+            )
+            self.assertTrue(results['login_page_opened'], "Login page did not open.")
+            self.assertTrue(results['credentials_entered'], "Credentials were not entered.")
+            self.assertTrue(results['remember_me_unchecked'], "'Remember Me' was not unchecked.")
+            self.assertTrue(results['user_logged_in'], "User did not log in.")
+            self.assertTrue(results['user_logged_out_after_reopen'], "User was not logged out after browser reopen.")
         finally:
             try:
                 driver.quit()
