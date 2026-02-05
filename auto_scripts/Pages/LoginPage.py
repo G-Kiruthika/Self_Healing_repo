@@ -253,3 +253,35 @@ class LoginPage:
         self.driver.find_element(*self.LOGIN_BUTTON).click()
         return self.is_error_message_displayed("Invalid credentials")
     # --- End of TC_SCRUM74_003 steps ---
+
+    # --- Start of TC_LOGIN_004 steps ---
+    def enter_valid_email_leave_password_empty(self, email: str):
+        """
+        TC_LOGIN_004 - Step 2 & 3: Enter valid registered email and leave password field empty.
+        Acceptance Criteria: Email is accepted, password field remains empty.
+        """
+        email_field = self.driver.find_element(*self.EMAIL_INPUT)
+        email_field.clear()
+        email_field.send_keys(email)
+        password_field = self.driver.find_element(*self.PASSWORD_INPUT)
+        password_field.clear()
+        return email_field.get_attribute("value") == email and password_field.get_attribute("value") == ""
+
+    def click_login_and_verify_password_required(self):
+        """
+        TC_LOGIN_004 - Step 4: Click on the Login button and verify validation error for empty password.
+        Acceptance Criteria: Validation error displayed: 'Password is required'.
+        """
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
+        return self.is_validation_error_displayed("Password is required")
+
+    def verify_login_prevented_password_empty(self):
+        """
+        TC_LOGIN_004 - Step 5: Verify login is prevented and user remains on login page when password is empty.
+        Acceptance Criteria: User cannot proceed with login, remains on login page.
+        """
+        current_url = self.driver.current_url
+        on_login_page = current_url.startswith(self.LOGIN_URL)
+        dashboard_visible = self.is_dashboard_displayed()
+        return on_login_page and not dashboard_visible
+    # --- End of TC_LOGIN_004 steps ---
