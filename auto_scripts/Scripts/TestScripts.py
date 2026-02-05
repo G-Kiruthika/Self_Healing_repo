@@ -55,6 +55,17 @@ class TestLoginFunctionality:
         assert result, 'TC-LOGIN-003 failed: error message or login page validation did not meet criteria.'
 
     def test_tc_login_004_empty_email_valid_password(self):
+        """
+        TC-LOGIN-004: Attempt login with empty email and valid password
+        Steps:
+        1. Navigate to the login page [Test Data: URL]
+        2. Leave the email field empty [Test Data: Email: (empty)]
+        3. Enter valid password [Test Data: Password]
+        4. Click on the Login button
+        5. Verify validation error is displayed: 'Email is required' or 'Please fill in all required fields'
+        6. Verify login is not processed; user remains on login page without authentication
+        Acceptance Criteria: TS-003
+        """
         url = 'https://ecommerce.example.com/login'
         password = 'ValidPass123!'
         expected_validation = 'Email is required'
@@ -62,31 +73,43 @@ class TestLoginFunctionality:
         assert result, 'TC-LOGIN-004 failed: validation error or login page validation did not meet criteria.'
 
     def test_tc_login_005_valid_email_empty_password(self):
+        """
+        TC-LOGIN-005: Attempt login with valid email and empty password
+        Steps:
+        1. Navigate to the login page [Test Data: URL]
+        2. Enter valid email address [Test Data: Email: testuser@example.com]
+        3. Leave the password field empty [Test Data: Password: (empty)]
+        4. Click on the Login button
+        5. Verify validation error is displayed: 'Password is required' or 'Please fill in all required fields'
+        6. Verify login is not processed; user remains on login page without authentication
+        Acceptance Criteria: TS-003
+        """
         url = 'https://ecommerce.example.com/login'
         email = 'testuser@example.com'
         expected_validation = 'Password is required'
         result = self.login_page.tc_login_005_valid_email_empty_password(url, email, expected_validation)
         assert result, 'TC-LOGIN-005 failed: validation error or login page validation did not meet criteria.'
 
-    def test_tc_login_006_forgot_password_flow(self):
+    def test_tc_login_006_password_recovery_flow(self):
         """
-        TC-LOGIN-006: Verify Forgot Password flow
+        TC-LOGIN-006: Password Recovery Flow
         Steps:
-        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
-        2. Verify login page is displayed with 'Forgot Password' link visible
-        3. Click on the 'Forgot Password' link
-        4. Verify user is redirected to the password recovery page
-        5. Verify password recovery page shows email input field and instructions
-        Acceptance Criteria: TS-004
+        1. Navigate to the login page [URL: https://ecommerce.example.com/login]
+        2. Click on the 'Forgot Password' link
+        3. Verify password recovery page is displayed with email input field and instructions
         """
+        url = 'https://ecommerce.example.com/login'
+        recovery_url = 'https://ecommerce.example.com/forgot-password'
         # Step 1: Navigate to login page
-        login_page_displayed = self.login_page.navigate_to_login('https://ecommerce.example.com/login')
-        assert login_page_displayed, "Login page is not displayed or 'Forgot Password' link not visible."
-
-        # Step 2: Click 'Forgot Password' link
+        login_page_displayed = self.login_page.navigate_to_login(url)
+        assert login_page_displayed, 'Login page not displayed.'
+        # Step 2: Click on the Forgot Password link
         forgot_clicked = self.login_page.click_forgot_password()
-        assert forgot_clicked, "Failed to click 'Forgot Password' link."
-
-        # Step 3: Verify password recovery page is loaded
-        password_recovery_loaded = self.password_recovery_page.is_loaded()
-        assert password_recovery_loaded, "Password recovery page not loaded or required elements not visible."
+        assert forgot_clicked, "Could not click 'Forgot Password' link."
+        # Step 3: Verify password recovery page is displayed
+        is_loaded = self.password_recovery_page.is_loaded()
+        assert is_loaded, 'Password recovery page not loaded correctly.'
+        email_visible = self.password_recovery_page.is_email_input_visible()
+        assert email_visible, 'Email input field not visible on recovery page.'
+        instructions_visible = self.password_recovery_page.is_instructions_visible()
+        assert instructions_visible, 'Instructions not visible on recovery page.'
