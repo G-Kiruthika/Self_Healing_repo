@@ -62,5 +62,25 @@ class TestCartFunctionality(unittest.TestCase):
         self.assertTrue(valid, "System did not return error for invalid product ID; product may have been added incorrectly.")
         print(f"API response for invalid product ID: {response.text}")
 
+    def test_TC_CART_009_access_denied_other_user_cart(self):
+        """
+        TC_CART_009: Authenticate as User A and attempt to access User B's cart.
+        Steps:
+        1. Authenticate as User A (user_id: 'userA').
+        2. Attempt to access User B's cart (cart_id: 'cart_of_userB').
+        3. Capture error message returned.
+        4. Assert that access is denied (error message contains 'Access denied').
+        """
+        user_id = "userA"
+        cart_id = "cart_of_userB"
+        # Step 1: Authenticate as User A (placeholder)
+        self.cart_page.authenticate_user(user_id)
+        # Step 2: Attempt to access User B's cart
+        error_message = self.cart_page.access_cart(cart_id)
+        # Step 3: Assert that access is denied
+        access_denied = self.cart_page.verify_access_denied(error_message)
+        self.assertTrue(access_denied, f"Expected 'Access denied' in error message, got: {error_message}")
+        print(f"Access attempt error message: {error_message}")
+
 if __name__ == "__main__":
     unittest.main()
