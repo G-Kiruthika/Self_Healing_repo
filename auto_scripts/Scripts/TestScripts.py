@@ -49,31 +49,29 @@ def test_TC_LOGIN_008_min_length_login(driver):
     login_page.go_to_login_page()
     assert login_page.is_min_length_accepted("a@b.co", "123456"), "Minimum length credentials were not accepted."
 
-# TC-SCRUM-96-002: User Signup & Duplicate Email
+# TC-SCRUM-96-002: Duplicate Email Registration and DB Verification
+from auto_scripts.Pages.UserSignupPage import UserSignupPage
 
-def test_TC_SCRUM_96_002_user_signup_duplicate_email():
+def test_TC_SCRUM_96_002_duplicate_email_and_db_verification(driver, db_connection):
     """
-    Test Case TC-SCRUM-96-002: User Signup & Duplicate Email
+    Test Case TC-SCRUM-96-002: Duplicate Email Registration and DB Verification
     Steps:
-    1. Create a user with email testuser@example.com
-       [Test Data: {"username": "user1", "email": "testuser@example.com", "password": "Pass123!"}]
-       [Acceptance Criteria: AC-001]
-       Expected: User created successfully
-    2. Attempt to create another user with same email
-       [Test Data: {"username": "user2", "email": "testuser@example.com", "password": "Pass456!"}]
-       [Acceptance Criteria: AC-001]
-       Expected: Registration fails with HTTP 409 Conflict status and error message 'Email already exists'
-    3. Verify only one user record exists in database
-       [Test Data: Query: SELECT COUNT(*) FROM users WHERE email='testuser@example.com']
-       [Acceptance Criteria: AC-001]
-       Expected: Database contains only one record for testuser@example.com
+    1. Register first user with email testuser@example.com and password Pass123!
+    2. Attempt to register second user with same email and password Pass456!
+    3. Verify only one user record exists in database for testuser@example.com
+    Acceptance Criteria: AC-001
     """
-    signup_page = UserSignupPage()
-    result = signup_page.run_signup_duplicate_flow(
-        first_user={"username": "user1", "email": "testuser@example.com", "password": "Pass123!"},
-        second_user={"username": "user2", "email": "testuser@example.com", "password": "Pass456!"}
-    )
-    assert result["first_signup_success"], "First user signup failed"
-    assert result["second_signup_status"] == 409, f"Expected HTTP 409 Conflict, got {result['second_signup_status']}"
-    assert "Email already exists" in result["second_signup_error"], "Expected error message for duplicate email"
-    assert result["user_count"] == 1, f"Expected only one user record, found {result['user_count']}"
+    signup_page = UserSignupPage(driver)
+    user1 = "user1"
+    email = "testuser@example.com"
+    pwd1 = "Pass123!"
+    user2 = "user2"
+    pwd2 = "Pass456!"
+    # Step 1 and 2: Register first user and then second user (should fail with conflict)
+    first_result, second_result = signup_page.register_and_validate_duplicate(user1, email, pwd1, user2, pwd2)
+    assert first_result["status"] == "success", f"Expected success for first user, got {first_result}"
+    assert second_result["status"] == "conflict", f"Expected conflict for duplicate email, got {second_result}"
+    assert "Email already exists" in second_result["message"], f"Expected error message 'Email already exists', got {second_result['message']}"
+    # Step 3: Verify only one user exists in DB
+    user_count = UserSignupPage.verify_user_count_in_db(db_connection, email)
+    assert user_count == 1, f"Expected only one user record in DB for {email}, got {user_count}"
