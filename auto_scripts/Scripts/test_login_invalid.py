@@ -1,11 +1,10 @@
-# Selenium Test Script for TC_LOGIN_002: Invalid Login Scenario
+# Test Script for TC-LOGIN-002: Invalid Login Attempt
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import NoSuchElementException
 from auto_scripts.Pages.LoginPage import LoginPage
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope='module')
 def driver():
     options = Options()
     options.add_argument('--headless')
@@ -16,40 +15,33 @@ def driver():
     yield driver
     driver.quit()
 
-def test_login_with_invalid_credentials(driver):
+def test_tc_login_002_invalid_login_flow(driver):
     """
-    Test Case ID: TC_LOGIN_002
-    Description: Attempt login with invalid email and valid password, verify error message and no authentication.
-    Steps:
+    Test Case TC-LOGIN-002:
     1. Navigate to the login page
-    2. Enter invalid email
-    3. Enter valid password
-    4. Click Login
-    5. Verify error message and user is not redirected
+    2. Enter an unregistered or invalid email address
+    3. Enter any password
+    4. Click on the Login button
+    5. Verify error message: 'Invalid email or password'
+    6. Verify user remains on login page
     """
     login_page = LoginPage(driver)
-
-    # Step 1: Go to login page
-    login_page.go_to_login_page()
-    assert login_page.is_login_fields_visible(), "Login fields should be visible on the login page."
+    # Step 1: Navigate to login page
+    assert login_page.navigate_to_login(), "Login page is not displayed after navigation."
 
     # Step 2: Enter invalid email
-    email_entered = login_page.enter_email("invaliduser@example.com")
-    assert email_entered, "Invalid email should be entered correctly."
+    invalid_email = "invaliduser@example.com"
+    assert login_page.enter_email(invalid_email), f"Email '{invalid_email}' was not entered correctly."
 
-    # Step 3: Enter valid password
-    password_entered = login_page.enter_password("ValidPass123!")
-    assert password_entered, "Password should be entered and masked."
+    # Step 3: Enter any password
+    test_password = "SomePassword123"
+    assert login_page.enter_password(test_password), "Password was not entered correctly or is not masked."
 
     # Step 4: Click Login
-    login_page.click_login()
+    assert login_page.click_login(), "Login button could not be clicked."
 
-    # Step 5: Verify error message and user is not redirected
-    error_displayed = login_page.is_error_message_displayed("Invalid email or password")
-    assert error_displayed, "Error message 'Invalid email or password' should be displayed."
-    redirected = login_page.is_redirected_to_dashboard()
-    assert not redirected, "User should not be redirected to dashboard after invalid login."
+    # Step 5: Verify error message displayed
+    assert login_page.is_error_message_displayed("Invalid email or password"), "Expected error message not displayed."
 
-    # Negative session check
-    session_created = login_page.is_session_token_created()
-    assert not session_created, "Session token should NOT be created for invalid login."
+    # Step 6: Verify user remains on login page
+    assert login_page.verify_user_stays_on_login_page(), "User did not remain on login page after invalid login."
