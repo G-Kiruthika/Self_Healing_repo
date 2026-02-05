@@ -1,12 +1,14 @@
 # Selenium Page Object for UsernameRecoveryPage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class UsernameRecoveryPage:
-    USERNAME_RECOVERY_URL = "https://ecommerce.example.com/forgot-username"  # Corrected for TC-LOGIN-007
+    LOGIN_PAGE_URL = "https://app.example.com/login"  # For TC_LOGIN_009 navigation
+    LOGIN_FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")  # Reused as no specific 'forgot username' locator provided
+    USERNAME_RECOVERY_URL = "https://ecommerce.example.com/forgot-username"  # Existing
     EMAIL_INPUT = (By.ID, "username-recovery-email")
     SEND_USERNAME_BUTTON = (By.ID, "send-username")
     SUCCESS_MESSAGE = (By.CSS_SELECTOR, "div.recovery-success")
@@ -16,6 +18,23 @@ class UsernameRecoveryPage:
     def __init__(self, driver: WebDriver):
         self.driver = driver
         self.wait = WebDriverWait(self.driver, 10)
+
+    def navigate_to_login_page(self):
+        """
+        Step 1: Navigate to the login page
+        """
+        self.driver.get(self.LOGIN_PAGE_URL)
+        # Optionally wait for the page to load
+        self.wait.until(EC.visibility_of_element_located(self.LOGIN_FORGOT_USERNAME_LINK))
+
+    def click_forgot_username_link(self):
+        """
+        Step 2: Click on 'Forgot Username' link
+        """
+        link = self.wait.until(EC.element_to_be_clickable(self.LOGIN_FORGOT_USERNAME_LINK))
+        link.click()
+        # Optionally wait for navigation to username recovery page
+        self.wait.until(lambda d: self.USERNAME_RECOVERY_URL in d.current_url)
 
     def is_loaded(self):
         """Verify username recovery page is loaded by checking URL and main elements."""
@@ -53,14 +72,14 @@ class UsernameRecoveryPage:
 
     def click_send_username(self):
         """
-        Step 4: Click on 'Send Username' button
+        Step 4: Click on 'Submit' button
         """
         button = self.wait.until(EC.element_to_be_clickable(self.SEND_USERNAME_BUTTON))
         button.click()
 
     def is_success_message_displayed(self):
         """
-        Step 4: Success message displayed: 'Username sent to your email'
+        Step 5: Success message displayed: 'Username sent to your email'
         """
         try:
             success = self.wait.until(EC.visibility_of_element_located(self.SUCCESS_MESSAGE))
@@ -96,3 +115,20 @@ class UsernameRecoveryPage:
         self.click_send_username()
         return self.is_success_message_displayed()
     # --- End of TC_LOGIN_007 steps ---
+
+    # --- Start of TC_LOGIN_009 steps ---
+    def tc_login_009_forgot_username_flow(self, email: str):
+        """
+        TC_LOGIN_009 Steps:
+        1. Navigate to the login page
+        2. Click on 'Forgot Username' link
+        3. Enter registered email address
+        4. Click on Submit button
+        5. Success message displayed and username reminder email sent
+        """
+        self.navigate_to_login_page()
+        self.click_forgot_username_link()
+        self.enter_email(email)
+        self.click_send_username()
+        return self.is_success_message_displayed()
+    # --- End of TC_LOGIN_009 steps ---
