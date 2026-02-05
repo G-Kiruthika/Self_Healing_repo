@@ -97,3 +97,26 @@ class TestLoginFunctionality:
         expected_error = 'Invalid email or password'
         result = self.login_page.tc_login_003_valid_email_wrong_password(url, email, password, expected_error)
         assert result, 'TC-LOGIN-003 failed: error message or login page validation did not meet criteria.'
+
+    def test_tc_login_004_empty_email_valid_password(self):
+        """
+        TC-LOGIN-004: Login attempt with empty email field and valid password
+        Steps:
+        1. Navigate to login page [Test Data: URL]
+        2. Leave email field empty [Test Data: Email: (empty)]
+        3. Enter valid password [Test Data: Password: ValidPass123!]
+        4. Click Login
+        5. Verify validation error for empty email ('Email is required' or 'Mandatory fields are required')
+        6. Ensure user remains unauthenticated (remains on login page)
+        """
+        url = 'https://example-ecommerce.com/login'
+        password = 'ValidPass123!'
+        expected_validation_error = 'Email is required'
+        expected_empty_field_prompt = 'Mandatory fields are required'
+        result = self.login_page.tc_login_004_empty_email_valid_password(
+            url=url,
+            password=password,
+            expected_validation_error=expected_validation_error,
+            expected_empty_field_prompt=expected_empty_field_prompt
+        )
+        assert result, 'TC-LOGIN-004 failed: validation error or login page validation did not meet criteria.'
