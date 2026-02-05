@@ -2,6 +2,7 @@
 from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.ForgotPasswordPage import ForgotPasswordPage
 from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
+from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
 from selenium.webdriver.common.by import By
 import pytest
 
@@ -10,22 +11,24 @@ class TestLogin:
         # Existing test logic...
         pass
 
-    def test_invalid_login_tc_scrum_115_002(self, driver):
+    def test_TC_LOGIN_007_forgot_password_flow(self, driver):
         """
-        TC-SCRUM-115-002: Invalid login attempt
+        Test Case TC_LOGIN_007: Forgot Password flow
         Steps:
-        1. Navigate to the e-commerce website login page
-        2. Enter invalid/non-existent username in the username field
-        3. Enter valid password in the password field
-        4. Click on the Login button
-        5. Verify user remains on login page and error message is displayed
+        1. Navigate to the login page
+        2. Click the 'Forgot Password' link
+        3. Enter registered email address
+        4. Click Submit
+        5. Verify success message displayed and password reset email sent
         """
-        # Step 1: Navigate to login page
         login_page = LoginPage(driver)
-        # Step 2 & 3 & 4: Attempt invalid login with provided test data
-        result = login_page.attempt_invalid_login(
-            invalid_email='invaliduser@example.com',
-            valid_password='ValidPass123!'
-        )
-        # Step 5: Verify error message and user remains on login page
-        assert result, "Error message not displayed or user not on login page after invalid login attempt."
+        login_page.navigate_to_login()
+        assert login_page.is_login_page_displayed(), "Login page is not displayed."
+
+        login_page.click_forgot_password()
+        recovery_page = PasswordRecoveryPage(driver)
+        assert recovery_page.is_forgot_password_page_displayed(), "Forgot password page is not displayed."
+
+        recovery_page.enter_email("testuser@example.com")
+        recovery_page.click_submit()
+        assert recovery_page.verify_success_message(), "Success message not displayed or password reset email not sent."
