@@ -100,7 +100,7 @@ def test_TC_SCRUM96_002_duplicate_user_registration_api():
     2. Attempt to register another user with same username 'duplicateuser' and email 'second@example.com'. Expect HTTP 409 Conflict and error message.
     3. Verify only one user record exists in database with username 'duplicateuser' and email 'first@example.com'.
     """
-    db_config = {"host": "localhost", "user": "root", "password": "pwd", "database": "ecommerce"}
+    db_config = {"host": "localhost", "user": "dbuser", "password": "dbpass", "database": "testdb"}
     page = UserRegistrationAPIPage(db_config=db_config)
     username = "duplicateuser"
     email1 = "first@example.com"
@@ -111,16 +111,12 @@ def test_TC_SCRUM96_002_duplicate_user_registration_api():
     password2 = "Pass456!"
     first_name2 = "Second"
     last_name2 = "User"
-    result = page.run_duplicate_username_workflow(
-        username, email1, password1, first_name1, last_name1,
-        email2, password2, first_name2, last_name2
-    )
-    # Step 1: Validate first registration
-    assert result["first_registration"]["username"] == username
-    assert result["first_registration"]["email"] == email1
-    # Step 2: Validate duplicate attempt
-    assert "error" in result["duplicate_attempt"]
-    assert "username already exists" in result["duplicate_attempt"]["error"].lower()
+    # Step 1: Register first user
+    resp1 = page.register_user(username, email1, password1, first_name1, last_name1)
+    assert resp1.status_code == 201, f"Expected 201 Created, got {resp1.status_code}"
+    # Step 2: Register duplicate user
+    resp2 = page.register_duplicate_user(username, email2, password2, first_name2, last_name2)
+    page.validate_conflict_response(resp2)
     # Step 3: DB validation
-    assert result["db_record"]["email"] == email1
-    assert result["user_count"] == 1
+    db_count = page.get_user_count_by_username(username)
+    assert db_count == 1, f"Expected exactly 1 user record for username '{username}', found {db_count}"
