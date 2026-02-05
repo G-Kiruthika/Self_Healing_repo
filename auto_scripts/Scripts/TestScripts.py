@@ -22,3 +22,17 @@ class TestLoginFunctionality:
         except Exception as e:
             print(f"TC_LOGIN_001 failed: {e}")
             raise
+
+    def test_TC_LOGIN_002(self):
+        """Test Case TC_LOGIN_002: Invalid login shows error message"""
+        try:
+            error_message = self.login_page.tc_login_002_invalid_login(
+                invalid_email='invaliduser@example.com',
+                valid_password='ValidPass123!'
+            )
+            assert error_message is not None, "No error message displayed for invalid login."
+            assert 'Invalid username or password' in error_message, f"Unexpected error message: {error_message}"
+            print("TC_LOGIN_002 passed: Error message displayed for invalid login.")
+        except Exception as e:
+            print(f"TC_LOGIN_002 failed: {e}")
+            raise
