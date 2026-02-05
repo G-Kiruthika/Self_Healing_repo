@@ -98,3 +98,20 @@ class TestLoginFunctionality:
         except Exception as e:
             print(f"TC-SCRUM-115-002 failed: {e}")
             raise
+
+    def test_TC_SCRUM_115_003(self):
+        """Test Case TC-SCRUM-115-003: Invalid password and account lockout flow"""
+        try:
+            result = self.login_page.tc_scrum_115_003_invalid_login_and_lockout(
+                username="validuser@example.com",
+                wrong_password="WrongPassword456!",
+                attempts=5
+            )
+            last_error = result.get("last_error", "")
+            lockout_message = result.get("lockout_message", "")
+            assert "Invalid username or password. Please try again." in last_error, f"Unexpected error message: {last_error}"
+            assert "Account locked due to multiple failed login attempts. Please try again after 15 minutes or reset your password." in lockout_message, f"Unexpected lockout message: {lockout_message}"
+            print("TC-SCRUM-115-003 passed: Correct error and lockout messages displayed after multiple failed login attempts.")
+        except Exception as e:
+            print(f"TC-SCRUM-115-003 failed: {e}")
+            raise
