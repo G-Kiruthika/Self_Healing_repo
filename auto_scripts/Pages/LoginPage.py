@@ -218,3 +218,36 @@ class LoginPage:
         dashboard_visible = self.is_dashboard_displayed()
         return on_login_page and not dashboard_visible
     # --- End of TC_LOGIN_004 steps ---
+
+    # --- Start of TC_LOGIN_005 steps ---
+    def leave_email_and_password_empty(self):
+        """
+        Step 2 & 3: Leave email and password fields empty
+        Acceptance Criteria: Email and Password fields remain empty
+        """
+        email_field = self.driver.find_element(*self.EMAIL_INPUT)
+        password_field = self.driver.find_element(*self.PASSWORD_INPUT)
+        email_field.clear()
+        password_field.clear()
+        return email_field.get_attribute("value") == "" and password_field.get_attribute("value") == ""
+
+    def click_login_and_verify_required_errors(self):
+        """
+        Step 4: Click on Login button and verify validation errors
+        Acceptance Criteria: 'Email is required' and 'Password is required' errors displayed
+        """
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
+        email_error = self.is_validation_error_displayed("Email is required")
+        password_error = self.is_validation_error_displayed("Password is required")
+        return email_error and password_error
+
+    def verify_login_prevented_empty_fields(self):
+        """
+        Step 5: Verify login is prevented and user remains on login page
+        Acceptance Criteria: User cannot proceed with login, remains on login page
+        """
+        current_url = self.driver.current_url
+        on_login_page = current_url.startswith(self.LOGIN_URL)
+        dashboard_visible = self.is_dashboard_displayed()
+        return on_login_page and not dashboard_visible
+    # --- End of TC_LOGIN_005 steps ---
