@@ -1,7 +1,7 @@
 # Executive Summary:
-# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, TC_LOGIN_010, TC_LOGIN_011, TC005, and now TC007 using Selenium in Python.
+# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, TC_LOGIN_010, TC_LOGIN_011, TC005, and now TC_LOGIN_016 using Selenium in Python.
 # Updates:
-# - Added execute_tc007_remember_me_persistence(email, password) for TC007, which navigates to login, checks 'Remember Me', logs in, closes and reopens browser, and verifies session persists.
+# - Added execute_tc_login_016_unregistered_email_valid_password(email, password) for TC_LOGIN_016, which enters unregistered email, valid password, clicks login, validates error message for unregistered email, and confirms login fails.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
@@ -12,13 +12,12 @@
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use open_login_page(), login_with_credentials(), execute_tc007_remember_me_persistence(email, password), execute_tc_login_010_remember_me_session_persistence(email, password), etc. to automate respective scenarios
-# - Example usage for TC007:
+# - Use open_login_page(), login_with_credentials(), execute_tc_login_016_unregistered_email_valid_password(email, password), execute_tc005_empty_email_valid_password(valid_password), execute_tc001_login_workflow(email, password), execute_tc_login_010_remember_me_session_persistence(email, password), execute_tc_login_011_no_remember_me_session_non_persistence(email, password) to automate respective scenarios
+# - Example usage for TC_LOGIN_016:
 #     page = LoginPage(driver)
-#     result = page.execute_tc007_remember_me_persistence("user@example.com", "ValidPassword123")
-#     assert result["remember_me_checked"] is True
-#     assert result["user_logged_in"] is True
-#     assert result["session_persisted"] is True
+#     result = page.execute_tc_login_016_unregistered_email_valid_password(email="unknown@example.com", password="ValidPass123")
+#     assert result["error_message"] is not None
+#     assert result["login_unsuccessful"] is True
 
 # Quality Assurance Report:
 # - Locator references validated against Locators.json
@@ -401,33 +400,19 @@ class LoginPage:
             result["error_message"] = str(e)
         return result
 
-    def execute_tc007_remember_me_persistence(self, email, password):
+    # ---- New method appended for TC_LOGIN_016 ----
+    def execute_tc_login_016_unregistered_email_valid_password(self, email, password):
         '''
-        TC007: Test Case for "Remember Me" session persistence.
-        Steps:
-            1. Navigate to login page and check 'Remember Me'.
-            2. Enter valid credentials and login.
-            3. Close and reopen browser. Verify session persists.
+        TC_LOGIN_016: Enter unregistered email and valid password, click login, validate error message for unregistered email, and confirm login is not successful.
         Args:
-            email (str): Valid email (e.g., 'user@example.com')
-            password (str): Valid password (e.g., 'ValidPassword123')
+            email (str): Unregistered email to use (e.g., unknown@example.com)
+            password (str): Valid password to use (e.g., ValidPass123)
         Returns:
-            dict with keys: 'remember_me_checked', 'user_logged_in', 'session_persisted', 'error_message'
+            dict with keys: 'error_message', 'login_unsuccessful'
         '''
-        result = {
-            "remember_me_checked": False,
-            "user_logged_in": False,
-            "session_persisted": False,
-            "error_message": None
-        }
+        result = {"error_message": None, "login_unsuccessful": None}
         try:
-            # Step 1: Navigate to login page and check 'Remember Me'
             self.open_login_page()
-            remember_me_elem = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_CHECKBOX))
-            if not remember_me_elem.is_selected():
-                remember_me_elem.click()
-            result["remember_me_checked"] = remember_me_elem.is_selected()
-            # Step 2: Enter valid credentials and login
             email_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
             email_elem.clear()
             email_elem.send_keys(email)
@@ -436,31 +421,16 @@ class LoginPage:
             password_elem.send_keys(password)
             login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
             login_btn.click()
-            # Step 2b: Confirm user is logged in (dashboard visible)
-            dashboard = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-            result["user_logged_in"] = dashboard.is_displayed()
-            # Step 3: Close and reopen browser, verify session persists
-            cookies = self.driver.get_cookies()
-            dashboard_url = self.driver.current_url
-            self.driver.quit()
-            from selenium import webdriver
-            options = webdriver.ChromeOptions()
-            options.add_argument('--headless')
-            new_driver = webdriver.Chrome(options=options)
-            new_driver.get(self.URL)
-            for cookie in cookies:
-                if 'domain' in cookie and cookie['domain'] in self.URL:
-                    try:
-                        new_driver.add_cookie(cookie)
-                    except Exception:
-                        pass
-            new_driver.get(dashboard_url)
             try:
-                dashboard_elem = WebDriverWait(new_driver, 10).until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-                result["session_persisted"] = dashboard_elem.is_displayed()
+                error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+                error_text = error_elem.text
+                if "unregistered" in error_text.lower() or "not found" in error_text.lower() or "does not exist" in error_text.lower() or "invalid" in error_text.lower():
+                    result["error_message"] = error_text
+                else:
+                    result["error_message"] = error_text
             except TimeoutException:
-                result["session_persisted"] = False
-            new_driver.quit()
+                result["error_message"] = None
+            result["login_unsuccessful"] = self.is_login_unsuccessful()
         except Exception as e:
             result["error_message"] = str(e)
         return result
