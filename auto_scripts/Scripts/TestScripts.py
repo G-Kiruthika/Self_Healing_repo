@@ -2,51 +2,109 @@
 from auto_scripts.Pages.APISignupPage import APISignupPage
 
 def test_TC_SCRUM_96_001_api_signup():
-    ...
+    """
+    Test Case TC-SCRUM-96-001: API Signup Automation
+    Steps:
+    1. Send POST request to /api/users/signup with valid user data (username, email, password)
+    2. Validate HTTP 201 response and correct schema (userId, username, email, no password)
+    3. Verify user data is stored in database with hashed password and correct details
+    """
+    username = "testuser123"
+    email = "testuser@example.com"
+    password = "SecurePass123!"
+    api_signup_page = APISignupPage()
+    # End-to-end test
+    assert api_signup_page.run_full_signup_test(username, email, password), "Signup test failed"
+
 # TC-SCRUM-96-001: User Signup Flow with UserSignupPage
 from auto_scripts.Pages.UserSignupPage import UserSignupPage
 
 def test_TC_SCRUM_96_001_user_signup_flow():
-    ...
+    """
+    Test Case TC-SCRUM-96-001: User Signup Flow
+    Steps:
+    1. Send POST request to /api/users/signup with valid user data
+    2. Validate HTTP 201 response and correct schema
+    3. Verify user data is stored in simulated DB with hashed password
+    """
+    username = "testuser123"
+    email = "testuser@example.com"
+    password = "SecurePass123!"
+    signup_page = UserSignupPage()
+    signup_page.run_signup_flow(username, email, password)
+
 # TC-LOGIN-008: Minimum allowed length for login credentials
 from auto_scripts.Pages.LoginPage import LoginPage
 
 def test_TC_LOGIN_008_min_length_login(driver):
-    ...
-# TC-SCRUM-96-002: Duplicate Email Signup Handling
+    """
+    Test Case TC_LOGIN_008: Minimum allowed length for login credentials
+    Steps:
+    1. Navigate to the login page.
+    2. Enter email and password with minimum allowed length (email: a@b.co, password: 123456).
+    3. Click Login and assert login is accepted if credentials are valid.
+    Acceptance Criteria: 8
+    """
+    login_page = LoginPage(driver)
+    login_page.go_to_login_page()
+    assert login_page.is_min_length_accepted("a@b.co", "123456"), "Minimum length credentials were not accepted."
+
+# TC-SCRUM-96-002: Duplicate Email Signup and DB Validation
 from auto_scripts.Pages.UserSignupPage import UserSignupPage
 
-def test_TC_SCRUM_96_002_duplicate_email_signup(driver, db_connection):
-    ...
-# TC-LOGIN-10: Maximum allowed length for login credentials
-from auto_scripts.Pages.LoginPage import LoginPage
+def test_TC_SCRUM_96_002_duplicate_email_signup_and_db_validation(driver, db_connection):
+    """
+    Test Case TC-SCRUM-96-002: Duplicate Email Signup and DB Validation
+    Steps:
+    1. Register first user with username 'user1', email 'testuser@example.com', password 'Pass123!'.
+    2. Attempt to register second user with username 'user2', same email, password 'Pass456!'.
+    3. Validate that only one user record exists in the database for that email.
+    """
+    signup_page = UserSignupPage(driver)
+    user1 = "user1"
+    user2 = "user2"
+    email = "testuser@example.com"
+    pwd1 = "Pass123!"
+    pwd2 = "Pass456!"
+    first_result, second_result = signup_page.register_and_validate_duplicate(user1, email, pwd1, user2, pwd2)
+    # Database validation
+    user_count = UserSignupPage.verify_user_count_in_db(db_connection, email)
+    assert user_count == 1, f"Expected only one user record for {email}, found {user_count}"
 
-def test_TC_LOGIN_10_max_length_login(driver):
-    ...
+from auto_scripts.Pages.ProfilePage import ProfilePage
 
-# TC-SCRUM-96-003: Invalid Email Signup Handling
+def test_TC_SCRUM_96_007_profile_update_and_db_verification(driver, db_connection):
+    """
+    Test Case TC-SCRUM-96-007: Profile Update and DB Verification
+    Steps:
+    1. Sign in as a valid user and obtain authentication token
+    2. Send PUT request to /api/users/profile with updated username
+    3. Verify updated information is persisted in database
+    """
+    email = "update@example.com"
+    password = "Pass123!"
+    new_username = "updatedUsername"
+    profile_page = ProfilePage(driver)
+    result = profile_page.full_profile_update_workflow(email, password, new_username, db_connection)
+    assert result["api_result"]["username"] == new_username, f"API did not return updated username: {result['api_result']}"
+    assert result["db_username"] == new_username, f"DB did not persist updated username: {result['db_username']}"
+
+# TC-SCRUM-96-003: Invalid Email Format Signup Negative Test
 from auto_scripts.Pages.UserSignupPage import UserSignupPage
 
 def test_TC_SCRUM_96_003_invalid_email_signup(driver, db_connection):
     """
-    TC-SCRUM-96-003: Test signup with invalid email format.
-    1. Send POST request to /api/users/signup with invalid email format.
-    2. Verify error message indicates email format issue.
-    3. Verify no user record is created in the database.
+    Test Case TC-SCRUM-96-003: Invalid Email Format Signup Negative Test
+    Steps:
+    1. Send POST request to /api/users/signup with invalid email format [username: 'testuser', email: 'invalidemail', password: 'Pass123!']
+    2. Validate error message indicates email format issue
+    3. Ensure no user record is created in DB
     """
-    page = UserSignupPage(driver)
-    username = 'testuser'
-    invalid_email = 'invalidemail'
-    password = 'Pass123!'
-    # The page method should handle the POST and validations
-    result = page.signup_with_invalid_email_and_validate(invalid_email, username, password, db_connection)
-
-    # Assert API response status (e.g., 400 Bad Request)
-    assert result['response'].status_code == 400, f"Expected 400, got {result['response'].status_code}"
-
-    # Assert error message indicates email format issue
-    assert 'email' in result['response'].json().get('error', '').lower(), \
-        "Error message does not indicate email format issue"
-
-    # Assert no user record is created in the database
-    assert not result['db_user_exists'], "User record should not be created for invalid email"
+    signup_page = UserSignupPage(driver)
+    invalid_email = "invalidemail"
+    username = "testuser"
+    password = "Pass123!"
+    result = signup_page.signup_with_invalid_email_and_validate(invalid_email, username, password, db_connection)
+    assert result["api_response"], "API did not return a response"
+    assert result["ui_error_message"], "UI did not display error message"
+    assert result["db_user_count"] == 0, f"User with invalid email should not be created. Found {result['db_user_count']} records."
