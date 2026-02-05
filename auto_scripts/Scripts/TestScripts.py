@@ -59,3 +59,34 @@ def test_TC_SCRUM_96_008_product_search_case_insensitive():
     expected_product_ids = [201, 202]
     product_page.search_case_variants_and_validate(base_search_term, expected_product_ids)
     print("TC_SCRUM96_008 case-insensitive search test PASSED.")
+
+# TC_SCRUM96_009: Product Search API DB/Empty Query/Missing Query Validation Test
+from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
+import requests
+import pymysql
+
+def test_TC_SCRUM96_009_product_search_db_empty_missing_query():
+    """
+    Test Case TC_SCRUM96_009: Product Search API DB/Empty Query/Missing Query Validation Test
+    Steps:
+    1. Ensure products table contains at least 5 test products
+    2. Send GET request to /api/products/search?query= (empty query parameter)
+    3. Send GET request to /api/products/search (without query parameter)
+    """
+    db_config = {
+        "host": "localhost",
+        "user": "testuser",
+        "password": "testpass",
+        "database": "testdb"
+    }
+    session = requests.Session()
+    product_page = ProductSearchAPIPage(session=session, db_config=db_config)
+    # Step 1: Ensure minimum products
+    product_count = product_page.ensure_minimum_test_products(min_count=5)
+    print(f"Step 1 PASSED: Database contains {product_count} products.")
+    # Step 2: Validate empty query
+    response_json = product_page.validate_empty_query_returns_products_or_empty()
+    print(f"Step 2 PASSED: Empty query returns products or empty array. Response: {response_json}")
+    # Step 3: Validate missing query parameter
+    resp_json = product_page.validate_missing_query_param_returns_400()
+    print(f"Step 3 PASSED: Missing query parameter returns HTTP 400. Response: {resp_json}")
