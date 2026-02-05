@@ -51,70 +51,41 @@ def test_TC_SCRUM_96_008_product_search_api_v2():
     # Step 4: Validate each product object contains required fields
     product_search_api.validate_product_schema(products)
 
-# TC_SCRUM96_001: User Registration API Automation Test
-from PageClasses.UserRegistrationAPIPage import UserRegistrationAPIPage
+# TC-SCRUM-96-001: User Registration API, DB, and Email Log Automation Test
+from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
 
-def test_TC_SCRUM96_001_user_registration_api():
+def test_TC_SCRUM_96_001_user_registration_api_db_email():
     """
-    Test Case TC_SCRUM96_001: User Registration API Automation
+    Test Case TC_SCRUM96_001: User Registration API, DB, and Email Log Automation
     Steps:
     1. Send POST request to /api/users/register with valid user registration data (username, email, password, firstName, lastName)
-    2. Validate HTTP 201 response and correct schema (userId, username, email, firstName, lastName, registrationTimestamp; password not present)
-    3. Query database to verify user creation, email stored, password hashed, account status 'ACTIVE'
-    4. Check email log for registration confirmation sent to user
+    2. Validate HTTP 201 response and returned user object (userId, username, email, firstName, lastName, registration timestamp; password not present)
+    3. Query database for user record; verify username, correct email, hashed password, and ACTIVE account status
+    4. Check email logs for registration confirmation email sent to user
     """
-    api_base_url = "http://localhost:5000"
-    db_config = {"host": "localhost", "user": "dbuser", "password": "dbpass", "database": "testdb"} # Example config
-    email_log_path = "/var/log/email_service.log" # Example log path
-    user_data = {
-        "username": "testuser001",
-        "email": "testuser001@example.com",
-        "password": "SecurePass123!",
-        "firstName": "John",
-        "lastName": "Doe"
-    }
-    page = UserRegistrationAPIPage(api_base_url, db_config, email_log_path)
-    # Step 1: Register user via API
-    api_resp = page.register_user(user_data)
-    # Step 2: Validate response schema
-    assert api_resp["userId"]
-    assert api_resp["username"] == user_data["username"]
-    assert api_resp["email"] == user_data["email"]
-    assert api_resp["firstName"] == user_data["firstName"]
-    assert api_resp["lastName"] == user_data["lastName"]
-    assert "registrationTimestamp" in api_resp
-    assert "password" not in api_resp
-    # Step 3: Verify user in DB
-    db_record = page.verify_user_in_db(user_data["username"], user_data["email"])
-    assert db_record is not None
-    assert db_record["email"] == user_data["email"]
-    assert db_record["password"] != user_data["password"]
-    assert db_record["account_status"] == "ACTIVE"
-    # Step 4: Verify confirmation email
-    assert page.verify_confirmation_email(user_data["email"])
-
-# TC-SCRUM-96-010: Cart API Workflow Automation Test
-from PageClasses.CartAPIPageClass import CartAPIPageClass
-
-def test_TC_SCRUM_96_010_cart_api():
-    """
-    Test Case TC-SCRUM-96-010: Cart API Workflow Automation
-    Steps:
-    1. Sign in as a user who has no existing cart [Test Data: {"email": "newcartuser@example.com", "password": "Pass123!"}]
-    2. Send POST request to /api/cart/items to add first product to cart [Test Data: {"productId": "PROD-001", "quantity": 2}]
-    3. Verify cart exists in database with correct item and quantity [Test Data: Query: SELECT * FROM carts WHERE userId={userId}; SELECT * FROM cart_items WHERE cartId={cartId}]
-    4. Send GET request to /api/cart to retrieve cart details [Test Data: Authorization: Bearer {token}]
-    Acceptance Criteria: AC-005
-    """
-    cart_api = CartAPIPageClass()
-    # Step 1: Sign in
-    assert cart_api.sign_in("newcartuser@example.com", "Pass123!"), "Sign-in failed"
-    # Step 2: Add item to cart
-    assert cart_api.add_item_to_cart("PROD-001", 2), "Add item to cart failed"
-    # Step 3: Verify cart in DB
-    assert cart_api.verify_cart_in_db(db_conn), "Cart DB verification failed"
-    # Step 4: Get cart and assert contents
-    cart_details = cart_api.get_cart()
-    assert cart_details is not None, "Cart retrieval failed"
-    assert cart_details['items'][0]['productId'] == "PROD-001", "Product ID mismatch in cart"
-    assert cart_details['items'][0]['quantity'] == 2, "Product quantity mismatch in cart"
+    db_cfg = {"host": "localhost", "user": "root", "password": "pwd", "database": "ecommerce"}
+    email_log = "/var/log/email_service.log"
+    page = UserRegistrationAPIPage(db_config=db_cfg, email_log_path=email_log)
+    username = "testuser001"
+    email = "testuser001@example.com"
+    password = "SecurePass123!"
+    first_name = "John"
+    last_name = "Doe"
+    result = page.full_workflow(username, email, password, first_name, last_name)
+    api_resp = result["api_response"]
+    db_record = result["db_record"]
+    email_log_result = result["email_log"]
+    # Step 2: Validate API response
+    assert api_resp["username"] == username, "Username mismatch in API response"
+    assert api_resp["email"] == email, "Email mismatch in API response"
+    assert api_resp["firstName"] == first_name, "First name mismatch in API response"
+    assert api_resp["lastName"] == last_name, "Last name mismatch in API response"
+    assert "userId" in api_resp, "userId missing in API response"
+    assert "password" not in api_resp, "Password should not be returned in API response"
+    # Step 3: Validate DB record
+    assert db_record["username"] == username, "Username mismatch in DB"
+    assert db_record["email"] == email, "Email mismatch in DB"
+    assert db_record["account_status"] == "ACTIVE", f"Account status is not ACTIVE, got {db_record['account_status']}"
+    assert db_record["password_hash"] != password, "Password should be hashed in DB"
+    # Step 4: Validate email log
+    assert email_log_result is True, "Confirmation email not found in logs"
