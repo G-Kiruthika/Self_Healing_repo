@@ -1,0 +1,9 @@
+{
+  "SignUpPage": {
+    "username_input": {"by": "id", "value": "username"},
+    "email_input": {"by": "id", "value": "email"},
+    "password_input": {"by": "id", "value": "password"},
+    "signup_button": {"by": "id", "value": "signup"},
+    "duplicate_email_error": {"by": "xpath", "value": "//div[contains(@class, 'error') and contains(text(), 'already registered')]"}
+  }
+}
