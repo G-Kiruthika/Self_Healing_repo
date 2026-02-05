@@ -32,28 +32,3 @@ class UserRegistrationAPIPage:
         if not jwt_token:
             raise RuntimeError("JWT token not found in login response.")
         return jwt_token
-
-"""
-Executive Summary:
-- Implements register_user_and_get_jwt for TC_SCRUM96_007.
-- Strict error handling and JWT extraction for downstream automation.
-
-Analysis:
-- Enables atomic registration and login for test users.
-
-Implementation Guide:
-1. Call register_user_and_get_jwt(user_data) with valid user dict.
-2. Use returned JWT for profile and API validation.
-
-QA Report:
-- Imports validated; exception handling robust.
-- Peer review recommended before deployment.
-
-Troubleshooting:
-- If registration/login fails, check API payload and endpoint status.
-- If JWT missing, validate login response structure.
-
-Future Considerations:
-- Parameterize URLs for multi-environment support.
-- Extend with additional user attributes and error reporting.
-"""

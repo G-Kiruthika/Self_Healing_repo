@@ -134,28 +134,3 @@ class ProfilePage:
             return db_username == expected_username
         except Exception as e:
             raise RuntimeError(f"DB verification failed: {e}")
-
-"""
-Executive Summary:
-- Added fetch_profile_api and validate_profile_fields to ProfilePage.py for TC_SCRUM96_007.
-- Strict field validation and API error handling.
-
-Analysis:
-- Enables atomic API fetch and field-by-field validation for user profile.
-
-Implementation Guide:
-1. Call fetch_profile_api(jwt_token) to retrieve profile.
-2. Call validate_profile_fields(profile_data, expected_data) to validate fields.
-
-QA Report:
-- Imports validated; robust error handling.
-- Peer review recommended before deployment.
-
-Troubleshooting:
-- If API call fails, check endpoint, token, and backend status.
-- If validation fails, check expected data mapping.
-
-Future Considerations:
-- Parameterize URLs and fields for multi-app support.
-- Extend with additional profile attributes and error reporting.
-"""
