@@ -121,3 +121,41 @@ import pymysql
 
 def test_TC_SCRUM_96_007_profile_update_and_db_verification():
     ...
+# TC-SCRUM-96-010: Cart Creation, Item Addition, DB Validation, Cart Retrieval Test
+from auto_scripts.Pages.CartAPIPage import CartAPIPage
+import requests
+import pymysql
+import pytest
+
+def test_TC_SCRUM_96_010_cart_creation_and_db_validation():
+    """
+    Test Case TC-SCRUM-96-010: Cart Creation, Item Addition, DB Validation, Cart Retrieval
+    Steps:
+    1. Authenticate user 'newcartuser@example.com' with password 'Pass123!'
+    2. Add product 'PROD-001' with quantity 2 to cart
+    3. Verify cart exists in DB with correct item and quantity
+    4. Retrieve cart details and assert the item and quantity
+    """
+    db_config = {
+        "host": "localhost",
+        "user": "dbuser",
+        "password": "dbpass",
+        "database": "ecommerce_db"
+    }
+    api_page = CartAPIPage(db_config=db_config)
+    # Step 1-4: Use workflow method
+    result = api_page.tc_scrum96_010_workflow(
+        email="newcartuser@example.com",
+        password="Pass123!",
+        product_id="PROD-001",
+        quantity=2
+    )
+    # Step 3: DB assertion
+    db_result = result["db_result"]
+    assert db_result["cartId"] is not None, "Cart ID not found in DB result"
+    assert any(item[0] == "PROD-001" and item[1] == 2 for item in db_result["items"]), "DB does not contain product PROD-001 with quantity 2"
+    # Step 4: API assertion
+    cart_details = result["cart_details"]
+    assert "items" in cart_details, "Cart details missing 'items'"
+    assert any(item["productId"] == "PROD-001" and item["quantity"] == 2 for item in cart_details["items"]), "API cart does not contain product PROD-001 with quantity 2"
+    print("TC-SCRUM-96-010 Cart creation, item addition, DB validation, cart retrieval test PASSED.")
