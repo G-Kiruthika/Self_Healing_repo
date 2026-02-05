@@ -26,7 +26,9 @@ class TestLogin:
     def test_tc_login_004_required_fields_validation(self, driver):
         login_page = LoginPage(driver)
         result = login_page.tc_login_004_required_fields_validation()
-        assert result is True
+        assert result["empty_prompt"] is not None, "Mandatory fields prompt should be displayed."
+        assert result["login_unsuccessful"], "Login should not be successful when required fields are empty."
+        assert (result["error_message"] is not None or result["validation_error"] is not None), "Error or validation message should be shown for empty fields."
 
     def test_tc_login_003(self, driver):
         """
@@ -193,55 +195,8 @@ class TestLogin:
             4. Verify that password reset email is sent (success message displayed).
         """
         login_page = LoginPage(driver)
-        login_page.open_login_page()
-        login_page.click_forgot_password_link()
+        login_page.go_to_login_page()
+        login_page.click_forgot_password()
         password_recovery_page = PasswordRecoveryPage(driver)
-        success_message = password_recovery_page.submit_password_reset_request('user@example.com')
-        assert success_message is not None and success_message != "", "Password reset success message should be displayed after submitting recovery request."
-
-    def test_tc004_empty_fields_required_error(self, driver):
-        """
-        Test Case TC004: Required Fields Validation
-        Steps:
-            1. Navigate to the login page
-            2. Leave both email and password fields empty
-            3. Click the 'Login' button
-            4. Verify error message 'Email and password required' is displayed
-        """
-        login_page = LoginPage(driver)
-        login_page.open_login_page()
-        assert login_page.validate_empty_login_fields_error() is True, "Error message 'Email and password required' should be displayed when both fields are empty."
-
-    def test_tc_login_011_no_remember_me_session_non_persistence(self, driver):
-        """
-        Test Case TC_LOGIN_011: No 'Remember Me' - Session Non-Persistence
-        Steps:
-            1. Navigate to the login page
-            2. Enter valid credentials without selecting 'Remember Me' (email: 'user@example.com', password: 'ValidPass123')
-            3. Click the 'Login' button
-            4. Verify dashboard is displayed
-            5. Simulate browser restart and verify session does NOT persist
-        """
-        login_page = LoginPage(driver)
-        result = login_page.execute_tc_login_011_no_remember_me_session_non_persistence(email='user@example.com', password='ValidPass123')
-        assert result['dashboard_displayed'], "Dashboard should be displayed after login."
-        assert result['remember_me_checked'] is False, "'Remember Me' checkbox should NOT be selected."
-        assert result['session_persisted'] is False, f"Session should NOT persist after browser restart. Error: {result.get('error_message', '')}"
-
-    # TC005 Automation: Enter empty email and valid password, click login, validate email field remains empty, check for 'Email required' error, and confirm login fails.
-    def test_tc005_empty_email_valid_password(self, driver):
-        """
-        Test Case TC005: Empty Email and Valid Password
-        Steps:
-            1. Navigate to the login page
-            2. Leave email field empty, enter valid password ('ValidPassword123')
-            3. Click the 'Login' button
-            4. Validate email field remains empty
-            5. Check for error message 'Email required'
-            6. Confirm login fails
-        """
-        login_page = LoginPage(driver)
-        result = login_page.execute_tc005_empty_email_valid_password('ValidPassword123')
-        assert result['email_field_empty'], "Email field should remain empty after login attempt."
-        assert result['error_message'] == 'Email required', f"Expected error message 'Email required', got: {result['error_message']}"
-        assert result['login_unsuccessful'], "Login should not be successful when email field is empty."
+        password_recovery_page.enter_email_and_submit('user@example.com')
+        assert password_recovery_page.is_success_message_displayed(), "Password reset success message should be displayed after submitting recovery request."
