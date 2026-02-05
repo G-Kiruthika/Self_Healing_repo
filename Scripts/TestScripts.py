@@ -71,5 +71,20 @@ class TestCartFunctionality(unittest.TestCase):
         cart_contents_after = cart_page.get_cart_contents()
         self.assertTrue(any(item["name"] == "111" and int(item["quantity"]) == 2 for item in cart_contents_after), "Product not present in cart after sign out/in.")
 
+    def test_TC_CART_007_delete_cart_and_verify_absence(self):
+        """
+        Test Case: TC_CART_007
+        Steps:
+        1. Delete shopping cart for a user. [Test Data: { "cart_id": "<cart_id>" }]
+        2. Query for deleted cart. [Test Data: { "cart_id": "<cart_id>" }]
+        Expected:
+        1. Cart and all associated products are deleted.
+        2. Cart is not found.
+        """
+        cart_page = CartPage(self.driver)
+        cart_page.open_cart()
+        cart_page.delete_cart()
+        self.assertTrue(cart_page.is_cart_deleted(), "Cart was not deleted or still found after deletion.")
+
 if __name__ == "__main__":
     unittest.main()
