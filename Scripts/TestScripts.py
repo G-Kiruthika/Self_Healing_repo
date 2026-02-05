@@ -94,3 +94,30 @@ async def test_cart_010():
     assert error_json.get("error"), "Error message not returned when adding product with zero quantity"
     assert not error_json.get("added"), "Product should not be added to cart when quantity is zero"
     print("TC_CART_010 passed: System returns error, product not added when quantity is zero.")
+
+@pytest.mark.asyncio
+async def test_cart_002():
+    """
+    Test Case TC_CART_002
+    Steps:
+    1. Attempt to sign up using an email that is already registered.
+       [Test Data: {"username": "user2", "email": "newuser1@example.com", "password": "AnotherPass123"}]
+    Expected:
+    1. System returns error message for duplicate email.
+    """
+    # Step 1: Attempt to register user with duplicate email
+    user_data = {
+        "username": "user2",
+        "email": "newuser1@example.com",
+        "password": "AnotherPass123"
+    }
+    reg_api = UserRegistrationAPIPage()
+    try:
+        jwt_token = reg_api.register_user_and_get_jwt(user_data)
+        # If no error, test should fail
+        assert False, "Expected error for duplicate email, but registration succeeded."
+    except Exception as e:
+        error_message = str(e)
+        # Check that error message indicates duplicate email
+        assert "duplicate" in error_message.lower() or "already registered" in error_message.lower(), f"Unexpected error message: {error_message}"
+    print("TC_CART_002 passed: Duplicate email registration correctly returns error.")
