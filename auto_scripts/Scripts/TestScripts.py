@@ -158,3 +158,53 @@ def test_TC_SCRUM96_004_registration_login_jwt_profile():
     assert "accountStatus" in profile_data, "accountStatus missing in profile response"
     assert "password" not in profile_data, "Password should not be present in profile response"
     print("TC_SCRUM96_004 registration, login, JWT validation, profile access test PASSED.")
+
+# TC_SCRUM96_002: Duplicate User Registration API Test
+import pytest
+from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+
+def test_TC_SCRUM96_002_duplicate_user_registration_api():
+    """
+    TC_SCRUM96_002: Duplicate User Registration API Test
+    Steps:
+    1. Register user 'duplicateuser' with email 'first@example.com' (expect HTTP 201)
+    2. Attempt duplicate registration with same username, different email (expect HTTP 409)
+    3. Verify only one user record exists in DB with username 'duplicateuser' and email 'first@example.com'
+    """
+    # Setup database config if needed
+    db_config = {
+        "host": "localhost",
+        "user": "db_user",
+        "password": "db_pass",
+        "database": "ecommerce_db"
+    }
+    api_page = UserRegistrationAPIPage(db_config=db_config)
+
+    # Step 1: Register first user
+    response1 = api_page.register_user_api(
+        username="duplicateuser",
+        email="first@example.com",
+        password="Pass123!",
+        first_name="First",
+        last_name="User"
+    )
+    assert response1.status_code == 201, f"Expected HTTP 201 Created, got {response1.status_code}: {response1.text}"
+
+    # Step 2: Attempt duplicate registration
+    response2 = api_page.register_user_api(
+        username="duplicateuser",
+        email="second@example.com",
+        password="Pass456!",
+        first_name="Second",
+        last_name="User"
+    )
+    assert response2.status_code == 409, f"Expected HTTP 409 Conflict, got {response2.status_code}: {response2.text}"
+    resp_json = response2.json()
+    assert "error" in resp_json, "Error message not present in response"
+    assert "username already exists" in resp_json["error"].lower(), f"Expected error 'username already exists', got '{resp_json['error']}'"
+
+    # Step 3: DB verification
+    count, db_email = api_page.verify_single_user_in_db("duplicateuser", "first@example.com")
+    assert count == 1, f"Expected exactly one user record, found {count}"
+    assert db_email == "first@example.com", f"Expected email 'first@example.com', got '{db_email}'"
+    print("TC_SCRUM96_002 duplicate user registration API test PASSED.")
