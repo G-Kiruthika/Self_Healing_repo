@@ -46,5 +46,13 @@ class TestCartAccess(unittest.TestCase):
         )
         self.assertTrue(result, 'Access denial verification failed for TC_CART_009.')
 
+    def test_TC_CART_010_add_product_with_zero_quantity(self):
+        """
+        TC_CART_010: Attempt to add a product to cart with quantity zero. Acceptance Criteria: System returns error; product not added.
+        """
+        product_id = '12345'
+        result = self.cart_page.add_product_with_zero_quantity_and_check_error(product_id)
+        self.assertTrue(result, 'Expected error message when adding product with zero quantity, but did not get one.')
+
 if __name__ == '__main__':
     unittest.main()
