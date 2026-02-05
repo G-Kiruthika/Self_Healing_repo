@@ -169,3 +169,23 @@ def test_TC016_session_timeout_logout(driver):
     login_page.login_with_credentials(email, password)
     # Simulate inactivity and verify logout
     assert login_page.wait_for_session_timeout_and_verify_logout(timeout_duration=900), "User was not logged out after session timeout."
+
+# TC-SCRUM-96-005: API Signin Negative Test
+from auto_scripts.Pages.LoginPage import LoginPage
+
+def test_TC_SCRUM_96_005_api_signin_invalid_credentials():
+    """
+    Test Case TC-SCRUM-96-005: API Sign-in Negative Test
+    Steps:
+    1. Ensure user account exists with known credentials (email: login@example.com, password: LoginPass123!)
+    2. Send POST request to /api/users/signin with incorrect password (email: login@example.com, password: WrongPassword)
+    3. Verify sign-in fails with HTTP 401 Unauthorized and error message 'Invalid credentials'
+    4. Verify no authentication token is returned
+    Acceptance Criteria: As described above
+    """
+    email = "login@example.com"
+    invalid_password = "WrongPassword"
+    result = LoginPage.api_signin_invalid_credentials(email, invalid_password)
+    assert result["status_code"] == 401, f"Expected HTTP 401 Unauthorized, got {result['status_code']}"
+    assert "invalid credentials" in result["error_message"].lower(), f"Expected error message 'Invalid credentials', got '{result['error_message']}'"
+    assert not result["token_present"], f"Expected no authentication token, but got one."
