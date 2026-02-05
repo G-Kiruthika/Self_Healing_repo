@@ -51,19 +51,44 @@ def test_TC_SCRUM_96_008_product_search_api_v2():
     # Step 4: Validate each product object contains required fields
     product_search_api.validate_product_schema(products)
 
-def test_TC_SCRUM_96_009_product_search_api_empty_result():
-    """
-    Test Case TC-SCRUM-96-009: Product Search API - Empty Result Validation
+# TC_SCRUM96_001: User Registration API Automation Test
+from PageClasses.UserRegistrationAPIPage import UserRegistrationAPIPage
 
+def test_TC_SCRUM96_001_user_registration_api():
+    """
+    Test Case TC_SCRUM96_001: User Registration API Automation
     Steps:
-    1. Send GET request to /api/products/search with non-existent search term [Test Data: Query parameter: ?q=nonexistentproduct12345] [Acceptance Criteria: AC-004]
-       Expected: Search returns HTTP 200 status with empty product list.
-    2. Verify response structure is valid with empty array [Test Data: Response body validation] [Acceptance Criteria: AC-004]
-       Expected: Response contains empty array: {"products": []}
-    3. Verify no error is thrown for empty results [Test Data: Error field validation] [Acceptance Criteria: AC-004]
-       Expected: No error messages in response, clean empty result.
-
-    Acceptance Criteria: AC-004
+    1. Send POST request to /api/users/register with valid user registration data (username, email, password, firstName, lastName)
+    2. Validate HTTP 201 response and correct schema (userId, username, email, firstName, lastName, registrationTimestamp; password not present)
+    3. Query database to verify user creation, email stored, password hashed, account status 'ACTIVE'
+    4. Check email log for registration confirmation sent to user
     """
-    product_search_api = ProductSearchAPIPage()
-    product_search_api.run_tc_scrum_96_009()
+    api_base_url = "http://localhost:5000"
+    db_config = {"host": "localhost", "user": "dbuser", "password": "dbpass", "database": "testdb"} # Example config
+    email_log_path = "/var/log/email_service.log" # Example log path
+    user_data = {
+        "username": "testuser001",
+        "email": "testuser001@example.com",
+        "password": "SecurePass123!",
+        "firstName": "John",
+        "lastName": "Doe"
+    }
+    page = UserRegistrationAPIPage(api_base_url, db_config, email_log_path)
+    # Step 1: Register user via API
+    api_resp = page.register_user(user_data)
+    # Step 2: Validate response schema
+    assert api_resp["userId"]
+    assert api_resp["username"] == user_data["username"]
+    assert api_resp["email"] == user_data["email"]
+    assert api_resp["firstName"] == user_data["firstName"]
+    assert api_resp["lastName"] == user_data["lastName"]
+    assert "registrationTimestamp" in api_resp
+    assert "password" not in api_resp
+    # Step 3: Verify user in DB
+    db_record = page.verify_user_in_db(user_data["username"], user_data["email"])
+    assert db_record is not None
+    assert db_record["email"] == user_data["email"]
+    assert db_record["password"] != user_data["password"]
+    assert db_record["account_status"] == "ACTIVE"
+    # Step 4: Verify confirmation email
+    assert page.verify_confirmation_email(user_data["email"])
