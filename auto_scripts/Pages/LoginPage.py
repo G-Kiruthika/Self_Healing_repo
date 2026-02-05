@@ -267,3 +267,27 @@ class LoginPage:
         # The rest of the flow continues in UsernameRecoveryPage
         return True
     # --- End of TC_LOGIN_007 steps ---
+
+    # --- Start of TC_SCRUM74_007 steps ---
+    def tc_scrum74_007_empty_fields_login_validation(self):
+        """
+        TC_SCRUM74_007 Steps:
+        1. Navigate to the login page
+        2. Leave email/username field empty
+        3. Leave password field empty
+        4. Click on the Login button
+        5. Validation errors displayed for both fields: 'Email/Username and Password are required'
+        """
+        self.navigate_to_login()
+        # Leave email/username and password fields empty
+        email_field = self.driver.find_element(*self.EMAIL_INPUT)
+        password_field = self.driver.find_element(*self.PASSWORD_INPUT)
+        email_field.clear()
+        password_field.clear()
+        # Click Login
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
+        # Check validation errors
+        email_error = self.is_validation_error_displayed("Email/Username is required")
+        password_error = self.is_validation_error_displayed("Password is required")
+        return email_error and password_error
+    # --- End of TC_SCRUM74_007 steps ---
