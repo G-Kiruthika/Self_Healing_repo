@@ -8,11 +8,17 @@ class LoginPage:
     def __init__(self, driver):
         self.driver = driver
         # Locators loaded from Locators.json
-        self.login_url = "https://your-app-url.com/login"  # Replace with actual URL if dynamic
-        self.email_field = (By.ID, "email")
-        self.password_field = (By.ID, "password")
-        self.login_button = (By.ID, "loginBtn")
-        self.error_message = (By.ID, "errorMsg")
+        self.login_url = "https://example-ecommerce.com/login"
+        self.email_field = (By.ID, "login-email")
+        self.password_field = (By.ID, "login-password")
+        self.remember_me_checkbox = (By.ID, "remember-me")
+        self.login_button = (By.ID, "login-submit")
+        self.forgot_password_link = (By.CSS_SELECTOR, "a.forgot-password-link")
+        self.error_message = (By.CSS_SELECTOR, "div.alert-danger")
+        self.validation_error = (By.CSS_SELECTOR, ".invalid-feedback")
+        self.empty_field_prompt = (By.XPATH, "//*[contains(text(), 'Mandatory fields are required')]")
+        self.dashboard_header = (By.CSS_SELECTOR, "h1.dashboard-title")
+        self.user_profile_icon = (By.CSS_SELECTOR, ".user-profile-name")
 
     def open_login_page(self):
         self.driver.get(self.login_url)
@@ -82,4 +88,56 @@ class LoginPage:
         results['login_failed'] = results['error_message_displayed']
 
         # Return details for validation
+        return results
+
+    # TC010: Multiple invalid login attempts followed by lockout and valid login attempt
+    def login_attempts_with_lockout_tc010(self, email="user@example.com", invalid_password="WrongPassword", valid_password="ValidPassword123", attempts=5, lockout_error="Account locked due to multiple failed attempts"):
+        """
+        Test Case TC010 Implementation:
+        1. Attempt login with invalid password 5 times.
+        2. Verify error message is displayed after each failed attempt.
+        3. Attempt login with correct credentials after lockout.
+        4. Verify lockout error message is displayed.
+        Args:
+            email (str): User email for login.
+            invalid_password (str): Invalid password to trigger lockout.
+            valid_password (str): Correct password to test lockout.
+            attempts (int): Number of invalid attempts before lockout.
+            lockout_error (str): Expected lockout error message.
+        Returns:
+            dict: Detailed stepwise results for validation.
+        """
+        results = {
+            'invalid_attempts': [],
+            'lockout_attempt': None
+        }
+        self.open_login_page()
+        for i in range(attempts):
+            step_result = {}
+            try:
+                self.enter_email(email)
+                self.enter_password(invalid_password)
+                self.click_login()
+                time.sleep(1)  # Wait for error message
+                error_msg = self.get_error_message()
+                step_result['error_message_displayed'] = error_msg is not None
+                step_result['error_message_text'] = error_msg
+                step_result['login_failed'] = error_msg is not None
+            except Exception as ex:
+                step_result['exception'] = str(ex)
+            results['invalid_attempts'].append(step_result)
+        # Attempt with correct credentials after lockout
+        lockout_result = {}
+        try:
+            self.enter_email(email)
+            self.enter_password(valid_password)
+            self.click_login()
+            time.sleep(1)  # Wait for error message
+            error_msg = self.get_error_message()
+            lockout_result['error_message_displayed'] = error_msg is not None and lockout_error in error_msg
+            lockout_result['error_message_text'] = error_msg
+            lockout_result['login_failed'] = error_msg is not None and lockout_error in error_msg
+        except Exception as ex:
+            lockout_result['exception'] = str(ex)
+        results['lockout_attempt'] = lockout_result
         return results
