@@ -100,9 +100,15 @@ class TestLogin:
         """
         login_page = LoginPage(driver)
         login_page.open_login_page()
-        result = login_page.test_max_length_login_tc_login_007('64_chars@example.com', 'A'*128)
-        assert result['fields_accept_max_input'], "Fields should accept maximum input length."
+        # Use the PageClass function for max length validation
+        result = login_page.validate_max_length_input_tc_login_007('64_chars@example.com', 'A'*128)
+        assert result['fields_accept_max_length'], "Fields should accept maximum input length."
         assert result['login_success'], "Login should succeed with valid max-length credentials."
+        # Optionally check for error/validation messages
+        if result['error_message']:
+            print(f"Login error message: {result['error_message']}")
+        if result['validation_error']:
+            print(f"Validation error: {result['validation_error']}")
 
     def test_tc_login_007_username_recovery(self, driver):
         """
@@ -162,17 +168,17 @@ class TestLogin:
         assert result['error_message'] == 'Invalid email or password', f"Expected error message not displayed. Actual: {result['error_message']}"
         assert result['login_unsuccessful'], "Login should not be successful with invalid email."
 
-    def test_tc_login_011_no_remember_me_session_non_persistence(self, driver):
+    def test_tc003_invalid_password_scenario(self, driver):
         """
-        Test Case TC_LOGIN_011:
-        1. Navigate to the login page.
-        2. Enter valid credentials WITHOUT selecting 'Remember Me' (email: 'user@example.com', password: 'ValidPass123').
-        3. Click the 'Login' button.
-        4. Verify dashboard is displayed.
-        5. Simulate browser restart and verify session does NOT persist.
+        Test Case TC003: Invalid Password Scenario
+        Steps:
+            1. Navigate to the login page
+            2. Enter valid email and invalid password ('user@example.com', 'WrongPassword')
+            3. Click the 'Login' button
+            4. Verify error message 'Invalid email or password' is displayed
+            5. Confirm login fails
         """
         login_page = LoginPage(driver)
-        result = login_page.execute_tc_login_011_no_remember_me_session_non_persistence('user@example.com', 'ValidPass123')
-        assert result['dashboard_displayed'], f"Dashboard should be displayed after login. Error: {result.get('error_message', '')}"
-        assert not result['remember_me_checked'], "'Remember Me' checkbox should not be selected."
-        assert result['session_persisted'] is False, "Session should NOT persist after browser restart."
+        result = login_page.execute_tc003_invalid_password_login(email='user@example.com', password='WrongPassword')
+        assert result['error_message_displayed'], f"Expected error message not displayed. Actual: {result['error_message_text']}"
+        assert result['login_unsuccessful'], "Login should not be successful with invalid password."
