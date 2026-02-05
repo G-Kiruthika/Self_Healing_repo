@@ -43,3 +43,20 @@ class TestLogin:
         error_message = login_page.get_authentication_error()
         assert error_message is not None and error_message != "", "Authentication error message should be displayed for incorrect password."
         assert login_page.is_login_unsuccessful(), "Login should not be successful with incorrect password."
+
+    def test_tc_login_004_required_fields_empty(self, driver):
+        """
+        Test Case TC_LOGIN_004:
+        1. Navigate to the login page.
+        2. Leave email and password fields empty.
+        3. Click the 'Login' button.
+        4. Verify error messages for required fields are shown.
+        5. Verify login is not successful.
+        """
+        login_page = LoginPage(driver)
+        login_page.open_login_page()
+        login_page.login_with_credentials('', '')
+        empty_prompt = login_page.get_empty_field_prompt()
+        required_errors = login_page.get_required_field_errors()
+        assert empty_prompt is not None or required_errors != [], "Error messages for required fields should be shown when fields are empty."
+        assert login_page.is_login_unsuccessful(), "Login should not be successful when required fields are empty."
