@@ -90,3 +90,19 @@ class TestLogin:
         result = login_page.validate_required_field_errors_tc_login_005('ValidPass123')
         assert result["error_message"] is not None, "Error message for required email/username should be displayed."
         assert result["login_unsuccessful"], "Login should not be successful when email/username is empty."
+
+    def test_tc_login_007_max_length_login(self, driver):
+        """
+        Test Case TC_LOGIN_007:
+        1. Navigate to the login page.
+        2. Enter email and password with maximum allowed length (email: '64_chars@example.com', password: 'A'*128).
+        3. Click the 'Login' button.
+        4. Assert fields accept max length and login succeeds if credentials are valid.
+        """
+        login_page = LoginPage(driver)
+        login_page.open_login_page()
+        email = '64_chars@example.com'
+        password = 'A' * 128
+        result = login_page.tc_login_007_max_length_login(email, password)
+        assert result['fields_accept_max_length'], "Email and password fields should accept maximum allowed length."
+        assert result['login_success'], f"Login should succeed if credentials are valid. Error: {result.get('error_message', '')}"
