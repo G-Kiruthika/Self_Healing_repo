@@ -112,3 +112,35 @@ def test_TC_SCRUM96_010_product_crud_and_sql_injection_validation():
         raise AssertionError(f"Step 5 failed: {str(e)}")
 
     print("TC_SCRUM96_010 Product CRUD and SQL Injection Validation Test completed successfully.")
+
+# TC-SCRUM96_004: User Registration, Login, JWT Validation, Profile API Test
+from auto_scripts.Pages.TC_SCRUM96_004OrchestratorPage import TC_SCRUM96_004OrchestratorPage
+import pytest
+
+def test_TC_SCRUM96_004_user_registration_login_jwt_profile():
+    """
+    TC_SCRUM96_004: End-to-end test for user registration, login, JWT validation, and profile API access.
+    Steps:
+      1. Register user
+      2. Login and validate tokens
+      3. Decode and validate JWT
+      4. Access protected profile endpoint
+    Acceptance criteria: Each step must pass and return expected results. Overall test must pass.
+    """
+    user_data = {
+        "username": "logintest",
+        "email": "logintest@example.com",
+        "password": "ValidPass123!",
+        "firstName": "Login",
+        "lastName": "Test"
+    }
+    orchestrator = TC_SCRUM96_004OrchestratorPage()
+    results = orchestrator.run_tc_scrum96_004(user_data)
+
+    # Stepwise assertions
+    assert results.get("step_1_pass"), f"Step 1 (Registration) failed: {results.get('step_1_error', results.get('step_1_registration_response', ''))}"
+    assert results.get("step_2_pass"), f"Step 2 (Login) failed: {results.get('step_2_error', '')}"
+    assert results.get("step_3_pass"), f"Step 3 (JWT validation) failed: {results.get('step_3_error', '')}"
+    assert results.get("step_4_pass"), f"Step 4 (Profile API) failed: {results.get('step_4_error', '')}"
+    assert results.get("overall_pass"), f"Overall test failed: {results}"
+    print("TC_SCRUM96_004 results:", results)
