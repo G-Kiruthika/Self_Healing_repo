@@ -52,17 +52,14 @@ class TestLogin:
 
     def test_TC_LOGIN_009_forgot_username_flow(self, driver):
         """
-        Test Case TC_LOGIN_009: Forgot Username Flow
+        Test Case TC_LOGIN_009: Username Recovery
         Steps:
         1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
-        2. Click on 'Forgot Username' link [Test Data: N/A]
+        2. Click on 'Forgot Username' link
         3. Enter registered email address [Test Data: Email: testuser@example.com]
-        4. Click on Submit button [Test Data: N/A]
-        5. Success message displayed and username reminder email sent
+        4. Click on Submit button
+        5. Assert that the success message is displayed and username reminder email is sent
         """
         username_recovery_page = UsernameRecoveryPage(driver)
-        try:
-            result = username_recovery_page.tc_login_009_forgot_username_flow(email="testuser@example.com")
-            assert result, "Forgot Username flow failed: Success message not displayed or incorrect."
-        except AssertionError as e:
-            pytest.fail(str(e))
+        result = username_recovery_page.tc_login_009_forgot_username_flow(email="testuser@example.com")
+        assert result, "Username recovery test failed: Success message not displayed or email not sent."
