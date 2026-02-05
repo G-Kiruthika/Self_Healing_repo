@@ -98,6 +98,9 @@ class UserRegistrationAPIPage:
                 assert user_record is not None, f"No record found for username {username}"
                 assert user_record['email'] == expected_email, "Email does not match"
                 assert user_record['account_status'] == 'ACTIVE', "Account status is not ACTIVE"
+                # Password should be hashed (not plain text)
+                assert not user_record['password'] == 'SecurePass123!', "Password is not hashed in DB"
+                assert len(user_record['password']) > 20, "Password hash length is suspiciously short"
                 return user_record
         finally:
             conn.close()
