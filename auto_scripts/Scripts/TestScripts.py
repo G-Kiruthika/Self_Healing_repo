@@ -172,5 +172,20 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
+    def test_tc_login_001_invalid_credentials_error(self):
+        """
+        Test Case TC_LOGIN_001:
+        1. Navigate to the login screen.
+        2. Enter invalid username and password.
+        3. Click the login button.
+        4. Assert error message 'Invalid username or password. Please try again.' is displayed.
+        """
+        driver = webdriver.Chrome()
+        page = LoginPage(driver)
+        try:
+            page.verify_invalid_login_shows_error('invalid@example.com', 'wrongpassword')
+        finally:
+            driver.quit()
+
 if __name__ == "__main__":
     unittest.main()
