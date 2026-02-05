@@ -184,5 +184,21 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
+    def test_tc_login_06_empty_fields_error(self):
+        """
+        Test Case TC_LOGIN_06:
+        1. Navigate to login page.
+        2. Leave both email and password fields empty.
+        3. Click on the 'Login' button.
+        4. Verify error messages 'Email is required' and 'Password is required' are displayed. User remains on login page.
+        """
+        driver = webdriver.Chrome()
+        page = LoginPage(driver)
+        try:
+            result = page.tc_login_06_empty_fields_error()
+            self.assertTrue(result, "TC_LOGIN_06 failed: Error messages not displayed or user not on login page.")
+        finally:
+            driver.quit()
+
 if __name__ == "__main__":
     unittest.main()
