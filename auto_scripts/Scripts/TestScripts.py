@@ -86,21 +86,11 @@ class TestLogin:
         TC_LOGIN_007: Login with both username and password fields empty
         Steps:
         1. Navigate to the login page
-        2. Leave both username and password fields empty
-        3. Click on the Login button
-        4. Verify validation errors 'Username is required' and 'Password is required' are displayed
+        2. Ensure both username and password fields are empty
+        3. Click the login button
+        4. Assert that both 'Username is required' and 'Password is required' validation errors are displayed
         """
         login_page = LoginPage(driver)
-        login_page.load()
-        assert login_page.is_displayed(), "Login page is not displayed"
-        # Clear both fields to ensure they are empty
-        email_elem = login_page.wait.until(lambda d: d.find_element(*login_page.EMAIL_FIELD))
-        email_elem.clear()
-        password_elem = login_page.wait.until(lambda d: d.find_element(*login_page.PASSWORD_FIELD))
-        password_elem.clear()
-        login_page.click_login()
-        # Check for both validation errors
-        validation_errors = driver.find_elements(By.CSS_SELECTOR, ".invalid-feedback")
-        errors_text = [e.text for e in validation_errors if e.is_displayed()]
-        assert any("Username is required" in t for t in errors_text), "Validation error 'Username is required' not found."
-        assert any("Password is required" in t for t in errors_text), "Validation error 'Password is required' not found."
+        validation_errors = login_page.test_empty_fields_validation()
+        assert 'Username is required' in validation_errors, "Expected 'Username is required' validation error not found."
+        assert 'Password is required' in validation_errors, "Expected 'Password is required' validation error not found."
