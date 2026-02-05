@@ -3,29 +3,27 @@
 Page Object for Login Page using Selenium WebDriver
 
 Executive Summary:
-This update adds support for TC-SCRUM-115-004: login validation for empty username and error highlighting. New methods ensure detection of empty field prompts and visual feedback for users.
+This update adds support for TC_LOGIN_005: validation of empty email and password fields during login. The new method ensures detection of required field errors and prevents login progression.
 
 Analysis:
-- Locators and workflows extended for empty field validation and UI highlighting.
-- Strict adherence to Selenium Python best practices.
+- Locators and workflows extended for strict empty field validation.
+- Adheres to Selenium Python best practices and project coding standards.
 
 Implementation Guide:
-- Use login_with_empty_username() to attempt login with no username.
-- Use highlight_username_field() to visually indicate error.
-- Use get_empty_field_prompt() to validate error prompt.
-- Use is_username_field_highlighted() to check visual state.
+- Use tc_login_005_empty_fields_validation() to automate and verify the empty fields scenario.
+- Method uses explicit waits, error validation, and navigation checks.
 
 QA Report:
-- All new methods validated for prompt detection and field highlighting.
+- All new methods validated for correct prompt detection and page state.
 - Exception handling covers all error scenarios.
 
 Troubleshooting:
-- Check locators and JavaScript execution for highlighting issues.
-- Validate backend error prompt logic.
+- Check locator definitions and error message text in Locators.json if test fails.
+- Validate frontend and backend error handling logic.
 
 Future Considerations:
-- Parameterize color, prompt, and extend to other fields.
-- Integrate with visual regression and accessibility tools.
+- Parameterize error messages for localization.
+- Integrate with accessibility and UI regression tools.
 """
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -168,3 +166,36 @@ class LoginPage:
         assert "Invalid password" in error, f"Expected 'Invalid password' error message, got: {error}"
         return True
     # --- End of TC_SCRUM74_004 steps ---
+
+    # --- Start of TC_LOGIN_005 steps ---
+    def tc_login_005_empty_fields_validation(self) -> bool:
+        """
+        TC_LOGIN_005 Steps:
+        1. Navigate to the login page
+        2. Leave email field empty
+        3. Leave password field empty
+        4. Click on the Login button
+        5. Verify validation errors: 'Email is required' and 'Password is required'
+        6. Ensure login is prevented and user remains on login page
+        """
+        self.load()
+        assert self.is_displayed(), "Login page is not displayed"
+        # Leave both fields empty
+        email_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_elem.clear()
+        password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_elem.clear()
+        self.click_login()
+        # Wait and verify validation errors
+        try:
+            validation_errors = self.driver.find_elements(By.CSS_SELECTOR, ".invalid-feedback")
+            error_texts = [e.text for e in validation_errors if e.is_displayed()]
+            assert any("Email is required" in t for t in error_texts), "'Email is required' validation error not displayed"
+            assert any("Password is required" in t for t in error_texts), "'Password is required' validation error not displayed"
+        except Exception as e:
+            raise AssertionError(f"Validation error check failed: {e}")
+        # Ensure user remains on login page
+        current_url = self.driver.current_url
+        assert self.URL in current_url, f"User did not remain on login page, current URL: {current_url}"
+        return True
+    # --- End of TC_LOGIN_005 steps ---
