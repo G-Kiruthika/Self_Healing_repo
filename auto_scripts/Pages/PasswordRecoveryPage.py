@@ -74,11 +74,15 @@ class PasswordRecoveryPage:
     def tc_login_008_forgot_password_unregistered_email(self, email: str) -> bool:
         """
         TC_LOGIN_008: Forgot Password with Unregistered Email
+
         Steps:
         1. Verify Password Recovery Page is loaded
         2. Enter unregistered email address [Test Data: Email: unregistered@example.com]
         3. Click on Submit button
         4. Verify generic message: 'If email exists, reset link will be sent'
+
+        Returns:
+            bool: True if the generic message is displayed as expected, raises AssertionError otherwise.
         """
         assert self.is_loaded(), "Password Recovery page is not loaded"
         input_field = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
