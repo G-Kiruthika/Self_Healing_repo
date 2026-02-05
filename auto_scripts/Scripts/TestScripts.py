@@ -77,12 +77,11 @@ class TestLoginFunctionality:
             raise
 
     def test_TC_LOGIN_004(self):
-        """Test Case TC_LOGIN_004: Empty fields should display validation error"""
+        """Test Case TC_LOGIN_004: Validation when username and password are empty"""
         try:
-            error_message = self.login_page.tc_login_004_empty_fields_flow()
-            assert error_message is not None, "Validation error message not displayed for empty fields."
-            assert 'Username and password are required' in error_message, f"Unexpected validation error: {error_message}"
-            print("TC_LOGIN_004 passed: Validation error displayed for empty fields.")
+            result = self.login_page.validate_empty_fields_error()
+            assert result, "Validation error for empty username and password not displayed or incorrect."
+            print("TC_LOGIN_004 passed: Correct error message displayed for empty username and password.")
         except Exception as e:
             print(f"TC_LOGIN_004 failed: {e}")
             raise
