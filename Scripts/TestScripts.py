@@ -4,6 +4,7 @@
 import unittest
 from selenium import webdriver
 from Pages.CartPage import CartPage
+from Pages.SearchPage import SearchPage
 
 class TestCartFunctionality(unittest.TestCase):
     """
@@ -13,6 +14,7 @@ class TestCartFunctionality(unittest.TestCase):
         # Initialize WebDriver (adjust as needed for your environment)
         self.driver = webdriver.Chrome()
         self.cart_page = CartPage(self.driver)
+        self.search_page = SearchPage(self.driver)
 
     def tearDown(self):
         self.driver.quit()
@@ -89,6 +91,18 @@ class TestCartFunctionality(unittest.TestCase):
         error_displayed = self.cart_page.validate_add_zero_quantity(product_id)
         self.assertTrue(error_displayed, "System did not return error when adding zero quantity; product may have been added incorrectly.")
         print(f"Error displayed after attempting to add zero quantity for product_id {product_id}: {error_displayed}")
+
+    def test_TC_CART_003_search_for_valid_keyword(self):
+        """
+        TC_CART_003: Send a product search request with a valid keyword ('laptop') and validate that matching products are returned.
+        Steps:
+        1. Use SearchPage to search for 'laptop'.
+        2. Validate that at least one matching product is returned.
+        """
+        self.search_page.search_product('laptop')
+        result = self.search_page.validate_search_results('laptop')
+        self.assertTrue(result, "System did not return matching products for keyword 'laptop'.")
+        print("Search for 'laptop' returned matching products.")
 
 if __name__ == "__main__":
     unittest.main()
