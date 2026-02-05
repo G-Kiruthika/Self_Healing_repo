@@ -3,6 +3,7 @@ import unittest
 from selenium import webdriver
 from CartPage import CartPage
 from pages.ProductSearchPage import ProductSearchPage
+from PageClasses.CartAPIPage import CartAPIPage
 
 class TestCartDuplicateSignup(unittest.TestCase):
     def setUp(self):
@@ -76,6 +77,25 @@ class TestCartDuplicateSignup(unittest.TestCase):
             self.assertIn('not added', error_message.lower(), 'Error message should mention product not added.')
         except Exception as e:
             self.fail(f'Exception occurred while testing zero quantity add: {str(e)}')
+
+    def test_cart_access_denied_tc_cart_009(self):
+        """
+        Test Case TC_CART_009:
+        Authenticate as User A and attempt to access User B's cart.
+        Test Data: {"user_token": "userA", "cart_id": "cart_of_userB"}
+        Acceptance Criteria: Access denied; error message returned.
+        """
+        self.driver.get('https://example-ecommerce.com')
+        cart_api_page = CartAPIPage(self.driver)
+        # Simulate User A attempting to access User B's cart
+        user_token = 'userA'
+        cart_id = 'cart_of_userB'
+        response = cart_api_page.access_cart(user_token, cart_id)
+        expected_message = 'You do not have permission to access this cart.'
+        access_denied = cart_api_page.validate_access_denied_error(response, expected_message)
+        self.assertTrue(access_denied, 'Access to another user's cart should be denied with the correct error message.')
+        # Optional: print response for debug
+        print('TC_CART_009 Response:', response)
 
     def tearDown(self):
         self.driver.quit()
