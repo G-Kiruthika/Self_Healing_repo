@@ -7,6 +7,7 @@ from SignUpPage import SignUpPage
 from AuthPage import AuthPage
 from CartApiPage import CartApiPage
 from UserRegistrationAPIPage import UserRegistrationAPIPage
+from ProductSearchPage import ProductSearchPage
 
 class TestCartFunctionality(unittest.TestCase):
     def setUp(self):
@@ -104,6 +105,30 @@ class TestCartFunctionality(unittest.TestCase):
         except AssertionError as e:
             self.fail(f"Duplicate email error validation failed: {e}")
         self.assertTrue("duplicate" in error_message.lower() or "already registered" in error_message.lower(), f"Error message does not indicate duplicate email: {error_message}")
+
+    def test_TC_CART_003_product_search(self):
+        """
+        Test Case: TC_CART_003
+        Steps:
+        1. Send a product search request with a valid keyword 'laptop'.
+        2. Validate that system returns matching products for both UI and API.
+        """
+        search_keyword = "laptop"
+        # UI Test
+        product_search_page = ProductSearchPage(self.driver)
+        try:
+            product_search_page.search_products_ui(search_keyword)
+            ui_valid = product_search_page.validate_search_results_ui(search_keyword)
+        except Exception as e:
+            self.fail(f"UI search or validation failed: {e}")
+        self.assertTrue(ui_valid, "UI search results validation failed.")
+        # API Test
+        try:
+            api_products = product_search_page.search_products_api(search_keyword)
+            api_valid = product_search_page.validate_search_results_api(api_products, search_keyword)
+        except Exception as e:
+            self.fail(f"API search or validation failed: {e}")
+        self.assertTrue(api_valid, "API search results validation failed.")
 
 if __name__ == "__main__":
     unittest.main()
