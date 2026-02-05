@@ -1,22 +1,22 @@
 # Executive Summary:
-# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, and now TC_LOGIN_010 using Selenium in Python.
+# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, TC_LOGIN_010, and now TC_LOGIN_011 using Selenium in Python.
 # Updates:
-# - Added execute_tc_login_010_remember_me_session_persistence() for TC_LOGIN_010, which navigates to login page, enters valid credentials, selects 'Remember Me', submits, and verifies session persists after browser restart.
+# - Added execute_tc_login_011_no_remember_me_session_non_persistence() for TC_LOGIN_011, which navigates to login page, enters valid credentials WITHOUT selecting 'Remember Me', submits, and verifies session does NOT persist after browser restart.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
 # - Strict locator mapping from Locators.json
 # - Defensive coding using Selenium WebDriverWait and exception handling
-# - Functions for navigation, login, error validation, positive login outcome, and session persistence
+# - Functions for navigation, login, error validation, positive login outcome, and session persistence/non-persistence
 # - Existing methods are preserved and new methods are appended
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use open_login_page(), login_with_credentials(), execute_tc001_login_workflow(email, password), execute_tc_login_010_remember_me_session_persistence(email, password) to automate respective scenarios
-# - Example usage for TC_LOGIN_010:
+# - Use open_login_page(), login_with_credentials(), execute_tc001_login_workflow(email, password), execute_tc_login_010_remember_me_session_persistence(email, password), execute_tc_login_011_no_remember_me_session_non_persistence(email, password) to automate respective scenarios
+# - Example usage for TC_LOGIN_011:
 #     page = LoginPage(driver)
-#     result = page.execute_tc_login_010_remember_me_session_persistence(email="user@example.com", password="ValidPass123")
-#     assert result["session_persisted"]
+#     result = page.execute_tc_login_011_no_remember_me_session_non_persistence(email="user@example.com", password="ValidPass123")
+#     assert result["session_persisted"] is False
 
 # Quality Assurance Report:
 # - All locator references validated against Locators.json
@@ -259,31 +259,99 @@ class LoginPage:
             result["dashboard_displayed"] = dashboard.is_displayed()
 
             # Step 5: Simulate browser restart and verify session persistence
-            # --- This is a best-practice simulation for session persistence ---
-            # 1. Get cookies before closing
             cookies = self.driver.get_cookies()
-            # 2. Get current URL for dashboard
             dashboard_url = self.driver.current_url
-            # 3. Close and re-instantiate browser (simulate restart)
             self.driver.quit()
             from selenium import webdriver
             options = webdriver.ChromeOptions()
-            options.add_argument('--headless') # Use headless for automation
+            options.add_argument('--headless')
             new_driver = webdriver.Chrome(options=options)
             new_driver.get(self.URL)
-            # 4. Inject cookies to restore session
             for cookie in cookies:
-                # Selenium requires domain to match
                 if 'domain' in cookie and cookie['domain'] in self.URL:
                     try:
                         new_driver.add_cookie(cookie)
                     except Exception:
                         pass
-            # 5. Navigate to dashboard and check session
             new_driver.get(dashboard_url)
             WebDriverWait(new_driver, 10).until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
             dashboard_elem = new_driver.find_element(*self.DASHBOARD_HEADER)
             result["session_persisted"] = dashboard_elem.is_displayed()
+            new_driver.quit()
+        except TimeoutException as e:
+            result["error_message"] = f"TimeoutException: {str(e)}"
+        except Exception as e:
+            result["error_message"] = str(e)
+        return result
+
+    def execute_tc_login_011_no_remember_me_session_non_persistence(self, email, password):
+        '''
+        TC_LOGIN_011: Executes login workflow WITHOUT 'Remember Me' and verifies session does NOT persist after browser restart.
+        Steps:
+            1. Navigate to login page
+            2. Enter valid credentials WITHOUT selecting 'Remember Me'
+            3. Click 'Login'
+            4. Verify dashboard is displayed
+            5. Simulate browser restart and verify session does NOT persist
+        Args:
+            email (str): Valid email
+            password (str): Valid password
+        Returns:
+            dict with keys: 'remember_me_checked', 'dashboard_displayed', 'session_persisted', 'error_message'
+        '''
+        result = {
+            "remember_me_checked": False,
+            "dashboard_displayed": False,
+            "session_persisted": None,
+            "error_message": None
+        }
+        try:
+            # Step 1: Navigate to login page
+            self.open_login_page()
+
+            # Step 2: Enter credentials WITHOUT selecting 'Remember Me'
+            email_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            email_elem.clear()
+            email_elem.send_keys(email)
+            password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            password_elem.clear()
+            password_elem.send_keys(password)
+            remember_me_elem = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_CHECKBOX))
+            if remember_me_elem.is_selected():
+                remember_me_elem.click()  # Ensure it is NOT selected
+            result["remember_me_checked"] = remember_me_elem.is_selected()
+
+            # Step 3: Click 'Login'
+            login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
+            login_btn.click()
+
+            # Step 4: Verify dashboard is displayed
+            dashboard = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            result["dashboard_displayed"] = dashboard.is_displayed()
+
+            # Step 5: Simulate browser restart and verify session does NOT persist
+            cookies = self.driver.get_cookies()
+            dashboard_url = self.driver.current_url
+            self.driver.quit()
+            from selenium import webdriver
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headless')
+            new_driver = webdriver.Chrome(options=options)
+            new_driver.get(self.URL)
+            for cookie in cookies:
+                if 'domain' in cookie and cookie['domain'] in self.URL:
+                    try:
+                        new_driver.add_cookie(cookie)
+                    except Exception:
+                        pass
+            new_driver.get(dashboard_url)
+            try:
+                # Try to find dashboard header; if not found, session did NOT persist
+                WebDriverWait(new_driver, 5).until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+                dashboard_elem = new_driver.find_element(*self.DASHBOARD_HEADER)
+                result["session_persisted"] = dashboard_elem.is_displayed()
+            except TimeoutException:
+                result["session_persisted"] = False
             new_driver.quit()
         except TimeoutException as e:
             result["error_message"] = f"TimeoutException: {str(e)}"
