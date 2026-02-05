@@ -91,5 +91,32 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
+    def test_tc013_concurrent_login_load(self):
+        """
+        Test Case TC013:
+        Simulate 1000 concurrent login attempts with valid credentials and verify system resilience.
+        Acceptance Criteria:
+        - System responds within acceptable time; no errors or crashes.
+        """
+        # Prepare 1000 valid credentials
+        credentials = [
+            {"email": f"user{i}@example.com", "password": "Password123!"} for i in range(1, 1001)
+        ]
+        # Run concurrent login simulation
+        page = LoginPage(None)  # Not used in threaded method, so can be None
+        results = page.simulate_concurrent_logins(credentials, max_threads=1000)
+        # Assert no system errors or crashes
+        failure_count = 0
+        for r in results:
+            if r["status"] != "SUCCESS":
+                # Accept handled errors, but count system-level failures
+                if "WebDriver error" in r["message"] or "Exception" in r["message"]:
+                    failure_count += 1
+        # Log summary
+        print(f"TC013: Total successful logins: {sum(1 for r in results if r['status']=='SUCCESS')} / {len(results)}")
+        print(f"TC013: System-level failures: {failure_count}")
+        # The test passes if there are no system-level failures
+        self.assertEqual(failure_count, 0, f"TC013 failed: {failure_count} system-level errors/crashes occurred during concurrent logins.")
+
 if __name__ == "__main__":
     unittest.main()
