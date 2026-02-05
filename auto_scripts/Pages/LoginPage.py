@@ -69,29 +69,24 @@ class LoginPage:
         forgot_username_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         forgot_username_link.click()
 
-    def login_with_min_length_credentials_and_validate(self):
+    def login_with_minimum_allowed_credentials_and_verify_success(self):
         """
-        Automates TC_LOGIN_07_01:
-        1. Navigates to the login page.
-        2. Enters an email address with the minimum allowed length (a@b.co).
-        3. Enters a password with the minimum allowed length (Abc12345).
-        4. Clicks the 'Login' button.
-        5. Validates that the user is successfully logged in if credentials are valid.
+        TC_LOGIN_07_01:
+        1. Navigate to the login page.
+        2. Enter an email address with the minimum allowed length (a@b.co).
+        3. Enter a password with the minimum allowed length (Abc12345).
+        4. Click the 'Login' button.
+        5. Verify that the user is successfully logged in if credentials are valid.
         """
-        min_length_email = "a@b.co"
-        min_length_password = "Abc12345"
-
         self.go_to_login_page()
-        self.enter_email(min_length_email)
-        self.enter_password(min_length_password)
+        self.enter_email("a@b.co")
+        self.enter_password("Abc12345")
         self.click_login()
-
-        # Validate successful login by checking for dashboard header and user profile icon
+        # Verification: Wait for dashboard or user profile icon to be visible as sign of successful login
         try:
             dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
             user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
-            assert dashboard_header.is_displayed(), "Dashboard header not displayed after login."
-            assert user_profile_icon.is_displayed(), "User profile icon not displayed after login."
+            assert dashboard_header.is_displayed() or user_profile_icon.is_displayed(), \
+                "Login did not succeed: Dashboard or User Profile not visible."
         except Exception as e:
-            error_message = self.get_error_message()
-            raise AssertionError(f"Login failed with min length credentials. Error: {error_message if error_message else str(e)}")
+            raise AssertionError(f"Login with minimum allowed credentials failed: {e}")
