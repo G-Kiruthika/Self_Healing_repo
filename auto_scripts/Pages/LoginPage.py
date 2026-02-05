@@ -1,7 +1,7 @@
 # Executive Summary:
 # This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, and now TC_LOGIN_006 using Selenium in Python.
 # Updates:
-# - Appended tc_login_006_required_password_error() to explicitly check error messages when login is attempted with valid email and empty password.
+# - Added validate_required_password_error_tc_login_006() for TC_LOGIN_006: Validates error message for required password when login is attempted with valid email and empty password.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
@@ -12,13 +12,12 @@
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use open_login_page(), login_with_credentials(), get_authentication_error(), get_validation_error(), is_login_unsuccessful(), validate_required_field_errors_tc_login_004(), and tc_login_006_required_password_error() to automate TC_LOGIN_003, TC_LOGIN_004, and TC_LOGIN_006 scenarios
+# - Use open_login_page(), login_with_credentials(), get_authentication_error(), get_validation_error(), is_login_unsuccessful(), validate_required_field_errors_tc_login_004(), and validate_required_password_error_tc_login_006() to automate TC_LOGIN_003, TC_LOGIN_004, and TC_LOGIN_006 scenarios
 # - Example usage for TC_LOGIN_006:
 #     page = LoginPage(driver)
-#     page.open_login_page()
-#     result = page.tc_login_006_required_password_error()
-#     assert result["password_error"] is not None
-#     assert result["login_unsuccessful"]
+#     result = page.validate_required_password_error_tc_login_006()
+#     assert result['password_error'] is not None
+#     assert result['login_unsuccessful']
 
 # Quality Assurance Report:
 # - All locator references validated against Locators.json
@@ -158,15 +157,15 @@ class LoginPage:
             raise Exception(f"TC_LOGIN_004 validation failed: {str(e)}")
         return result
 
-    def tc_login_006_required_password_error(self):
+    def validate_required_password_error_tc_login_006(self):
         '''
         TC_LOGIN_006: Validates error message for required password when login is attempted with valid email and empty password.
         Steps:
             1. Navigate to login page
-            2. Enter valid email and leave password field empty
+            2. Enter valid email (user@example.com) and leave password empty
             3. Click 'Login'
-            4. Verify error message for required password is shown
-            5. Verify login is not successful
+            4. Verify error message for required password
+            5. Ensure login is not successful
         Returns:
             dict with keys: 'password_error', 'login_unsuccessful'
         '''
@@ -178,23 +177,15 @@ class LoginPage:
             email_elem.send_keys("user@example.com")
             password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
             password_elem.clear()
-            # Password left empty intentionally
+            # Leave password empty
             login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
             login_btn.click()
-            # Check for required field error prompt or error message
+            # Check for required password error
             try:
-                error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
-                result["password_error"] = error_elem.text
+                password_error_elem = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
+                result["password_error"] = password_error_elem.text
             except TimeoutException:
-                try:
-                    validation_elem = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
-                    result["password_error"] = validation_elem.text
-                except TimeoutException:
-                    try:
-                        empty_prompt_elem = self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT))
-                        result["password_error"] = empty_prompt_elem.text
-                    except TimeoutException:
-                        result["password_error"] = None
+                result["password_error"] = None
             result["login_unsuccessful"] = self.is_login_unsuccessful()
         except Exception as e:
             raise Exception(f"TC_LOGIN_006 validation failed: {str(e)}")
