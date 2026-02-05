@@ -89,14 +89,16 @@ class TestLoginFunctionality:
     def test_TC_SCRUM_115_002(self):
         """Test Case TC_SCRUM_115_002: Invalid username with valid password (error message validation)"""
         try:
-            result = self.login_page.validate_invalid_username_valid_password(
-                invalid_username="invaliduser@example.com",
-                valid_password="ValidPass123!"
+            # Using the robust page method for invalid username scenario
+            result = self.login_page.login_with_invalid_username_and_validate_error(
+                username="invaliduser@example.com",
+                password="ValidPass123!",
+                expected_error="Invalid username or password. Please try again."
             )
             assert result, "Error message for invalid username and valid password not displayed or incorrect, or user did not remain on login page."
-            print("TC-SCRUM-115_002 passed: Correct error message displayed and user remained on login page.")
+            print("TC-SCRUM-115-002 passed: Correct error message displayed and user remained on login page.")
         except Exception as e:
-            print(f"TC-SCRUM-115_002 failed: {e}")
+            print(f"TC-SCRUM-115-002 failed: {e}")
             raise
 
     def test_TC_SCRUM_115_003(self):
