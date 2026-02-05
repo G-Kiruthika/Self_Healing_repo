@@ -1,17 +1,18 @@
 """
 Executive Summary:
-This PageClass implements the login page automation for an e-commerce application using Selenium in Python. It includes robust methods for SQL injection prevention (TC-LOGIN-013), and strictly follows Python Selenium best practices. All locators are mapped from Locators.json and the code is structured for maintainability and extensibility.
+This PageClass implements the login page automation for an e-commerce application using Selenium in Python. It includes robust methods for SQL injection prevention (TC-LOGIN-013), special character password validation (TC-LOGIN-011), and strictly follows Python Selenium best practices. All locators are mapped from Locators.json and the code is structured for maintainability and extensibility.
 
 Detailed Analysis:
 The LoginPage.py PageClass includes:
 - Strict locator mapping from Locators.json
 - Defensive coding using Selenium WebDriverWait and exception handling
 - Functions for login, error handling, and security validation
+- The tc_login_011_special_char_password function implements all steps for TC-LOGIN-011
 - The tc_login_013_sql_injection_prevention function implements all steps for TC-LOGIN-013
 
 Implementation Guide:
 - Instantiate LoginPage with a Selenium WebDriver instance
-- Use tc_login_013_sql_injection_prevention(email, sql_injection_password) to execute the test case
+- Use tc_login_011_special_char_password(email, password) to execute the test case
 - All functions are self-contained and compatible with pytest or unittest frameworks
 
 Quality Assurance Report:
@@ -46,7 +47,7 @@ from selenium.common.exceptions import (
 class LoginPage:
     """
     Page Object for the Login Page.
-    Implements methods for TC-LOGIN-013: SQL Injection prevention.
+    Implements methods for TC-LOGIN-011: Special character password validation, TC-LOGIN-013: SQL Injection prevention, and other login scenarios.
     """
 
     # Locators from Locators.json
@@ -116,6 +117,56 @@ class LoginPage:
         except Exception as e:
             raise AssertionError(f"TC-LOGIN-010 failed: {str(e)}")
     # --- End of TC-LOGIN-010 steps ---
+
+    # --- Start of TC-LOGIN-011 steps ---
+    def tc_login_011_special_char_password(self, email: str, password: str) -> bool:
+        """
+        TC-LOGIN-011: Login with valid email and password containing special characters
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter valid email address [Test Data: Email: testuser@example.com]
+        3. Enter password with special characters [Test Data: Password: P@ssw0rd!#$%^&*()]
+        4. Click on the Login button
+        Acceptance Criteria: TS-009
+        """
+        try:
+            # Step 1: Navigate to Login Page
+            self.driver.get(self.URL)
+            login_page_displayed = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD)).is_displayed()
+            assert login_page_displayed, "Login page is not displayed"
+
+            # Step 2: Enter valid email address
+            email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            email_input.clear()
+            email_input.send_keys(email)
+            assert email_input.get_attribute("value") == email, "Email is not entered correctly"
+
+            # Step 3: Enter password with special characters
+            password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            password_input.clear()
+            password_input.send_keys(password)
+            assert password_input.get_attribute("type") == "password", "Password field is not masked"
+            assert password_input.get_attribute("value") == password, "Password with special characters is not accepted"
+
+            # Step 4: Click on the Login button
+            login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
+            login_btn.click()
+
+            # Step 5: Validate login result
+            try:
+                dashboard_visible = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER)).is_displayed()
+                return dashboard_visible
+            except TimeoutException:
+                # Check for error message if login fails
+                if self.driver.find_elements(*self.ERROR_MESSAGE):
+                    error = self.driver.find_element(*self.ERROR_MESSAGE)
+                    assert error.is_displayed(), "Error message should be displayed for invalid credentials"
+                    return False
+                else:
+                    raise AssertionError("Neither dashboard nor error message displayed after login attempt")
+        except Exception as e:
+            raise AssertionError(f"TC-LOGIN-011 failed: {str(e)}")
+    # --- End of TC-LOGIN-011 steps ---
 
     # --- Start of TC-LOGIN-013 steps ---
     def tc_login_013_sql_injection_prevention(self, email: str, sql_injection_password: str) -> bool:
