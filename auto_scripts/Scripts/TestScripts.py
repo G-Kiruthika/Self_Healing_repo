@@ -52,7 +52,7 @@ def test_TC_SCRUM_96_008_product_search_api_v2():
     product_search_api.validate_product_schema(products)
 
 # TC_SCRUM96_001: User Registration API Automation Test
-from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+from PageClasses.UserRegistrationAPIPage import UserRegistrationAPIPage
 
 def test_TC_SCRUM96_001_user_registration_api():
     """
@@ -63,12 +63,7 @@ def test_TC_SCRUM96_001_user_registration_api():
     3. Query database to verify user creation, email stored, password hashed, account status 'ACTIVE'
     4. Check email log for registration confirmation sent to user
     """
-    db_config = {
-        "host": "localhost",
-        "user": "root",
-        "password": "pwd",
-        "database": "ecommerce"
-    }
+    db_config = {"host": "localhost", "user": "root", "password": "pwd", "database": "ecommerce"}
     email_log_path = "/var/log/email_service.log"
     page = UserRegistrationAPIPage(db_config=db_config, email_log_path=email_log_path)
     username = "testuser001"
@@ -76,24 +71,23 @@ def test_TC_SCRUM96_001_user_registration_api():
     password = "SecurePass123!"
     first_name = "John"
     last_name = "Doe"
-    # Step 1, 2, 3, 4: End-to-end workflow
-    result = page.full_workflow(username, email, password, first_name, last_name)
-    # Step 2: Validate API response
-    api_resp = result["api_response"]
-    assert api_resp["userId"], "userId missing in API response"
-    assert api_resp["username"] == username, "Username mismatch in API response"
-    assert api_resp["email"] == email, "Email mismatch in API response"
-    assert api_resp["firstName"] == first_name, "First name mismatch in API response"
-    assert api_resp["lastName"] == last_name, "Last name mismatch in API response"
-    assert "password" not in api_resp, "Password should not be in API response"
-    # Step 3: Validate DB record
-    db_record = result["db_record"]
-    assert db_record["username"] == username, "Username mismatch in DB"
-    assert db_record["email"] == email, "Email mismatch in DB"
-    assert db_record["password_hash"] != password, "Password should be hashed in DB"
-    assert db_record["account_status"] == "ACTIVE", "Account status should be ACTIVE"
-    # Step 4: Validate email log
-    assert result["email_log"] is True, "Confirmation email not found in logs"
+    # Step 1: Register user via API
+    api_resp = page.register_user_api(username, email, password, first_name, last_name)
+    # Step 2: Validate response schema
+    assert "userId" in api_resp
+    assert api_resp["username"] == username
+    assert api_resp["email"] == email
+    assert api_resp["firstName"] == first_name
+    assert api_resp["lastName"] == last_name
+    assert "password" not in api_resp
+    # Step 3: Verify user in DB
+    db_record = page.verify_user_in_db(username)
+    assert db_record["username"] == username
+    assert db_record["email"] == email
+    assert db_record["password_hash"] != password
+    assert db_record["account_status"] == "ACTIVE"
+    # Step 4: Verify confirmation email
+    assert page.check_email_log(email)
 
 # TC_SCRUM96_002: Duplicate User Registration API Automation Test
 from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
