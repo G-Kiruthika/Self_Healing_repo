@@ -174,13 +174,13 @@ class TestLogin:
         """
         Test Case TC_LOGIN_014: Login with Username Containing Special Characters
         Steps:
-        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
-        2. Enter username with special characters [Test Data: Username: test.user+tag@example.com]
-        3. Enter valid password [Test Data: Password: ValidPass123!]
-        4. Click on the Login button
-        5. Validate system processes login with special characters correctly
-        Acceptance Criteria: System handles input gracefully (error/validation/successful login)
+            1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+            2. Enter username with special characters [Test Data: Username: test.user+tag@example.com]
+            3. Enter valid password [Test Data: Password: ValidPass123!]
+            4. Click on the Login button
+            5. Validate system response: username is accepted and login is processed correctly (dashboard header and profile icon visible)
+        Acceptance Criteria: AC_007
         """
         login_page = LoginPage(driver)
         result = login_page.tc_login_014_special_char_username_login()
-        assert result, "Special character username login test failed: System did not handle input gracefully."
+        assert result, "Special character username login test failed: Username not accepted or login not processed correctly."
