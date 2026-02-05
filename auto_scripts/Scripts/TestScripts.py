@@ -35,3 +35,20 @@ class TestLogin:
         assert "Invalid username or password" in error_element.text, f"Unexpected error message: {error_element.text}"
         # Ensure user remains on login page
         assert driver.current_url.startswith(login_page.LOGIN_URL), "User was redirected away from login page after invalid login"
+
+    def test_login_invalid_password_tc_login_003(self, driver):
+        """
+        TC_LOGIN_003: Login with valid username and invalid password
+        Steps:
+        1. Navigate to the login page
+        2. Enter valid username (testuser@example.com)
+        3. Enter invalid password (WrongPassword123)
+        4. Click on the Login button
+        5. Verify error message 'Invalid username or password' is displayed and user remains on login page
+        """
+        login_page = LoginPage(driver)
+        result = login_page.tc_login_003_invalid_password(
+            username="testuser@example.com",
+            invalid_password="WrongPassword123"
+        )
+        assert result, "TC_LOGIN_003 failed: Error message not displayed or user not on login page after invalid password"
