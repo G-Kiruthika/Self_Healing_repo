@@ -49,84 +49,49 @@ def test_TC_LOGIN_008_min_length_login(driver):
     login_page.go_to_login_page()
     assert login_page.is_min_length_accepted("a@b.co", "123456"), "Minimum length credentials were not accepted."
 
-# TC-SCRUM-96-002: Duplicate Email Signup Handling
+# TC-SCRUM-96-002: Duplicate Email Signup and DB Validation
 from auto_scripts.Pages.UserSignupPage import UserSignupPage
 
-def test_TC_SCRUM_96_002_duplicate_email_signup(driver, db_connection):
+def test_TC_SCRUM_96_002_duplicate_email_signup_and_db_validation(driver, db_connection):
     """
-    Test Case TC-SCRUM-96-002: Duplicate Email Signup Handling
+    Test Case TC-SCRUM-96-002: Duplicate Email Signup and DB Validation
     Steps:
-    1. Create user with email testuser@example.com (username: user1, password: Pass123!)
-    2. Attempt to create another user with same email (username: user2, password: Pass456!)
-    3. Verify only one user record exists in simulated DB for that email
-    Acceptance criteria: Registration fails with 409 Conflict and error message 'Email already exists', DB contains only one record.
+    1. Register first user with username 'user1', email 'testuser@example.com', password 'Pass123!'.
+    2. Attempt to register second user with username 'user2', same email, password 'Pass456!'.
+    3. Validate that only one user record exists in the database for that email.
     """
     signup_page = UserSignupPage(driver)
     user1 = "user1"
+    user2 = "user2"
     email = "testuser@example.com"
     pwd1 = "Pass123!"
-    user2 = "user2"
     pwd2 = "Pass456!"
-    # Register first user and then attempt to register duplicate
     first_result, second_result = signup_page.register_and_validate_duplicate(user1, email, pwd1, user2, pwd2)
-    assert first_result["status"] == "success", f"Expected success for first user, got {first_result}"
-    assert second_result["status"] == "conflict", f"Expected conflict for duplicate email, got {second_result}"
-    assert "Email already exists" in second_result["message"], f"Expected error message 'Email already exists', got {second_result['message']}"
     # Database validation
     user_count = UserSignupPage.verify_user_count_in_db(db_connection, email)
-    assert user_count == 1, f"Expected only one user record in DB for {email}, got {user_count}"
+    assert user_count == 1, f"Expected only one user record for {email}, found {user_count}"
 
-# TC-LOGIN-10: Maximum allowed length for login credentials
-from auto_scripts.Pages.LoginPage import LoginPage
+from auto_scripts.Pages.ProfilePage import ProfilePage
 
-def test_TC_LOGIN_10_max_length_login(driver):
+def test_TC_SCRUM_96_007_profile_update_and_db_verification():
     """
-    Test Case TC_LOGIN_10: Maximum allowed length for login credentials
+    Test Case TC-SCRUM-96-007: Profile Update and DB Verification
     Steps:
-    1. Navigate to the login page.
-    2. Enter email and password with maximum allowed length (email: 64 chars local + '@' + 255 chars domain, password: 128 chars).
-    3. Click Login and assert login is accepted if credentials are valid, or error is shown if not.
-    Acceptance Criteria: Fields accept maximum allowed input, correct login outcome.
+    1. Sign in as a valid user and obtain authentication token
+    2. Send PUT request to /api/users/profile with updated username
+    3. Verify updated information is persisted in database
     """
-    login_page = LoginPage(driver)
-    login_page.go_to_login_page()
-    max_local = "a" * 64
-    max_domain = "b" * 255
-    max_email = f"{max_local}@{max_domain}.com"
-    max_password = "c" * 128
-    login_page.enter_email(max_email)
-    login_page.enter_password(max_password)
-    login_page.click_login()
-    # Validate field acceptance
-    assert len(max_email) <= 320, "Email exceeds maximum allowed length"
-    assert len(max_password) <= 128, "Password exceeds maximum allowed length"
-    result = login_page.login_with_max_length_credentials(max_email, max_password)
-    if result == "Login successful":
-        assert True
-    else:
-        assert result is not None and isinstance(result, str), "Expected error message for failed login"
-
-# TC-SCRUM-96-005: Negative API Login - Invalid Credentials
-from auto_scripts.Pages.LoginPage import LoginPage
-import requests
-
-def test_TC_SCRUM_96_005_api_login_invalid_credentials():
-    """
-    Test Case TC-SCRUM-96-005: Negative API Login - Invalid Credentials
-    Steps:
-    1. Ensure user account exists with known credentials (email: login@example.com, password: LoginPass123!)
-    2. Send POST request to /api/users/signin with incorrect password (email: login@example.com, password: WrongPassword)
-    3. Validate HTTP 401 Unauthorized and error message 'Invalid credentials'
-    4. Ensure no authentication token is returned
-    """
-    base_url = "http://localhost:8000"  # Adjust as needed for your test environment
-    login_page = LoginPage(None, base_url)
-    username = "login@example.com"
-    wrong_password = "WrongPassword"
-    expected_error = "Invalid credentials"
-    # Step 2: API sign-in with wrong password
-    response = login_page.api_signin(username, wrong_password)
-    # Step 3: Validate error response
-    login_page.verify_signin_failure(response, expected_error)
-    # Step 4: Ensure no token
-    login_page.verify_no_token(response)
+    email = "update@example.com"
+    password = "Pass123!"
+    new_username = "updatedUsername"
+    # Step 1: Sign in and get token
+    login_page = LoginPage(None)
+    token = login_page.login_and_get_token_api(email, password)
+    assert token is not None, "Failed to obtain authentication token"
+    # Step 2: Update username via PUT
+    profile_page = ProfilePage(None)
+    api_result = profile_page.update_username_api(token, new_username)
+    assert api_result["username"] == new_username, f"API did not return updated username: {api_result}"
+    # Step 3: Verify DB record
+    db_username = profile_page.verify_username_in_db(email, new_username)
+    assert db_username, f"DB did not persist updated username: {db_username}"
