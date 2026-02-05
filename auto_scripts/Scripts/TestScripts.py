@@ -211,3 +211,19 @@ class TestLogin:
         login_page = LoginPage(driver)
         login_page.open_login_page()
         assert login_page.validate_empty_login_fields_error() is True, "Error message 'Email and password required' should be displayed when both fields are empty."
+
+    def test_tc_login_011_no_remember_me_session_non_persistence(self, driver):
+        """
+        Test Case TC_LOGIN_011: No 'Remember Me' - Session Non-Persistence
+        Steps:
+            1. Navigate to the login page
+            2. Enter valid credentials without selecting 'Remember Me' (email: 'user@example.com', password: 'ValidPass123')
+            3. Click the 'Login' button
+            4. Verify dashboard is displayed
+            5. Simulate browser restart and verify session does NOT persist
+        """
+        login_page = LoginPage(driver)
+        result = login_page.execute_tc_login_011_no_remember_me_session_non_persistence(email='user@example.com', password='ValidPass123')
+        assert result['dashboard_displayed'], "Dashboard should be displayed after login."
+        assert result['remember_me_checked'] is False, "'Remember Me' checkbox should NOT be selected."
+        assert result['session_persisted'] is False, f"Session should NOT persist after browser restart. Error: {result.get('error_message', '')}"
