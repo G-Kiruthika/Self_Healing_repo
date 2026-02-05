@@ -116,5 +116,22 @@ class TestCartAddInvalidProduct(unittest.TestCase):
         error_displayed = self.cart_page.add_product_with_invalid_id(product_id, quantity)
         self.assertTrue(error_displayed, "Error message should be displayed when adding product with invalid ID.")
 
+class TestCartAddZeroQuantity(unittest.TestCase):
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.driver.get('http://your-app-url/cart')
+        self.cart_page = CartPage(self.driver)
+
+    def tearDown(self):
+        self.driver.quit()
+
+    def test_add_product_with_zero_quantity(self):
+        """
+        TC_CART_010: Attempt to add a product to cart with quantity zero. System returns error; product not added.
+        """
+        product_id = '12345'
+        error_displayed = self.cart_page.add_product_with_zero_quantity_and_check_error(product_id)
+        self.assertTrue(error_displayed, "Error message should be displayed when adding product with zero quantity.")
+
 if __name__ == '__main__':
     unittest.main()
