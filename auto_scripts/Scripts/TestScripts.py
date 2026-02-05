@@ -95,3 +95,38 @@ import pytest
 
 def test_TC_SCRUM96_003_duplicate_email_registration_and_db_verification():
     ...
+
+# TC-SCRUM96_007: Automated Test for Registration, JWT, Profile API, and DB Validation
+from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+from auto_scripts.Pages.ProfilePage import ProfilePage
+import pytest
+import pymysql
+
+def test_TC_SCRUM96_007_registration_login_profile_db_validation():
+    '''
+    Automated test for TC_SCRUM96_007:
+    1. Register and login a test user to obtain JWT
+    2. Send GET request to /api/users/profile endpoint with JWT
+    3. Validate all profile fields against DB
+    '''
+    user_data = {
+        "username": "profileuser",
+        "email": "profileuser@example.com",
+        "password": "Profile123!",
+        "firstName": "Profile",
+        "lastName": "User"
+    }
+    db_config = {
+        "host": "localhost",
+        "user": "test",
+        "password": "test",
+        "database": "ecommerce"
+    }
+    # Step 1: Register and login user to obtain JWT
+    reg_login_result = UserRegistrationAPIPage().tc_scrum96_007_register_and_login(user_data)
+    jwt_token = reg_login_result["jwt_token"]
+    assert jwt_token, "JWT token must be returned after registration and login"
+    # Step 2 & 3: Fetch profile and validate against DB
+    profile_result = ProfilePage.tc_scrum96_007_get_profile_and_validate(jwt_token, user_data, db_config)
+    assert profile_result["status_code"] == 200, "Profile API must return 200 OK"
+    assert profile_result["db_validation"] is True, "Profile data must match DB records"
