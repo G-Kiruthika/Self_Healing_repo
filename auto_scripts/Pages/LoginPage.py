@@ -1,42 +1,3 @@
-'''
-Executive Summary:
-This PageClass implements the login page automation for an e-commerce application using Selenium in Python. It supports:
-- TC-LOGIN-008: extremely long email validation
-- TC-LOGIN-009: extremely long password validation (NEW)
-All locators are mapped from Locators.json and the code is structured for maintainability and extensibility.
-
-Detailed Analysis:
-- Strict locator mapping from Locators.json
-- Defensive coding using Selenium WebDriverWait and exception handling
-- Functions for login, error handling, and navigation
-- New method for extremely long password handling as per TC-LOGIN-009
-
-Implementation Guide:
-- Instantiate LoginPage with a Selenium WebDriver instance
-- Use tc_login_008_extremely_long_email_login() to automate TC-LOGIN-008 scenario
-- Use tc_login_009_extremely_long_password_login() to automate TC-LOGIN-009 scenario
-- Example usage:
-    page = LoginPage(driver)
-    result = page.tc_login_009_extremely_long_password_login(valid_email, very_long_password)
-- Returns True if system handles input gracefully (error/truncation/validation), False otherwise
-
-Quality Assurance Report:
-- All locator references validated against Locators.json
-- PageClass code reviewed for Pythonic standards and Selenium best practices
-- Functions include assertion checks and detailed exception handling
-- Existing methods are preserved and new methods are appended
-
-Troubleshooting Guide:
-- Ensure the driver is initialized and points to the correct browser instance
-- Validate all locator values against Locators.json
-- For any assertion failure, review the error message for details
-- TimeoutException may indicate slow page load or incorrect locator
-
-Future Considerations:
-- Extend PageClass for additional navigation and UI validation tests
-- Integrate with reporting tools for enhanced test results
-'''
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -125,54 +86,55 @@ class LoginPage:
             print(f"Exception during TC_LOGIN_008 extremely long email login: {e}")
             return False
 
-    # --- TC-LOGIN-009: Login with Extremely Long Password (NEW) ---
-    def tc_login_009_extremely_long_password_login(self, valid_email: str, very_long_password: str) -> bool:
+    # --- TC-LOGIN-015: Login with Password Containing Special Characters ---
+    def tc_login_015_special_char_password(self, username: str, special_char_password: str) -> bool:
         '''
-        Automates TC-LOGIN-009: Login attempt using an extremely long password (1000+ characters).
+        Automates TC-LOGIN-015: Login attempt using a password with various special characters.
         Steps:
             1. Navigate to the login page.
-            2. Enter valid email address.
-            3. Enter extremely long password.
+            2. Enter valid username.
+            3. Enter password with special characters.
             4. Click on the Login button.
-            5. Validate system response: truncation, validation error, or graceful failure.
+            5. Validate system processes login correctly (successful login or appropriate error).
         Args:
-            valid_email (str): The valid email address.
-            very_long_password (str): The extremely long password string (1000+ chars).
+            username (str): The valid username/email.
+            special_char_password (str): The password with special characters.
         Returns:
-            bool: True if system handles input gracefully (error/truncation/validation), False otherwise.
+            bool: True if system processes login correctly (user is logged in or proper error message shown), False otherwise.
         '''
         try:
             self.driver.get("https://ecommerce.example.com/login")
             self.wait.until(EC.presence_of_element_located(self.EMAIL_FIELD))
             email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
             email_input.clear()
-            email_input.send_keys(valid_email)
+            email_input.send_keys(username)
             password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
             password_input.clear()
-            password_input.send_keys(very_long_password)
+            password_input.send_keys(special_char_password)
             login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
             login_btn.click()
-            error_or_validation_present = False
+            # Wait for either dashboard or error/validation
             try:
-                error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
-                if error_elem.is_displayed():
-                    error_or_validation_present = True
-            except (TimeoutException, NoSuchElementException):
-                pass
-            try:
-                validation_elem = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
-                if validation_elem.is_displayed():
-                    error_or_validation_present = True
-            except (TimeoutException, NoSuchElementException):
-                pass
-            still_on_login_page = self.driver.current_url == "https://ecommerce.example.com/login"
-            dashboard_header_absent = True
-            try:
-                self.driver.find_element(*self.DASHBOARD_HEADER)
-                dashboard_header_absent = False
-            except NoSuchElementException:
-                dashboard_header_absent = True
-            return error_or_validation_present and still_on_login_page and dashboard_header_absent
+                # Success: user lands on dashboard and sees profile icon/header
+                self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+                self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+                return True
+            except TimeoutException:
+                # Failure: check for error or validation message
+                try:
+                    error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+                    if error_elem.is_displayed():
+                        return True
+                except (TimeoutException, NoSuchElementException):
+                    pass
+                try:
+                    validation_elem = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
+                    if validation_elem.is_displayed():
+                        return True
+                except (TimeoutException, NoSuchElementException):
+                    pass
+            # If neither success nor error/validation, test failed
+            return False
         except (TimeoutException, NoSuchElementException, ElementNotInteractableException, WebDriverException) as e:
-            print(f"Exception during TC_LOGIN_009 extremely long password login: {e}")
+            print(f"Exception during TC_LOGIN_015 special char password login: {e}")
             return False
