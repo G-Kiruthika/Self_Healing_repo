@@ -130,7 +130,7 @@ class TestCartAddZeroQuantity(unittest.TestCase):
         TC_CART_010: Attempt to add a product to cart with quantity zero. System returns error; product not added.
         """
         product_id = '12345'
-        error_displayed = self.cart_page.add_product_with_zero_quantity_and_check_error(product_id)
+        error_displayed = self.cart_page.add_product_with_zero_quantity(product_id)
         self.assertTrue(error_displayed, "Error message should be displayed when adding product with zero quantity.")
 
 class TestCartAccessDenied(unittest.TestCase):
