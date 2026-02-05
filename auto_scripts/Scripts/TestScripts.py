@@ -78,3 +78,22 @@ class TestLoginFunctionality:
         password = 'SomePassword123'
         result = self.login_page.tc_login_002_invalid_login_flow(email, password)
         assert result, 'Invalid login flow failed: error message or login page validation did not meet criteria.'
+
+    def test_tc_login_003_valid_email_wrong_password(self):
+        """
+        TC-LOGIN-003: Login attempt with valid registered email and incorrect password
+        Steps:
+        1. Navigate to the login page [Test Data: URL]
+        2. Enter valid registered email address [Test Data: Email]
+        3. Enter incorrect password [Test Data: Password]
+        4. Click on the Login button
+        5. Verify error message displayed: 'Invalid email or password'
+        6. Verify user remains on login page without authentication
+        Acceptance Criteria: TS-002
+        """
+        url = 'https://example-ecommerce.com/login'
+        email = 'testuser@example.com'
+        password = 'WrongPassword456'
+        expected_error = 'Invalid email or password'
+        result = self.login_page.tc_login_003_valid_email_wrong_password(url, email, password, expected_error)
+        assert result, 'TC-LOGIN-003 failed: error message or login page validation did not meet criteria.'
