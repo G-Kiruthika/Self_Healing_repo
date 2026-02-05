@@ -3,14 +3,14 @@
 Page Object for Login Page using Selenium WebDriver
 
 Executive Summary:
-This update adds support for TC-LOGIN-004: validation of error message and session state when logging in with an empty email field and valid password. The new method ensures error handling and session prevention in line with strict security and usability standards.
+This update adds support for TC_SCRUM74_006: validation of error message when attempting to login with empty password. The new method ensures error handling and session prevention in line with strict security and usability standards.
 
 Analysis:
 - Locators and workflows extended for robust error validation and session checks.
 - Adheres to Selenium Python best practices and project coding standards.
 
 Implementation Guide:
-- Use tc_login_004_empty_email_validation(password) to automate and verify the empty email scenario.
+- Use tc_scrum74_006_empty_password_validation(email) to automate and verify the empty password scenario.
 - Method uses explicit waits, error validation, and session checks.
 
 QA Report:
@@ -269,20 +269,31 @@ class LoginPage:
         return True
     # --- End of TC_LOGIN_004 steps ---
 
-    # --- Start of TC_LOGIN_006 steps ---
-    def tc_login_006_forgot_password_flow(self, email: str) -> bool:
+    # --- Start of TC_SCRUM74_006 steps ---
+    def tc_scrum74_006_empty_password_validation(self, email: str) -> bool:
         """
-        TC_LOGIN_006: Forgot Password Flow
+        TC_SCRUM74_006: Login with Valid Email and Empty Password
         1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
-        2. Click on 'Forgot Password' link
-        3. Enter registered email address [Test Data: Email: testuser@example.com]
-        4. Click on 'Send Reset Link' button
-        5. Verify password reset email is received
+        2. Enter valid email [Test Data: Email: testuser@example.com]
+        3. Leave password field empty [Test Data: Password: '']
+        4. Click on the Login button [Test Data: N/A]
+        5. Validation error displayed: 'Password is required'
         """
         self.load()
         assert self.is_displayed(), "Login page is not displayed"
-        forgot_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_PASSWORD_LINK))
-        forgot_link.click()
-        # At this point, PasswordRecoveryPage should be loaded; handled by PasswordRecoveryPage object
+        self.enter_email(email)
+        password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_elem.clear()  # Leave password empty
+        self.click_login()
+        # Wait and verify validation error
+        try:
+            validation_errors = self.driver.find_elements(By.CSS_SELECTOR, ".invalid-feedback")
+            error_texts = [e.text for e in validation_errors if e.is_displayed()]
+            assert any("Password is required" in t for t in error_texts), "'Password is required' validation error not displayed"
+        except Exception as e:
+            raise AssertionError(f"Validation error check failed: {e}")
+        # Ensure user remains on login page
+        current_url = self.driver.current_url
+        assert self.URL in current_url or "login" in current_url, f"User did not remain on login page, current URL: {current_url}"
         return True
-    # --- End of TC_LOGIN_006 steps ---
+    # --- End of TC_SCRUM74_006 steps ---
