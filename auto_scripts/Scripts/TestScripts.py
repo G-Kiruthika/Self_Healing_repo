@@ -75,7 +75,23 @@ import requests
 import pymysql
 
 def test_TC_SCRUM96_009_product_search_edge_cases():
-    ...
+    """
+    Test Case TC-SCRUM-96-009: Product Search API Edge Case Test
+    Steps:
+    1. Send GET request to /api/products/search with non-existent search term 'nonexistentproduct12345'
+    2. Validate HTTP 200 and empty product list
+    3. Validate response structure with empty array {"products": []}
+    4. Ensure no error is thrown for empty results
+    """
+    db_config = {
+        "host": "localhost",
+        "user": "dbuser",
+        "password": "dbpass",
+        "database": "ecommerce_db"
+    }
+    api_page = ProductSearchAPIPage(session=requests.Session(), db_config=db_config)
+    api_page.search_nonexistent_product_and_validate("nonexistentproduct12345")
+    print("TC-SCRUM-96-009 Product Search API edge case test PASSED.")
 # TC_SCRUM96_010: Product Search API Special Character, SQL Injection, DB Integrity, Log Validation Test
 from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
 import requests
