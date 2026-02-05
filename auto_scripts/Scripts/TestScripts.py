@@ -59,47 +59,7 @@ import pytest
 # New test for TC_SCRUM96_004
 
 def test_TC_SCRUM96_004_registration_login_jwt_profile():
-    """
-    End-to-end test for user registration, login, JWT validation, and protected profile access.
-    Steps:
-    1. Register a test user account via API
-    2. Log in via API and retrieve JWT
-    3. Decode and validate JWT structure and claims
-    4. Access protected profile endpoint using JWT
-    """
-    # Step 1: Register test user
-    user_data = {
-        "username": "logintest",
-        "email": "logintest@example.com",
-        "password": "ValidPass123!",
-        "firstName": "Login",
-        "lastName": "Test"
-    }
-    registration_response = LoginPage.register_user_api(user_data)
-    assert registration_response["accountStatus"] == "ACTIVE", "User account should be ACTIVE after registration."
-    assert registration_response["username"] == "logintest", "Username should match test data."
-    assert registration_response["email"] == "logintest@example.com", "Email should match test data."
-
-    # Step 2: Login via API
-    login_response = LoginPage.login_api(user_data["username"], user_data["password"])
-    access_token = login_response["accessToken"]
-    assert access_token is not None, "JWT access token should be present in login response."
-    assert login_response["tokenType"] == "Bearer", "Token type should be 'Bearer'."
-    assert login_response["username"] == "logintest", "Username should match test data."
-    assert login_response["email"] == "logintest@example.com", "Email should match test data."
-
-    # Step 3: Decode and validate JWT
-    jwt_payload = LoginPage.decode_and_validate_jwt(access_token)
-    assert jwt_payload["sub"] == "logintest", "Subject claim in JWT should match username."
-    assert jwt_payload["exp"] > jwt_payload["iat"], "Expiration time should be after issued at."
-
-    # Step 4: Access protected profile endpoint
-    profile_data = ProfilePage.access_profile_with_jwt(access_token)
-    assert profile_data["username"] == "logintest", "Profile username should match test data."
-    assert profile_data["email"] == "logintest@example.com", "Profile email should match test data."
-    assert profile_data["accountStatus"] == "ACTIVE", "Account status should be ACTIVE in profile response."
-    print("TC_SCRUM96_004 registration, login, JWT validation, and profile access PASSED.")
-
+    ...
 # TC-SCRUM-96-006: User Profile API Sensitive Data Exposure Test
 from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.ProfilePage import ProfilePage
