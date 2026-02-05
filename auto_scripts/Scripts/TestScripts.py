@@ -33,3 +33,15 @@ class TestLoginFunctionality:
         password = 'valid_password'       # Replace with actual valid test password
         result = self.login_page.tc_lgn_01_successful_login(email, password)
         assert result, 'Login failed or Dashboard not displayed.'
+
+    def test_lgn_02_empty_field_submission(self):
+        """
+        LGN-02: Verify error for empty field submission
+        Steps:
+        1. Navigate to login page
+        2. Submit login with empty email and password fields
+        3. Verify the error message 'Mandatory fields are required' is shown
+        """
+        self.login_page.navigate_to_login()
+        error_text = self.login_page.submit_empty_login_and_get_mandatory_field_error()
+        assert error_text == 'Mandatory fields are required', f"Expected error not shown. Got: {error_text}"
