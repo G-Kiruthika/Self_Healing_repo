@@ -87,68 +87,42 @@ def test_TC_SCRUM_96_003_invalid_email_signup(driver, db_connection):
     assert "invalid email" in result["ui_error_message"].lower() or "email format" in result["ui_error_message"].lower(), f"Expected email format error in UI, got: {result['ui_error_message']}"
     assert "invalid email" in result["api_response"].lower() or "email format" in result["api_response"].lower(), f"Expected email format error in API response, got {result['api_response']}"
 
-# TC-SCRUM-96-004: Login and JWT Validation Automation Test
+# TC-SCRUM-96-004: Login and JWT Validation Automation Test (API-based, as per new PageClass methods)
 from auto_scripts.Pages.UserSignupPage import UserSignupPage
+from auto_scripts.Pages.ProfilePage import ProfilePage
 from auto_scripts.Pages.LoginPage import LoginPage
 import requests
+import datetime
 
-def test_TC_SCRUM_96_004_login_and_jwt_validation(driver):
+def test_TC_SCRUM_96_004_login_and_jwt_validation_api():
     """
-    Executive Summary:
-    - This test automates the end-to-end workflow for user account creation, login, and JWT authentication validation.
-    - It covers the acceptance criteria for TC-SCRUM-96-004, ensuring robust quality assurance and future maintainability.
-
-    Detailed Analysis:
-    - Step 1: Create a user account using UserSignupPage with valid credentials.
-    - Step 2: Authenticate via API (POST /api/users/signin) and validate HTTP 200 response and token presence.
-    - Step 3: Decode and validate the returned JWT token using LoginPage.validate_jwt_token.
-
-    Implementation Guide:
-    - Uses Selenium Page Object Model for UI actions and requests library for API calls.
-    - Leverages LoginPage.validate_jwt_token for secure token verification.
-    - Extensible for future authentication flows and token claims.
-
-    Quality Assurance Report:
-    - Asserts on user creation, successful login, and JWT validity.
-    - Error handling for API and token validation.
-    - Full traceability in logs and comments.
-
-    Troubleshooting Guide:
-    - If user creation fails, check DB and API endpoint.
-    - If login fails, verify credentials and API status.
-    - If JWT validation fails, check token format and claims.
-
-    Future Considerations:
-    - Easily extend to multi-factor authentication and additional JWT claims.
-    - Modular structure for integration with CI/CD pipelines.
+    Test Case TC-SCRUM-96-004: End-to-end API automation for signup, signin, and JWT validation.
+    Steps:
+    1. Create a user account via API (UserSignupPage.api_register_user)
+    2. Sign in via API (ProfilePage.api_sign_in_and_get_token) and retrieve JWT token
+    3. Validate JWT token (LoginPage.validate_jwt_token) contains userId, email, exp
+    Acceptance Criteria: User is created, sign-in returns token, token contains required claims and is not expired.
     """
-    # Test data
+    # Step 1: Create user via API
     username = "loginuser"
     email = "login@example.com"
     password = "LoginPass123!"
+    signup_response = UserSignupPage.api_register_user(username, email, password)
+    assert signup_response["username"] == username, f"Signup username mismatch: {signup_response}"
+    assert signup_response["email"] == email, f"Signup email mismatch: {signup_response}"
 
-    # Step 1: Create user account
-    signup_page = UserSignupPage(driver)
-    signup_result = signup_page.register_user(username, email, password)
-    assert signup_result["status"] == "success", f"User creation failed: {signup_result}"
-
-    # Step 2: Authenticate via API and retrieve JWT token
-    signin_api_url = "https://example-ecommerce.com/api/users/signin"
-    signin_payload = {"email": email, "password": password}
-    signin_response = requests.post(signin_api_url, json=signin_payload)
-    assert signin_response.status_code == 200, f"Sign-in failed: {signin_response.text}"
-    response_json = signin_response.json()
-    assert "token" in response_json, "Authentication token not found in response."
-    token = response_json["token"]
+    # Step 2: Sign in via API and get JWT token
+    signin_response = ProfilePage.api_sign_in_and_get_token(email, password)
+    assert "token" in signin_response, f"No token in sign-in response: {signin_response}"
+    token = signin_response["token"]
 
     # Step 3: Validate JWT token
-    validated_payload = LoginPage.validate_jwt_token(token)
-    assert "userId" in validated_payload, "userId missing in JWT payload."
-    assert "email" in validated_payload, "email missing in JWT payload."
-    assert "exp" in validated_payload, "Expiration time missing in JWT payload."
-    # Additional assertion for expiration
-    import datetime
-    exp_time = datetime.datetime.fromtimestamp(validated_payload["exp"])
+    payload = LoginPage.validate_jwt_token(token)
+    assert "userId" in payload, "JWT payload missing 'userId'"
+    assert "email" in payload, "JWT payload missing 'email'"
+    assert payload["email"] == email, f"JWT email mismatch: {payload}"
+    assert "exp" in payload, "JWT payload missing 'exp'"
+    exp_time = datetime.datetime.fromtimestamp(payload["exp"])
     assert exp_time > datetime.datetime.utcnow(), "Token has expired."
 
 # TC016: Session Timeout Automation Test
@@ -221,3 +195,20 @@ def test_TC_SCRUM_96_006_profile_api():
 
     # Step 3: Validate profile response schema and absence of sensitive data
     assert profile_page.validate_profile_response(profile_response), "Profile response schema validation failed or sensitive data exposed."
+
+def test_TC_SCRUM_96_006_profile_api_new_workflow():
+    """
+    Test Case TC-SCRUM-96-006: Profile API Automation (using new workflow)
+    Steps:
+    1. Sign in as a valid user and obtain authentication token [Test Data: {"email": "profile@example.com", "password": "Pass123!"}]
+    2. Send GET request to /api/users/profile with authentication token
+    3. Verify sensitive information is not exposed [Response schema validation]
+    Acceptance Criteria: AC-003
+    """
+    email = "profile@example.com"
+    password = "Pass123!"
+    profile_page = ProfilePage(None)  # No driver needed for API test
+    profile_data = profile_page.profile_info_retrieval_and_security_workflow(email, password)
+    assert "userId" in profile_data, "userId missing in profile response"
+    assert "username" in profile_data, "username missing in profile response"
+    assert "email" in profile_data, "email missing in profile response"
