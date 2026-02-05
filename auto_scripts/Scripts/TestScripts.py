@@ -52,19 +52,23 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    def test_tc_login_07_01_minimum_allowed_credentials(self):
+    def test_tc_login_07_02_too_short_credentials_error(self):
         """
-        Test Case TC_LOGIN_07_01:
+        Test Case TC_LOGIN_07_02:
         1. Navigate to the login page.
-        2. Enter an email address with the minimum allowed length (a@b.co).
-        3. Enter a password with the minimum allowed length (Abc12345).
+        2. Enter an email address shorter than the minimum allowed length (e.g., 'a@').
+        3. Enter a password shorter than the minimum allowed length (e.g., 'abc').
         4. Click the 'Login' button.
-        5. Verify that the user is successfully logged in if credentials are valid.
+        5. Assert that login is not allowed and the appropriate error message is shown.
         """
         driver = webdriver.Chrome()
         try:
             login_page = LoginPage(driver)
-            login_page.login_with_minimum_allowed_credentials_and_verify_success()
+            login_page.login_with_too_short_credentials_and_validate_error(
+                email="a@",
+                password="abc",
+                expected_error="Mandatory fields are required"
+            )
         finally:
             driver.quit()
 
