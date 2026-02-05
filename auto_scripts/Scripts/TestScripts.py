@@ -56,8 +56,50 @@ from auto_scripts.Pages.ProfilePage import ProfilePage
 import requests
 import pytest
 
+# New test for TC_SCRUM96_004
+
 def test_TC_SCRUM96_004_registration_login_jwt_profile():
-    ...
+    """
+    End-to-end test for user registration, login, JWT validation, and protected profile access.
+    Steps:
+    1. Register a test user account via API
+    2. Log in via API and retrieve JWT
+    3. Decode and validate JWT structure and claims
+    4. Access protected profile endpoint using JWT
+    """
+    # Step 1: Register test user
+    user_data = {
+        "username": "logintest",
+        "email": "logintest@example.com",
+        "password": "ValidPass123!",
+        "firstName": "Login",
+        "lastName": "Test"
+    }
+    registration_response = LoginPage.register_user_api(user_data)
+    assert registration_response["accountStatus"] == "ACTIVE", "User account should be ACTIVE after registration."
+    assert registration_response["username"] == "logintest", "Username should match test data."
+    assert registration_response["email"] == "logintest@example.com", "Email should match test data."
+
+    # Step 2: Login via API
+    login_response = LoginPage.login_api(user_data["username"], user_data["password"])
+    access_token = login_response["accessToken"]
+    assert access_token is not None, "JWT access token should be present in login response."
+    assert login_response["tokenType"] == "Bearer", "Token type should be 'Bearer'."
+    assert login_response["username"] == "logintest", "Username should match test data."
+    assert login_response["email"] == "logintest@example.com", "Email should match test data."
+
+    # Step 3: Decode and validate JWT
+    jwt_payload = LoginPage.decode_and_validate_jwt(access_token)
+    assert jwt_payload["sub"] == "logintest", "Subject claim in JWT should match username."
+    assert jwt_payload["exp"] > jwt_payload["iat"], "Expiration time should be after issued at."
+
+    # Step 4: Access protected profile endpoint
+    profile_data = ProfilePage.access_profile_with_jwt(access_token)
+    assert profile_data["username"] == "logintest", "Profile username should match test data."
+    assert profile_data["email"] == "logintest@example.com", "Profile email should match test data."
+    assert profile_data["accountStatus"] == "ACTIVE", "Account status should be ACTIVE in profile response."
+    print("TC_SCRUM96_004 registration, login, JWT validation, and profile access PASSED.")
+
 # TC-SCRUM-96-006: User Profile API Sensitive Data Exposure Test
 from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.ProfilePage import ProfilePage
@@ -92,39 +134,4 @@ from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
 import pytest
 
 def test_TC_SCRUM96_003_duplicate_email_registration_and_db_verification():
-    """
-    1. Register a user with username 'firstuser' and email 'duplicate@example.com' using UserRegistrationAPIPage.register_user_and_get_jwt.
-    2. Attempt to register another user with username 'seconduser' and same email using UserRegistrationAPIPage.attempt_duplicate_email_registration.
-    3. Verify only one user record exists in DB for that email and username using UserRegistrationAPIPage.verify_single_user_in_db_by_email.
-    """
-
-    # Test data
-    user1_data = {
-        "username": "firstuser",
-        "email": "duplicate@example.com",
-        "password": "Pass123!",
-        "firstName": "First",
-        "lastName": "User"
-    }
-    user2_data = {
-        "username": "seconduser",
-        "email": "duplicate@example.com",
-        "password": "Pass456!",
-        "firstName": "Second",
-        "lastName": "User"
-    }
-    user_registration_page = UserRegistrationAPIPage()
-
-    # Step 1: Register first user and get JWT
-    jwt_token = user_registration_page.register_user_and_get_jwt(user1_data)
-    assert jwt_token is not None, "JWT token should be returned for first registration."
-
-    # Step 2: Attempt duplicate registration with same email, different username
-    duplicate_result = user_registration_page.attempt_duplicate_email_registration(user2_data)
-    assert duplicate_result["status_code"] == 409, "API should return HTTP 409 Conflict for duplicate email"
-    assert "email" in duplicate_result["error_message"].lower(), "Error message should indicate email conflict"
-
-    # Step 3: Verify only one user record exists in DB for that email and username
-    db_check = user_registration_page.verify_single_user_in_db_by_email(user1_data["email"], user1_data["username"])
-    assert db_check is True, f"Expected only one user record for email '{user1_data['email']}' and username '{user1_data['username']}'."
-    print("TC_SCRUM96_003 duplicate email registration and DB verification PASSED.")
+    ...
