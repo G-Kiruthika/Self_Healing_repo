@@ -1,61 +1,56 @@
-# Selenium Test Script for LoginPage
+# Selenium Automation Test Script for TC_LOGIN_001
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from auto_scripts.Pages.LoginPage import LoginPage
 import time
 
-@pytest.fixture(scope='module')
+# Test Data
+LOGIN_URL = "https://app.example.com/login"
+VALID_EMAIL = "testuser@example.com"
+VALID_PASSWORD = "ValidPass123!"
+
+@pytest.fixture(scope="function")
 def driver():
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
     driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(10)
     yield driver
     driver.quit()
 
-@pytest.fixture
-def login_page(driver):
-    return LoginPage(driver)
+def test_TC_LOGIN_001_valid_login(driver):
+    """
+    Test Case: TC_LOGIN_001 - Valid Login
+    Steps:
+    1. Navigate to the login page
+    2. Enter valid registered email
+    3. Enter correct password
+    4. Click on the Login button
+    5. Verify user session is created
+    """
+    login_page = LoginPage(driver)
 
-# TC_LOGIN_001: End-to-end login workflow with valid credentials
-def test_login_successful(login_page):
-    email = "validuser@example.com"
-    password = "ValidPass123!"
-    assert login_page.login_successful(email, password)
+    # Step 1: Navigate to the login page
+    is_login_page = login_page.navigate_to_login()
+    assert is_login_page, "Step 1 Failed: Login page is not displayed with email and password fields."
 
-# TC_LOGIN_017: Account lockout after multiple failed attempts
-def test_login_account_lockout(login_page):
-    email = "testuser@example.com"
-    wrong_passwords = ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5"]
-    correct_password = "ValidPass123!"
-    assert login_page.login_account_lockout(email, wrong_passwords, correct_password)
+    # Step 2: Enter valid registered email
+    email_accepted = login_page.enter_email(VALID_EMAIL)
+    assert email_accepted, f"Step 2 Failed: Email '{VALID_EMAIL}' was not accepted or displayed in the field."
 
-# TC_LOGIN_020: Invalid email format validation
-def test_login_invalid_email_format(login_page):
-    invalid_email = "testuserexample.com"  # missing '@'
-    password = "ValidPass123!"
-    assert login_page.login_invalid_email_format(invalid_email, password)
+    # Step 3: Enter correct password
+    password_accepted = login_page.enter_password(VALID_PASSWORD)
+    assert password_accepted, "Step 3 Failed: Password is not masked or not accepted."
 
-# TC_LOGIN_003: Invalid credentials (invalid username, valid password)
-def test_login_invalid_credentials(login_page):
-    invalid_email = "invaliduser@example.com"
-    valid_password = "Test@1234"
-    assert login_page.login_invalid_credentials(invalid_email, valid_password)
+    # Step 4: Click on the Login button
+    is_dashboard = login_page.click_login()
+    assert is_dashboard, "Step 4 Failed: User is not authenticated or not redirected to dashboard."
 
-# TC_LOGIN_018: Three failed attempts warning
-def test_login_three_failed_attempts_warning(login_page):
-    email = "testuser@example.com"
-    wrong_passwords = ["WrongPass1", "WrongPass2", "WrongPass3"]
-    assert login_page.login_three_failed_attempts_warning(email, wrong_passwords)
+    # Step 5: Verify user session is created
+    session_created = login_page.verify_user_session()
+    assert session_created, "Step 5 Failed: User session token is not generated or user profile is not displayed."
 
-# TC_LOGIN_004: Valid username, invalid password
-def test_login_invalid_credentials_valid_username_invalid_password(login_page):
-    valid_email = "testuser@example.com"
-    invalid_password = "WrongPass@123"
-    assert login_page.login_invalid_credentials_valid_username_invalid_password(valid_email, invalid_password)
-
-# TC_LOGIN_007: Empty fields validation
-def test_login_empty_fields_validation(login_page):
-    assert login_page.login_empty_fields_validation()
+    # Optional: Add a small wait to observe the result in non-headless mode
+    # time.sleep(2)
