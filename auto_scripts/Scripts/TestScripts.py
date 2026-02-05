@@ -112,41 +112,28 @@ def test_TC_SCRUM96_002_duplicate_user_registration_api():
     first_name2 = "Second"
     last_name2 = "User"
     # Step 1: Register first user
-    resp1 = page.register_user(username, email1, password1, first_name1, last_name1)
-    assert resp1.status_code == 201, f"Expected 201 Created, got {resp1.status_code}"
-    # Step 2: Register duplicate user
-    resp2 = page.register_duplicate_user(username, email2, password2, first_name2, last_name2)
-    page.validate_conflict_response(resp2)
-    # Step 3: DB validation
-    db_count = page.get_user_count_by_username(username)
-    assert db_count == 1, f"Expected exactly 1 user record for username '{username}', found {db_count}"
+    resp1 = page.register_user_api(username, email1, password1, first_name1, last_name1)
+    assert resp1.status_code == 201, f"Expected 201 Created, got {resp1.status_code}, response: {resp1.text}"
+    # Step 2: Attempt duplicate registration
+    resp2 = page.register_duplicate_user_api(username, email2, password2, first_name2, last_name2)
+    assert resp2.status_code == 409, f"Expected 409 Conflict, got {resp2.status_code}, response: {resp2.text}"
+    assert "username already exists" in resp2.text.lower(), f"Expected error message for duplicate username, got: {resp2.text}"
+    # Step 3: Verify only one user record exists in DB
+    count, db_email = page.verify_single_user_in_db(username, email1)
+    assert count == 1, f"Expected 1 user record, found {count}"
+    assert db_email == email1, f"Expected email '{email1}', got {db_email}"
 
-# TC_SCRUM96_005: Negative API Login, Token Absence, Audit Log Verification
-from auto_scripts.Pages.LoginPage import LoginPage
+# TC_SCRUM96_005: API Negative Login and Security Log Validation
+from auto_scripts.Pages.AuthAPILogPage import AuthAPILogPage
 
-def test_TC_SCRUM96_005_negative_api_login_audit_log():
+def test_TC_SCRUM96_005_api_negative_login_and_log():
     """
-    Test Case TC_SCRUM96_005: Negative API Login, Token Absence, and Audit Log Verification
+    Test Case TC_SCRUM96_005: API Negative Login and Security Log Validation
     Steps:
-    1. Send POST to /api/auth/login with non-existent username and password
-    2. Verify HTTP 401 Unauthorized and error message 'Invalid username or password'
-    3. Verify no JWT tokens in response
-    4. Verify audit log entry for failed login
+    1. Send POST request to /api/auth/login with non-existent username and any password
+    2. Verify HTTP 401 Unauthorized and error message 'Invalid username or password' (no field hint)
+    3. Ensure no JWT token is returned
+    4. Verify failed login is logged in security audit logs
     """
-    # Setup
-    base_url = "http://localhost:8000"  # Replace with real base URL in test env
-    username = "nonexistentuser999"
-    password = "AnyPassword123!"
-    source_ip = "127.0.0.1"
-    driver = None  # Replace with Selenium WebDriver if UI steps are needed
-
-    # Mock audit_log_query_func for demonstration
-    def audit_log_query_func(query_username):
-        # Simulate audit log entries
-        return [
-            {"username": query_username, "timestamp": "2024-06-01T12:34:56Z", "source_ip": source_ip}
-        ]
-
-    login_page = LoginPage(driver=driver, base_url=base_url)
-    result = login_page.run_tc_scrum96_005(username, password, source_ip, audit_log_query_func)
-    assert result["audit_log_verified"] is True, "Audit log verification failed for failed login attempt."
+    page = AuthAPILogPage()
+    page.test_tc_scrum96_005()
