@@ -64,7 +64,7 @@ class TestLogin:
         result = username_recovery_page.tc_login_009_forgot_username_flow(email="testuser@example.com")
         assert result, "Username recovery test failed: Success message not displayed or email not sent."
 
-    def test_TC_LOGIN_011_max_username_length(self, driver):
+    def test_TC_LOGIN_011_max_length_username(self, driver):
         """
         Test Case TC_LOGIN_011: Login with maximum allowed username length (255 characters)
         Steps:
@@ -78,5 +78,5 @@ class TestLogin:
         login_page = LoginPage(driver)
         username = "a_very_long_username_with_exactly_255_characters_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com"
         password = "ValidPass123!"
-        result = login_page.tc_login_011_max_username_length(username, password)
+        result = login_page.tc_login_011_max_length_username(username, password)
         assert result, "Max username length login test failed: Login attempt not processed as expected."
