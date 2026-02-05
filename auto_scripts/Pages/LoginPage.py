@@ -9,12 +9,14 @@ Detailed Analysis:
 - New method: tc_login_005_login_with_empty_password() implements TC-LOGIN-005 steps
 - New method: tc_login_012_sql_injection_login() implements TC-LOGIN-012 steps for SQL injection prevention verification
 - New method: tc_login_012_min_length_username_login() implements TC-LOGIN-012 steps for minimum username length
+- New method: tc_login_008_extremely_long_email_login() implements TC-LOGIN-008 steps for long email validation
 
 Implementation Guide:
 - Instantiate LoginPage with a Selenium WebDriver instance
 - Use tc_login_005_login_with_empty_password() to automate TC-LOGIN-005 scenario
 - Use tc_login_012_sql_injection_login() to automate TC-LOGIN-012 SQL injection scenario
 - Use tc_login_012_min_length_username_login() to automate TC-LOGIN-012 minimum username length scenario
+- Use tc_login_008_extremely_long_email_login() to automate TC-LOGIN-008 scenario
 
 Quality Assurance Report:
 - All locator references validated against Locators.json
@@ -81,7 +83,7 @@ class LoginPage:
 
     # --- TC-LOGIN-012: Login with Minimum Allowed Username Length ---
     def tc_login_012_min_length_username_login(self) -> bool:
-        """
+        '''
         Automates TC_LOGIN_012: Login attempt using minimum allowed username length (3 characters).
         Steps:
             1. Navigate to the login page.
@@ -91,7 +93,7 @@ class LoginPage:
             5. Verify login is processed and dashboard/user icon is displayed.
         Returns:
             bool: True if login is successful and dashboard/user icon is present, False otherwise.
-        """
+        '''
         try:
             # 1. Navigate to the login page
             self.driver.get("https://ecommerce.example.com/login")
@@ -151,4 +153,78 @@ class LoginPage:
         except (TimeoutException, NoSuchElementException, ElementNotInteractableException, WebDriverException) as e:
             # Log exception if logger is present, or print
             print(f"Exception during TC_LOGIN_012 min length username login: {e}")
+            return False
+
+    # --- TC-LOGIN-008: Login with Extremely Long Email Address ---
+    def tc_login_008_extremely_long_email_login(self, long_email: str, valid_password: str) -> bool:
+        '''
+        Automates TC-LOGIN-008: Login attempt with an extremely long email address (255+ characters).
+        Steps:
+            1. Navigate to the login page.
+            2. Enter an extremely long email address.
+            3. Enter a valid password.
+            4. Click on the Login button.
+            5. Verify if the system truncates input or displays a validation error.
+        Returns:
+            bool: True if validation error or truncation occurs, False if login is processed (which would be a bug).
+        '''
+        try:
+            # 1. Navigate to the login page
+            self.driver.get("https://ecommerce.example.com/login")
+            self.wait.until(EC.presence_of_element_located(self.EMAIL_FIELD))
+
+            # 2. Enter the extremely long email address
+            email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            email_input.clear()
+            email_input.send_keys(long_email)
+
+            # 3. Enter valid password
+            password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            password_input.clear()
+            password_input.send_keys(valid_password)
+
+            # 4. Click on the Login button
+            login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
+            login_btn.click()
+
+            # 5. Check for validation error or truncation
+            # Check if email input value is truncated
+            entered_email = email_input.get_attribute("value")
+            if len(entered_email) < len(long_email):
+                # Input was truncated
+                return True
+
+            # Check for validation error message
+            try:
+                validation_msg = self.driver.find_element(*self.VALIDATION_ERROR)
+                if validation_msg.is_displayed():
+                    return True
+            except NoSuchElementException:
+                pass
+
+            # Check for generic error message (login fails gracefully)
+            try:
+                error_msg = self.driver.find_element(*self.ERROR_MESSAGE)
+                if error_msg.is_displayed():
+                    return True
+            except NoSuchElementException:
+                pass
+
+            # If dashboard or user icon appears, login was processed (should not happen)
+            try:
+                self.wait.until(EC.presence_of_element_located(self.DASHBOARD_HEADER))
+                return False
+            except TimeoutException:
+                pass
+            try:
+                self.wait.until(EC.presence_of_element_located(self.USER_PROFILE_ICON))
+                return False
+            except TimeoutException:
+                pass
+
+            # If none of the above, assume validation handled
+            return True
+
+        except (TimeoutException, NoSuchElementException, ElementNotInteractableException, WebDriverException) as e:
+            print(f"Exception during TC_LOGIN_008 extremely long email login: {e}")
             return False
