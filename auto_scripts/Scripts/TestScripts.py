@@ -32,15 +32,16 @@ class TestLogin:
         result = login_page.tc_login_002_invalid_email_login('userexample.com', 'ValidPass123')
         assert result is True
 
-    def test_tc_login_004_required_fields_validation(self, driver):
+    def test_tc_login_004_empty_credentials(self, driver):
         """
         Test Case TC_LOGIN_004:
         1. Navigate to the login page.
         2. Leave email and password fields empty.
         3. Click the 'Login' button.
-        4. Verify error messages for required fields are displayed.
-        5. Ensure login is not successful.
+        4. Assert error messages for required fields are shown.
+        5. Assert login is not successful.
         """
         login_page = LoginPage(driver)
-        result = login_page.tc_login_004_required_fields_validation()
-        assert result is True
+        login_page.open_login_page()
+        assert login_page.is_required_field_error_displayed(), "Required field error message should be displayed."
+        assert login_page.is_login_unsuccessful(), "Login should not be successful with empty credentials."
