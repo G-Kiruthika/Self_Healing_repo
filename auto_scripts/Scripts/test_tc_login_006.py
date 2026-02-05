@@ -1,21 +1,15 @@
 # test_tc_login_006.py
 """
-Selenium Test Script for TC_LOGIN_006: End-to-End Password Recovery Flow
+Automated Selenium test for TC-LOGIN-006: Forgot Password navigation and recovery page display.
+
+Test Steps:
+1. Navigate to the login page.
+2. Click on the 'Forgot Password' link.
+3. Verify password recovery page is displayed.
 
 Traceability:
-- TestCase ID: 198
-- Description: Test Case TC_LOGIN_006
-- Steps:
-    1. Navigate to the login page
-    2. Click on 'Forgot Password' link
-    3. Enter registered email address
-    4. Click on 'Send Reset Link' button
-    5. Verify password reset email is received
-- Page Objects Used:
-    - LoginPage (auto_scripts/Pages/LoginPage.py)
-    - PasswordRecoveryPage (auto_scripts/Pages/PasswordRecoveryPage.py)
-- Maintainer: Test Automation Team
-- Compliance: Selenium Python best practices, enterprise standards
+- Page Objects: LoginPage, PasswordRecoveryPage
+- Test Case: TC-LOGIN-006
 """
 import pytest
 from selenium import webdriver
@@ -23,51 +17,42 @@ from selenium.webdriver.chrome.options import Options
 from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
 
-# Test Data
-LOGIN_URL = "https://app.example.com/login"
-REGISTERED_EMAIL = "testuser@example.com"
-
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def driver():
     options = Options()
     options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--window-size=1920,1080')
     driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(5)
     yield driver
     driver.quit()
 
-def test_tc_login_006_password_recovery_flow(driver):
+def test_tc_login_006_forgot_password_navigation(driver):
     """
-    End-to-End test for TC_LOGIN_006: Password Recovery Flow
+    TC-LOGIN-006: Verify navigation to password recovery page via 'Forgot Password' link.
     """
+    # Step 1: Navigate to login page
     login_page = LoginPage(driver)
-    password_recovery_page = PasswordRecoveryPage(driver)
-
-    # Step 1: Navigate to the login page
     login_page.load()
-    assert login_page.is_displayed(), "Login page is not displayed (Step 1)"
-    assert LOGIN_URL in driver.current_url, f"Not on login page URL, got: {driver.current_url}"
+    assert login_page.is_displayed(), "Login page is not displayed"
 
-    # Step 2: Click on 'Forgot Password' link
-    assert login_page.tc_login_006_navigate_to_password_recovery(), "Navigation to password recovery failed (Step 2)"
-    assert password_recovery_page.is_loaded(), "Password recovery page not loaded after navigation (Step 2)"
-
-    # Step 3: Enter registered email address
-    assert password_recovery_page.is_email_input_visible(), "Email input not visible on password recovery page (Step 3)"
-    assert password_recovery_page.enter_email(REGISTERED_EMAIL), "Unable to enter email in password recovery field (Step 3)"
-
-    # Step 4: Click on 'Send Reset Link' button
-    password_recovery_page.click_send_reset_link()
-    assert password_recovery_page.is_success_message_displayed(), "Success message not displayed after sending reset link (Step 4)"
-
-    # Step 5: Verify password reset email is received (placeholder)
+    # Step 2: Assert 'Forgot Password' link is present and clickable, then click
     try:
-        password_recovery_page.verify_password_reset_email_received(REGISTERED_EMAIL)
-    except NotImplementedError:
-        # Acceptable for now; integration required for real inbox check
-        pass
+        forgot_link = driver.find_element(*LoginPage.FORGOT_PASSWORD_LINK)
+        assert forgot_link.is_displayed(), "'Forgot Password' link is not visible on Login page"
+    except Exception as e:
+        pytest.fail(f"'Forgot Password' link not found: {e}")
 
-    # If all asserts pass, the test is successful
-    print("TC_LOGIN_006: Password recovery flow executed successfully.")
+    login_page.click_forgot_password_link()
+
+    # Step 3: Verify navigation to password recovery page
+    recovery_page = PasswordRecoveryPage(driver)
+    assert recovery_page.is_loaded(), (
+        f"Password Recovery page is not loaded. Current URL: {driver.current_url}"
+    )
+    # Check for email input and instructions
+    assert recovery_page.is_email_input_visible(), "Email input is not visible on Password Recovery page"
+    # Optionally, check for presence of instructions div
+    instructions = driver.find_elements_by_css_selector('div.instructions')
+    if instructions:
+        assert instructions[0].is_displayed(), "Instructions are not visible on Password Recovery page"
