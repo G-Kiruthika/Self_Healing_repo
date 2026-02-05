@@ -232,3 +232,16 @@ class TestLogin:
         assert result['spaces_trimmed'], "Spaces should be trimmed from the email/username field."
         assert result['login_successful'], "Login should succeed after trimming spaces."
         assert result['dashboard_displayed'], "User should be redirected to dashboard/homepage after successful login."
+
+    def test_tc_login_016_unregistered_email_valid_password(self, driver):
+        """
+        Test Case TC_LOGIN_016:
+        1. Navigate to the login page. [Acceptance Criteria: 2]
+        2. Enter unregistered email and valid password (email: "unknown@example.com", password: "ValidPass123") [Acceptance Criteria: 2]
+        3. Click the 'Login' button. [Acceptance Criteria: 2]
+        4. Assert error message for unregistered email is shown and login fails.
+        """
+        login_page = LoginPage(driver)
+        result = login_page.execute_tc_login_016_unregistered_email_valid_password(email="unknown@example.com", password="ValidPass123")
+        assert result["error_message"] is not None, "Error message for unregistered email should be shown."
+        assert result["login_unsuccessful"] is True, "Login should not be successful with unregistered email."
