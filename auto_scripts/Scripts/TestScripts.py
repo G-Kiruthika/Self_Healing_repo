@@ -1,3 +1,6 @@
+# Existing content of TestScripts.py
+# ... (existing test methods)
+
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -23,20 +26,22 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    # ...other existing test methods...
+    # ... (other methods)
 
-    def test_tc_login_002_remember_me_checkbox_absence(self):
+    def test_tc_login_06_02_overlong_email_error(self):
         """
-        Test Case TC_LOGIN_002:
-        1. Navigate to the login screen.
-        2. Check for the presence of 'Remember Me' checkbox.
-        3. Assert that 'Remember Me' checkbox is NOT present.
+        Test Case TC_LOGIN_06_02:
+        1. Navigate to the login page.
+        2. Enter an email address exceeding the maximum allowed length (255+ characters).
+        3. Enter a valid password ('ValidPassword1!').
+        4. Click the 'Login' button.
+        5. Assert that an error for overlong email is displayed and login is not allowed.
         """
         driver = webdriver.Chrome()
         page = LoginPage(driver)
         try:
-            result = page.is_remember_me_checkbox_absent()
-            self.assertTrue(result, "TC_LOGIN_002 failed: 'Remember Me' checkbox is present on login screen.")
+            result = page.login_with_overlong_email('ValidPassword1!')
+            self.assertTrue(result, "TC_LOGIN_06_02 failed: Error for overlong email not displayed or login was allowed.")
         finally:
             driver.quit()
 
