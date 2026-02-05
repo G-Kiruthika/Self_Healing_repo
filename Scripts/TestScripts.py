@@ -7,6 +7,8 @@ Covers TC_CART_003: Product search workflow validation
 import unittest
 from PageClasses.ProductSearchAPIPage import ProductSearchAPIPage
 from PageClasses.CartAPIPage import CartAPIPage
+from PageClasses.CartPage import CartPage
+from selenium import webdriver
 
 class TestProductSearchAPI(unittest.TestCase):
     def test_TC_CART_003_product_search_laptop(self):
@@ -45,6 +47,30 @@ class TestProductSearchAPI(unittest.TestCase):
         cart_contents = cart_page.get_cart_contents()
         self.assertFalse(cart_page.is_product_in_cart(cart_contents, product_id),
                          msg="Product was added to cart despite exceeding available stock.")
+
+    def test_TC_CART_006_cart_persistence_after_sign_out_in(self):
+        """
+        TC_CART_006:
+        1. Sign in as user and add products to cart. [Test Data: { 'product_id': '111', 'quantity': 2 }]
+        2. Sign out and sign in again. [Test Data: { 'username': 'newuser1', 'password': 'StrongPass123' }]
+        3. Query cart contents.
+        Expected: Previously added products are present in cart, cart contents remain unchanged after sign-out/in.
+        """
+        driver = webdriver.Chrome()
+        cart_page = CartPage(driver)
+        username = "newuser1"
+        password = "StrongPass123"
+        product_id = "111"
+        quantity = 2
+        try:
+            # Step 1: Sign in and add products to cart
+            cart_page.sign_in_and_add_to_cart(username, password, product_id, quantity)
+            # Step 2: Sign out and sign in again
+            cart_page.sign_out_and_sign_in(username, password)
+            # Step 3: Query cart contents and validate
+            cart_page.validate_product_in_cart(product_id, quantity)
+        finally:
+            driver.quit()
 
 if __name__ == "__main__":
     unittest.main()
