@@ -118,3 +118,49 @@ class LoginPage:
             assert field in data, f"Missing field {field} in login response"
         assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
         return data
+
+    # --- TC_SCRUM96_004: New Methods Below ---
+    @staticmethod
+    def register_user_api(user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Registers a user via POST /api/users/register.
+        Args:
+            user_data (dict): Registration data (username, email, password, firstName, lastName).
+        Returns:
+            dict: API response JSON.
+        Raises:
+            AssertionError: If registration fails or required fields are missing.
+        """
+        api_url = "https://example-ecommerce.com/api/users/register"
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(api_url, json=user_data, headers=headers)
+        assert response.status_code == 201, f"Expected HTTP 201, got {response.status_code}. Response: {response.text}"
+        data = response.json()
+        required_fields = ["userId", "username", "email", "firstName", "lastName", "accountStatus"]
+        for field in required_fields:
+            assert field in data, f"Missing field {field} in registration response"
+        assert data["accountStatus"] == "ACTIVE", "Account status must be ACTIVE"
+        return data
+
+    @staticmethod
+    def decode_and_validate_jwt(token: str) -> Dict[str, Any]:
+        """
+        Decodes and validates JWT structure and claims (subject, expiration, issued at).
+        Args:
+            token (str): JWT token string.
+        Returns:
+            dict: Decoded JWT payload.
+        Raises:
+            AssertionError: If claims are missing or invalid.
+        """
+        try:
+            payload = jwt.decode(token, options={"verify_signature": False}, algorithms=["HS256", "RS256"])
+            assert 'sub' in payload, "Subject (sub) claim missing in token"
+            assert 'exp' in payload, "Expiration (exp) claim missing in token"
+            assert 'iat' in payload, "Issued at (iat) claim missing in token"
+            assert isinstance(payload['exp'], int), "Expiration (exp) must be integer timestamp"
+            exp_time = datetime.datetime.fromtimestamp(payload['exp'])
+            assert exp_time > datetime.datetime.utcnow(), "Token has expired"
+            return payload
+        except Exception as e:
+            raise AssertionError(f"JWT decode/validation failed: {e}")

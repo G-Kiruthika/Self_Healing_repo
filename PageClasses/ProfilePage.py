@@ -78,3 +78,29 @@ class ProfilePage:
             assert field in data, f"Missing field {field} in profile response"
         assert data["accountStatus"] == "ACTIVE", "Account status must be ACTIVE"
         return data
+
+    # --- TC_SCRUM96_004: New Methods Below ---
+    @staticmethod
+    def access_profile_with_jwt(jwt_token: str) -> Dict[str, Any]:
+        """
+        Accesses the /api/users/profile endpoint with JWT and validates response for TC_SCRUM96_004.
+        Args:
+            jwt_token (str): JWT access token.
+        Returns:
+            dict: Profile data from API response.
+        Raises:
+            AssertionError: If HTTP status or profile fields do not match expected.
+        """
+        api_url = "https://example-ecommerce.com/api/users/profile"
+        headers = {
+            "Authorization": f"Bearer {jwt_token}",
+            "Content-Type": "application/json"
+        }
+        response = requests.get(api_url, headers=headers)
+        assert response.status_code == 200, f"Expected HTTP 200, got {response.status_code}. Response: {response.text}"
+        data = response.json()
+        required_fields = ["userId", "username", "email", "firstName", "lastName", "accountStatus"]
+        for field in required_fields:
+            assert field in data, f"Missing field {field} in profile response"
+        assert data["accountStatus"] == "ACTIVE", "Account status must be ACTIVE"
+        return data
