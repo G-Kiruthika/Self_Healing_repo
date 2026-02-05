@@ -17,22 +17,22 @@ class TestLoginPage(unittest.TestCase):
         1. Navigate to the login screen.
         2. Click on 'Forgot Username' link.
         3. Follow the instructions to recover username.
-        4. Assert that username recovery instructions are followed and confirmation or error is retrieved.
+        4. Assert that username recovery instructions are followed and username is retrieved.
         """
         driver = webdriver.Chrome()
         try:
             login_page = LoginPage(driver)
             login_page.open_login_page()
             self.assertTrue(login_page.is_on_login_page(), "Login screen is not displayed.")
-            clicked = login_page.click_forgot_username()
-            self.assertTrue(clicked, "Could not click 'Forgot Username' link.")
+            login_page.click_forgot_username()
             recovery_page = UsernameRecoveryPage(driver)
-            recovery_page.go_to_username_recovery()
-            recovery_page.enter_email('user@example.com')
-            recovery_page.submit_recovery()
-            confirmation = recovery_page.get_confirmation_message()
-            error = recovery_page.get_error_message()
-            self.assertTrue(confirmation or error, "No confirmation or error message received after username recovery.")
+            self.assertTrue(recovery_page.is_username_recovery_page_displayed(), "Username Recovery page is not displayed.")
+            results = recovery_page.recover_username_flow_tc_login_003(email='user@example.com')
+            self.assertTrue(results['clicked_forgot_username'], "Failed to click 'Forgot Username' link.")
+            self.assertTrue(results['recovery_page_displayed'], "Username Recovery page not displayed after clicking link.")
+            self.assertTrue(results['instructions_followed_and_email_submitted'], "Failed to follow instructions and submit email.")
+            self.assertIsNotNone(results['success_message'], "No success message after username recovery.")
+            self.assertIsNotNone(results['retrieved_username'], "No username retrieved after recovery.")
         finally:
             driver.quit()
 
