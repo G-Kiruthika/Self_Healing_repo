@@ -11,6 +11,7 @@ class PasswordRecoveryPage:
     SUBMIT_BUTTON = (By.ID, "recovery-submit")
     SUCCESS_MESSAGE = (By.CSS_SELECTOR, "div.recovery-success")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.recovery-error")
+    GENERIC_MESSAGE = (By.CSS_SELECTOR, "div.recovery-success")  # Assuming generic message is shown in success div
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
@@ -68,3 +69,28 @@ class PasswordRecoveryPage:
         """
         # In a real implementation, integrate with a test email inbox or use a mock service
         raise NotImplementedError("Email inbox check for password reset must be implemented in the test harness or with an external email service.")
+
+    # --- Start of TC_LOGIN_008 steps ---
+    def tc_login_008_forgot_password_unregistered_email(self, email: str) -> bool:
+        """
+        TC_LOGIN_008: Forgot Password with Unregistered Email
+        Steps:
+        1. Verify Password Recovery Page is loaded
+        2. Enter unregistered email address [Test Data: Email: unregistered@example.com]
+        3. Click on Submit button
+        4. Verify generic message: 'If email exists, reset link will be sent'
+        """
+        assert self.is_loaded(), "Password Recovery page is not loaded"
+        input_field = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
+        input_field.clear()
+        input_field.send_keys(email)
+        submit_btn = self.wait.until(EC.element_to_be_clickable(self.SUBMIT_BUTTON))
+        submit_btn.click()
+        try:
+            generic_message = self.wait.until(EC.visibility_of_element_located(self.GENERIC_MESSAGE))
+            assert generic_message.is_displayed(), "Generic message not displayed after submitting unregistered email"
+            assert "If email exists, reset link will be sent" in generic_message.text, f"Unexpected generic message: {generic_message.text}"
+        except Exception as e:
+            raise AssertionError(f"Generic message validation failed: {e}")
+        return True
+    # --- End of TC_LOGIN_008 steps ---
