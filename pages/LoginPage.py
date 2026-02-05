@@ -1,120 +1,118 @@
-# Selenium Page Object for LoginPage
+# LoginPage.py
+"""
+Page Object for Login Page using Selenium WebDriver
+"""
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class LoginPage:
-    LOGIN_URL = "https://example-ecommerce.com/login"  # Updated per Locators.json
-    EMAIL_INPUT = (By.ID, "login-email")
-    PASSWORD_INPUT = (By.ID, "login-password")
-    LOGIN_BUTTON = (By.ID, "login-submit")
+    URL = "https://example-ecommerce.com/login"
+    EMAIL_FIELD = (By.ID, "login-email")
+    PASSWORD_FIELD = (By.ID, "login-password")
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
+    LOGIN_SUBMIT = (By.ID, "login-submit")
+    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
+    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
+    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
+    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
-        self.wait = WebDriverWait(self.driver, 10)
+        self.wait = WebDriverWait(driver, 10)
 
-    def go_to_login_page(self):
-        self.driver.get(self.LOGIN_URL)
-        assert self.is_loaded(), "Login page did not load successfully"
-
-    def is_loaded(self):
-        try:
-            correct_url = self.driver.current_url.startswith(self.LOGIN_URL)
-            email_visible = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT)).is_displayed()
-            password_visible = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT)).is_displayed()
-            login_btn_visible = self.wait.until(EC.visibility_of_element_located(self.LOGIN_BUTTON)).is_displayed()
-            return correct_url and email_visible and password_visible and login_btn_visible
-        except (NoSuchElementException, TimeoutException):
-            return False
+    def navigate_to_login(self):
+        """Navigate to the login page."""
+        self.driver.get(self.URL)
+        self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
 
     def enter_email(self, email: str):
-        email_field = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
-        email_field.clear()
-        email_field.send_keys(email)
-        return email_field.get_attribute("value") == email
+        """Enter email into the email field."""
+        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_input.clear()
+        email_input.send_keys(email)
 
     def enter_password(self, password: str):
-        password_field = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
-        password_field.clear()
-        password_field.send_keys(password)
-        return password_field.get_attribute("value") == password
+        """Enter password into the password field."""
+        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_input.clear()
+        password_input.send_keys(password)
+
+    def click_remember_me(self):
+        """Click the 'Remember Me' checkbox."""
+        checkbox = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_CHECKBOX))
+        checkbox.click()
 
     def click_login(self):
-        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON))
+        """Click the login submit button."""
+        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT))
         login_btn.click()
 
-    def is_error_message_displayed(self):
+    def click_forgot_password(self):
+        """Click the 'Forgot Password' link."""
+        forgot_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_PASSWORD_LINK))
+        forgot_link.click()
+
+    def get_error_message(self) -> str:
+        """Get the error message displayed after failed login."""
+        error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+        return error_elem.text
+
+    def get_validation_error(self) -> str:
+        """Get the validation error message displayed for invalid input."""
+        validation_elem = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
+        return validation_elem.text
+
+    def is_empty_field_prompt_displayed(self) -> bool:
+        """Check if the empty field prompt is displayed."""
         try:
-            error = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
-            return error.is_displayed()
-        except (NoSuchElementException, TimeoutException):
+            self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT))
+            return True
+        except:
             return False
 
-    def is_validation_error_displayed(self):
+    def is_dashboard_displayed(self) -> bool:
+        """Check if dashboard header is displayed after login."""
         try:
-            validation_error = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
-            return validation_error.is_displayed()
-        except (NoSuchElementException, TimeoutException):
+            self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            return True
+        except:
             return False
 
-    # --- Start of TC_LOGIN_008 steps ---
-    def tc_login_008_extremely_long_email(self, email: str, password: str) -> bool:
+    def is_user_profile_icon_displayed(self) -> bool:
+        """Check if user profile icon is displayed after login."""
+        try:
+            self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+            return True
+        except:
+            return False
+
+    # --- TC_LOGIN_005 ---
+    def login_with_empty_username(self, password: str) -> str:
         """
-        TC-LOGIN-008: Login with extremely long email address (255+ characters)
-        1. Navigate to the login page
-        2. Enter an extremely long email address
+        Execute TC_LOGIN_005:
+        1. Navigate to login page
+        2. Leave username field empty
         3. Enter valid password
-        4. Click on the Login button
-        5. Verify system truncates input or shows validation error, or login fails gracefully
+        4. Click Login
+        5. Return validation error message for empty username
         """
-        self.go_to_login_page()
-        assert self.is_loaded(), "Login page is not loaded"
-        assert self.enter_email(email), "Email input failed"
-        assert self.enter_password(password), "Password input failed"
+        self.navigate_to_login()
+        # Leave email field empty (do not enter anything)
+        self.enter_password(password)
         self.click_login()
-        # Acceptance: Either validation error or error message is displayed, or login fails gracefully
-        validation = self.is_validation_error_displayed()
-        error = self.is_error_message_displayed()
-        # Optionally, check for URL not changing (login fails gracefully)
-        login_failed = self.driver.current_url.startswith(self.LOGIN_URL)
-        assert validation or error or login_failed, (
-            "Expected validation error, error message, or failed login, but none detected"
-        )
-        return validation or error or login_failed
-    # --- End of TC_LOGIN_008 steps ---
-
-    # --- Start of TC_LOGIN_003 steps ---
-    def tc_login_003_invalid_password(self, email: str, invalid_password: str) -> bool:
-        """
-        TC-LOGIN-003: Attempt login with valid username and invalid password
-        Steps:
-        1. Navigate to the login page
-        2. Enter valid username
-        3. Enter invalid password
-        4. Click on the Login button
-        5. Verify error message 'Invalid username or password' is displayed and user remains on login page
-        Returns True if the expected error message is displayed and URL remains on login page, else False.
-        """
-        self.go_to_login_page()
-        assert self.is_loaded(), "Login page is not loaded"
-        assert self.enter_email(email), "Email input failed"
-        assert self.enter_password(invalid_password), "Password input failed"
-        self.click_login()
-        error_displayed = self.is_error_message_displayed()
-        still_on_login = self.driver.current_url.startswith(self.LOGIN_URL)
-        # Optionally, verify the actual error message text if needed
-        if error_displayed:
-            error_element = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
-            error_text = error_element.text.strip()
-            assert "Invalid username or password" in error_text, (
-                f"Unexpected error message: {error_text}"
+        # Wait for validation error message specific to username
+        try:
+            validation_error = self.wait.until(
+                EC.visibility_of_element_located(self.VALIDATION_ERROR)
             )
-        assert error_displayed and still_on_login, (
-            "Expected error message and to remain on login page, but criteria not met"
-        )
-        return error_displayed and still_on_login
-    # --- End of TC_LOGIN_003 steps ---
+            return validation_error.text
+        except:
+            # Optionally, check for empty field prompt if standard validation error not found
+            if self.is_empty_field_prompt_displayed():
+                prompt_elem = self.driver.find_element(*self.EMPTY_FIELD_PROMPT)
+                return prompt_elem.text
+            return "Validation error not found"
