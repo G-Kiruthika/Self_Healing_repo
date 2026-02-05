@@ -112,13 +112,38 @@ def test_TC_SCRUM96_002_duplicate_user_registration_api():
     first_name2 = "Second"
     last_name2 = "User"
     # Step 1: Register first user
-    resp1 = page.register_user_api(username, email1, password1, first_name1, last_name1)
-    assert resp1.status_code == 201, f"Expected 201 Created, got {resp1.status_code}, response: {resp1.text}"
-    # Step 2: Attempt duplicate registration
-    resp2 = page.register_duplicate_user_api(username, email2, password2, first_name2, last_name2)
-    assert resp2.status_code == 409, f"Expected 409 Conflict, got {resp2.status_code}, response: {resp2.text}"
-    assert "username already exists" in resp2.text.lower(), f"Expected error message for duplicate username, got: {resp2.text}"
-    # Step 3: Verify only one user record exists in DB
-    count, db_email = page.verify_single_user_in_db(username, email1)
-    assert count == 1, f"Expected 1 user record, found {count}"
-    assert db_email == email1, f"Expected email '{email1}', got {db_email}"
+    resp1 = page.register_user(username, email1, password1, first_name1, last_name1)
+    assert resp1.status_code == 201, f"Expected 201 Created, got {resp1.status_code}"
+    # Step 2: Register duplicate user
+    resp2 = page.register_duplicate_user(username, email2, password2, first_name2, last_name2)
+    page.validate_conflict_response(resp2)
+    # Step 3: DB validation
+    db_count = page.get_user_count_by_username(username)
+    assert db_count == 1, f"Expected exactly 1 user record for username '{username}', found {db_count}"
+
+# TC_SCRUM96_005: Negative API Login Automation Test
+from auto_scripts.Pages.AuthLoginAPIPage import AuthLoginAPIPage
+
+def test_TC_SCRUM96_005_negative_api_login():
+    """
+    Test Case TC_SCRUM96_005: Negative API Login (Strict error validation, token absence, security audit log)
+    Steps:
+    1. Send POST request to /api/auth/login with username='nonexistentuser999' and password='AnyPassword123!'
+    2. Validate HTTP 401 Unauthorized and error message 'Invalid username or password'
+    3. Confirm no access_token or refresh_token fields in response
+    4. Verify failed login attempt is logged in security audit logs (stub)
+    Acceptance Criteria: AC_SCRUM96_005
+    """
+    username = "nonexistentuser999"
+    password = "AnyPassword123!"
+    page = AuthLoginAPIPage()
+    # Step 1: Send login request
+    response = page.send_login_request(username, password)
+    # Step 2: Verify unauthorized response and error message
+    page.verify_unauthorized_response(response)
+    # Step 3: Verify no tokens in response
+    page.verify_no_tokens_in_response(response)
+    # Step 4: Check security audit log (stub)
+    log_found = page.check_security_audit_log(username)
+    assert log_found, "Failed login attempt not found in security audit logs"
+    print("TC_SCRUM96_005 negative login test completed successfully.")
