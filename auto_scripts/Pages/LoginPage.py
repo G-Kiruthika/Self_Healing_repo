@@ -107,3 +107,34 @@ class LoginPage:
             "error_displayed": error_displayed,
             "validation_displayed": validation_displayed
         }
+
+    # TC_LOGIN_08_01: login_with_special_char_email_and_password_and_validate_success
+    def login_with_special_char_email_and_password_and_validate_success(self, email="user.name+tag@example.com", password="P@ssw0rd!#"):
+        """
+        1. Navigate to the login page. [Acceptance Criteria: SCENARIO-8]
+        2. Enter a valid email address containing allowed special characters (e.g., dot, underscore, plus).
+        3. Enter a valid password containing special characters.
+        4. Click the 'Login' button.
+        5. Assert that the login page is displayed initially.
+        6. Assert that email and password are accepted.
+        7. Assert successful login (dashboard and user profile icon visible) if credentials are valid.
+        """
+        self.go_to_login_page()
+        # Step 1: Ensure login page is displayed
+        assert self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT)), "Login page is not displayed."
+        # Step 2: Enter special character email
+        self.enter_email(email)
+        # Step 3: Enter special character password
+        self.enter_password(password)
+        # Step 4: Click Login
+        self.click_login()
+        # Step 5: Validate acceptance
+        # If login succeeds, dashboard and profile icon must be visible
+        dashboard_displayed = self.is_dashboard_displayed()
+        profile_icon_displayed = self.is_user_profile_icon_displayed()
+        assert dashboard_displayed, "User is not successfully logged in (dashboard not visible)."
+        assert profile_icon_displayed, "User profile icon not visible after login."
+        return {
+            "dashboard_displayed": dashboard_displayed,
+            "profile_icon_displayed": profile_icon_displayed
+        }
