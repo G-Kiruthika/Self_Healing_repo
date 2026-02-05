@@ -8,7 +8,6 @@ from Pages.CartPage import CartPage
 
 class TestCartAccess(unittest.TestCase):
     def setUp(self):
-        # Setup driver (adjust path as needed)
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(10)
         self.cart_page = CartPage(self.driver)
@@ -17,8 +16,6 @@ class TestCartAccess(unittest.TestCase):
         self.driver.quit()
 
     def mock_login_function(self, credentials):
-        # Stub for authentication
-        # Replace with real login logic as needed
         self.driver.get('https://your-app-url/login')
         username_field = self.driver.find_element(By.ID, 'username')
         password_field = self.driver.find_element(By.ID, 'password')
@@ -30,9 +27,6 @@ class TestCartAccess(unittest.TestCase):
         login_button.click()
 
     def test_TC_CART_009_access_denied_to_other_users_cart(self):
-        """
-        TC_CART_009: Authenticate as User A and attempt to access User B's cart. Assert access denied and error message returned.
-        """
         userA_credentials = {'username': 'userA', 'password': 'passwordA'}
         cart_of_userB_id = 'cart_of_userB'
         error_message_locator = (By.ID, 'cart_error_message')
@@ -46,18 +40,24 @@ class TestCartAccess(unittest.TestCase):
         )
         self.assertTrue(result, 'Access denial verification failed for TC_CART_009.')
 
-    def test_TC_CART_010_add_zero_quantity_shows_error(self):
+    def test_TC_CART_010_add_product_with_quantity_zero_expect_error(self):
         """
-        TC_CART_010: Attempt to add a product to cart with quantity zero and validate error message is shown.
+        TC_CART_010: Add product to cart with quantity zero, expect error.
         """
-        product_id = '12345'
-        quantity = 0
-        expected_error_text = 'System returns error; product not added.'
-        # Add product to cart with quantity zero
-        self.cart_page.add_product_to_cart_with_quantity(product_id, quantity)
-        # Validate error message
-        result = self.cart_page.validate_error_for_zero_quantity(expected_error_text)
-        self.assertTrue(result, f"Expected error message for zero quantity not displayed for TC_CART_010.")
+        self.driver.get('https://your-app-url/cart')
+        expected_error_message = "Quantity must be greater than zero."
+        error_message = self.cart_page.add_product_with_quantity(0)
+        self.assertIsNotNone(error_message, "No error message returned when adding product with quantity zero.")
+        self.assertEqual(error_message, expected_error_message, f"Expected error message '{expected_error_message}', but got '{error_message}'.")
+
+    def test_TC_CART_004_attempt_cart_creation_without_authentication(self):
+        """
+        TC_CART_004: Attempt to create a shopping cart without authentication.
+        Acceptance Criteria: System denies request; error for unauthorized access.
+        """
+        self.driver.get('https://your-app-url/cart')
+        result = self.cart_page.attempt_cart_creation_without_authentication()
+        self.assertTrue(result, "Unauthorized access error was not displayed when attempting cart creation without authentication.")
 
 if __name__ == '__main__':
     unittest.main()
