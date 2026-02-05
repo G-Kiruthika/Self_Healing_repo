@@ -94,15 +94,60 @@ class LoginPage:
         self.verify_no_token_and_no_session(response)
         return response
 
-# Executive Summary:
-# LoginPage.py updated to support TC_SCRUM96_006 with /api/auth/login endpoint, strict error and token/session validation.
-# Analysis:
-# All test steps mapped to methods. Existing logic preserved, new methods appended.
-# Implementation Guide:
-# Use tc_scrum96_006_workflow() for end-to-end test automation.
-# Quality Assurance:
-# All assertions strictly validate API and security. Code follows Python/Selenium best practices.
-# Troubleshooting:
-# If login fails, check credentials and endpoint. If token/session appears, check backend API.
-# Future Considerations:
-# Extend session validation as schema evolves; add DB/session store checks if required.
+    # Executive Summary:
+    # LoginPage.py updated to support TC_SCRUM96_006 with /api/auth/login endpoint, strict error and token/session validation.
+    # Analysis:
+    # All test steps mapped to methods. Existing logic preserved, new methods appended.
+    # Implementation Guide:
+    # Use tc_scrum96_006_workflow() for end-to-end test automation.
+    # Quality Assurance:
+    # All assertions strictly validate API and security. Code follows Python/Selenium best practices.
+    # Troubleshooting:
+    # If login fails, check credentials and endpoint. If token/session appears, check backend API.
+    # Future Considerations:
+    # Extend session validation as schema evolves; add DB/session store checks if required.
+
+    # --- TC_SCRUM96_004 additions ---
+    def decode_and_validate_jwt(self, token: str, expected_username: str, secret_key: str, algorithms: list = ["HS256"]) -> dict:
+        """
+        Decodes and validates a JWT token.
+        - Checks structure, claims (sub, exp, iat), expiration (24h), and signature.
+        - Ensures subject claim matches expected_username.
+        - Returns decoded payload if valid, raises AssertionError if not.
+        """
+        import jwt
+        from jwt import InvalidTokenError, ExpiredSignatureError, DecodeError
+        from datetime import datetime, timedelta, timezone
+
+        try:
+            # Decode and verify signature & claims
+            payload = jwt.decode(token, secret_key, algorithms=algorithms)
+        except ExpiredSignatureError:
+            raise AssertionError("JWT token has expired")
+        except InvalidTokenError as e:
+            raise AssertionError(f"Invalid JWT token: {str(e)}")
+        except DecodeError as e:
+            raise AssertionError(f"JWT decode error: {str(e)}")
+
+        # Validate required claims
+        assert "sub" in payload, "JWT 'sub' (subject) claim missing"
+        assert "exp" in payload, "JWT 'exp' (expiration) claim missing"
+        assert "iat" in payload, "JWT 'iat' (issued at) claim missing"
+
+        # Check subject
+        assert payload["sub"] == expected_username, f"JWT subject mismatch: expected '{expected_username}', got '{payload['sub']}'"
+
+        # Check expiration: exactly 24 hours after issued-at
+        issued_at = datetime.fromtimestamp(payload["iat"], tz=timezone.utc)
+        expiration = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+        expected_expiration = issued_at + timedelta(hours=24)
+        assert abs((expiration - expected_expiration).total_seconds()) < 5, (
+            f"JWT expiration not 24h after issued-at: issued at {issued_at}, exp {expiration}"
+        )
+
+        # Optionally, check current time is before expiration
+        now = datetime.now(timezone.utc)
+        assert now < expiration, "JWT token is expired (current time after exp)"
+
+        # If all checks pass, return payload
+        return payload
