@@ -1,0 +1,58 @@
+import requests
+from typing import Optional
+
+class ProfilePage:
+    """
+    Page Object for user profile management.
+    Provides methods for updating user profile via API and verifying persistence in the database.
+    """
+    API_URL = "https://example-ecommerce.com/api/users/profile"
+
+    def __init__(self, db_connection: Optional[object] = None):
+        """
+        Optionally pass a database connection for DB verification methods.
+        """
+        self.db_connection = db_connection
+
+    def update_profile_username(self, auth_token: str, new_username: str) -> requests.Response:
+        """
+        Sends a PUT request to update the user's profile username.
+
+        Args:
+            auth_token (str): JWT authentication token.
+            new_username (str): The new username to set.
+        Returns:
+            requests.Response: The response object from the PUT request.
+        Raises:
+            AssertionError: If the HTTP status is not 200 or response data is not as expected.
+        """
+        headers = {
+            "Authorization": f"Bearer {auth_token}",
+            "Content-Type": "application/json"
+        }
+        payload = {"username": new_username}
+        response = requests.put(self.API_URL, json=payload, headers=headers)
+        assert response.status_code == 200, f"Expected HTTP 200, got {response.status_code}. Response: {response.text}"
+        data = response.json()
+        assert data.get("username") == new_username, f"Username not updated in response. Expected {new_username}, got {data.get('username')}"
+        return response
+
+    def verify_username_in_db(self, email: str, expected_username: str) -> bool:
+        """
+        Verifies that the username is updated in the database for the given email.
+        Args:
+            email (str): User's email address.
+            expected_username (str): Expected username value in DB.
+        Returns:
+            bool: True if the username matches, False otherwise.
+        Raises:
+            AssertionError: If db_connection is not set.
+        """
+        assert self.db_connection is not None, "Database connection is not set."
+        query = f"SELECT username FROM users WHERE email='{email}'"
+        cursor = self.db_connection.cursor()
+        cursor.execute(query)
+        result = cursor.fetchone()
+        if result is None:
+            return False
+        return result[0] == expected_username

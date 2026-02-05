@@ -4,6 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import jwt
 import datetime
 from typing import Optional, Dict
+import requests
 
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
@@ -114,3 +115,25 @@ class LoginPage:
             raise AssertionError(f"Invalid JWT token: {e}")
         except Exception as e:
             raise AssertionError(f"JWT validation failed: {e}")
+
+    @staticmethod
+    def api_login_and_get_token(email: str, password: str) -> str:
+        """
+        Signs in via API and obtains authentication token.
+
+        Args:
+            email (str): User email.
+            password (str): User password.
+        Returns:
+            str: JWT authentication token string.
+        Raises:
+            AssertionError: If login fails or token is not returned.
+        """
+        api_url = "https://example-ecommerce.com/api/users/login"
+        payload = {"email": email, "password": password}
+        response = requests.post(api_url, json=payload)
+        assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}. Response: {response.text}"
+        data = response.json()
+        token = data.get("token")
+        assert token, f"Authentication token not found in response: {data}"
+        return token
