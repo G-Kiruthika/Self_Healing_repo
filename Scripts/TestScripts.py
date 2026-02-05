@@ -80,5 +80,30 @@ class TestCartFunctionality(unittest.TestCase):
         # self.assertIn('cart_id', cart_result, "Cart ID not returned.")
         print("Cart creation via API is not implemented due to missing PageClass.")
 
+    def test_TC_CART_002_duplicate_email(self):
+        """
+        Test Case: TC_CART_002
+        Steps:
+        1. Attempt to sign up using an email that is already registered.
+        2. Validate the error message for duplicate email.
+        """
+        user_data = {
+            "username": "user2",
+            "email": "newuser1@example.com",
+            "password": "AnotherPass123",
+            "firstName": "Test",
+            "lastName": "User"
+        }
+        api_page = UserRegistrationAPIPage()
+        result = api_page.attempt_duplicate_registration(user_data)
+        error_message = result.get("error_message", "")
+        status_code = result.get("status_code", None)
+        self.assertIn(status_code, [409, 400], f"Expected 409 or 400 for duplicate email, got {status_code}")
+        try:
+            api_page.validate_duplicate_email_error(error_message)
+        except AssertionError as e:
+            self.fail(f"Duplicate email error validation failed: {e}")
+        self.assertTrue("duplicate" in error_message.lower() or "already registered" in error_message.lower(), f"Error message does not indicate duplicate email: {error_message}")
+
 if __name__ == "__main__":
     unittest.main()
