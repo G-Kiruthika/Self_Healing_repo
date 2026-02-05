@@ -1,8 +1,59 @@
 # TC-SCRUM-96-001: API Signup Automation Test
 from auto_scripts.Pages.APISignupPage import APISignupPage
 
-def test_TC_SCRUM_96_001_api_signup():
-    ...
+# TC_SCRUM96_001: User Registration API End-to-End Test
+from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+import pytest
+import datetime
+
+def test_TC_SCRUM96_001_user_registration_api_e2e():
+    """
+    TC_SCRUM96_001: User Registration API End-to-End Test
+    Steps:
+    1. Send POST request to /api/users/register with test data
+    2. Assert HTTP 201 Created and verify returned fields
+    3. Query the database for user creation and validate email/account status
+    4. Check registration confirmation email was sent
+    """
+    # Test Data
+    username = "testuser001"
+    email = "testuser001@example.com"
+    password = "SecurePass123!"
+    first_name = "John"
+    last_name = "Doe"
+    registration_api = UserRegistrationAPIPage()
+
+    # Step 1: Send POST request to /api/users/register
+    response = registration_api.register_user_api(
+        username=username,
+        email=email,
+        password=password,
+        first_name=first_name,
+        last_name=last_name
+    )
+
+    # Step 2: Assert HTTP 201 Created and verify returned fields
+    assert response.status_code == 201, f"Expected 201 Created, got {response.status_code}: {response.text}"
+    resp_json = response.json()
+    assert "userId" in resp_json, "userId not found in response"
+    assert resp_json["username"] == username, "Username mismatch"
+    assert resp_json["email"] == email, "Email mismatch"
+    assert resp_json["firstName"] == first_name, "First name mismatch"
+    assert resp_json["lastName"] == last_name, "Last name mismatch"
+    assert "registrationTimestamp" in resp_json, "registrationTimestamp missing"
+    assert "password" not in resp_json, "Password should not be returned in response"
+
+    # Step 3: Query the database for user creation and validate email/account status
+    user_db_record = registration_api.verify_single_user_in_db(username)
+    assert user_db_record is not None, "User not found in DB after registration"
+    assert user_db_record["email"] == email, "Email mismatch in DB"
+    assert user_db_record["accountStatus"] in ["active", "pending"], "Unexpected account status in DB"
+
+    # Step 4: Check registration confirmation email was sent (simulate if needed)
+    email_sent = registration_api.verify_registration_confirmation_email_sent(email)
+    assert email_sent, "Registration confirmation email was not sent"
+    print("TC_SCRUM96_001 user registration API end-to-end test PASSED.")
+
 # TC_SCRUM96_006: Negative Login API & Session Validation Test
 from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
