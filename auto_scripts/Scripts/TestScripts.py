@@ -5,6 +5,7 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from auto_scripts.Pages.LoginPage import LoginPage
+from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
 
 class TestLoginPage(unittest.TestCase):
     # Existing test methods...
@@ -129,6 +130,25 @@ class TestLoginPage(unittest.TestCase):
             self.assertTrue(results['remember_me_unchecked'], "'Remember Me' was not unchecked.")
             self.assertTrue(results['user_logged_in'], "User did not log in.")
             self.assertTrue(results['user_logged_out_after_reopen'], "User was not logged out after browser reopen.")
+        finally:
+            try:
+                driver.quit()
+            except Exception:
+                pass
+
+    def test_tc_login_09_forgot_password_navigation(self):
+        """
+        Test Case TC_LOGIN_09:
+        1. Navigate to the login page.
+        2. Click on the 'Forgot Password' link.
+        3. Verify 'Forgot Password' page is displayed.
+        """
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        try:
+            login_page.tc_login_09_navigate_and_click_forgot_password()
+            recovery_page = PasswordRecoveryPage(driver)
+            recovery_page.tc_login_09_verify_forgot_password_page()
         finally:
             try:
                 driver.quit()
