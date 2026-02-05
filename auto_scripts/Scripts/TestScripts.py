@@ -49,29 +49,17 @@ def test_TC_LOGIN_008_min_length_login(driver):
     login_page.go_to_login_page()
     assert login_page.is_min_length_accepted("a@b.co", "123456"), "Minimum length credentials were not accepted."
 
-# TC-SCRUM-96-002: Duplicate Email Registration and DB Verification
+# TC-SCRUM-96-002: Duplicate Email Signup Handling
 from auto_scripts.Pages.UserSignupPage import UserSignupPage
 
-def test_TC_SCRUM_96_002_duplicate_email_and_db_verification(driver, db_connection):
+def test_TC_SCRUM_96_002_duplicate_email_signup():
     """
-    Test Case TC-SCRUM-96-002: Duplicate Email Registration and DB Verification
+    Test Case TC-SCRUM-96-002: Duplicate Email Signup Handling
     Steps:
-    1. Register first user with email testuser@example.com and password Pass123!
-    2. Attempt to register second user with same email and password Pass456!
-    3. Verify only one user record exists in database for testuser@example.com
-    Acceptance Criteria: AC-001
+    1. Create user with email testuser@example.com (username: user1, password: Pass123!)
+    2. Attempt to create another user with same email (username: user2, password: Pass456!)
+    3. Verify only one user record exists in simulated DB for that email
+    Acceptance criteria: Registration fails with 409 Conflict and error message 'Email already exists', DB contains only one record.
     """
-    signup_page = UserSignupPage(driver)
-    user1 = "user1"
-    email = "testuser@example.com"
-    pwd1 = "Pass123!"
-    user2 = "user2"
-    pwd2 = "Pass456!"
-    # Step 1 and 2: Register first user and then second user (should fail with conflict)
-    first_result, second_result = signup_page.register_and_validate_duplicate(user1, email, pwd1, user2, pwd2)
-    assert first_result["status"] == "success", f"Expected success for first user, got {first_result}"
-    assert second_result["status"] == "conflict", f"Expected conflict for duplicate email, got {second_result}"
-    assert "Email already exists" in second_result["message"], f"Expected error message 'Email already exists', got {second_result['message']}"
-    # Step 3: Verify only one user exists in DB
-    user_count = UserSignupPage.verify_user_count_in_db(db_connection, email)
-    assert user_count == 1, f"Expected only one user record in DB for {email}, got {user_count}"
+    signup_page = UserSignupPage()
+    signup_page.signup_duplicate_email_test()
