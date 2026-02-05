@@ -45,3 +45,20 @@ class TestLoginFunctionality:
         self.login_page.navigate_to_login()
         error_text = self.login_page.submit_empty_login_and_get_mandatory_field_error()
         assert error_text == 'Mandatory fields are required', f"Expected error not shown. Got: {error_text}"
+
+    def test_tc_login_001_valid_login_flow(self):
+        """
+        TC-LOGIN-001: Valid login flow
+        Steps:
+        1. Navigate to the e-commerce website login page [Test Data: URL]
+        2. Enter valid registered email address [Test Data: Email]
+        3. Enter correct password [Test Data: Password]
+        4. Click on the Login button
+        5. Verify user is successfully authenticated and redirected to the dashboard/home page
+        6. Verify user session is established (username is displayed in the header and session cookie is set)
+        """
+        url = 'https://ecommerce.example.com/login'
+        email = 'testuser@example.com'
+        password = 'ValidPass123!'
+        result = self.login_page.tc_login_001_valid_login_flow(url, email, password)
+        assert result, 'Valid login flow failed: Dashboard/session not established.'
