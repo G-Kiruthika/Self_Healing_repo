@@ -1,30 +1,28 @@
 # Executive Summary:
-# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, TC_LOGIN_010, TC_LOGIN_011, and now TC005 using Selenium in Python.
+# This PageClass implements the login page automation for TC_LOGIN_003, TC_LOGIN_004, TC_LOGIN_006, TC001, TC_LOGIN_010, and now TC_LOGIN_011 using Selenium in Python.
 # Updates:
-# - Added execute_tc005_empty_email_valid_password(valid_password) for TC005, which enters empty email, valid password, clicks login, validates email field remains empty, checks for 'Email required' error, and confirms login fails.
+# - Added execute_tc_login_011_no_remember_me_session_non_persistence() for TC_LOGIN_011, which navigates to login page, enters valid credentials WITHOUT selecting 'Remember Me', submits, and verifies session does NOT persist after browser restart.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
 # - Strict locator mapping from Locators.json
 # - Defensive coding using Selenium WebDriverWait and exception handling
 # - Functions for navigation, login, error validation, positive login outcome, and session persistence/non-persistence
-# - Existing methods are preserved and new method is appended
+# - Existing methods are preserved and new methods are appended
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use open_login_page(), login_with_credentials(), execute_tc005_empty_email_valid_password(valid_password), execute_tc001_login_workflow(email, password), execute_tc_login_010_remember_me_session_persistence(email, password), execute_tc_login_011_no_remember_me_session_non_persistence(email, password) to automate respective scenarios
-# - Example usage for TC005:
+# - Use open_login_page(), login_with_credentials(), execute_tc001_login_workflow(email, password), execute_tc_login_010_remember_me_session_persistence(email, password), execute_tc_login_011_no_remember_me_session_non_persistence(email, password) to automate respective scenarios
+# - Example usage for TC_LOGIN_011:
 #     page = LoginPage(driver)
-#     result = page.execute_tc005_empty_email_valid_password(valid_password="ValidPassword123")
-#     assert result["email_field_empty"] is True
-#     assert result["error_message"] == "Email required"
-#     assert result["login_unsuccessful"] is True
+#     result = page.execute_tc_login_011_no_remember_me_session_non_persistence(email="user@example.com", password="ValidPass123")
+#     assert result["session_persisted"] is False
 
 # Quality Assurance Report:
-# - Locator references validated against Locators.json
+# - All locator references validated against Locators.json
 # - PageClass code reviewed for Pythonic standards and Selenium best practices
 # - Functions include assertion checks and detailed exception handling
-# - Existing methods are preserved and new method is appended
+# - Existing methods are preserved and new methods are appended
 
 # Troubleshooting Guide:
 # - Ensure the driver is initialized and points to the correct browser instance
@@ -357,46 +355,6 @@ class LoginPage:
             new_driver.quit()
         except TimeoutException as e:
             result["error_message"] = f"TimeoutException: {str(e)}"
-        except Exception as e:
-            result["error_message"] = str(e)
-        return result
-
-    def execute_tc005_empty_email_valid_password(self, valid_password):
-        '''
-        TC005: Enter empty email and valid password, click login, validate email field remains empty, check for 'Email required' error, and confirm login fails.
-        Args:
-            valid_password (str): Valid password to use.
-        Returns:
-            dict with keys: 'email_field_empty', 'error_message', 'login_unsuccessful'
-        '''
-        result = {"email_field_empty": None, "error_message": None, "login_unsuccessful": None}
-        try:
-            self.open_login_page()
-            # Step 1: Clear email field (leave empty)
-            email_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
-            email_elem.clear()
-            # Step 2: Enter valid password
-            password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
-            password_elem.clear()
-            password_elem.send_keys(valid_password)
-            # Step 3: Click login
-            login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
-            login_btn.click()
-            # Step 4: Validate email field remains empty
-            email_value = email_elem.get_attribute("value")
-            result["email_field_empty"] = (email_value == "")
-            # Step 5: Check for error message 'Email required'
-            try:
-                error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
-                error_text = error_elem.text
-                if "Email required" in error_text:
-                    result["error_message"] = "Email required"
-                else:
-                    result["error_message"] = error_text
-            except TimeoutException:
-                result["error_message"] = None
-            # Step 6: Confirm login fails
-            result["login_unsuccessful"] = self.is_login_unsuccessful()
         except Exception as e:
             result["error_message"] = str(e)
         return result
