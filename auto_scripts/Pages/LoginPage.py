@@ -2,6 +2,8 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class LoginPage:
     LOGIN_URL = "https://example-ecommerce.com/login"
@@ -10,13 +12,15 @@ class LoginPage:
     LOGIN_BUTTON = (By.ID, "login-submit")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
+    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
     FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
-    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")  # ADDED for TC_LOGIN_007
+    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
+        self.wait = WebDriverWait(self.driver, 10)
 
     def navigate_to_login(self):
         self.driver.get(self.LOGIN_URL)
@@ -39,10 +43,6 @@ class LoginPage:
             return False
 
     def click_forgot_username(self):
-        """
-        Step 2: Click on 'Forgot Username' link
-        Acceptance Criteria: User is redirected to username recovery page
-        """
         try:
             link = self.driver.find_element(*self.FORGOT_USERNAME_LINK)
             link.click()
@@ -254,40 +254,31 @@ class LoginPage:
 
     # --- Start of TC_LOGIN_007 steps ---
     def tc_login_007_forgot_username_flow(self, email: str):
-        """
-        TC_LOGIN_007 Steps:
-        1. Navigate to the login page
-        2. Click on 'Forgot Username' link
-        3. Enter registered email address
-        4. Click on 'Send Username' button
-        5. Verify username recovery email is received (delegated to UsernameRecoveryPage)
-        """
         self.navigate_to_login()
         self.click_forgot_username()
-        # The rest of the flow continues in UsernameRecoveryPage
         return True
     # --- End of TC_LOGIN_007 steps ---
 
     # --- Start of TC_SCRUM74_007 steps ---
     def tc_scrum74_007_empty_fields_login_validation(self):
-        """
-        TC_SCRUM74_007 Steps:
-        1. Navigate to the login page
-        2. Leave email/username field empty
-        3. Leave password field empty
-        4. Click on the Login button
-        5. Validation errors displayed for both fields: 'Email/Username and Password are required'
-        """
         self.navigate_to_login()
-        # Leave email/username and password fields empty
         email_field = self.driver.find_element(*self.EMAIL_INPUT)
         password_field = self.driver.find_element(*self.PASSWORD_INPUT)
         email_field.clear()
         password_field.clear()
-        # Click Login
         self.driver.find_element(*self.LOGIN_BUTTON).click()
-        # Check validation errors
         email_error = self.is_validation_error_displayed("Email/Username is required")
         password_error = self.is_validation_error_displayed("Password is required")
         return email_error and password_error
     # --- End of TC_SCRUM74_007 steps ---
+
+    # --- LGN-02 SPECIFIC METHOD ---
+    def submit_empty_login_and_get_mandatory_field_error(self):
+        """
+        Leaves email and password fields blank, clicks Login, and returns the mandatory field error message.
+        """
+        self.driver.find_element(*self.EMAIL_INPUT).clear()
+        self.driver.find_element(*self.PASSWORD_INPUT).clear()
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
+        error_element = self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT))
+        return error_element.text
