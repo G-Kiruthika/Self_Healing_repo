@@ -8,7 +8,35 @@ from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
 
 def test_TC_SCRUM96_006_negative_login_api_and_session_validation():
-    ...
+    """
+    Test Case TC_SCRUM96_006: Negative Login API & Session Validation
+    Steps:
+    1. Register a test user with username 'validuser' and password 'CorrectPass123!'
+    2. Send POST request to /api/auth/login with correct username but incorrect password
+    3. Verify no JWT token is generated and user session is not created
+    """
+    base_url = "https://example-ecommerce.com"  # Use the actual API base URL if different
+    username = "validuser"
+    email = "validuser@example.com"
+    correct_password = "CorrectPass123!"
+    wrong_password = "WrongPassword456!"
+    first_name = "Valid"
+    last_name = "User"
+
+    # Step 1: Register the user via API
+    reg_api = UserRegistrationAPIPage()
+    reg_response = reg_api.register_user_api(username, email, correct_password, first_name, last_name)
+    assert reg_response.status_code == 201, f"Registration failed: {reg_response.text}"
+
+    # Step 2: Attempt login via API with wrong password
+    login_page = LoginPage(None, base_url)  # driver=None for API-only test
+    response = login_page.api_auth_login(username, wrong_password)
+
+    # Step 3: Verify 401 Unauthorized and error message
+    login_page.verify_auth_failure(response, "Invalid username or password")
+
+    # Step 4: Verify no JWT token and no session
+    login_page.verify_no_token_and_no_session(response)
 
 # TC_SCRUM96_007: User Profile API & DB Validation Test
 from PageClasses.UserRegistrationAPIPage import UserRegistrationAPIPage
