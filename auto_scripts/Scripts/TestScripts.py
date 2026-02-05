@@ -146,3 +146,50 @@ def test_TC_SCRUM_96_006_user_profile_api_sensitive_data_exposure():
     # Validate field types and formats
     profile_page.validate_profile_response(profile_json)
     print("TC-SCRUM-96-006 user profile API sensitive data exposure test PASSED.")
+
+# TC-SCRUM-96-007: User Profile Update and DB Verification Test
+from auto_scripts.Pages.ProfilePage import ProfilePage
+import pytest
+import pymysql
+
+
+def test_TC_SCRUM_96_007_profile_update_and_db_verification():
+    """
+    Test Case TC-SCRUM-96-007: Profile update via API and DB verification
+    Steps:
+    1. Sign in as valid user and obtain authentication token
+    2. Fetch userId via get_profile
+    3. Update username via PUT /api/users/profile
+    4. Assert DB reflects updated username
+    """
+    # Test Data
+    email = "update@example.com"
+    password = "Pass123!"
+    new_username = "updatedUsername"
+    db_config = {
+        "host": "localhost",
+        "user": "dbuser",
+        "password": "dbpass",
+        "database": "ecommerce_db"
+    }
+
+    # Step 1: Sign in and get token
+    token = ProfilePage.sign_in_and_get_token(email, password)
+    assert token is not None, "Authentication token not obtained"
+
+    # Step 2: Fetch userId via get_profile
+    profile_data = ProfilePage.get_profile(token)
+    user_id = profile_data["userId"]
+    old_username = profile_data["username"]
+    assert user_id is not None, "userId not found in profile data"
+
+    # Step 3: Update username via PUT and verify API & DB
+    profile_page = ProfilePage(None, db_config=db_config)
+    result = profile_page.update_profile_and_verify(token, user_id, new_username)
+    assert result["updated_profile"]["username"] == new_username, "Username not updated in API response"
+    assert result["db_verified"] is True, "Database verification failed for updated username"
+
+    # Step 4: Optionally, revert username for test isolation
+    # profile_page.update_profile_and_verify(token, user_id, old_username)
+
+    print("TC-SCRUM-96-007 profile update and DB verification test PASSED.")
