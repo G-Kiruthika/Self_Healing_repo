@@ -63,3 +63,22 @@ def test_TC_SCRUM_96_002_duplicate_email_signup():
     """
     signup_page = UserSignupPage()
     signup_page.signup_duplicate_email_test()
+
+# TC-LOGIN-016: Test login with unregistered email
+from auto_scripts.Pages.LoginPage import LoginPage
+
+def test_TC_LOGIN_016_login_with_unregistered_email(driver):
+    """
+    Test Case TC_LOGIN_016: Test login with unregistered email
+    Steps:
+    1. Navigate to the login page.
+    2. Enter unregistered email and valid password.
+    3. Click the 'Login' button.
+    Expected:
+    - Error message for unregistered email is shown.
+    - Login is not successful.
+    """
+    login_page = LoginPage(driver)
+    error_message, login_success = login_page.login_with_unregistered_email_tc_login_016(email="unknown@example.com", password="ValidPass123")
+    assert error_message is not None, "No error message displayed for unregistered email."
+    assert login_success is False, "Login succeeded with unregistered email, expected failure."
