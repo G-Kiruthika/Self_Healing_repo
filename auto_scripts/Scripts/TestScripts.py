@@ -24,17 +24,19 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    def test_tc017_invalid_login_error_accessibility(self):
+    def test_tc019_login_with_special_unicode(self):
         """
-        Test Case TC017:
-        1. Trigger error message by invalid login (user@example.com / WrongPassword).
-        2. Verify error message is displayed in clear text and accessible to screen readers (ARIA attributes).
+        Test Case TC019:
+        1. Enter valid email and password containing special characters and Unicode.
+           [Test Data: üser+name@example.com / P@sswørd!🔒]
+        2. Click 'Login' button.
+        3. Verify that fields accept input and login succeeds if credentials are valid.
         """
         driver = webdriver.Chrome()
         page = LoginPage(driver)
         try:
-            result = page.tc017_invalid_login_error_accessibility('user@example.com', 'WrongPassword')
-            self.assertTrue(result, "TC017 failed: Error message not displayed in clear text or not accessible to screen readers.")
+            result = page.login_with_special_unicode('üser+name@example.com', 'P@sswørd!🔒')
+            self.assertTrue(result, "TC019 failed: Fields did not accept special/Unicode input or login did not succeed.")
         finally:
             driver.quit()
 
