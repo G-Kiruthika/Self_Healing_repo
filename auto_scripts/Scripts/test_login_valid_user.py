@@ -1,52 +1,46 @@
-# TC-LOGIN-001: Valid User Login Test (Selenium)
+# Selenium Test Script for TC-LOGIN-001: Valid User Login
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import WebDriverException
 from auto_scripts.Pages.LoginPage import LoginPage
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def driver():
     options = Options()
     options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
     options.add_argument('--window-size=1920,1080')
     driver = webdriver.Chrome(options=options)
+    driver.implicitly_wait(10)
     yield driver
     driver.quit()
 
-def test_valid_user_login(driver):
+def test_tc_login_001_valid_user_login(driver):
     """
-    TC-LOGIN-001: End-to-end login test for valid user.
+    TC-LOGIN-001: Verify that a registered user can log in with valid credentials
     Steps:
-        1. Navigate to login page
-        2. Enter valid email
-        3. Enter correct password
-        4. Click Login
-        5. Verify user session
-    Acceptance Criteria:
-        - Login page displays email/password fields
-        - Email is accepted/displayed
-        - Password is masked and accepted
-        - User is redirected to dashboard
-        - User profile icon is visible (session established)
+    1. Navigate to the e-commerce website login page
+    2. Enter valid registered email address in the email field
+    3. Enter correct password in the password field
+    4. Click on the Login button
+    5. Verify user session is established
     """
-    # Test Data
-    LOGIN_URL = "https://app.example.com/login"  # As per PageClass
-    TEST_EMAIL = "testuser@example.com"
-    TEST_PASSWORD = "ValidPass123!"
-
     login_page = LoginPage(driver)
 
-    # Step 1: Navigate to login page
-    assert login_page.navigate_to_login(), "Login page did not display email/password fields."
+    # Step 1: Navigate to Login Page
+    assert login_page.navigate_to_login(), "Login page is not displayed with email and password fields."
 
-    # Step 2: Enter valid email
-    assert login_page.enter_email(TEST_EMAIL), f"Email '{TEST_EMAIL}' not accepted/displayed in field."
+    # Step 2: Enter valid registered email
+    valid_email = "testuser@example.com"
+    assert login_page.enter_email(valid_email), f"Email '{valid_email}' was not accepted or not displayed in the field."
 
     # Step 3: Enter correct password
-    assert login_page.enter_password(TEST_PASSWORD), "Password not masked or not accepted."
+    valid_password = "ValidPass123!"
+    assert login_page.enter_password(valid_password), "Password was not masked or not accepted."
 
     # Step 4: Click Login
-    assert login_page.click_login(), "User not authenticated or not redirected to dashboard."
+    assert login_page.click_login(), "User was not redirected to dashboard/home page after login."
 
     # Step 5: Verify user session
-    assert login_page.verify_user_session(), "User session not established; profile icon not visible."
+    assert login_page.verify_user_session(), "User session not established: username not displayed or session cookie missing."
