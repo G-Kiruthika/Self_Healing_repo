@@ -89,3 +89,27 @@ class LoginPage:
         error_displayed = self.is_error_message_displayed("Invalid email or password")
         user_stays = self.verify_user_stays_on_login_page()
         return error_displayed and user_stays
+
+    # --- TC-LOGIN-008 Test Steps Implementation ---
+    def tc_login_008_unregistered_email_login_flow(self, url: str, email: str, password: str, expected_error: str = "Invalid email or password"):
+        """
+        TC_LOGIN_008: Login attempt with unregistered email
+        Steps:
+        1. Navigate to the login page [Test Data: URL]
+        2. Enter unregistered email address [Test Data: Email]
+        3. Enter any password [Test Data: Password]
+        4. Click on the Login button
+        5. Verify error message displayed: 'Invalid email or password'
+        6. Verify user remains on login page
+        Acceptance Criteria: AC_008
+        """
+        self.driver.get(url)
+        login_page_displayed = self.is_login_page_displayed()
+        if not login_page_displayed:
+            return False
+        email_entered = self.enter_email(email)
+        password_entered = self.enter_password(password)
+        self.click_login()
+        error_displayed = self.is_error_message_displayed(expected_error)
+        user_stays = self.verify_user_stays_on_login_page()
+        return all([login_page_displayed, email_entered, password_entered, error_displayed, user_stays])
