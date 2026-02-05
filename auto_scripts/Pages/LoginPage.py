@@ -3,23 +3,21 @@
 # It now supports:
 # - TC014: Login attempt with inactive account and verification of 'Account inactive' error message.
 # - TC015: Password masking verification and copy-paste restriction detection.
+# - TC_LOGIN_05: Attempt to login with empty password and verify 'Password is required' error message.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
 # - Strict locator mapping from Locators.json
 # - Defensive coding using Selenium WebDriverWait and exception handling
 # - Functions for navigation, UI validation, password field masking, and copy-paste restriction
-# - New/updated method: is_copy_paste_restricted_on_password() implements TC015 step 2
+# - New/updated method: tc_login_05_empty_password_error() implements TC_LOGIN_05 steps
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use enter_password(password) to automate TC015 step 1 (masking verification)
-# - Use is_copy_paste_restricted_on_password() to automate TC015 step 2 (copy-paste restriction)
+# - Use tc_login_05_empty_password_error() to automate TC_LOGIN_05 scenario
 # - Example usage:
 #     page = LoginPage(driver)
-#     page.enter_password('ValidPassword123')
-#     assert page.is_password_field_masked()
-#     assert page.is_copy_paste_restricted_on_password()
+#     page.tc_login_05_empty_password_error('user1@example.com')
 
 # Quality Assurance Report:
 # - All locator references validated against Locators.json
@@ -241,4 +239,41 @@ class LoginPage:
             )
             return "Account inactive" in error_elem.text
         except TimeoutException:
+            return False
+
+    # --- TC_LOGIN_05: Empty Password Error Verification ---
+    def tc_login_05_empty_password_error(self, email: str, expected_error: str = "Password is required") -> bool:
+        """
+        TC_LOGIN_05: Attempt login with empty password and verify error message
+        Steps:
+        1. Navigate to login page
+        2. Enter a valid registered email address
+        3. Leave password field empty
+        4. Click on 'Login' button
+        5. Verify error message 'Password is required' is displayed and user remains on login page
+        Args:
+            email (str): Registered email to use for login
+            expected_error (str): The expected error message
+        Returns:
+            bool: True if error message is displayed and user remains on login page, False otherwise
+        """
+        self.go_to()
+        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_input.clear()
+        email_input.send_keys(email)
+        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_input.clear()
+        # Do not enter any password
+        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT))
+        login_btn.click()
+        try:
+            # Check for error message
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+            error_text = error_elem.text.strip()
+            assert expected_error in error_text, f"Expected error '{expected_error}', got '{error_text}'"
+            # Optionally, verify user is still on login page
+            assert self.driver.current_url == self.URL, "User was redirected from login page after empty password attempt!"
+            return True
+        except (TimeoutException, AssertionError) as e:
+            print(f"TC_LOGIN_05 failed: {e}")
             return False
