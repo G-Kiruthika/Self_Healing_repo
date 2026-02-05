@@ -98,3 +98,20 @@ class TestLogin:
             password="CorrectPassword123!"
         )
         assert result, "Locked account login test failed: Error message not shown or user was authenticated."
+
+    def test_TC_LOGIN_010_max_length_username(self, driver):
+        """
+        Test Case TC_LOGIN_010: Login with maximum allowed username length (255 characters)
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://app.example.com/login]
+        2. Enter username with maximum allowed length (255 characters) [Test Data: Username: 'a'*243 + '@example.com']
+        3. Enter valid password [Test Data: Password: ValidPass123!]
+        4. Click on the Login button
+        5. Verify system processes login attempt without field length errors
+        Acceptance Criteria: AC_SCRUM-114_006
+        """
+        login_page = LoginPage(driver)
+        username = "{}@example.com".format('a'*243)
+        password = "ValidPass123!"
+        result = login_page.tc_login_010_login_with_max_length_username(username, password)
+        assert result, "Max username length login test failed: Login attempt not processed as expected."
