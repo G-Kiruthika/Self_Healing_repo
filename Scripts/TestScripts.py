@@ -1,6 +1,7 @@
 import pytest
 from UserRegistrationAPIPage import UserRegistrationAPIPage
 from ProfilePage import ProfilePage
+from CartPage import CartPage
 
 class TestCartAPI:
     def test_TC_CART_001(self):
@@ -104,28 +105,27 @@ class TestCartAPI:
     def test_TC_CART_007(self):
         """
         Test Case TC_CART_007:
-        1. Delete shopping cart for a user. [Test Data: {"cart_id": "<cart_id>"}] [Acceptance Criteria: SCENARIO-007]
-        Expected: Cart and all associated products are deleted.
+        1. Delete shopping cart for a user. [Test Data: {"cart_id": "<cart_id>"}]
+           Expected: Cart and all associated products are deleted.
         2. Query for deleted cart. [Test Data: {"cart_id": "<cart_id>"}]
-        Expected: Cart is not found.
+           Expected: Cart is not found.
         """
-        import requests
-        CART_DELETE_API_URL = "https://example-ecommerce.com/api/cart/delete"
-        CART_QUERY_API_URL = "https://example-ecommerce.com/api/cart/query"
-        cart_id = "test_cart_007"  # Replace with actual cart_id from test setup
-        jwt_token = "dummy_jwt_token"  # Replace with actual JWT token if authentication is needed
-        headers = {"Authorization": f"Bearer {jwt_token}", "Content-Type": "application/json"}
-
-        # Step 1: Delete shopping cart
-        delete_payload = {"cart_id": cart_id}
-        delete_resp = requests.post(CART_DELETE_API_URL, json=delete_payload, headers=headers)
-        assert delete_resp.status_code == 200, f"Cart delete failed: {delete_resp.text}"
-        delete_json = delete_resp.json()
-        assert delete_json.get("success"), "Cart deletion not successful."
-        print(f"Cart {cart_id} deleted successfully.")
-
+        cart_id = "test_cart_007"  # Replace with actual cart_id as needed
+        auth_token = "test_jwt_token"  # Replace with valid JWT token as needed
+        cart_page = CartPage()
+        # Step 1: Delete cart
+        try:
+            delete_response = cart_page.delete_cart(cart_id, auth_token)
+            assert delete_response.get("success"), f"Cart deletion failed: {delete_response}"
+        except Exception as e:
+            pytest.fail(f"Exception during cart deletion: {e}")
         # Step 2: Query for deleted cart
-        query_payload = {"cart_id": cart_id}
-        query_resp = requests.post(CART_QUERY_API_URL, json=query_payload, headers=headers)
-        assert query_resp.status_code == 404 or not query_resp.json().get("cartId"), "Cart was found after deletion, expected not found."
-        print(f"Cart {cart_id} not found after deletion. Test Case TC_CART_007 passed.")
+        try:
+            query_response = cart_page.query_cart(cart_id, auth_token)
+            # Step 3: Validate cart is deleted
+            assert cart_page.validate_cart_deleted(query_response), "Cart was found after deletion, expected not found."
+        except AssertionError as ae:
+            pytest.fail(str(ae))
+        except Exception as e:
+            pytest.fail(f"Exception during cart query: {e}")
+        print("Test Case TC_CART_007 passed: Cart deleted and not found on query.")
