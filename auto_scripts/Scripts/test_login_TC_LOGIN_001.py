@@ -1,10 +1,9 @@
-# Selenium Test Script for TC_LOGIN_001
+# Selenium Automation Test Script for TC_LOGIN_001
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-import time
 from auto_scripts.Pages.LoginPage import LoginPage
 
 @pytest.fixture(scope="module")
@@ -18,36 +17,38 @@ def driver():
     yield driver
     driver.quit()
 
-def test_TC_LOGIN_001(driver):
+def test_TC_LOGIN_001_valid_login(driver):
     """
     Test Case ID: TC_LOGIN_001
-    Description: Verify successful login with valid credentials and session creation.
+    Description: Valid login with registered email and correct password, verify session and dashboard.
     Steps:
-        1. Navigate to the login page
-        2. Enter valid registered email
-        3. Enter correct password
-        4. Click on the Login button
-        5. Verify user session is created
+    1. Navigate to the login page
+    2. Enter valid registered email
+    3. Enter correct password
+    4. Click on the Login button
+    5. Verify user is authenticated and redirected to dashboard
+    6. Verify user session is created and user profile is displayed
     """
+    # Test Data
+    valid_email = "testuser@example.com"
+    valid_password = "ValidPass123!"
+
     login_page = LoginPage(driver)
 
     # Step 1: Navigate to the login page
-    assert login_page.navigate_to_login(), "Login page is not displayed with email and password fields."
+    assert login_page.navigate_to_login(), "Login page should be displayed with email and password fields."
 
     # Step 2: Enter valid registered email
-    email = "testuser@example.com"
-    assert login_page.enter_email(email), f"Email '{email}' was not accepted or not displayed in the field."
+    assert login_page.enter_email(valid_email), f"Email '{valid_email}' should be accepted and displayed in the field."
 
     # Step 3: Enter correct password
-    password = "ValidPass123!"
-    assert login_page.enter_password(password), "Password was not masked or not accepted."
+    assert login_page.enter_password(valid_password), "Password should be masked and accepted."
 
     # Step 4: Click on the Login button
-    assert login_page.click_login(), "User was not redirected to dashboard after login."
+    assert login_page.click_login(), "User should be redirected to dashboard after successful login."
 
-    # Step 5: Verify user session is created (proxy: user profile is displayed)
-    assert login_page.verify_user_session(), "User session token was not generated or user profile is not displayed."
+    # Step 5: Verify dashboard and profile
+    assert login_page.is_dashboard_displayed(), "Dashboard and user profile should be visible after login."
 
-    # Additional: Sanity check - dashboard elements
-    assert driver.find_element(By.CSS_SELECTOR, "h1.dashboard-title").is_displayed(), "Dashboard header not visible."
-    assert driver.find_element(By.CSS_SELECTOR, ".user-profile-name").is_displayed(), "User profile icon not visible."
+    # Step 6: Verify user session is created
+    assert login_page.verify_user_session(), "User session token should be generated and user profile displayed."
