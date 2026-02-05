@@ -46,3 +46,33 @@ class CartPage:
         except Exception as e:
             # Log exception if needed
             return False
+
+    def add_product_with_zero_quantity_and_check_error(self, product_id):
+        """
+        SCENARIO-010
+        Attempts to add a product to the cart with quantity zero.
+        Acceptance Criteria: System returns error; product not added.
+        Args:
+            product_id (str): The product ID to add.
+        Returns:
+            bool: True if error message is displayed (as expected), False otherwise.
+        """
+        try:
+            self.driver.find_element(*self.product_id_field).clear()
+            self.driver.find_element(*self.product_id_field).send_keys(product_id)
+            self.driver.find_element(*self.quantity_field).clear()
+            self.driver.find_element(*self.quantity_field).send_keys("0")
+            self.driver.find_element(*self.add_to_cart_button).click()
+            # Check for error message
+            try:
+                error = self.driver.find_element(*self.error_message)
+                if error.is_displayed():
+                    return True  # Error is displayed as expected
+                else:
+                    return False
+            except NoSuchElementException:
+                # No error message displayed, test fails
+                return False
+        except Exception as e:
+            # Log exception if needed
+            return False
