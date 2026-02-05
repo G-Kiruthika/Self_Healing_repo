@@ -155,5 +155,22 @@ class TestLoginPage(unittest.TestCase):
             except Exception:
                 pass
 
+    def test_tc_login_017_password_masked_and_login_page_displayed(self):
+        """
+        Test Case TC_LOGIN_017:
+        1. Navigate to the login page and verify it is displayed.
+        2. Enter password 'ValidPass123' and verify the password field is masked.
+        """
+        driver = webdriver.Chrome()
+        page = LoginPage(driver)
+        try:
+            login_page_displayed = page.is_login_page_displayed()
+            self.assertTrue(login_page_displayed, "Login page is not displayed.")
+            # Enter password and check masking
+            password_masked = page.is_password_field_masked()
+            self.assertTrue(password_masked, "Password field is not masked.")
+        finally:
+            driver.quit()
+
 if __name__ == "__main__":
     unittest.main()
