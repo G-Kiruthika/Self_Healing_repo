@@ -50,3 +50,19 @@ def test_TC_SCRUM_96_008_product_search_api_v2():
     products = product_search_api.validate_products_match_search(response, search_term)
     # Step 4: Validate each product object contains required fields
     product_search_api.validate_product_schema(products)
+
+# TC-SCRUM-96-009: Search with non-existent product
+from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
+
+def test_TC_SCRUM_96_009_search_nonexistent_product():
+    """
+    Test Case TC-SCRUM-96-009: Search with non-existent product
+    Steps:
+    1. Send GET request to /api/products/search with non-existent search term [Test Data: Query parameter: ?q=nonexistentproduct12345]
+    2. Validate HTTP 200 response and empty product list
+    3. Validate response structure is {"products": []}
+    4. Ensure no error is present in the response for empty results
+    Acceptance Criteria: AC-004
+    """
+    product_search_api = ProductSearchAPIPage()
+    product_search_api.search_nonexistent_product_and_validate("nonexistentproduct12345")
