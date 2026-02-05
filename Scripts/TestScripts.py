@@ -42,5 +42,25 @@ class TestCartFunctionality(unittest.TestCase):
         print(f"Delete response: {delete_response.text}")
         print(f"Cart exists after deletion: {cart_exists}")
 
+    def test_TC_CART_008_invalid_product_id(self):
+        """
+        TC_CART_008: Attempt to add a product to cart with invalid product ID
+        Steps:
+        1. Attempt to add a product to cart with invalid product ID (product_id: '99999', quantity: 1)
+        2. System returns error; product not added.
+        """
+        product_id = '99999'
+        quantity = 1
+        # If authentication is required, provide a valid token or None
+        auth_token = None
+        response = self.cart_page.add_product_to_cart_invalid_id(product_id, quantity, auth_token)
+        # Validate error response
+        try:
+            valid = self.cart_page.validate_invalid_product_error(response)
+        except AssertionError as e:
+            self.fail(f"Error not returned as expected for invalid product ID: {e}")
+        self.assertTrue(valid, "System did not return error for invalid product ID; product may have been added incorrectly.")
+        print(f"API response for invalid product ID: {response.text}")
+
 if __name__ == "__main__":
     unittest.main()
