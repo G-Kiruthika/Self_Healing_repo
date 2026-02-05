@@ -121,3 +121,15 @@ class TestLogin:
         max_length_ok = username_recovery_page.verify_email_field_max_length('64_chars@example.com')
         assert flow_result, "Username recovery flow failed."
         assert max_length_ok, "Email field did not accept max length input."
+
+    def test_tc_login_009_special_character_login(self, driver):
+        """
+        Test Case TC_LOGIN_009:
+        1. Navigate to the login page.
+        2. Enter email and password containing special characters (email: 'user+test@example.com', password: 'P@$$w0rd!').
+        3. Click the 'Login' button.
+        4. Assert login succeeds if credentials are valid.
+        """
+        login_page = LoginPage(driver)
+        result = login_page.tc_login_009_special_character_login()
+        assert result is True, "Login should succeed with valid credentials containing special characters."
