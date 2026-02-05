@@ -79,16 +79,15 @@ class TestLogin:
         """
         Test Case TC_LOGIN_005:
         1. Navigate to the login page.
-        2. Leave email/username field empty and enter valid password ('ValidPassword123').
+        2. Leave email/username field empty and enter valid password ('ValidPass123').
         3. Click the 'Login' button.
         4. Verify error message for required email/username is shown.
         5. Verify login is not successful.
         """
         login_page = LoginPage(driver)
         login_page.open_login_page()
-        result = login_page.execute_tc005_empty_email_valid_password('ValidPassword123')
-        assert result["email_empty"], "Email field should remain empty."
-        assert result["error_message"] == "Email required", "Error message 'Email required' should be displayed."
+        result = login_page.validate_required_field_errors_tc_login_005('ValidPass123')
+        assert result["error_message"] is not None, "Error message for required email/username should be displayed."
         assert result["login_unsuccessful"], "Login should not be successful when email/username is empty."
 
     def test_tc_login_007_max_length_login(self, driver):
@@ -228,3 +227,21 @@ class TestLogin:
         assert result['dashboard_displayed'], "Dashboard should be displayed after login."
         assert result['remember_me_checked'] is False, "'Remember Me' checkbox should NOT be selected."
         assert result['session_persisted'] is False, f"Session should NOT persist after browser restart. Error: {result.get('error_message', '')}"
+
+    # TC005 Automation: Enter empty email and valid password, click login, validate email field remains empty, check for 'Email required' error, and confirm login fails.
+    def test_tc005_empty_email_valid_password(self, driver):
+        """
+        Test Case TC005: Empty Email and Valid Password
+        Steps:
+            1. Navigate to the login page
+            2. Leave email field empty, enter valid password ('ValidPassword123')
+            3. Click the 'Login' button
+            4. Validate email field remains empty
+            5. Check for error message 'Email required'
+            6. Confirm login fails
+        """
+        login_page = LoginPage(driver)
+        result = login_page.execute_tc005_empty_email_valid_password('ValidPassword123')
+        assert result['email_field_empty'], "Email field should remain empty after login attempt."
+        assert result['error_message'] == 'Email required', f"Expected error message 'Email required', got: {result['error_message']}"
+        assert result['login_unsuccessful'], "Login should not be successful when email field is empty."
