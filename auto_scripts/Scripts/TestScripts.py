@@ -4,6 +4,7 @@ from auto_scripts.Pages.ForgotPasswordPage import ForgotPasswordPage
 from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
 from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
 from auto_scripts.Pages.ResetPasswordPage import ResetPasswordPage
+from auto_scripts.Pages.DashboardPage import DashboardPage
 from selenium.webdriver.common.by import By
 import pytest
 
@@ -122,14 +123,18 @@ class TestLogin:
         assert flow_result, "Username recovery flow failed."
         assert max_length_ok, "Email field did not accept max length input."
 
-    def test_tc_login_009_special_character_login(self, driver):
+    def test_tc001_login_and_dashboard_redirect(self, driver):
         """
-        Test Case TC_LOGIN_009:
+        Test Case TC001:
         1. Navigate to the login page.
-        2. Enter email and password containing special characters (email: 'user+test@example.com', password: 'P@$$w0rd!').
+        2. Enter a valid email and password.
         3. Click the 'Login' button.
-        4. Assert login succeeds if credentials are valid.
+        4. Verify dashboard is displayed.
         """
         login_page = LoginPage(driver)
-        result = login_page.tc_login_009_special_character_login()
-        assert result is True, "Login should succeed with valid credentials containing special characters."
+        dashboard_page = DashboardPage(driver)
+        login_page.navigate_to_login()
+        login_page.enter_email('user@example.com')
+        login_page.enter_password('ValidPassword123')
+        login_page.click_login()
+        assert dashboard_page.is_dashboard_displayed(), "Dashboard was not displayed after login."
