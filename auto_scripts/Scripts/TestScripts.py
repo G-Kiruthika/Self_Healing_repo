@@ -118,20 +118,20 @@ class TestLoginPage(unittest.TestCase):
         # The test passes if there are no system-level failures
         self.assertEqual(failure_count, 0, f"TC013 failed: {failure_count} system-level errors/crashes occurred during concurrent logins.")
 
-    def test_tc_login_03_unregistered_email(self):
+    def test_tc_login_03_invalid_login(self):
         """
         Test Case TC_LOGIN_03:
         1. Navigate to the login page.
         2. Enter an unregistered email address ('nouser@example.com').
         3. Enter any password ('AnyPassword1!').
         4. Click on the 'Login' button.
-        5. Assert error message is displayed and user remains on the login page.
+        5. Assert error message 'Invalid email or password' is displayed and user remains on the login page.
         """
         driver = webdriver.Chrome()
         page = LoginPage(driver)
         try:
-            result = page.login_with_unregistered_email('nouser@example.com', 'AnyPassword1!')
-            self.assertTrue(result, "TC_LOGIN_03 failed: Error message not shown or user did not remain on login page.")
+            result = page.tc_login_03_invalid_login('nouser@example.com', 'AnyPassword1!')
+            self.assertTrue(result, "TC_LOGIN_03 failed: Error message not displayed or user not on login page.")
         finally:
             driver.quit()
 
