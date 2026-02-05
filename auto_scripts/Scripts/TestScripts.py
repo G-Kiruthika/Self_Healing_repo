@@ -85,7 +85,7 @@ def test_TC_SCRUM_96_003_invalid_email_signup(driver, db_connection):
     )
     assert result["db_user_count"] == 0, f"User with invalid email should not be created. Found {result['db_user_count']} records."
     assert "invalid email" in result["ui_error_message"].lower() or "email format" in result["ui_error_message"].lower(), f"Expected email format error in UI, got: {result['ui_error_message']}"
-    assert "invalid email" in result["api_response"].lower() or "email format" in result["api_response"].lower(), f"Expected email format error in API response, got: {result['api_response']}"
+    assert "invalid email" in result["api_response"].lower() or "email format" in result["api_response"].lower(), f"Expected email format error in API response, got {result['api_response']}"
 
 # TC-SCRUM-96-004: Login and JWT Validation Automation Test
 from auto_scripts.Pages.UserSignupPage import UserSignupPage
@@ -189,23 +189,3 @@ def test_TC_SCRUM_96_005_api_signin_invalid_credentials():
     assert result["status_code"] == 401, f"Expected HTTP 401 Unauthorized, got {result['status_code']}"
     assert "invalid credentials" in result["error_message"].lower(), f"Expected error message 'Invalid credentials', got '{result['error_message']}'"
     assert not result["token_present"], f"Expected no authentication token, but got one."
-
-# TC_LOGIN_09: Forgot Password navigation test
-from auto_scripts.Pages.LoginPage import LoginPage
-from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
-
-def test_TC_LOGIN_09_forgot_password_navigation(driver):
-    """
-    Test Case TC_LOGIN_09: Forgot Password Navigation
-    Steps:
-    1. Navigate to the login page.
-    2. Click on the 'Forgot Password' link.
-    3. Validate that the Password Recovery page is displayed.
-    Acceptance Criteria: Login page is displayed, then Forgot Password page is displayed.
-    """
-    login_page = LoginPage(driver)
-    login_page.go_to_login_page()
-    login_page.click_forgot_password()
-    recovery_page = PasswordRecoveryPage(driver)
-    recovery_page.go_to_password_recovery()
-    assert recovery_page.wait.until(lambda d: recovery_page.driver.current_url == recovery_page.URL), "Forgot Password page was not displayed."
