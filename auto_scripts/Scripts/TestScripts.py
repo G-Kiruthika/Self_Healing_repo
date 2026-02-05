@@ -92,3 +92,29 @@ def test_TC_SCRUM96_001_user_registration_api():
     assert db_record["account_status"] == "ACTIVE"
     # Step 4: Verify confirmation email
     assert page.verify_confirmation_email(user_data["email"])
+
+# TC-SCRUM-96-010: Cart API Workflow Automation Test
+from PageClasses.CartAPIPageClass import CartAPIPageClass
+
+def test_TC_SCRUM_96_010_cart_api():
+    """
+    Test Case TC-SCRUM-96-010: Cart API Workflow Automation
+    Steps:
+    1. Sign in as a user who has no existing cart [Test Data: {"email": "newcartuser@example.com", "password": "Pass123!"}]
+    2. Send POST request to /api/cart/items to add first product to cart [Test Data: {"productId": "PROD-001", "quantity": 2}]
+    3. Verify cart exists in database with correct item and quantity [Test Data: Query: SELECT * FROM carts WHERE userId={userId}; SELECT * FROM cart_items WHERE cartId={cartId}]
+    4. Send GET request to /api/cart to retrieve cart details [Test Data: Authorization: Bearer {token}]
+    Acceptance Criteria: AC-005
+    """
+    cart_api = CartAPIPageClass()
+    # Step 1: Sign in
+    assert cart_api.sign_in("newcartuser@example.com", "Pass123!"), "Sign-in failed"
+    # Step 2: Add item to cart
+    assert cart_api.add_item_to_cart("PROD-001", 2), "Add item to cart failed"
+    # Step 3: Verify cart in DB
+    assert cart_api.verify_cart_in_db(db_conn), "Cart DB verification failed"
+    # Step 4: Get cart and assert contents
+    cart_details = cart_api.get_cart()
+    assert cart_details is not None, "Cart retrieval failed"
+    assert cart_details['items'][0]['productId'] == "PROD-001", "Product ID mismatch in cart"
+    assert cart_details['items'][0]['quantity'] == 2, "Product quantity mismatch in cart"
