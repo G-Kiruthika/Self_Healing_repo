@@ -57,3 +57,29 @@ def test_login_invalid_credentials_both_invalid(driver):
     invalid_email = "wronguser@example.com"
     invalid_password = "WrongPass@999"
     assert login_page.login_invalid_credentials_both_invalid(invalid_email, invalid_password)
+
+# LGN-01: Verify successful login with valid credentials
+
+def test_lgn_01_valid_login(driver):
+    """
+    LGN-01: Verify successful login with valid credentials
+    Steps:
+    1. Navigate to login page
+    2. Enter valid email and password
+    3. Click Login button
+    4. Validate redirection to Dashboard
+    """
+    login_page = LoginPage(driver)
+    email = "testuser@example.com"
+    password = "ValidPass123!"
+    # Step 1: Navigate to login page
+    assert login_page.navigate_to_login(), "Failed to navigate to login page."
+    # Step 2: Check login fields are visible
+    assert login_page.is_login_page_displayed(), "Login fields are not visible."
+    # Step 3: Enter valid credentials
+    assert login_page.enter_email(email), "Email input failed."
+    assert login_page.enter_password(password), "Password input failed."
+    # Step 4: Click Login button
+    assert login_page.click_login(), "Login button click or dashboard redirection failed."
+    # Step 5: Validate dashboard is displayed
+    assert login_page.is_dashboard_displayed(), "Dashboard is not displayed after login."
