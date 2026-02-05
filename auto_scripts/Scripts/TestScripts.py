@@ -103,3 +103,17 @@ class TestLogin:
         result = login_page.test_max_length_login_tc_login_007('64_chars@example.com', 'A'*128)
         assert result['fields_accept_max_input'], "Fields should accept maximum input length."
         assert result['login_success'], "Login should succeed with valid max-length credentials."
+
+    def test_tc_login_008_min_length_login(self, driver):
+        """
+        Test Case TC_LOGIN_008:
+        1. Navigate to the login page.
+        2. Enter email and password with minimum allowed length (email: 'a@b.co', password: '123456').
+        3. Click the 'Login' button.
+        4. Verify that fields accept minimum input and login succeeds if credentials are valid.
+        """
+        login_page = LoginPage(driver)
+        login_page.open_login_page()
+        result = login_page.validate_min_length_login_tc_login_008('a@b.co', '123456')
+        assert result['fields_accepted'], "Fields should accept minimum input length."
+        assert result['login_successful'], "Login should succeed with valid min-length credentials."
