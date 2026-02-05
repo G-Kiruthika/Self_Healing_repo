@@ -32,3 +32,19 @@ class TestLogin:
         assert error_prompt == "Username is required. Please enter your username.", f"Unexpected error prompt: {error_prompt}"
         login_page.highlight_username_field()
         assert login_page.is_username_field_highlighted(), "Username field is not highlighted after empty username submission."
+
+    def test_boundary_and_negative_login_tc_scrum_115_005(self, driver):
+        """
+        TC-SCRUM-115-005: Boundary and negative test for login with maximum username length and empty password
+        Steps:
+        1. Navigate to the e-commerce website login page
+        2. Enter username with maximum allowed length (boundary test)
+        3. Leave the password field empty
+        4. Click on the Login button
+        5. Verify error message: 'Password is required. Please enter your password.'
+        6. Verify password field is highlighted in red with error icon and focus
+        """
+        login_page = LoginPage(driver)
+        boundary_username = "user_with_very_long_email_address_testing_boundary_conditions@example.com"
+        result = login_page.tc_scrum_115_005_boundary_and_negative_login(boundary_username)
+        assert result is True, "Boundary and negative login test for TC-SCRUM-115-005 failed."
