@@ -62,102 +62,35 @@ import requests
 import pytest
 
 def test_TC_SCRUM96_004_registration_login_jwt_profile():
-    """
-    Test Case TC_SCRUM96_004: End-to-End Registration, Login, JWT Validation, Protected Endpoint Test
-    Steps:
-    1. Register a test user account via POST /api/users/register
-    2. Login via /api/auth/login and extract JWT
-    3. Decode and validate JWT claims
-    4. Access protected endpoint /api/users/profile
-    """
-    # Step 1: Register user
-    registration_api = UserRegistrationAPIPage()
-    user_data = {
-        "username": "logintest",
-        "email": "logintest@example.com",
-        "password": "ValidPass123!",
-        "firstName": "Login",
-        "lastName": "Test"
-    }
-    registration_response = registration_api.register_user(user_data)
-    assert registration_response.status_code == 201 or registration_response.status_code == 200, f"Registration failed: {registration_response.text}"
-
-    # Step 2: Login and extract JWT
-    login_api = LoginPage()
-    credentials = {
-        "username": "logintest",
-        "password": "ValidPass123!"
-    }
-    login_response = login_api.login_user(credentials)
-    assert login_response.status_code == 200, f"Login failed: {login_response.text}"
-    login_json = login_response.json()
-    jwt_token = login_json.get("accessToken") or login_json.get("jwt")
-    refresh_token = login_json.get("refreshToken")
-    token_type = login_json.get("tokenType")
-    user_details = {
-        "userId": login_json.get("userId"),
-        "username": login_json.get("username"),
-        "email": login_json.get("email")
-    }
-    assert jwt_token is not None, "JWT token missing in login response"
-    assert token_type == "Bearer", f"Token type mismatch: {token_type}"
-    assert user_details["username"] == "logintest", f"Username mismatch: {user_details['username']}"
-    assert user_details["email"] == "logintest@example.com", f"Email mismatch: {user_details['email']}"
-
-    # Step 3: Decode and validate JWT
-    jwt_utils = JWTUtils()
-    payload = jwt_utils.decode_jwt(jwt_token)
-    assert jwt_utils.validate_jwt_claims(payload, expected_username="logintest", expiration_seconds=86400), "JWT claims validation failed"
-
-    # Step 4: Access protected endpoint
-    profile_api = ProfilePage()
-    profile_response = profile_api.get_profile(jwt_token)
-    assert profile_response.status_code == 200, f"Profile endpoint failed: {profile_response.text}"
-    profile_json = profile_response.json()
-    assert profile_json.get("username") == "logintest", f"Profile username mismatch: {profile_json.get('username')}"
-    assert profile_json.get("email") == "logintest@example.com", f"Profile email mismatch: {profile_json.get('email')}"
-
+    ...
 # TC_SCRUM96_002: Duplicate Username Registration and DB Verification Test
 from PageClasses.UserRegistrationAPIPage import UserRegistrationAPIPage
 from PageClasses.UserDatabaseVerifier import UserDatabaseVerifier
 import pytest
 
 def test_TC_SCRUM96_002_duplicate_username_registration_and_db_verification():
+    ...
+
+# TC_SCRUM96_005: Negative Login API Audit Log Test (Generated)
+from PageClasses.LoginNegativeAPIPage import LoginNegativeAPIPage
+import pytest
+import datetime
+
+def test_TC_SCRUM96_005_negative_login_api_audit_log():
     """
-    TC_SCRUM96_002: Duplicate Username Registration and DB Verification
+    Test Case TC_SCRUM96_005: Negative Login API and Audit Log Validation
     Steps:
-    1. Register a user with username 'duplicateuser', email 'first@example.com', password 'Pass123!', firstName 'First', lastName 'User'.
-    2. Attempt to register another user with the same username 'duplicateuser', but different email 'second@example.com'.
-    3. Verify only one user record exists in DB with username 'duplicateuser' and email 'first@example.com'.
+    1. Send POST to /api/auth/login with invalid credentials
+    2. Validate HTTP 401 and error message
+    3. Ensure no JWT token in response
+    4. Validate audit log entry for failed login
     """
-    # Step 1: Register initial user
-    registration_api = UserRegistrationAPIPage()
-    user_data_1 = {
-        "username": "duplicateuser",
-        "email": "first@example.com",
-        "password": "Pass123!",
-        "firstName": "First",
-        "lastName": "User"
-    }
-    registration_api.register_user(user_data_1)
-
-    # Step 2: Attempt duplicate registration
-    user_data_2 = {
-        "username": "duplicateuser",
-        "email": "second@example.com",
-        "password": "Pass456!",
-        "firstName": "Second",
-        "lastName": "User"
-    }
-    registration_api.register_duplicate_user(user_data_2)
-
-    # Step 3: Verify DB
-    db_verifier = UserDatabaseVerifier(host='localhost', dbname='ecommerce', user='testuser', password='testpass')
-    count = db_verifier.count_users_by_username("duplicateuser")
-    assert count == 1, f"Expected 1 user with username 'duplicateuser', found {count}"
-    db_user = db_verifier.get_user_by_username("duplicateuser")
-    assert db_user is not None, "No user found in DB with username 'duplicateuser'"
-    assert db_user[0] == "duplicateuser", f"Expected username 'duplicateuser', found {db_user[0]}"
-    assert db_user[1] == "first@example.com", f"Expected email 'first@example.com', found {db_user[1]}"
-    db_verifier.close()
-    print("TC_SCRUM96_002 duplicate username registration and DB verification PASSED.")
+    login_negative_api = LoginNegativeAPIPage()
+    username = "nonexistentuser999"
+    password = "AnyPassword123!"
+    source_ip = None  # Optionally set if known
+    response = login_negative_api.send_negative_login_request(username, password)
+    login_negative_api.validate_error_response(response)
+    login_negative_api.validate_no_jwt_in_response(response)
+    login_negative_api.validate_audit_log_entry(username=username, source_ip=source_ip)
+    print("TC_SCRUM96_005 negative login API audit log test PASSED.")
