@@ -136,37 +136,33 @@ class TestLoginFunctionality:
         self.username_recovery_page.go_to()
         assert self.username_recovery_page.is_loaded(), "Username recovery page not loaded or instructions not visible."
 
-    def test_tc_login_001_full_flow(self):
+    def test_tc_login_008_extremely_long_email(self):
         """
-        TC-LOGIN-001: Full Login Flow Validation
+        TC-LOGIN-008: Attempt login with an extremely long email address (255+ chars)
         Steps:
-        1. Navigate to the e-commerce website login page [Test Data: URL: https://ecommerce.example.com/login]
-        2. Enter valid registered email address in the email field [Test Data: Email: testuser@example.com]
-        3. Enter correct password in the password field [Test Data: Password: ValidPass123!]
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter an extremely long email address (255+ characters)
+        3. Enter valid password [Test Data: Password: ValidPass123!]
         4. Click on the Login button
-        5. Verify user is authenticated and redirected to dashboard/home page
-        6. Verify user session is established (username in header, session cookie set)
-        Acceptance Criteria: TS-001
+        5. Validate that either a truncation or error message is shown and login fails gracefully
+        Acceptance Criteria: TS-006
         """
-        url = "https://ecommerce.example.com/login"
-        email = "testuser@example.com"
-        password = "ValidPass123!"
+        url = 'https://ecommerce.example.com/login'
+        long_email = (
+            'verylongemailaddressverylongemailaddressverylongemailaddressverylongemailaddress'
+            'verylongemailaddressverylongemailaddressverylongemailaddressverylongemailaddress'
+            'verylongemailaddressverylongemailaddressverylongemailaddressverylongemailaddress@example.com'
+        )
+        password = 'ValidPass123!'
         # Step 1: Navigate to login page
-        login_page_displayed = self.login_page.navigate_to_login(url)
-        assert login_page_displayed, "Login page not displayed."
-        # Step 2: Enter email
-        email_accepted = self.login_page.enter_email(email)
-        assert email_accepted, "Email not accepted or not displayed correctly."
-        # Step 3: Enter password
-        password_accepted = self.login_page.enter_password(password)
-        assert password_accepted, "Password not accepted or not masked."
-        # Step 4: Click login
-        login_clicked = self.login_page.click_login()
-        assert login_clicked, "Login button not clickable."
-        # Step 5: Authentication and redirection
-        authenticated = self.login_page.is_authenticated()
-        assert authenticated, "User not authenticated or not redirected to dashboard."
-        # Step 6: Session verification
-        session_established = self.login_page.is_session_established()
-        assert session_established, "Session not established or username not displayed in header."
-        return True
+        self.login_page.navigate()
+        # Step 2: Enter extremely long email address
+        self.login_page.enter_email(long_email)
+        # Step 3: Enter valid password
+        self.login_page.enter_password(password)
+        # Step 4: Click on the Login button
+        self.login_page.click_login()
+        # Step 5: Validate error or truncation message and login fails gracefully
+        error_message = self.login_page.get_error_message()
+        assert error_message is not None and ("email" in error_message.lower() or "invalid" in error_message.lower() or "too long" in error_message.lower() or "maximum length" in error_message.lower()), \
+            f"TC-LOGIN-008 failed: Expected error or truncation for long email, got: {error_message}"
