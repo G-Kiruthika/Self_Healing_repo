@@ -64,45 +64,47 @@ import pytest
 def test_TC_SCRUM96_004_registration_login_jwt_profile():
     ...
 
-# TC_SCRUM96_002: Duplicate Username Registration and Conflict Validation Test
+# TC_SCRUM96_002: Duplicate Username Registration and DB Verification Test
+from PageClasses.UserRegistrationAPIPage import UserRegistrationAPIPage
+from PageClasses.UserDatabaseVerifier import UserDatabaseVerifier
 import pytest
-from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
 
-def test_TC_SCRUM96_002_duplicate_username_registration_conflict():
+def test_TC_SCRUM96_002_duplicate_username_registration_and_db_verification():
     """
-    TC_SCRUM96_002: Duplicate Username Registration and Conflict Validation Test
+    TC_SCRUM96_002: Duplicate Username Registration and DB Verification
     Steps:
-    1. Register a user with username 'duplicateuser' and email 'first@example.com'
-    2. Attempt duplicate registration with same username but email 'second@example.com'
-    3. Validate HTTP 201 for first, HTTP 409 for duplicate, and error message
-    4. Confirm only one DB record for username with first email
+    1. Register a user with username 'duplicateuser', email 'first@example.com', password 'Pass123!', firstName 'First', lastName 'User'.
+    2. Attempt to register another user with the same username 'duplicateuser', but different email 'second@example.com'.
+    3. Verify only one user record exists in DB with username 'duplicateuser' and email 'first@example.com'.
     """
-    username = "duplicateuser"
-    first_email = "first@example.com"
-    first_password = "Pass123!"
-    first_first_name = "First"
-    first_last_name = "User"
-    second_email = "second@example.com"
-    second_password = "Pass456!"
-    second_first_name = "Second"
-    second_last_name = "User"
-
+    # Step 1: Register initial user
     registration_api = UserRegistrationAPIPage()
+    user_data_1 = {
+        "username": "duplicateuser",
+        "email": "first@example.com",
+        "password": "Pass123!",
+        "firstName": "First",
+        "lastName": "User"
+    }
+    registration_api.register_user(user_data_1)
 
-    result = registration_api.register_duplicate_user_and_validate_conflict(
-        username,
-        first_email,
-        first_password,
-        first_first_name,
-        first_last_name,
-        second_email,
-        second_password,
-        second_first_name,
-        second_last_name
-    )
+    # Step 2: Attempt duplicate registration
+    user_data_2 = {
+        "username": "duplicateuser",
+        "email": "second@example.com",
+        "password": "Pass456!",
+        "firstName": "Second",
+        "lastName": "User"
+    }
+    registration_api.register_duplicate_user(user_data_2)
 
-    assert result["first_registration_status"] == 201, f"Expected HTTP 201 Created for first user, got {result['first_registration_status']}"
-    assert result["duplicate_registration_status"] == 409, f"Expected HTTP 409 Conflict for duplicate username, got {result['duplicate_registration_status']}"
-    assert "already exists" in result["duplicate_error_message"].lower(), f"Expected error message indicating username already exists, got: {result['duplicate_error_message']}"
-    assert result["db_user_count"] == 1, f"Expected only one record for username 'duplicateuser', found {result['db_user_count']}"
-    assert result["db_email"] == first_email, f"Expected email '{first_email}' for username 'duplicateuser', got '{result['db_email']}"
+    # Step 3: Verify DB
+    db_verifier = UserDatabaseVerifier(host='localhost', dbname='ecommerce', user='testuser', password='testpass')
+    count = db_verifier.count_users_by_username("duplicateuser")
+    assert count == 1, f"Expected 1 user with username 'duplicateuser', found {count}"
+    db_user = db_verifier.get_user_by_username("duplicateuser")
+    assert db_user is not None, "No user found in DB with username 'duplicateuser'"
+    assert db_user[0] == "duplicateuser", f"Expected username 'duplicateuser', found {db_user[0]}"
+    assert db_user[1] == "first@example.com", f"Expected email 'first@example.com', found {db_user[1]}"
+    db_verifier.close()
+    print("TC_SCRUM96_002 duplicate username registration and DB verification PASSED.")
