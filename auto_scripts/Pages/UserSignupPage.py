@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import requests
 
 class UserSignupPage:
     """
@@ -112,3 +113,37 @@ class UserSignupPage:
         cursor.execute(query)
         count = cursor.fetchone()[0]
         return count
+
+    def signup_with_invalid_email_and_validate(self, invalid_email, username, password, db_connection):
+        """
+        Implements TC-SCRUM-96-003:
+        1. Send POST request to /api/users/signup with invalid email
+        2. Verify error message indicates email format issue
+        3. Verify no user record is created in the database
+        """
+        api_url = "https://example-ecommerce.com/api/users/signup"
+        payload = {
+            "username": username,
+            "email": invalid_email,
+            "password": password
+        }
+        response = requests.post(api_url, json=payload)
+        assert response.status_code == 400, f"Expected 400 Bad Request, got {response.status_code}"
+        assert "email format" in response.text.lower() or "invalid email" in response.text.lower(), f"Expected email format error, got: {response.text}"
+        # Optionally, use Selenium to verify the error message on the UI
+        self.go_to_signup_page()
+        self.enter_username(username)
+        self.enter_email(invalid_email)
+        self.enter_password(password)
+        self.click_signup()
+        error_msg = self.get_error_message()
+        assert error_msg is not None, "No error message displayed for invalid email."
+        assert "email format" in error_msg.lower() or "invalid email" in error_msg.lower(), f"Expected email format error in UI, got: {error_msg}"
+        # DB validation
+        user_count = UserSignupPage.verify_user_count_in_db(db_connection, invalid_email)
+        assert user_count == 0, f"User with invalid email '{invalid_email}' should not be created. Found {user_count} records."
+        return {
+            "api_response": response.text,
+            "ui_error_message": error_msg,
+            "db_user_count": user_count
+        }
