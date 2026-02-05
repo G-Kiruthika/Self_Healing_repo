@@ -60,7 +60,7 @@ class TestLogin:
         assert result["login_unsuccessful"], "Login should not be successful when required fields are empty."
         assert (result["error_message"] is not None or result["validation_error"] is not None), "Error or validation message should be shown for empty fields."
 
-    def test_tc_login_006_required_password_validation(self, driver):
+    def test_tc_login_006_required_password_error(self, driver):
         """
         Test Case TC_LOGIN_006:
         1. Navigate to the login page.
@@ -71,7 +71,7 @@ class TestLogin:
         """
         login_page = LoginPage(driver)
         login_page.open_login_page()
-        result = login_page.validate_required_password_error_tc_login_006()
+        result = login_page.tc_login_006_required_password_error()
         assert result["password_error"] is not None, "Password required error should be displayed."
         assert result["login_unsuccessful"], "Login should not be successful when password is empty."
 
