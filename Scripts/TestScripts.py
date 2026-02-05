@@ -8,6 +8,8 @@ from AuthPage import AuthPage
 from CartApiPage import CartApiPage
 from UserRegistrationAPIPage import UserRegistrationAPIPage
 from ProductSearchPage import ProductSearchPage
+from Pages.ProductPage import ProductPage
+from Pages.CartPage import CartPage
 
 class TestCartFunctionality(unittest.TestCase):
     def setUp(self):
@@ -129,6 +131,34 @@ class TestCartFunctionality(unittest.TestCase):
         except Exception as e:
             self.fail(f"API search or validation failed: {e}")
         self.assertTrue(api_valid, "API search results validation failed.")
+
+    def test_TC_CART_005_add_product_exceed_stock(self):
+        """
+        Test Case: TC_CART_005
+        Steps:
+        1. Attempt to add a product to cart with quantity greater than available stock.
+        2. Verify error/warning message appears and product is not added.
+        """
+        product_id = "12345"
+        quantity = 101
+        # Step 1: Search for product
+        product_page = ProductPage(self.driver)
+        product_page.search_product(product_id)
+        product_page.select_product()
+        product_page.set_quantity(quantity)
+        product_page.add_to_cart()
+
+        # Step 2: Open cart and verify error/warning
+        cart_page = CartPage(self.driver)
+        cart_page.open_cart()
+        error_message = cart_page.get_error_message()
+        stock_warning = cart_page.get_stock_warning()
+        cart_quantity = cart_page.get_cart_quantity()
+
+        # Assert error/warning present
+        self.assertTrue(error_message or stock_warning, "No error or stock warning message displayed when exceeding stock.")
+        # Assert product not added (cart quantity should not be 101)
+        self.assertNotEqual(cart_quantity, str(quantity), f"Product was added to cart with quantity {cart_quantity} despite exceeding stock.")
 
 if __name__ == "__main__":
     unittest.main()
