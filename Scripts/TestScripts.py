@@ -48,7 +48,7 @@ class TestCartFunctionality(unittest.TestCase):
         product_page.search_product("111")
         product_page.select_product("111")
         product_page.set_quantity(2)
-        product_page.add_to_cart()
+        product_page.add_to_cart("111")
 
         # Step 3: Open cart and verify contents
         cart_page = CartPage(self.driver)
@@ -85,6 +85,26 @@ class TestCartFunctionality(unittest.TestCase):
         cart_page.open_cart()
         cart_page.delete_cart()
         self.assertTrue(cart_page.is_cart_deleted(), "Cart was not deleted or still found after deletion.")
+
+    def test_TC_CART_008_add_invalid_product_to_cart(self):
+        """
+        Test Case: TC_CART_008
+        Steps:
+        1. Attempt to add a product to cart with invalid product ID. [Test Data: {"product_id": "99999", "quantity": 1}]
+        Expected:
+        1. System returns error; product not added.
+        """
+        product_page = ProductPage(self.driver)
+        product_page.search_product("99999")
+        selected = product_page.select_product("99999")
+        # Even if not found, try setting quantity and adding to cart to simulate user action
+        product_page.set_quantity(1)
+        added = product_page.add_to_cart("99999")
+        error_msg = product_page.get_error_message()
+        self.assertFalse(selected, "Product should not be selectable with invalid ID.")
+        self.assertFalse(added, "Add to cart should fail for invalid product ID.")
+        self.assertIsNotNone(error_msg, "Error message should be displayed for invalid product.")
+        self.assertIn("error", error_msg.lower(), "Error message should indicate an error.")
 
 if __name__ == "__main__":
     unittest.main()
