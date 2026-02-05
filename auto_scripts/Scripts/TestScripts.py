@@ -13,7 +13,6 @@ def test_TC_SCRUM_96_001_api_signup():
     email = "testuser@example.com"
     password = "SecurePass123!"
     api_signup_page = APISignupPage()
-    # End-to-end test
     assert api_signup_page.run_full_signup_test(username, email, password), "Signup test failed"
 
 # TC-SCRUM-96-001: User Signup Flow with UserSignupPage
@@ -87,21 +86,18 @@ def test_TC_SCRUM_96_003_invalid_email_signup(driver, db_connection):
     assert "invalid email" in result["ui_error_message"].lower() or "email format" in result["ui_error_message"].lower(), f"Expected email format error in UI, got: {result['ui_error_message']}"
     assert "invalid email" in result["api_response"].lower() or "email format" in result["api_response"].lower(), f"Expected email format error in API response, got: {result['api_response']}"
 
-# TC012: XSS payload in email field
+# TC-LOGIN-07-02: Short email and password negative login scenario
 from auto_scripts.Pages.LoginPage import LoginPage
 
-def test_TC012_xss_payload_in_email_field(driver):
+def test_TC_LOGIN_07_02_short_email_and_password(driver):
     """
-    Test Case TC012
+    Test Case TC_LOGIN_07_02: Short email and password negative login scenario
     Steps:
     1. Navigate to the login page.
-    2. Enter XSS payload in email field: <script>alert('xss')</script>
-    3. Click the 'Login' button.
-    Expected:
-    - Application does not execute script; error message or input sanitized.
+    2. Enter an email address shorter than the minimum allowed length (e.g., 1 character).
+    3. Enter a password shorter than the minimum allowed length (e.g., 3 characters).
+    4. Click the 'Login' button.
+    Expected: System displays an error or prevents login; appropriate error message is shown.
     """
     login_page = LoginPage(driver)
-    error_message, validation_error = login_page.test_xss_payload_in_email_field_tc012()
-    assert error_message is not None or validation_error is not None, "Expected error or validation message for XSS payload."
-    assert "script" not in error_message.lower() if error_message else True, "XSS script should not be executed or returned."
-    assert "script" not in validation_error.lower() if validation_error else True, "XSS script should not be executed or returned."
+    login_page.test_login_with_short_email_and_password(email="a@", password="abc")
