@@ -1,5 +1,5 @@
 # UserSignupPage.py
-# PageClass for TC-SCRUM-96-001: User Signup Flow
+# PageClass for TC-SCRUM-96-002: User Signup & Duplicate Email
 
 import requests
 from jsonschema import validate, ValidationError
@@ -12,6 +12,7 @@ class UserSignupPage:
     Covers:
       - POST /api/users/signup
       - Response validation
+      - Duplicate email check
       - Simulated DB check
     """
     SIGNUP_URL = "http://localhost:8000/api/users/signup"  # Adjust base URL as needed
@@ -59,6 +60,20 @@ class UserSignupPage:
             self.logger.error(f"Signup failed with status {response.status_code}: {response.text}")
         return response
 
+    def signup_user_expect_conflict(self, username, email, password):
+        """
+        Attempts to signup with an email that already exists. Expects HTTP 409 and error message.
+        """
+        payload = {
+            "username": username,
+            "email": email,
+            "password": password
+        }
+        self.logger.info(f"Attempting signup with duplicate email: {email}")
+        response = requests.post(self.SIGNUP_URL, json=payload)
+        self.last_response = response
+        return response
+
     def validate_response_status(self):
         """
         Validates that the last response has HTTP 201 status code.
@@ -67,6 +82,22 @@ class UserSignupPage:
             raise AssertionError("No response found. Did you run signup_user()?")
         assert self.last_response.status_code == 201, f"Expected 201, got {self.last_response.status_code}"
         self.logger.info("Response status 201 validated.")
+
+    def validate_conflict_response(self):
+        """
+        Validates that the last response has HTTP 409 status and correct error message for duplicate email.
+        """
+        if not self.last_response:
+            raise AssertionError("No response found. Did you run signup_user_expect_conflict()?")
+        assert self.last_response.status_code == 409, f"Expected 409, got {self.last_response.status_code}"
+        try:
+            resp_json = self.last_response.json()
+            assert 'error' in resp_json, "Error message not found in response"
+            assert resp_json['error'] == "Email already exists", f"Unexpected error message: {resp_json['error']}"
+        except Exception as e:
+            self.logger.error(f"Conflict response validation failed: {e}")
+            raise AssertionError(f"Conflict response invalid: {e}")
+        self.logger.info("Duplicate email conflict response validated.")
 
     def validate_response_schema(self):
         """
@@ -93,6 +124,14 @@ class UserSignupPage:
         assert user_record["password_hash"] == expected_hash, "Password hash mismatch"
         self.logger.info("Simulated DB check passed for user.")
 
+    def verify_single_db_record(self, email):
+        """
+        Verifies only one user record exists in simulated DB for the given email.
+        """
+        count = 1 if email in self._simulated_db else 0
+        assert count == 1, f"Expected 1 record for {email}, found {count}"
+        self.logger.info(f"Verified only one record exists for email: {email}")
+
     def run_signup_flow(self, username, email, password):
         """
         End-to-end signup flow for test automation.
@@ -103,51 +142,31 @@ class UserSignupPage:
         self.verify_user_in_db(email, username, password)
         self.logger.info("Signup flow completed successfully.")
 
-    # --- TC-SCRUM-96-002: Duplicate Email User Signup Test ---
-    def tc_scrum_96_002_duplicate_email_signup(self):
+    def run_signup_duplicate_flow(self, user1, user2):
         """
-        Implements TC-SCRUM-96-002:
-        1. Create user with email testuser@example.com
-        2. Attempt to create another user with same email, expect HTTP 409 and error message
-        3. Verify only one user record exists in DB
-        Returns: dict with results for each step
+        End-to-end flow for TC-SCRUM-96-002:
+          - Create user1
+          - Attempt to create user2 with same email
+          - Validate duplicate email rejection
+          - Verify only one DB record exists
+        user1: dict with keys username, email, password
+        user2: dict with keys username, email, password
         """
-        results = {}
-        # Step 1: Create initial user
-        username1 = "user1"
-        email = "testuser@example.com"
-        password1 = "Pass123!"
-        response1 = self.signup_user(username1, email, password1)
-        results['step1_status'] = response1.status_code
-        results['step1_success'] = response1.status_code == 201
-        results['step1_response'] = response1.json() if response1.status_code == 201 else response1.text
-
-        # Step 2: Attempt duplicate user creation
-        username2 = "user2"
-        password2 = "Pass456!"
-        payload2 = {
-            "username": username2,
-            "email": email,
-            "password": password2
-        }
-        response2 = requests.post(self.SIGNUP_URL, json=payload2)
-        results['step2_status'] = response2.status_code
-        results['step2_success'] = response2.status_code == 409
-        results['step2_error_message'] = None
-        if response2.status_code == 409:
-            try:
-                error_json = response2.json()
-                results['step2_error_message'] = error_json.get('message', error_json)
-            except Exception:
-                results['step2_error_message'] = response2.text
-        # Step 3: Verify only one record exists in simulated DB
-        count = sum(1 for user in self._simulated_db.values() if user['email'] == email)
-        results['step3_db_count'] = count
-        results['step3_success'] = count == 1
-        return results
+        # Step 1: Create user1
+        self.signup_user(user1['username'], user1['email'], user1['password'])
+        self.validate_response_status()
+        self.validate_response_schema()
+        self.verify_user_in_db(user1['email'], user1['username'], user1['password'])
+        # Step 2: Attempt duplicate signup
+        self.signup_user_expect_conflict(user2['username'], user2['email'], user2['password'])
+        self.validate_conflict_response()
+        # Step 3: Verify only one record exists
+        self.verify_single_db_record(user1['email'])
+        self.logger.info("Duplicate signup flow completed successfully.")
 
 # Example usage for test case TC-SCRUM-96-002
 if __name__ == "__main__":
     page = UserSignupPage()
-    results = page.tc_scrum_96_002_duplicate_email_signup()
-    print(results)
+    user1 = {"username": "user1", "email": "testuser@example.com", "password": "Pass123!"}
+    user2 = {"username": "user2", "email": "testuser@example.com", "password": "Pass456!"}
+    page.run_signup_duplicate_flow(user1, user2)
