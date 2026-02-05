@@ -129,3 +129,41 @@ def test_TC_SCRUM96_002_duplicate_user_registration_api():
     db_record = page.verify_single_user_record_in_db(username, email1)
     assert db_record["count"] == 1
     assert db_record["email"] == email1
+
+# TC_SCRUM96_003: Duplicate Email Registration API Automation Test
+from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+
+def test_TC_SCRUM96_003_duplicate_email_registration_api():
+    """
+    Test Case TC_SCRUM96_003: Duplicate Email Registration API Automation
+    Steps:
+    1. Register user with username 'firstuser' and email 'duplicate@example.com'. Expect HTTP 201 Created.
+    2. Attempt to register another user with username 'seconduser' and same email 'duplicate@example.com'. Expect HTTP 409 Conflict and error message.
+    3. Verify only one user record exists in database with email 'duplicate@example.com'.
+    """
+    db_config = {"host": "localhost", "user": "dbuser", "password": "dbpass", "database": "testdb"}
+    page = UserRegistrationAPIPage(db_config=db_config)
+    # Step 1: Register first user
+    first_resp = page.register_user_api(
+        username="firstuser",
+        email="duplicate@example.com",
+        password="Pass123!",
+        first_name="First",
+        last_name="User"
+    )
+    assert first_resp["username"] == "firstuser"
+    assert first_resp["email"] == "duplicate@example.com"
+    assert "userId" in first_resp
+    # Step 2: Attempt to register second user with same email
+    second_resp = page.register_duplicate_user_api(
+        username="seconduser",
+        email="duplicate@example.com",
+        password="Pass456!",
+        first_name="Second",
+        last_name="User"
+    )
+    assert second_resp["error"]
+    assert "already registered" in second_resp["error"].lower()
+    # Step 3: Verify only one user record exists in DB for the email
+    email_count = page.verify_email_count_in_db("duplicate@example.com")
+    assert email_count == 1
