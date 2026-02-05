@@ -222,3 +222,34 @@ class LoginPage:
         self.driver.find_element(*self.LOGIN_BUTTON).click()
         return self.is_error_message_displayed("Invalid email or username")
     # --- End of TC_SCRUM74_002 steps ---
+
+    # --- Start of TC_SCRUM74_003 steps ---
+    def enter_nonexistent_email(self, email: str):
+        """
+        Step 2: Enter non-existent email in the email field.
+        Acceptance Criteria: Email is accepted in the field.
+        """
+        email_field = self.driver.find_element(*self.EMAIL_INPUT)
+        email_field.clear()
+        email_field.send_keys(email)
+        return email_field.get_attribute("value") == email
+
+    def enter_any_password(self, password: str):
+        """
+        Step 3: Enter any password in the password field.
+        Acceptance Criteria: Password is masked.
+        """
+        password_field = self.driver.find_element(*self.PASSWORD_INPUT)
+        password_field.clear()
+        password_field.send_keys(password)
+        is_masked = password_field.get_attribute("type") == "password"
+        return is_masked and password_field.get_attribute("value") == password
+
+    def click_login_and_verify_invalid_credentials(self):
+        """
+        Step 4: Click on the Login button and verify error message for non-existent email.
+        Acceptance Criteria: Login fails with error message 'Invalid credentials'.
+        """
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
+        return self.is_error_message_displayed("Invalid credentials")
+    # --- End of TC_SCRUM74_003 steps ---
