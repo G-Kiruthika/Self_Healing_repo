@@ -2,6 +2,7 @@ import unittest
 from selenium import webdriver
 from Pages.SignUpPage import SignUpPage
 from Pages.ProductSearchPage import ProductSearchPage
+from Pages.CartPage import CartPage
 
 class TestSignUpDuplicateEmail(unittest.TestCase):
     def setUp(self):
@@ -39,6 +40,22 @@ class TestProductSearch(unittest.TestCase):
         # Perform product search via UI
         product_names = self.product_search_page.search_product_ui(keyword)
         self.assertTrue(len(product_names) > 0, "No products displayed in UI for keyword 'laptop'.")
+
+class TestCartCreationUnauthorized(unittest.TestCase):
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.driver.get('http://your-app-url/cart')
+        self.cart_page = CartPage(self.driver)
+
+    def tearDown(self):
+        self.driver.quit()
+
+    def test_cart_creation_unauthenticated(self):
+        """
+        TC_CART_004: Attempt to create a shopping cart without authentication. System should deny request with unauthorized access error.
+        """
+        unauthorized_error_displayed = self.cart_page.attempt_create_cart()
+        self.assertTrue(unauthorized_error_displayed, "Unauthorized access error should be displayed when attempting to create a cart without authentication.")
 
 if __name__ == '__main__':
     unittest.main()
