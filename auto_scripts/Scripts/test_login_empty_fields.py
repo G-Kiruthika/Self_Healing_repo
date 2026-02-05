@@ -1,62 +1,48 @@
-# test_login_empty_fields.py
 """
-Automated Selenium test for TC_LOGIN_005: Validation of empty email and password fields during login.
-
-Test Case Reference: TC_LOGIN_005
-Test Steps:
-1. Navigate to the login page
-2. Leave email field empty
-3. Leave password field empty
-4. Click on the Login button
-5. Verify validation errors: 'Email is required' and 'Password is required'
-6. Ensure login is prevented and user remains on login page
-
+Selenium Test Script for TC_SCRUM74_007: Login with both fields empty
+Covers acceptance criteria AC_006
 Author: Automation Agent
 """
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import TimeoutException
 from auto_scripts.Pages.LoginPage import LoginPage
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope='module')
 def driver():
     options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--headless')  # Remove if GUI needed
+    options.add_argument('--disable-gpu')
     driver = webdriver.Chrome(options=options)
+    driver.implicitly_wait(5)
     yield driver
     driver.quit()
 
-def test_tc_login_005_empty_fields_validation(driver):
+def test_login_with_empty_fields(driver):
     """
-    Test for TC_LOGIN_005: Validates empty email and password field submission on login page.
+    TC_SCRUM74_007: Login with both fields empty
+    Steps:
+    1. Navigate to the login page
+    2. Leave email/username field empty
+    3. Leave password field empty
+    4. Click on the Login button
+    5. Verify validation errors displayed for both fields: 'Email/Username and Password are required'
     """
     login_page = LoginPage(driver)
+    result = login_page.tc_scrum74_007_empty_fields_validation()
 
-    # Step 1: Navigate to the login page
-    login_page.load()
-    assert login_page.is_displayed(), "Login page is not displayed"
-
-    # Step 2 & 3: Leave email and password fields empty
-    email_elem = driver.find_element(*LoginPage.EMAIL_FIELD)
-    password_elem = driver.find_element(*LoginPage.PASSWORD_FIELD)
-    email_elem.clear()
-    password_elem.clear()
-
-    # Step 4: Click on the Login button
-    login_page.click_login()
-
-    # Step 5: Verify validation errors for both fields
-    try:
-        validation_errors = driver.find_elements_by_css_selector(".invalid-feedback")
-        error_texts = [e.text for e in validation_errors if e.is_displayed()]
-        assert any("Email is required" in t for t in error_texts), "'Email is required' validation error not displayed"
-        assert any("Password is required" in t for t in error_texts), "'Password is required' validation error not displayed"
-    except Exception as e:
-        pytest.fail(f"Validation error check failed: {e}")
-
-    # Step 6: Ensure login is prevented and user remains on login page
-    current_url = driver.current_url
-    assert LoginPage.URL in current_url, f"User did not remain on login page, current URL: {current_url}"
+    # Assert navigation succeeded
+    assert result.get('navigate_to_login', False), f"Navigation failed: {result.get('error', '')}"
+    # Assert email field handled
+    assert result.get('enter_email', False), f"Email field error: {result.get('error', '')}"
+    # Assert password field handled
+    assert result.get('enter_password', False), f"Password field error: {result.get('error', '')}"
+    # Assert login button clicked
+    assert result.get('click_login', False), f"Login button error: {result.get('error', '')}"
+    # Assert validation error is displayed
+    assert result.get('validation_error_displayed', False), (
+        "Validation error for empty fields not displayed as expected. "
+        f"Result: {result}"
+    )
+    print("Test Case TC_SCRUM74_007 passed: Validation error displayed for empty fields.")
