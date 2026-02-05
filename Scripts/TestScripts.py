@@ -76,3 +76,27 @@ class TestCartAPI:
         assert cart_json.get("cartId"), "Cart creation failed, cartId not present."
         assert cart_json.get("userId") == user_id, "Cart not associated with correct user."
         print("Test Case TC_CART_001_new passed: User registered, authenticated, cart created.")
+
+    def test_TC_CART_002(self):
+        """
+        Test Case TC_CART_002:
+        1. Attempt to sign up using an email that is already registered.
+        Test Data: {"username": "user2", "email": "newuser1@example.com", "password": "AnotherPass123"}
+        Expected: System returns error message for duplicate email.
+        """
+        user_data = {
+            "username": "user2",
+            "email": "newuser1@example.com",
+            "password": "AnotherPass123",
+            "firstName": "User",
+            "lastName": "Two"
+        }
+        reg_api = UserRegistrationAPIPage()
+        import pytest
+        try:
+            reg_api.register_user_and_get_jwt(user_data)
+            pytest.fail("Registration succeeded with duplicate email, expected failure.")
+        except RuntimeError as e:
+            # The error message should indicate duplicate email
+            assert "duplicate" in str(e).lower() or "already" in str(e).lower(), f"Unexpected error message: {e}"
+        print("Test Case TC_CART_002 passed: Duplicate email registration correctly failed.")
