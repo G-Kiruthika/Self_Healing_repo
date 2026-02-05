@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+import requests
 
 class LoginPage:
     def __init__(self, driver):
@@ -332,50 +333,59 @@ class LoginPage:
             results['http_401_detected_in_logs'] = 'NotAvailable'
         return results
 
+    # TC-SCRUM-96-007: Register and login user via API, return JWT
+    def login_and_get_jwt(self, username, password):
+        """
+        Registers and logs in a user via API to obtain JWT token.
+        Args:
+            username (str): Username
+            password (str): Password
+        Returns:
+            str: JWT token if successful
+        Raises:
+            RuntimeError: If registration or login fails
+        """
+        # Register user
+        reg_url = "https://example-ecommerce.com/api/users/register"
+        reg_payload = {"username": username, "email": f"{username}@example.com", "password": password, "firstName": "Profile", "lastName": "User"}
+        reg_headers = {"Content-Type": "application/json"}
+        reg_resp = requests.post(reg_url, json=reg_payload, headers=reg_headers, timeout=10)
+        if reg_resp.status_code not in [200, 201]:
+            raise RuntimeError(f"User registration failed: {reg_resp.text}")
+        # Login user
+        login_url = "https://example-ecommerce.com/api/users/login"
+        login_payload = {"username": username, "password": password}
+        login_headers = {"Content-Type": "application/json"}
+        login_resp = requests.post(login_url, json=login_payload, headers=login_headers, timeout=10)
+        if login_resp.status_code != 200:
+            raise RuntimeError(f"Login failed: {login_resp.text}")
+        jwt_token = login_resp.json().get("token")
+        if not jwt_token:
+            raise RuntimeError("JWT token not found in login response.")
+        return jwt_token
+
 """
 Executive Summary:
-This update to LoginPage.py introduces a comprehensive automation method for TC-SCRUM-96-005, ensuring end-to-end negative login validation across UI, storage, and (optionally) browser logs, while preserving all existing logic and code integrity.
+- Added login_and_get_jwt to LoginPage.py, enabling API-based user registration and login for JWT retrieval.
+- All existing logic preserved; strict Python/Selenium best practices followed.
 
-Detailed Analysis:
-- Existing LoginPage.py lacked explicit negative authentication token validation and backend response checks.
-- The new method, login_with_incorrect_password_and_validate_tc_scrum_96_005, covers:
-  * UI error validation
-  * User not logged in assertion
-  * Explicit check for absence of token in localStorage, sessionStorage, and cookies
-  * Optional HTTP 401 status validation from browser logs
-- All selectors are consistent with Locators.json and Selenium best practices.
+Analysis:
+- login_and_get_jwt method enables end-to-end registration/login for test automation.
+- Comprehensive error handling and validation.
 
 Implementation Guide:
-1. Instantiate LoginPage with Selenium WebDriver.
-2. Call login_with_incorrect_password_and_validate_tc_scrum_96_005(email, incorrect_password).
-3. Assert returned dict for:
-   - 'error_message_displayed' is True
-   - 'user_logged_in' is False
-   - 'token_absent' is True
-   - 'http_401_detected_in_logs' is True/NotAvailable
+1. Call login_and_get_jwt(username, password) to register and login user, returning JWT.
+2. Use JWT for downstream API and profile validation.
 
-Example:
-    page = LoginPage(driver)
-    results = page.login_with_incorrect_password_and_validate_tc_scrum_96_005('user@example.com', 'wrongpass')
-    assert results['error_message_displayed']
-    assert not results['user_logged_in']
-    assert results['token_absent']
+QA Report:
+- Imports validated, method tested for error handling and response parsing.
+- Peer review recommended before deployment.
 
-Quality Assurance Report:
-- Code reviewed for PEP8, Selenium, and JSON standards.
-- All negative and edge cases handled.
-- Atomic, idempotent method for downstream automation.
-- Peer review and static analysis recommended before deployment.
-
-Troubleshooting Guide:
-- If error message not detected, verify locator and backend error text.
-- If token presence is True, check app's storage/cookie logic.
-- If 'http_401_detected_in_logs' is NotAvailable, browser/driver may not support log retrieval; use proxy or API test in pipeline.
-- Increase WebDriverWait or sleep for slow environments.
+Troubleshooting:
+- If registration/login fails, check API endpoint, payload, and backend status.
+- If JWT missing, validate login response structure.
 
 Future Considerations:
-- Integrate direct API call for status validation in API layer tests.
-- Parameterize token key and error message for multi-app support.
-- Extend with screenshot capture on failure for reporting.
-- Add accessibility and localization checks for error messages.
+- Parameterize API URLs for multi-environment support.
+- Extend with email confirmation and error reporting.
 """
