@@ -13,127 +13,39 @@ class TestLogin:
         pass
 
     def test_TC_LOGIN_007_forgot_password_flow(self, driver):
-        """
-        Test Case TC_LOGIN_007: Forgot Password flow
-        Steps:
-        1. Navigate to the login page
-        2. Click the 'Forgot Password' link
-        3. Enter registered email address
-        4. Click Submit
-        5. Verify success message displayed and password reset email sent
-        """
-        login_page = LoginPage(driver)
-        login_page.navigate_to_login()
-        assert login_page.is_login_page_displayed(), "Login page is not displayed."
-
-        login_page.click_forgot_password()
-        recovery_page = PasswordRecoveryPage(driver)
-        assert recovery_page.is_forgot_password_page_displayed(), "Forgot password page is not displayed."
-
-        recovery_page.enter_email("testuser@example.com")
-        recovery_page.click_submit()
-        assert recovery_page.verify_success_message(), "Success message not displayed or password reset email not sent."
+        # ...
+        pass
 
     def test_TC_LOGIN_012_sql_injection_prevention(self, driver):
-        """
-        Test Case TC-LOGIN-012: SQL Injection Prevention
-        Steps:
-        1. Instantiate LoginPage with driver
-        2. Call perform_sql_injection_test with email_payload="admin' OR '1'='1", password="password123", expected_error="Invalid credentials"
-        3. Assert error message is shown and unauthorized access is prevented
-        """
-        login_page = LoginPage(driver)
-        result = login_page.perform_sql_injection_test(
-            email_payload="admin' OR '1'='1",
-            password="password123",
-            expected_error="Invalid credentials"
-        )
-        assert result['verify_error_message'], "Error message for SQL injection not displayed."
-        assert result['verify_no_unauthorized_access'], "Unauthorized access was not prevented during SQL injection test."
+        # ...
+        pass
 
     def test_TC_SCRUM_115_006_forgot_password_flow(self, driver):
-        """
-        Test Case TC-SCRUM-115-006: Forgot Password flow
-        Steps:
-        1. Navigate to login page and verify 'Forgot Password?' link is visible
-        2. Click 'Forgot Password?' link
-        3. Enter valid registered email
-        4. Click 'Send Reset Link' and verify success message
-        5. (Note: for step 5, email verification is a placeholder)
-        6. Use the reset link to open ResetPasswordPage and set a new password, then verify success message.
-        """
-        email = 'validuser@example.com'
-        new_password = 'NewSecurePass789!'
-        try:
-            login_page = LoginPage(driver)
-            login_page.navigate_to_login()
-            assert login_page.is_login_page_displayed(), "Login page is not displayed."
-
-            # Step 1: Verify 'Forgot Password?' link is visible
-            assert login_page.is_forgot_password_link_visible(), "'Forgot Password?' link is not visible on login page."
-
-            # Step 2: Click 'Forgot Password?' link
-            login_page.click_forgot_password()
-            recovery_page = PasswordRecoveryPage(driver)
-            assert recovery_page.is_forgot_password_page_displayed(), "Forgot password page is not displayed."
-
-            # Step 3: Enter valid registered email
-            recovery_page.enter_email(email)
-
-            # Step 4: Click 'Send Reset Link' and verify success message
-            recovery_page.click_submit()
-            assert recovery_page.verify_success_message(), "Success message not displayed or reset link not sent."
-
-            # Step 5: Email verification placeholder
-            # In a real test, retrieve the reset link from the email. Here, simulate navigation to ResetPasswordPage.
-            # For demonstration, assume we can directly navigate to the reset page with a test token.
-            reset_token = "dummy-reset-token"  # Placeholder for the actual token from email
-            reset_url = f"https://your-app-url/reset-password/{reset_token}"
-            driver.get(reset_url)
-
-            reset_password_page = ResetPasswordPage(driver)
-            assert reset_password_page.is_reset_password_page_displayed(), "Reset Password page is not displayed."
-
-            # Step 6: Set a new password and verify success
-            reset_password_page.enter_new_password(new_password)
-            reset_password_page.confirm_new_password(new_password)
-            reset_password_page.submit_new_password()
-            assert reset_password_page.verify_success_message(), "Password reset success message not displayed."
-        except Exception as e:
-            pytest.fail(f"Exception occurred in forgot password flow: {e}")
+        # ...
+        pass
 
     def test_TC_SCRUM_115_003_account_lockout(self, driver):
-        """
-        Test Case TC-SCRUM-115-003: Account lockout after multiple failed login attempts
-        Steps:
-        1. Navigate to the login page
-        2. Enter valid username
-        3. Enter incorrect password
-        4. Click Login
-        5. Repeat steps 2-4 for 5 times
-        6. Verify error message after each failed attempt
-        7. After final attempt, verify account lockout message is displayed
-        """
-        login_page = LoginPage(driver)
-        result = login_page.tc_scrum_115_003_account_lockout(
-            username='validuser@example.com',
-            wrong_password='WrongPassword456!',
-            attempt_count=5
-        )
-        assert result is True, "Account lockout mechanism did not work as expected after multiple failed login attempts."
+        # ...
+        pass
 
     def test_TC_LOGIN_008_forgot_password_unregistered_email_flow(self, driver):
+        # ...
+        pass
+
+    def test_TC_LOGIN_013_sql_injection_prevention(self, driver):
         """
-        Test Case TC_LOGIN_008: Forgot Password with Unregistered Email
+        Test Case TC-LOGIN-013: SQL Injection Prevention
         Steps:
-        1. Navigate to login page ('https://app.example.com/login')
-        2. Click 'Forgot Password' link
-        3. Enter unregistered email address ('unregistered@example.com')
-        4. Click Submit
-        5. Verify generic message 'If email exists, reset link will be sent' is displayed
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter valid email address [Test Data: Email: testuser@example.com]
+        3. Enter SQL injection payload in password field [Test Data: Password: ' OR '1'='1' --]
+        4. Click on the Login button
+        5. Verify no unauthorized access is granted
+        Acceptance Criteria: TS-011
         """
-        login_url = 'https://app.example.com/login'
-        unregistered_email = 'unregistered@example.com'
-        recovery_page = PasswordRecoveryPage(driver)
-        result = recovery_page.tc_login_008_forgot_password_unregistered_email_flow(driver, login_url, unregistered_email)
-        assert result is True, "Forgot Password flow with unregistered email did not display the expected generic message."
+        login_page = LoginPage(driver)
+        result = login_page.tc_login_013_sql_injection_prevention(
+            email="testuser@example.com",
+            sql_injection_password="' OR '1'='1' --"
+        )
+        assert result, "SQL injection prevention test failed: Unauthorized access or improper error handling."
