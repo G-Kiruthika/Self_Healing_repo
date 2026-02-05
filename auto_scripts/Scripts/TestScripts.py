@@ -60,17 +60,33 @@ class TestLogin:
         assert result["login_unsuccessful"], "Login should not be successful when required fields are empty."
         assert (result["error_message"] is not None or result["validation_error"] is not None), "Error or validation message should be shown for empty fields."
 
-    def test_tc_login_006(self, driver):
+    def test_tc_login_006_required_password_validation(self, driver):
         """
         Test Case TC_LOGIN_006:
         1. Navigate to the login page.
-        2. Enter valid email and leave password field empty (email: 'user@example.com', password: '').
+        2. Enter valid email and leave password field empty.
         3. Click the 'Login' button.
         4. Verify error message for required password is shown.
         5. Verify login is not successful.
         """
         login_page = LoginPage(driver)
-        result = login_page.validate_empty_password_error_tc_login_006('user@example.com')
-        assert result["password_error"] is not None, "Password error prompt should be displayed."
+        login_page.open_login_page()
+        result = login_page.validate_required_password_error_tc_login_006('user@example.com')
+        assert result["password_error"] is not None, "Password required error should be displayed."
         assert result["login_unsuccessful"], "Login should not be successful when password is empty."
         assert (result["error_message"] is not None or result["validation_error"] is not None), "Error or validation message should be shown for empty password."
+
+    def test_tc_login_005_required_email_validation(self, driver):
+        """
+        Test Case TC_LOGIN_005:
+        1. Navigate to the login page.
+        2. Leave email/username field empty and enter valid password ('ValidPass123').
+        3. Click the 'Login' button.
+        4. Verify error message for required email/username is shown.
+        5. Verify login is not successful.
+        """
+        login_page = LoginPage(driver)
+        login_page.open_login_page()
+        result = login_page.validate_required_field_errors_tc_login_005('ValidPass123')
+        assert result["error_message"] is not None, "Error message for required email/username should be displayed."
+        assert result["login_unsuccessful"], "Login should not be successful when email/username is empty."
