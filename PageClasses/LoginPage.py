@@ -1,6 +1,9 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import jwt
+import datetime
+from typing import Optional, Dict
 
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
@@ -72,3 +75,42 @@ class LoginPage:
         error_msg = self.get_error_message()
         assert error_msg == expected_error, f"Expected error '{expected_error}', got '{error_msg}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login."
+
+    @staticmethod
+    def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
+        """
+        Decodes and validates a JWT authentication token.
+        Checks for userId, email, and expiration time (exp claim).
+
+        Args:
+            token (str): JWT token string.
+            secret (str, optional): Secret key for decoding (if required).
+            algorithms (list, optional): List of algorithms to use for decoding (default ['HS256']).
+
+        Returns:
+            dict: Decoded payload if valid.
+
+        Raises:
+            AssertionError: If required claims are missing or token is expired.
+            jwt.DecodeError: If token is invalid.
+        """
+        if algorithms is None:
+            algorithms = ['HS256']
+        try:
+            # Decode without verifying signature if secret is not provided (for test env)
+            if secret:
+                payload = jwt.decode(token, secret, algorithms=algorithms)
+            else:
+                payload = jwt.decode(token, options={"verify_signature": False}, algorithms=algorithms)
+            assert 'userId' in payload, "userId claim missing in token"
+            assert 'email' in payload, "email claim missing in token"
+            assert 'exp' in payload, "Expiration (exp) claim missing in token"
+            exp_time = datetime.datetime.fromtimestamp(payload['exp'])
+            assert exp_time > datetime.datetime.utcnow(), "Token has expired"
+            return payload
+        except jwt.ExpiredSignatureError:
+            raise AssertionError("Token has expired")
+        except jwt.DecodeError as e:
+            raise AssertionError(f"Invalid JWT token: {e}")
+        except Exception as e:
+            raise AssertionError(f"JWT validation failed: {e}")
