@@ -45,6 +45,16 @@ class LoginPage:
         email_field.send_keys(email)
         return email_field.get_attribute("value") == email
 
+    def enter_invalid_email_format(self, email: str):
+        """
+        Step 2: Enter invalid email format in the email field.
+        Acceptance Criteria: Invalid email format error message is displayed.
+        """
+        email_field = self.driver.find_element(*self.EMAIL_INPUT)
+        email_field.clear()
+        email_field.send_keys(email)
+        return email_field.get_attribute("value") == email
+
     def enter_password(self, password: str):
         """
         Step 3: Enter correct password in the password field.
@@ -63,6 +73,24 @@ class LoginPage:
         """
         self.driver.find_element(*self.LOGIN_BUTTON).click()
         return self.is_dashboard_displayed()
+
+    def click_login_and_check_invalid_email_error(self):
+        """
+        Step 4: Click on the Login button and verify invalid email format error message.
+        Acceptance Criteria: Error message 'Invalid email or username' is displayed.
+        """
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
+        return self.is_error_message_displayed("Invalid email or username")
+
+    def is_error_message_displayed(self, expected_message: str):
+        """
+        Checks if the error message is displayed and matches expected text.
+        """
+        try:
+            error_elem = self.driver.find_element(*self.ERROR_MESSAGE)
+            return error_elem.is_displayed() and expected_message in error_elem.text
+        except NoSuchElementException:
+            return False
 
     def is_dashboard_displayed(self):
         """
@@ -107,16 +135,6 @@ class LoginPage:
         """
         self.driver.find_element(*self.LOGIN_BUTTON).click()
         return self.is_error_message_displayed("Invalid email or password")
-
-    def is_error_message_displayed(self, expected_message: str):
-        """
-        Checks if the error message is displayed and matches expected text.
-        """
-        try:
-            error_elem = self.driver.find_element(*self.ERROR_MESSAGE)
-            return error_elem.is_displayed() and expected_message in error_elem.text
-        except NoSuchElementException:
-            return False
 
     def verify_user_stays_on_login_page(self):
         """
@@ -178,3 +196,17 @@ class LoginPage:
         dashboard_visible = self.is_dashboard_displayed()
         return on_login_page and not dashboard_visible
     # --- End of TC_LOGIN_003 steps ---
+    # --- Start of TC_SCRUM74_002 steps ---
+    def run_tc_scrum74_002(self, invalid_email: str, valid_password: str):
+        """
+        Implements Test Case TC_SCRUM74_002:
+        1. Navigate to the login page
+        2. Enter invalid email format
+        3. Enter valid password
+        4. Click Login and verify error message
+        """
+        self.navigate_to_login()
+        self.enter_invalid_email_format(invalid_email)
+        self.enter_password(valid_password)
+        return self.click_login_and_check_invalid_email_error()
+    # --- End of TC_SCRUM74_002 steps ---
