@@ -87,3 +87,62 @@ class LoginPage:
         except Exception as e:
             raise AssertionError(f"TC-LOGIN-010 failed: {str(e)}")
     # --- End of TC-LOGIN-010 steps ---
+
+    # --- Start of TC-LOGIN-013 steps ---
+    def tc_login_013_sql_injection_prevention(self, email: str, sql_injection_password: str) -> bool:
+        """
+        TC-LOGIN-013: SQL Injection Prevention on Login Form
+        Steps:
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter valid email address [Test Data: Email: testuser@example.com]
+        3. Enter SQL injection payload in password field [Test Data: Password: ' OR '1'='1' --]
+        4. Click on the Login button
+        5. Verify no unauthorized access is granted
+        Acceptance Criteria: TS-011
+        """
+        try:
+            # Step 1: Navigate to Login Page
+            self.driver.get(self.URL)
+            login_page_displayed = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD)).is_displayed()
+            assert login_page_displayed, "Login page is not displayed"
+
+            # Step 2: Enter valid email address
+            email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            email_input.clear()
+            email_input.send_keys(email)
+            assert email_input.get_attribute("value") == email, "Email is not entered correctly"
+
+            # Step 3: Enter SQL injection payload in password field
+            password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            password_input.clear()
+            password_input.send_keys(sql_injection_password)
+            # The input is accepted, but we check that it does not result in unauthorized access
+
+            # Step 4: Click on the Login button
+            login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
+            login_btn.click()
+
+            # Step 5: Validate login fails and no unauthorized access is granted
+            try:
+                dashboard_visible = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER), timeout=5)
+                if dashboard_visible.is_displayed():
+                    raise AssertionError("SQL injection succeeded: unauthorized access granted!")
+            except TimeoutException:
+                # Expected: dashboard is NOT visible
+                pass
+
+            error_message_displayed = False
+            if self.driver.find_elements(*self.ERROR_MESSAGE):
+                error = self.driver.find_element(*self.ERROR_MESSAGE)
+                error_message_displayed = error.is_displayed()
+                assert error_message_displayed, "Appropriate error message not displayed after SQL injection attempt"
+            # Additional check: user profile icon should not be visible
+            unauthorized_access = False
+            if self.driver.find_elements(*self.USER_PROFILE_ICON):
+                profile_icon = self.driver.find_element(*self.USER_PROFILE_ICON)
+                unauthorized_access = profile_icon.is_displayed()
+            assert not unauthorized_access, "User is authenticated despite SQL injection attempt"
+            return error_message_displayed and not unauthorized_access
+        except Exception as e:
+            raise AssertionError(f"TC-LOGIN-013 failed: {str(e)}")
+    # --- End of TC-LOGIN-013 steps ---
