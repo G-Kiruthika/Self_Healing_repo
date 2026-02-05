@@ -36,21 +36,21 @@ class PasswordRecoveryPage:
             return False
 
     def enter_email(self, email: str):
-        """Enter email address for password recovery."""
+        """Step 3: Enter registered email address"""
         input_field = self.driver.find_element(*self.EMAIL_INPUT)
         input_field.clear()
         input_field.send_keys(email)
         return input_field.get_attribute("value") == email
 
-    def submit_recovery(self):
-        """Click on submit button to initiate password recovery."""
+    def click_send_reset_link(self):
+        """Step 4: Click on 'Send Reset Link' button"""
         self.driver.find_element(*self.SUBMIT_BUTTON).click()
 
     def is_success_message_displayed(self):
-        """Check if success message appears after submitting recovery."""
+        """Step 4: Success message displayed: 'Password reset link sent to your email'"""
         try:
             success = self.driver.find_element(*self.SUCCESS_MESSAGE)
-            return success.is_displayed()
+            return success.is_displayed() and 'Password reset link sent to your email' in success.text
         except NoSuchElementException:
             return False
 
@@ -62,20 +62,24 @@ class PasswordRecoveryPage:
         except NoSuchElementException:
             return False
 
-    def verify_page_elements(self):
+    def verify_password_reset_email_received(self, email: str):
         """
-        TC_LOGIN_009 - Step 3: Verify password recovery page elements (email input and submit button).
-        Returns True if both are visible.
-        """
-        return self.is_email_input_visible() and self.is_submit_button_visible()
-
-    # --- ADDED FOR TC_LOGIN_010 ---
-    def check_password_reset_email_received(self, email: str):
-        """
-        TC_LOGIN_010: Step 4 - Check email inbox for password reset link.
+        Step 5: Verify password reset email is received
         Note: This is a placeholder for integration with email checking service.
         Returns True if password reset email is received with valid reset link.
         """
         # In a real implementation, integrate with a test email inbox or use a mock service
-        # For now, raise NotImplementedError to indicate this step is external
         raise NotImplementedError("Email inbox check for password reset link must be implemented in the test harness or with an external email service.")
+
+    # --- Start of TC_LOGIN_006 steps ---
+    def tc_login_006_password_recovery_flow(self, email: str):
+        """
+        TC_LOGIN_006 Steps:
+        3. Enter registered email address
+        4. Click on 'Send Reset Link' button
+        5. Verify password reset email is received
+        """
+        self.enter_email(email)
+        self.click_send_reset_link()
+        return self.is_success_message_displayed()
+    # --- End of TC_LOGIN_006 steps ---

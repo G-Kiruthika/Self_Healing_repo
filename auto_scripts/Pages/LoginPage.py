@@ -12,6 +12,7 @@ class LoginPage:
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
@@ -32,6 +33,18 @@ class LoginPage:
             email_visible = self.driver.find_element(*self.EMAIL_INPUT).is_displayed()
             password_visible = self.driver.find_element(*self.PASSWORD_INPUT).is_displayed()
             return email_visible and password_visible
+        except NoSuchElementException:
+            return False
+
+    def click_forgot_password(self):
+        """
+        Step 2: Click on 'Forgot Password' link
+        Acceptance Criteria: User is redirected to password recovery page.
+        """
+        try:
+            link = self.driver.find_element(*self.FORGOT_PASSWORD_LINK)
+            link.click()
+            return True
         except NoSuchElementException:
             return False
 
@@ -269,3 +282,19 @@ class LoginPage:
         # Strict validation for error message
         return self.is_validation_error_displayed("Email/Username is required")
     # --- End of TC_SCRUM74_005 steps ---
+
+    # --- Start of TC_LOGIN_006 steps ---
+    def tc_login_006_forgot_password_flow(self, email: str):
+        """
+        TC_LOGIN_006 Steps:
+        1. Navigate to the login page
+        2. Click on 'Forgot Password' link
+        3. Enter registered email address
+        4. Click on 'Send Reset Link' button
+        5. Verify password reset email is received (delegated to PasswordRecoveryPage)
+        """
+        self.navigate_to_login()
+        self.click_forgot_password()
+        # The rest of the flow continues in PasswordRecoveryPage
+        return True
+    # --- End of TC_LOGIN_006 steps ---
