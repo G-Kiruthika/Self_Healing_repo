@@ -94,3 +94,18 @@ class TestLogin:
         validation_errors = login_page.test_empty_fields_validation()
         assert 'Username is required' in validation_errors, "Expected 'Username is required' validation error not found."
         assert 'Password is required' in validation_errors, "Expected 'Password is required' validation error not found."
+
+    def test_remember_me_session_persistence_tc_login_008(self, driver_factory):
+        """
+        TC_LOGIN_008: Remember Me Session Persistence
+        Steps:
+        1. Navigate to the login page (URL: https://ecommerce.example.com/login)
+        2. Enter valid username and password (Username: testuser@example.com, Password: ValidPass123!)
+        3. Check the Remember Me checkbox
+        4. Click on the Login button
+        5. Close the browser and reopen, navigate to the website
+        6. Verify user session is persisted and user remains logged in
+        """
+        login_page = LoginPage(driver_factory())
+        result = login_page.test_remember_me_session_persistence(driver_factory)
+        assert result, "TC_LOGIN_008 failed: Session was not persisted after browser restart or dashboard/user icon not displayed."
