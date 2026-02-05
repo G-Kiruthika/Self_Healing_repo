@@ -25,14 +25,7 @@ def test_TC_SCRUM96_007_user_profile_api_db_validation():
     2. Send GET request to /api/users/profile endpoint with valid JWT token in Authorization header
     3. Verify all profile fields match the registered user data in database
     """
-    base_url = "http://localhost:8000"  # Replace with actual API base URL
-    db_config = {
-        "host": "localhost",
-        "port": 5432,
-        "dbname": "yourdb",
-        "user": "youruser",
-        "password": "yourpass"
-    }
+    # Setup test user data
     user_data = {
         "username": "profileuser",
         "email": "profileuser@example.com",
@@ -40,30 +33,30 @@ def test_TC_SCRUM96_007_user_profile_api_db_validation():
         "firstName": "Profile",
         "lastName": "User"
     }
+    db_config = {
+        "host": "localhost",
+        "user": "youruser",
+        "password": "yourpass",
+        "database": "yourdb"
+    }
     # Step 1: Register user and login to get JWT token
-    api_auth = ApiAuthPage(base_url)
-    reg_response = api_auth.register_user(
-        user_data["username"],
-        user_data["email"],
-        user_data["password"],
-        user_data["firstName"],
-        user_data["lastName"]
-    )
-    login_response = api_auth.login_user(user_data["username"], user_data["password"])
-    jwt_token = api_auth.get_jwt_token(login_response)
-    assert jwt_token is not None, "JWT token not found in login response"
+    from pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+    registration_api = UserRegistrationAPIPage()
+    jwt_token = registration_api.register_user_and_get_jwt(user_data)
+    assert jwt_token is not None, "JWT token not found in registration/login response"
 
     # Step 2: Fetch user profile via API
-    api_profile_page = ApiProfilePage(base_url)
-    profile_response = api_profile_page.get_user_profile(jwt_token)
-    # Validate profile schema and absence of password
-    assert api_profile_page.validate_profile_response(profile_response)
+    from ProfilePage import ProfilePage
+    profile_page = ProfilePage(None)
+    profile_response = profile_page.fetch_profile_api(jwt_token)
+    assert profile_page.validate_profile_response(profile_response)
 
-    # Step 3: Fetch user from DB and compare
-    db_user_page = DbUserPage(db_config)
-    db_user = db_user_page.get_user_from_db(user_data["username"])
-    assert db_user is not None, "User not found in DB"
-    assert db_user_page.compare_profile_to_db(profile_response, db_user)
+    # Step 3: Validate profile fields against database
+    from pages.DatabaseValidationHelper import DatabaseValidationHelper
+    db_helper = DatabaseValidationHelper(db_config)
+    db_record = db_helper.get_user_from_db(user_data["username"])
+    assert db_record is not None, "User not found in DB"
+    assert db_helper.compare_db_and_api_profile(db_record, profile_response)
 
 # TC_SCRUM96_005: Negative Login Audit Log Test
 from auto_scripts.Pages.LoginPage import LoginPage
