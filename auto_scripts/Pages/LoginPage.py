@@ -16,6 +16,7 @@ class LoginPage:
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
     FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
+    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")  # Added for TC-LOGIN-007
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
@@ -31,7 +32,8 @@ class LoginPage:
             email_visible = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
             password_visible = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
             forgot_password_visible = self.wait.until(EC.visibility_of_element_located(self.FORGOT_PASSWORD_LINK))
-            return email_visible.is_displayed() and password_visible.is_displayed() and forgot_password_visible.is_displayed()
+            forgot_username_visible = self.wait.until(EC.visibility_of_element_located(self.FORGOT_USERNAME_LINK))
+            return email_visible.is_displayed() and password_visible.is_displayed() and forgot_password_visible.is_displayed() and forgot_username_visible.is_displayed()
         except (NoSuchElementException, TimeoutException):
             return False
 
@@ -39,6 +41,17 @@ class LoginPage:
         try:
             forgot_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_PASSWORD_LINK))
             forgot_link.click()
+            return True
+        except (NoSuchElementException, TimeoutException):
+            return False
+
+    def click_forgot_username(self):
+        """
+        Click on the 'Forgot Username' link to navigate to the Username Recovery page.
+        """
+        try:
+            forgot_username_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
+            forgot_username_link.click()
             return True
         except (NoSuchElementException, TimeoutException):
             return False
