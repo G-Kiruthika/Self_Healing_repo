@@ -187,7 +187,7 @@ class TestLogin:
         )
         assert result, "Special character username login test failed: Login attempt not processed as expected."
 
-    def test_TC_LOGIN_015_special_character_password(self, driver):
+    def test_TC_LOGIN_015_special_char_password(self, driver):
         """
         Test Case TC_LOGIN_015: Login with Password Containing Special Characters
         Steps:
@@ -195,12 +195,11 @@ class TestLogin:
             2. Enter valid username [Test Data: Username: testuser@example.com]
             3. Enter password with various special characters [Test Data: Password: P@$$w0rd!#%&*()_+-=[]{}|;:,.<>?]
             4. Click on the Login button
-            5. Assert that the system processes the login correctly (no validation error or error message, redirected to dashboard)
-        Acceptance Criteria: Password with special characters is accepted, successful login, no errors.
+            5. Validate system processes login correctly (successful login or appropriate error).
+        Acceptance Criteria: AC_007
         """
         login_page = LoginPage(driver)
-        result = login_page.login_with_special_char_password(
-            username="testuser@example.com",
-            password="P@$$w0rd!#%&*()_+-=[]{}|;:,.<>?"
-        )
+        username = "testuser@example.com"
+        special_char_password = "P@$$w0rd!#%&*()_+-=[]{}|;:,.<>?"
+        result = login_page.tc_login_015_special_char_password(username, special_char_password)
         assert result, "Special character password login test failed: Login attempt not processed as expected."
