@@ -20,13 +20,7 @@ class LoginPage:
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
 
-    # ...other functions...
-
     def login_with_email_and_password(self, email, password, remember_me=False):
-        """
-        Logs in using the provided email and password.
-        Optionally checks the 'Remember Me' checkbox.
-        """
         self.driver.get(self.URL)
         email_field = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
         email_field.clear()
@@ -42,10 +36,6 @@ class LoginPage:
         login_button.click()
 
     def is_dashboard_displayed(self):
-        """
-        Checks if the dashboard/homepage is displayed after login.
-        Returns True if dashboard header or user profile icon is visible.
-        """
         try:
             self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
             self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
@@ -54,56 +44,50 @@ class LoginPage:
             return False
 
     def get_error_message(self):
-        """
-        Returns the error message displayed on the login page, if any.
-        """
         try:
             error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
             return error_elem.text
         except Exception:
             return None
 
-    # ========================
-    # TC_LOGIN_014 Automation
-    # ========================
-    def login_with_spaces_in_email(self, email_with_spaces, valid_password):
+    def verify_invalid_login_shows_error(self, invalid_email, invalid_password):
         """
-        [TC_LOGIN_014]
-        Automates login with an email/username that includes leading and trailing spaces.
-        Ensures that spaces are trimmed and login is successful (user is redirected to dashboard).
+        Automates TC_LOGIN_001: Attempts login with invalid credentials and asserts the correct error message is shown.
+
+        Steps:
+            1. Navigates to the login screen.
+            2. Enters invalid username and password.
+            3. Clicks the login button.
+            4. Asserts the error message is displayed with the text:
+               'Invalid username or password. Please try again.'
 
         Args:
-            email_with_spaces (str): Email/username with leading/trailing spaces (e.g., '  user@example.com  ')
-            valid_password (str): Valid password for the user
+            invalid_email (str): The invalid email/username to use.
+            invalid_password (str): The invalid password to use.
 
-        Returns:
-            bool: True if login is successful and dashboard is displayed, False otherwise.
+        Raises:
+            AssertionError: If the error message is not displayed or does not match the expected text.
         """
+        # Step 1: Navigate to login page
         self.driver.get(self.URL)
-        # Enter email with spaces
+
+        # Step 2: Enter invalid credentials
         email_field = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
         email_field.clear()
-        email_field.send_keys(email_with_spaces)
-        # Enter valid password
+        email_field.send_keys(invalid_email)
+
         password_field = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
         password_field.clear()
-        password_field.send_keys(valid_password)
-        # Click Login
+        password_field.send_keys(invalid_password)
+
+        # Step 3: Click the login button
         login_button = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
         login_button.click()
-        # Wait for dashboard
-        try:
-            self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-            self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
-            return True
-        except Exception:
-            return False
 
-"""
-Analysis:
-- The new method 'login_with_spaces_in_email' directly addresses TC_LOGIN_014, automating the process of entering an email with leading/trailing spaces and verifying successful login and redirection to the dashboard.
-- All existing logic and methods are preserved, ensuring code integrity.
-- The method is fully documented for downstream automation, including usage, arguments, and return value.
-- No locators were changed; all selectors are consistent with Locators.json.
-- This update is strictly additive and non-breaking.
-"""
+        # Step 4: Assert error message is shown with correct text
+        expected_error = "Invalid username or password. Please try again."
+        error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+        actual_error = error_elem.text.strip()
+        assert actual_error == expected_error, (
+            f"Expected error message '{expected_error}', but got '{actual_error}'"
+        )
