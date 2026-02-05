@@ -13,3 +13,8 @@ class TestLogin:
         login_page = LoginPage(driver)
         result = login_page.tc_login_001_login_flow('user@example.com', 'ValidPass123')
         assert result is True
+
+    def test_tc_login_003_invalid_password_flow(self, driver):
+        login_page = LoginPage(driver)
+        result = login_page.tc_login_003_invalid_password_flow('user@example.com', 'WrongPass456')
+        assert result is True
