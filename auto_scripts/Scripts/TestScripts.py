@@ -27,26 +27,19 @@ def test_TC_SCRUM_96_005_negative_login_audit_log():
 from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
 import requests
 import pymysql
-import logging
+
 
 def test_TC_SCRUM96_008_product_search_case_insensitive():
-    db_config = {
-        "host": "localhost",
-        "user": "test_user",
-        "password": "test_pass",
-        "database": "test_db"
-    }
-    logger = logging.getLogger("TC_SCRUM96_008")
-    product_page = ProductSearchAPIPage(db_config, logger)
-    # Insert test products
-    product_page.insert_test_products()
-    # Validate case-insensitive search
-    results = product_page.search_products_case_insensitive()
-    for query in ["laptop", "LAPTOP", "LaPtOp"]:
-        assert results[query]["status_code"] == 200, f"API did not return 200 for query {query}"
-        assert "Laptop Computer" in results[query]["returned_names"], f"'Laptop Computer' not found for query {query}"
-        assert "Gaming Laptop" in results[query]["returned_names"], f"'Gaming Laptop' not found for query {query}"
-    print("TC_SCRUM96_008 passed: Case-insensitive product search validated.")
+    page = ProductSearchAPIPage()
+    queries = ["laptop", "LAPTOP", "LaPtOp"]
+    expected_products = ["Laptop Computer", "Gaming Laptop"]
+    # Step 1: Insert test products into the database (assumed DB setup is handled externally)
+    # Step 2-4: Validate API returns expected products for all query cases
+    page.validate_case_insensitive_search(queries, expected_products)
+    # Optionally, print QA report
+    report = page.report_case_insensitive_search(queries, expected_products)
+    for query, result in report.items():
+        print(f"Query: {query} => {result}")
 # TC-SCRUM96_009: Product Search API Edge Case Test
 from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
 import requests
