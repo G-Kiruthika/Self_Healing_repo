@@ -152,3 +152,43 @@ def test_TC_SCRUM96_002_user_registration_duplicate_and_db_verification():
     db_check = user_registration_page.verify_single_user_in_db("duplicateuser", "first@example.com")
     assert db_check is True, "Only one user record should exist in DB with expected email"
     print("TC_SCRUM96_002 user registration, duplicate, and DB verification PASSED.")
+
+# TC-SCRUM96_003: User Registration, Duplicate Email Registration, and DB Verification Test
+from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+import pytest
+
+def test_TC_SCRUM96_003_user_registration_duplicate_email_and_db_verification():
+    """
+    Test Case TC_SCRUM96_003:
+    1. Register a user with username 'firstuser' and email 'duplicate@example.com'.
+    2. Attempt to register another user with different username 'seconduser' but same email 'duplicate@example.com'.
+    3. Verify only one user record exists in the database for email 'duplicate@example.com' and username 'firstuser'.
+    """
+    user_registration_page = UserRegistrationAPIPage()
+    # Step 1: Register user
+    user_data_first = {
+        "username": "firstuser",
+        "email": "duplicate@example.com",
+        "password": "Pass123!",
+        "firstName": "First",
+        "lastName": "User"
+    }
+    jwt_token = user_registration_page.register_user_and_get_jwt(user_data_first)
+    assert jwt_token is not None, "JWT token should be returned for successful registration"
+
+    # Step 2: Attempt duplicate registration with same email
+    user_data_second = {
+        "username": "seconduser",
+        "email": "duplicate@example.com",
+        "password": "Pass456!",
+        "firstName": "Second",
+        "lastName": "User"
+    }
+    duplicate_result = user_registration_page.attempt_duplicate_registration(user_data_second)
+    assert duplicate_result["status_code"] == 409, "API should return HTTP 409 Conflict for duplicate email"
+    assert "email" in duplicate_result["error_message"].lower(), "Error message should indicate email conflict"
+
+    # Step 3: Verify single user in DB for email and username
+    db_check = user_registration_page.verify_single_user_in_db("duplicate@example.com", "firstuser")
+    assert db_check is True, "Only one user record should exist in DB with expected username and email"
+    print("TC_SCRUM96_003 user registration, duplicate email, and DB verification PASSED.")
