@@ -1,6 +1,3 @@
-# Existing content of TestScripts.py
-# ... (existing test methods)
-
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -26,22 +23,40 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    # ... (other methods)
+    # ...other existing test methods...
 
-    def test_tc_login_06_02_overlong_email_error(self):
+    def test_tc_login_002_remember_me_checkbox_absence(self):
         """
-        Test Case TC_LOGIN_06_02:
-        1. Navigate to the login page.
-        2. Enter an email address exceeding the maximum allowed length (255+ characters).
-        3. Enter a valid password ('ValidPassword1!').
-        4. Click the 'Login' button.
-        5. Assert that an error for overlong email is displayed and login is not allowed.
+        Test Case TC_LOGIN_002:
+        1. Navigate to the login screen.
+        2. Check for the presence of 'Remember Me' checkbox.
+        3. Assert that 'Remember Me' checkbox is NOT present.
         """
         driver = webdriver.Chrome()
         page = LoginPage(driver)
         try:
-            result = page.login_with_overlong_email('ValidPassword1!')
-            self.assertTrue(result, "TC_LOGIN_06_02 failed: Error for overlong email not displayed or login was allowed.")
+            result = page.is_remember_me_checkbox_absent()
+            self.assertTrue(result, "TC_LOGIN_002 failed: 'Remember Me' checkbox is present on login screen.")
+        finally:
+            driver.quit()
+
+    def test_tc_login_06_02_excessive_email_length(self):
+        """
+        Test Case TC_LOGIN_06_02:
+        1. Navigate to login page.
+        2. Enter an email address exceeding 255 characters.
+        3. Enter a valid password.
+        4. Click the 'Login' button.
+        5. Verify that login is not allowed and an error message or validation feedback is displayed.
+        """
+        driver = webdriver.Chrome()
+        page = LoginPage(driver)
+        try:
+            long_email = 'u' * 256 + '@example.com'  # 256+ chars
+            valid_password = 'ValidPassword1!'
+            result = page.tc_login_06_02_excessive_email_length(long_email, valid_password)
+            self.assertTrue(result['login_blocked'], "TC_LOGIN_06_02 failed: Login was not blocked for excessive email length.")
+            self.assertTrue(result['validation_error'] or result['error_message'], "TC_LOGIN_06_02 failed: No error or validation message displayed.")
         finally:
             driver.quit()
 
