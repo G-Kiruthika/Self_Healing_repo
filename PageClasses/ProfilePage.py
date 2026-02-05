@@ -1,5 +1,5 @@
 import requests
-from typing import Optional
+from typing import Optional, Dict, Any
 
 class ProfilePage:
     """
@@ -17,7 +17,6 @@ class ProfilePage:
     def update_profile_username(self, auth_token: str, new_username: str) -> requests.Response:
         """
         Sends a PUT request to update the user's profile username.
-
         Args:
             auth_token (str): JWT authentication token.
             new_username (str): The new username to set.
@@ -56,3 +55,26 @@ class ProfilePage:
         if result is None:
             return False
         return result[0] == expected_username
+
+    def get_user_profile_api(self, jwt_token: str) -> Dict[str, Any]:
+        """
+        Fetches user profile via protected API endpoint using JWT token.
+        Args:
+            jwt_token (str): JWT access token for Authorization header.
+        Returns:
+            dict: User profile data from API response.
+        Raises:
+            AssertionError: If HTTP status is not 200 or profile fields are missing.
+        """
+        headers = {
+            "Authorization": f"Bearer {jwt_token}",
+            "Content-Type": "application/json"
+        }
+        response = requests.get(self.API_URL, headers=headers)
+        assert response.status_code == 200, f"Expected HTTP 200, got {response.status_code}. Response: {response.text}"
+        data = response.json()
+        required_fields = ["userId", "username", "email", "firstName", "lastName", "accountStatus"]
+        for field in required_fields:
+            assert field in data, f"Missing field {field} in profile response"
+        assert data["accountStatus"] == "ACTIVE", "Account status must be ACTIVE"
+        return data

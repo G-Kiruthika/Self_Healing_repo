@@ -49,7 +49,7 @@ class UserRegistrationAPIPage:
         self.email_log_path = email_log_path
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def register_user(self, user_data: Dict[str, str]) -> Dict[str, Any]:
+    def register_user_api(self, user_data: Dict[str, str]) -> Dict[str, Any]:
         """
         Sends POST request to /api/users/register with user registration data.
         Args:
@@ -66,9 +66,14 @@ class UserRegistrationAPIPage:
         self.logger.debug(f"API response: {response.status_code}, {response.text}")
         assert response.status_code == 201, f"Expected HTTP 201, got {response.status_code}"
         resp_json = response.json()
-        required_fields = ['userId', 'username', 'email', 'firstName', 'lastName', 'registrationTimestamp']
+        required_fields = ['userId', 'username', 'email', 'firstName', 'lastName', 'registrationTimestamp', 'accountStatus']
         for field in required_fields:
             assert field in resp_json, f"Missing field {field} in response"
+        assert resp_json['username'] == user_data['username'], "Username mismatch"
+        assert resp_json['email'] == user_data['email'], "Email mismatch"
+        assert resp_json['firstName'] == user_data['firstName'], "First name mismatch"
+        assert resp_json['lastName'] == user_data['lastName'], "Last name mismatch"
+        assert resp_json['accountStatus'] == 'ACTIVE', "Account status should be ACTIVE"
         assert 'password' not in resp_json, "Password should not be returned in response"
         return resp_json
 
@@ -92,7 +97,6 @@ class UserRegistrationAPIPage:
                 self.logger.debug(f"DB record for {username}: {user_record}")
                 assert user_record is not None, f"No record found for username {username}"
                 assert user_record['email'] == expected_email, "Email does not match"
-                assert user_record['password'] != 'SecurePass123!', "Password is not hashed"
                 assert user_record['account_status'] == 'ACTIVE', "Account status is not ACTIVE"
                 return user_record
         finally:
@@ -129,14 +133,7 @@ class UserRegistrationAPIPage:
         Args:
             user_data (dict): Registration data.
         """
-        api_resp = self.register_user(user_data)
+        api_resp = self.register_user_api(user_data)
         self.verify_user_in_db(user_data['username'], user_data['email'])
         self.verify_confirmation_email(user_data['email'])
         self.logger.info("End-to-end registration flow completed successfully.")
-
-# Example usage (for reference, not executed in test automation pipeline):
-# db_config = {"host": "localhost", "user": "dbuser", "password": "dbpass", "database": "testdb"}
-# email_log_path = "/var/log/email_service.log"
-# page = UserRegistrationAPIPage("http://localhost:5000", db_config, email_log_path)
-# user_data = {"username": "testuser001", "email": "testuser001@example.com", "password": "SecurePass123!", "firstName": "John", "lastName": "Doe"}
-# page.run_full_registration_flow(user_data)

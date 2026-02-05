@@ -3,7 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import jwt
 import datetime
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 import requests
 
 class LoginPage:
@@ -18,7 +18,7 @@ class LoginPage:
     EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
-    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")  # Added for TC_LOGIN_003
+    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")
 
     def __init__(self, driver, timeout=10):
         self.driver = driver
@@ -43,9 +43,6 @@ class LoginPage:
         login_btn.click()
 
     def click_forgot_username(self):
-        """
-        Clicks the 'Forgot Username' link to initiate the recovery workflow.
-        """
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
@@ -57,7 +54,6 @@ class LoginPage:
             return None
 
     def is_on_login_page(self):
-        # Check for presence of login form elements
         try:
             self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
             self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
@@ -79,26 +75,9 @@ class LoginPage:
 
     @staticmethod
     def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
-        """
-        Decodes and validates a JWT authentication token.
-        Checks for userId, email, and expiration time (exp claim).
-
-        Args:
-            token (str): JWT token string.
-            secret (str, optional): Secret key for decoding (if required).
-            algorithms (list, optional): List of algorithms to use for decoding (default ['HS256']).
-
-        Returns:
-            dict: Decoded payload if valid.
-
-        Raises:
-            AssertionError: If required claims are missing or token is expired.
-            jwt.DecodeError: If token is invalid.
-        """
         if algorithms is None:
             algorithms = ['HS256']
         try:
-            # Decode without verifying signature if secret is not provided (for test env)
             if secret:
                 payload = jwt.decode(token, secret, algorithms=algorithms)
             else:
@@ -117,23 +96,25 @@ class LoginPage:
             raise AssertionError(f"JWT validation failed: {e}")
 
     @staticmethod
-    def api_login_and_get_token(email: str, password: str) -> str:
+    def login_api(username: str, password: str) -> Dict[str, Any]:
         """
-        Signs in via API and obtains authentication token.
-
+        Sends POST request to /api/auth/login for API-based login.
         Args:
-            email (str): User email.
-            password (str): User password.
+            username (str): Username for login.
+            password (str): Password for login.
         Returns:
-            str: JWT authentication token string.
+            dict: Response JSON with JWT tokens and user details.
         Raises:
-            AssertionError: If login fails or token is not returned.
+            AssertionError: If login fails or required fields are missing.
         """
-        api_url = "https://example-ecommerce.com/api/users/login"
-        payload = {"email": email, "password": password}
-        response = requests.post(api_url, json=payload)
-        assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}. Response: {response.text}"
+        api_url = "https://example-ecommerce.com/api/auth/login"
+        payload = {"username": username, "password": password}
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(api_url, json=payload, headers=headers)
+        assert response.status_code == 200, f"Expected HTTP 200, got {response.status_code}. Response: {response.text}"
         data = response.json()
-        token = data.get("token")
-        assert token, f"Authentication token not found in response: {data}"
-        return token
+        required_fields = ["accessToken", "refreshToken", "tokenType", "userId", "username", "email"]
+        for field in required_fields:
+            assert field in data, f"Missing field {field} in login response"
+        assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
+        return data
