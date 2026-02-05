@@ -1,0 +1,10 @@
+{
+  "LoginPage": {
+    "username_field": "",
+    "password_field": "",
+    "submit_button": ""
+  },
+  "HomePage": {
+    "welcome_message": ""
+  }
+}
