@@ -90,3 +90,30 @@ class LoginPage:
                 "Login did not succeed: Dashboard or User Profile not visible."
         except Exception as e:
             raise AssertionError(f"Login with minimum allowed credentials failed: {e}")
+
+    def login_with_maximum_allowed_credentials_and_verify_success(self):
+        """
+        TC_LOGIN_06_01:
+        1. Navigate to the login page.
+        2. Enter an email address with the maximum allowed length (254 characters).
+           Example: user_with_254_chars_email@example.com
+        3. Enter a password with the maximum allowed length (128 characters).
+           Example: A_128_character_long_password_string
+        4. Click the 'Login' button.
+        5. Verify that the user is successfully logged in and redirected to the dashboard.
+        """
+        self.go_to_login_page()
+        # Example max length email and password
+        max_length_email = "{}@example.com".format("a" * (254 - len("@example.com")))
+        max_length_password = "A" * 128
+        self.enter_email(max_length_email)
+        self.enter_password(max_length_password)
+        self.click_login()
+        # Verification: Wait for dashboard or user profile icon to be visible as sign of successful login
+        try:
+            dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+            assert dashboard_header.is_displayed() or user_profile_icon.is_displayed(), \
+                "Login did not succeed: Dashboard or User Profile not visible."
+        except Exception as e:
+            raise AssertionError(f"Login with maximum allowed credentials failed: {e}")
