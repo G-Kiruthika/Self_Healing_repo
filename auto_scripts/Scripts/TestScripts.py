@@ -8,7 +8,6 @@ from selenium.webdriver.common.by import By
 import pytest
 
 class TestLogin:
-    
     def test_tc_login_001_login_flow(self, driver):
         login_page = LoginPage(driver)
         result = login_page.tc_login_001_login_flow('user@example.com', 'ValidPass123')
@@ -20,14 +19,27 @@ class TestLogin:
         assert result is True
 
     def test_tc_login_002_invalid_email_login(self, driver):
-        """
-        Test Case TC_LOGIN_002:
-        1. Navigate to the login page.
-        2. Enter invalid email format and valid password.
-        3. Click the 'Login' button.
-        4. Verify error message for invalid email format is shown.
-        5. Ensure login is not successful.
-        """
         login_page = LoginPage(driver)
         result = login_page.tc_login_002_invalid_email_login('userexample.com', 'ValidPass123')
         assert result is True
+
+    def test_tc_login_004_required_fields_validation(self, driver):
+        login_page = LoginPage(driver)
+        result = login_page.tc_login_004_required_fields_validation()
+        assert result is True
+
+    def test_tc_login_003(self, driver):
+        """
+        Test Case TC_LOGIN_003:
+        1. Navigate to the login page.
+        2. Enter valid email and incorrect password ('user@example.com', 'WrongPass456').
+        3. Click the 'Login' button.
+        4. Verify error message for incorrect password is shown.
+        5. Verify login is not successful.
+        """
+        login_page = LoginPage(driver)
+        login_page.open_login_page()
+        login_page.login_with_credentials('user@example.com', 'WrongPass456')
+        error_message = login_page.get_authentication_error()
+        assert error_message is not None and error_message != "", "Authentication error message should be displayed for incorrect password."
+        assert login_page.is_login_unsuccessful(), "Login should not be successful with incorrect password."
