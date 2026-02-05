@@ -46,7 +46,6 @@ class LoginPage:
             return None
 
     def is_on_login_page(self):
-        # Check for presence of login form elements
         try:
             self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
             self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
@@ -67,8 +66,32 @@ class LoginPage:
         assert self.is_on_login_page(), "User is not on the login page after failed login."
 
     def click_forgot_username(self):
-        """
-        Clicks the 'Forgot Username' link on the login page to initiate the username recovery workflow.
-        """
         forgot_username_link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         forgot_username_link.click()
+
+    def login_with_min_length_credentials_and_validate(self):
+        """
+        Automates TC_LOGIN_07_01:
+        1. Navigates to the login page.
+        2. Enters an email address with the minimum allowed length (a@b.co).
+        3. Enters a password with the minimum allowed length (Abc12345).
+        4. Clicks the 'Login' button.
+        5. Validates that the user is successfully logged in if credentials are valid.
+        """
+        min_length_email = "a@b.co"
+        min_length_password = "Abc12345"
+
+        self.go_to_login_page()
+        self.enter_email(min_length_email)
+        self.enter_password(min_length_password)
+        self.click_login()
+
+        # Validate successful login by checking for dashboard header and user profile icon
+        try:
+            dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+            assert dashboard_header.is_displayed(), "Dashboard header not displayed after login."
+            assert user_profile_icon.is_displayed(), "User profile icon not displayed after login."
+        except Exception as e:
+            error_message = self.get_error_message()
+            raise AssertionError(f"Login failed with min length credentials. Error: {error_message if error_message else str(e)}")
