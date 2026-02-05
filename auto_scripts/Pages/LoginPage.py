@@ -3,14 +3,14 @@
 Page Object for Login Page using Selenium WebDriver
 
 Executive Summary:
-This update adds support for TC-LOGIN-003: validation of error message and session state when logging in with an invalid password. The new method ensures error handling and session prevention in line with strict security and usability standards.
+This update adds support for TC-LOGIN-004: validation of error message and session state when logging in with an empty email field and valid password. The new method ensures error handling and session prevention in line with strict security and usability standards.
 
 Analysis:
 - Locators and workflows extended for robust error validation and session checks.
 - Adheres to Selenium Python best practices and project coding standards.
 
 Implementation Guide:
-- Use tc_login_003_invalid_password_error_message() to automate and verify the invalid password scenario.
+- Use tc_login_004_empty_email_validation(password) to automate and verify the empty email scenario.
 - Method uses explicit waits, error validation, and session checks.
 
 QA Report:
@@ -226,3 +226,45 @@ class LoginPage:
         # assert not any(c['name'] == 'sessionid' for c in cookies), "Session cookie should not be present after failed login"
         return True
     # --- End of TC_LOGIN_003 steps ---
+
+    # --- Start of TC_LOGIN_004 steps ---
+    def tc_login_004_empty_email_validation(self, password: str) -> bool:
+        """
+        TC-LOGIN-004: Login with Empty Email and Valid Password
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Leave the email field empty [Test Data: Email: (empty)]
+        3. Enter valid password [Test Data: Password: ValidPass123!]
+        4. Click on the Login button [Test Data: N/A]
+        5. Verify validation error is displayed: 'Email is required' or 'Please fill in all required fields'
+        6. Verify login is not processed: user remains on login page without authentication
+        """
+        self.load()
+        assert self.is_displayed(), "Login page is not displayed"
+        # Leave email field empty
+        email_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_elem.clear()
+        # Enter valid password
+        self.enter_password(password)
+        # Click login
+        self.click_login()
+        # Wait and verify validation error
+        try:
+            validation_errors = self.driver.find_elements(By.CSS_SELECTOR, ".invalid-feedback")
+            error_texts = [e.text for e in validation_errors if e.is_displayed()]
+            assert any("Email is required" in t or "Please fill in all required fields" in t for t in error_texts), "Expected validation error for empty email not displayed"
+        except Exception as e:
+            raise AssertionError(f"Validation error check failed: {e}")
+        # Ensure user remains on login page
+        current_url = self.driver.current_url
+        assert self.URL in current_url, f"User did not remain on login page, current URL: {current_url}"
+        # Optionally, check for absence of dashboard/profile icon
+        try:
+            assert not self.is_dashboard_displayed(), "Dashboard should not be displayed for invalid login"
+        except:
+            pass
+        try:
+            assert not self.is_user_profile_icon_displayed(), "User profile icon should not be visible for invalid login"
+        except:
+            pass
+        return True
+    # --- End of TC_LOGIN_004 steps ---
