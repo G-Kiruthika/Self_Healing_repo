@@ -5,5 +5,11 @@
     "password_input": {"by": "id", "value": "password"},
     "signup_button": {"by": "id", "value": "signup"},
     "duplicate_email_error": {"by": "xpath", "value": "//div[contains(@class, 'error') and contains(text(), 'already registered')]"}
+  },
+  "CartPage": {
+    "product_id_input": {"by": "id", "value": "product_id_input"},
+    "quantity_input": {"by": "id", "value": "quantity_input"},
+    "add_to_cart_button": {"by": "id", "value": "add_to_cart_button"},
+    "stock_error_message": {"by": "xpath", "value": "//div[contains(@class, 'error') and contains(text(), 'stock exceeded')]"}
   }
 }
