@@ -1,24 +1,25 @@
 # Executive Summary:
-# This PageClass implements the login page automation for TC_LOGIN_003 using Selenium in Python.
+# This PageClass implements the login page automation for TC_LOGIN_003 and TC_LOGIN_004 using Selenium in Python.
 # Updates:
 # - Added get_authentication_error() to fetch error messages for incorrect credentials.
 # - Added is_login_unsuccessful() to verify absence of dashboard/user icon after failed login.
+# - Added get_empty_field_prompt() and get_required_field_errors() for TC_LOGIN_004.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
 # - Strict locator mapping from Locators.json
 # - Defensive coding using Selenium WebDriverWait and exception handling
-# - Functions for navigation, login, error validation, and negative login outcome
+# - Functions for navigation, login, error validation, empty field checks, and negative login outcome
 # - Existing methods are preserved and new methods are appended
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use open_login_page(), login_with_credentials(), get_authentication_error(), and is_login_unsuccessful() to automate TC_LOGIN_003 scenario
+# - Use open_login_page(), login_with_credentials(), get_empty_field_prompt(), get_required_field_errors(), get_authentication_error(), and is_login_unsuccessful() to automate TC_LOGIN_004 scenario
 # - Example usage:
 #     page = LoginPage(driver)
 #     page.open_login_page()
-#     page.login_with_credentials('user@example.com', 'WrongPass456')
-#     assert page.get_authentication_error() is not None
+#     page.login_with_credentials('', '')
+#     assert page.get_empty_field_prompt() is not None or page.get_required_field_errors() != []
 #     assert page.is_login_unsuccessful()
 
 # Quality Assurance Report:
@@ -117,3 +118,24 @@ class LoginPage:
             return len(dashboard) == 0 and len(user_icon) == 0
         finally:
             self.driver.implicitly_wait(10)
+
+    def get_empty_field_prompt(self):
+        '''Returns the prompt shown when mandatory fields are left empty.'''
+        try:
+            prompt_elem = self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT))
+            return prompt_elem.text
+        except TimeoutException:
+            return None
+
+    def get_required_field_errors(self):
+        '''Returns a list of required field error messages for empty email/password.'''
+        errors = []
+        try:
+            error_elems = self.driver.find_elements(*self.VALIDATION_ERROR)
+            for elem in error_elems:
+                text = elem.text.strip()
+                if text:
+                    errors.append(text)
+        except Exception:
+            pass
+        return errors
