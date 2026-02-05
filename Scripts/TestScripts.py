@@ -57,5 +57,27 @@ class TestCartCreationUnauthorized(unittest.TestCase):
         unauthorized_error_displayed = self.cart_page.attempt_create_cart()
         self.assertTrue(unauthorized_error_displayed, "Unauthorized access error should be displayed when attempting to create a cart without authentication.")
 
+class TestCartExceedStock(unittest.TestCase):
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.driver.get('http://your-app-url/cart')
+        self.cart_page = CartPage(self.driver)
+
+    def tearDown(self):
+        self.driver.quit()
+
+    def test_add_product_exceed_stock_error(self):
+        """
+        TC_CART_005: Attempt to add a product to cart with quantity greater than available stock.
+        System returns error; product not added.
+        """
+        product_id = '12345'
+        quantity = 101
+        add_result = self.cart_page.add_product_to_cart(product_id, quantity)
+        # Expect operation may succeed (button click), but error should be shown
+        error_message = self.cart_page.get_stock_error_message()
+        self.assertIsNotNone(error_message, "Stock exceeded error message should be displayed when adding quantity greater than available stock.")
+        self.assertIn('stock exceeded', error_message.lower(), "Error message should indicate stock exceeded.")
+
 if __name__ == '__main__':
     unittest.main()
