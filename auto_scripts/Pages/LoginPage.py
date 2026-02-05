@@ -7,10 +7,12 @@ Detailed Analysis:
 - Defensive coding using Selenium WebDriverWait and exception handling
 - Functions for login, error handling, security validation, and navigation to password recovery
 - New method: tc_login_005_login_with_empty_password() implements TC-LOGIN-005 steps
+- New method: tc_login_012_sql_injection_login() implements TC-LOGIN-012 steps for SQL injection prevention verification
 
 Implementation Guide:
 - Instantiate LoginPage with a Selenium WebDriver instance
 - Use tc_login_005_login_with_empty_password() to automate TC-LOGIN-005 scenario
+- Use tc_login_012_sql_injection_login() to automate TC-LOGIN-012 SQL injection scenario
 
 Quality Assurance Report:
 - All locator references validated against Locators.json
@@ -129,3 +131,69 @@ class LoginPage:
             return True
         except Exception as e:
             raise AssertionError(f"TC-LOGIN-005 failed: {str(e)}")
+
+    # --- TC-LOGIN-012: SQL Injection Login Negative Test ---
+    def tc_login_012_sql_injection_login(self, email: str, password: str) -> bool:
+        '''
+        TC-LOGIN-012 Steps:
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter SQL injection payload in email field [Test Data: Email: admin' OR '1'='1]
+        3. Enter any password [Test Data: Password: password123]
+        4. Click on the Login button
+        5. Verify no unauthorized access is granted
+        Acceptance Criteria: TS-010
+        '''
+        try:
+            # Step 1: Navigate to login page
+            self.driver.get(self.URL)
+            login_page_displayed = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD)).is_displayed()
+            assert login_page_displayed, "Login page is not displayed"
+
+            # Step 2: Enter SQL injection payload in email field
+            email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            email_input.clear()
+            email_input.send_keys(email)
+            assert email_input.get_attribute("value") == email, "SQL injection payload not entered correctly"
+
+            # Step 3: Enter any password
+            password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            password_input.clear()
+            password_input.send_keys(password)
+            assert password_input.get_attribute("value") == password, "Password is not entered correctly"
+
+            # Step 4: Click on the Login button
+            login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
+            login_btn.click()
+
+            # Step 5: Verify login fails with appropriate error message; SQL injection is prevented
+            error_displayed = False
+            error_text = ""
+            try:
+                validation_error = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
+                error_displayed = validation_error.is_displayed()
+                error_text = validation_error.text
+            except TimeoutException:
+                try:
+                    error_msg = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+                    error_displayed = error_msg.is_displayed()
+                    error_text = error_msg.text
+                except TimeoutException:
+                    error_displayed = False
+            assert error_displayed, "No error message displayed after SQL injection attempt"
+            assert ("invalid" in error_text.lower() or "error" in error_text.lower() or "unauthorized" in error_text.lower()), \
+                f"Unexpected error message after SQL injection: {error_text}"
+
+            # Verify user is not authenticated and database is not compromised
+            current_url = self.driver.current_url
+            assert self.URL in current_url, "User was redirected away from login page; unauthorized access may have occurred"
+            dashboard_present = False
+            try:
+                dashboard_present = self.driver.find_element(*self.DASHBOARD_HEADER).is_displayed()
+            except NoSuchElementException:
+                dashboard_present = False
+            assert not dashboard_present, "Dashboard is displayed; unauthorized access granted after SQL injection"
+
+            # Optionally, check for additional signs of compromise (not implemented here)
+            return True
+        except Exception as e:
+            raise AssertionError(f"TC-LOGIN-012 failed: {str(e)}")
