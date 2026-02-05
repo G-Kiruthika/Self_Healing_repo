@@ -48,7 +48,7 @@ class TestLogin:
         """
         login_page = LoginPage(driver)
         result = login_page.tc_login_003_invalid_password(
-            username="testuser@example.com",
+            email="testuser@example.com",
             invalid_password="WrongPassword123"
         )
         assert result, "TC_LOGIN_003 failed: Error message not displayed or user not on login page after invalid password"
