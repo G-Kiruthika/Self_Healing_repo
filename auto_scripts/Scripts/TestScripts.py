@@ -87,20 +87,20 @@ class TestLoginFunctionality:
             raise
 
     def test_TC_SCRUM_115_002(self):
-        """Test Case TC-SCRUM-115-002: Invalid username with valid password (error message validation)"""
+        """Test Case TC_SCRUM_115_002: Invalid username with valid password (error message validation)"""
         try:
             result = self.login_page.validate_invalid_username_valid_password(
                 invalid_username="invaliduser@example.com",
                 valid_password="ValidPass123!"
             )
             assert result, "Error message for invalid username and valid password not displayed or incorrect, or user did not remain on login page."
-            print("TC-SCRUM-115-002 passed: Correct error message displayed and user remained on login page.")
+            print("TC-SCRUM-115_002 passed: Correct error message displayed and user remained on login page.")
         except Exception as e:
-            print(f"TC-SCRUM-115-002 failed: {e}")
+            print(f"TC-SCRUM-115_002 failed: {e}")
             raise
 
     def test_TC_SCRUM_115_003(self):
-        """Test Case TC-SCRUM-115-003: Invalid password and account lockout flow"""
+        """Test Case TC_SCRUM_115_003: Invalid password and account lockout flow"""
         try:
             result = self.login_page.tc_scrum_115_003_invalid_login_and_lockout(
                 username="validuser@example.com",
@@ -111,7 +111,7 @@ class TestLoginFunctionality:
             lockout_message = result.get("lockout_message", "")
             assert "Invalid username or password. Please try again." in last_error, f"Unexpected error message: {last_error}"
             assert "Account locked due to multiple failed login attempts. Please try again after 15 minutes or reset your password." in lockout_message, f"Unexpected lockout message: {lockout_message}"
-            print("TC-SCRUM-115-003 passed: Correct error and lockout messages displayed after multiple failed login attempts.")
+            print("TC-SCRUM-115_003 passed: Correct error and lockout messages displayed after multiple failed login attempts.")
         except Exception as e:
-            print(f"TC-SCRUM-115-003 failed: {e}")
+            print(f"TC-SCRUM-115_003 failed: {e}")
             raise
