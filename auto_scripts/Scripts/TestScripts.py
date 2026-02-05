@@ -112,3 +112,43 @@ def test_TC_SCRUM_96_010_cart_api_e2e():
     assert any(item["productId"] == product_id and item["quantity"] == quantity for item in items), \
         f"Product {product_id} with quantity {quantity} not found in cart details"
     print("TC-SCRUM-96-010 Cart API end-to-end test PASSED.")
+
+# TC-SCRUM96_002: User Registration, Duplicate Registration, and DB Verification Test
+from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+import pytest
+
+def test_TC_SCRUM96_002_user_registration_duplicate_and_db_verification():
+    """
+    Test Case TC_SCRUM96_002:
+    1. Register a user with username 'duplicateuser' and email 'first@example.com'.
+    2. Attempt to register another user with the same username but different email 'second@example.com'.
+    3. Verify only one user record exists in the database for username 'duplicateuser' and email 'first@example.com'.
+    """
+    user_registration_page = UserRegistrationAPIPage()
+    # Step 1: Register user
+    user_data_first = {
+        "username": "duplicateuser",
+        "email": "first@example.com",
+        "password": "Pass123!",
+        "firstName": "First",
+        "lastName": "User"
+    }
+    jwt_token = user_registration_page.register_user_and_get_jwt(user_data_first)
+    assert jwt_token is not None, "JWT token should be returned for successful registration"
+
+    # Step 2: Attempt duplicate registration
+    user_data_second = {
+        "username": "duplicateuser",
+        "email": "second@example.com",
+        "password": "Pass456!",
+        "firstName": "Second",
+        "lastName": "User"
+    }
+    duplicate_result = user_registration_page.attempt_duplicate_registration(user_data_second)
+    assert duplicate_result["status_code"] == 409, "API should return HTTP 409 Conflict for duplicate username"
+    assert "username" in duplicate_result["error_message"].lower(), "Error message should indicate username conflict"
+
+    # Step 3: Verify single user in DB
+    db_check = user_registration_page.verify_single_user_in_db("duplicateuser", "first@example.com")
+    assert db_check is True, "Only one user record should exist in DB with expected email"
+    print("TC_SCRUM96_002 user registration, duplicate, and DB verification PASSED.")
