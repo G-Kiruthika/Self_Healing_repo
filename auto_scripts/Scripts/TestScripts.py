@@ -135,3 +135,38 @@ class TestLoginFunctionality:
         # Step 3: Verify username recovery page is displayed
         self.username_recovery_page.go_to()
         assert self.username_recovery_page.is_loaded(), "Username recovery page not loaded or instructions not visible."
+
+    def test_tc_login_001_full_flow(self):
+        """
+        TC-LOGIN-001: Full Login Flow Validation
+        Steps:
+        1. Navigate to the e-commerce website login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter valid registered email address in the email field [Test Data: Email: testuser@example.com]
+        3. Enter correct password in the password field [Test Data: Password: ValidPass123!]
+        4. Click on the Login button
+        5. Verify user is authenticated and redirected to dashboard/home page
+        6. Verify user session is established (username in header, session cookie set)
+        Acceptance Criteria: TS-001
+        """
+        url = "https://ecommerce.example.com/login"
+        email = "testuser@example.com"
+        password = "ValidPass123!"
+        # Step 1: Navigate to login page
+        login_page_displayed = self.login_page.navigate_to_login(url)
+        assert login_page_displayed, "Login page not displayed."
+        # Step 2: Enter email
+        email_accepted = self.login_page.enter_email(email)
+        assert email_accepted, "Email not accepted or not displayed correctly."
+        # Step 3: Enter password
+        password_accepted = self.login_page.enter_password(password)
+        assert password_accepted, "Password not accepted or not masked."
+        # Step 4: Click login
+        login_clicked = self.login_page.click_login()
+        assert login_clicked, "Login button not clickable."
+        # Step 5: Authentication and redirection
+        authenticated = self.login_page.is_authenticated()
+        assert authenticated, "User not authenticated or not redirected to dashboard."
+        # Step 6: Session verification
+        session_established = self.login_page.is_session_established()
+        assert session_established, "Session not established or username not displayed in header."
+        return True
