@@ -169,7 +169,7 @@ class ProductSearchAPIPage:
 # Implementation Guide:
 # 1. Instantiate ProductSearchAPIPage with session and db_config.
 # 2. Use tc_scrum96_008_full_workflow(products, 'laptop') to run the test case end-to-end.
-#    - products: List of dicts, e.g. [{"productId": 101, "name": "Laptop Pro", ...}, {"productId": 102, "name": "Laptop Air", ...}]
+#    - products: List of dicts, e.g. [{"productId": 101, "name": "Laptop Pro", ...}, {"productId": 102, "Laptop Air", ...}]
 #    - db_config: Dict with DB connection params.
 #
 # Quality Assurance Report:
