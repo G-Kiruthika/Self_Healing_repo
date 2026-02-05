@@ -201,17 +201,18 @@ class TestLogin:
         password_recovery_page.enter_email_and_submit('user@example.com')
         assert password_recovery_page.is_success_message_displayed(), "Password reset success message should be displayed after submitting recovery request."
 
-    def test_tc_login_015_case_sensitivity_enforcement(self, driver):
+    def test_tc_login_013_account_lockout(self, driver):
         """
-        Test Case TC_LOGIN_015:
-        1. Navigate to the login page.
-        2. Enter email/username and password with different cases (email: 'USER@EXAMPLE.COM', password: 'VALIDPASS123').
-        3. Click the 'Login' button.
-        4. Validate case sensitivity enforcement as per requirement.
-        5. Assert that result['case_sensitivity_enforced'] is True or False.
+        Test Case TC_LOGIN_013: Account Lockout After Multiple Failed Login Attempts
+        Steps:
+            1. Navigate to the login page.
+            2. Enter incorrect password for a valid email multiple times (email: 'user@example.com', password: 'WrongPass456', attempts: 5).
+            3. Assert that after threshold attempts, the account is locked or login is throttled, and error messages are validated.
         """
         login_page = LoginPage(driver)
-        result = login_page.execute_tc_login_015_case_sensitivity_enforcement(email='USER@EXAMPLE.COM', password='VALIDPASS123')
-        assert result['case_sensitivity_enforced'] is True or result['case_sensitivity_enforced'] is False, f"Case sensitivity enforcement result is not boolean: {result['case_sensitivity_enforced']}"
-        if result['error_message']:
-            print(f"Login error message: {result['error_message']}")
+        result = login_page.execute_tc_login_013_account_lockout('user@example.com', 'WrongPass456', 5)
+        assert result['locked_or_throttled'] is True, f"Account should be locked or login throttled. Error: {result['final_error_message']}"
+        assert any(word in result['final_error_message'].lower() for word in ['locked', 'throttle', 'too many']), f"Final error message should indicate lockout or throttling. Message: {result['final_error_message']}"
+        assert result['login_unsuccessful'] is True, "Login should not be successful after lockout/throttling."
+        assert result['attempts'] == 5, "There should be 5 login attempts."
+        assert isinstance(result['all_error_messages'], list) and len(result['all_error_messages']) == 5, "Error messages list should have 5 entries."
