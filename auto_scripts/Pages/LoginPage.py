@@ -1,6 +1,8 @@
 import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
+import base64
+import json
 
 class LoginPage:
     def __init__(self, driver: WebDriver, base_url: str):
@@ -46,6 +48,29 @@ class LoginPage:
     def verify_no_token(self, response: requests.Response):
         resp_json = response.json()
         assert "token" not in resp_json or not resp_json.get("token"), "Authentication token should not be present in response"
+
+    def validate_jwt_token(self, token: str):
+        """
+        Decodes a JWT token and validates it contains 'userId', 'email', and 'exp' fields.
+        Raises AssertionError if any validation fails.
+        """
+        try:
+            # JWT format: header.payload.signature
+            parts = token.split('.')
+            assert len(parts) == 3, "Invalid JWT token format"
+
+            payload_b64 = parts[1]
+            # Pad base64 if necessary
+            padding = '=' * (-len(payload_b64) % 4)
+            payload_b64 += padding
+            decoded_bytes = base64.urlsafe_b64decode(payload_b64)
+            payload = json.loads(decoded_bytes.decode('utf-8'))
+
+            assert 'userId' in payload, "JWT token missing 'userId'"
+            assert 'email' in payload, "JWT token missing 'email'"
+            assert 'exp' in payload, "JWT token missing 'exp' (expiration time)"
+        except Exception as e:
+            raise AssertionError(f"JWT token validation failed: {e}")
 
     # Example usage in test case
     # def test_api_signin_failure(self):
