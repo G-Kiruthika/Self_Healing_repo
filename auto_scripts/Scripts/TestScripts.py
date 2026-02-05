@@ -112,11 +112,13 @@ def test_TC_SCRUM96_002_duplicate_user_registration_api():
     first_name2 = "Second"
     last_name2 = "User"
     # Step 1: Register first user
-    resp1 = page.register_user(username, email1, password1, first_name1, last_name1)
-    assert resp1.status_code == 201, f"Expected 201 Created, got {resp1.status_code}"
-    # Step 2: Register duplicate user
-    resp2 = page.register_duplicate_user(username, email2, password2, first_name2, last_name2)
-    page.validate_conflict_response(resp2)
-    # Step 3: DB validation
-    db_count = page.get_user_count_by_username(username)
-    assert db_count == 1, f"Expected exactly 1 user record for username '{username}', found {db_count}"
+    resp1 = page.register_user_api(username, email1, password1, first_name1, last_name1)
+    assert resp1.status_code == 201, f"Expected 201 Created, got {resp1.status_code}, response: {resp1.text}"
+    # Step 2: Attempt duplicate registration
+    resp2 = page.register_duplicate_user_api(username, email2, password2, first_name2, last_name2)
+    assert resp2.status_code == 409, f"Expected 409 Conflict, got {resp2.status_code}, response: {resp2.text}"
+    assert "username already exists" in resp2.text.lower(), f"Expected error message for duplicate username, got: {resp2.text}"
+    # Step 3: Verify only one user record exists in DB
+    count, db_email = page.verify_single_user_in_db(username, email1)
+    assert count == 1, f"Expected 1 user record, found {count}"
+    assert db_email == email1, f"Expected email '{email1}', got {db_email}"
