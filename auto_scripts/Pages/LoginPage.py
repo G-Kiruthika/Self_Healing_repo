@@ -2,21 +2,24 @@
 # This PageClass implements the login page automation for an e-commerce application using Selenium in Python.
 # It now supports:
 # - TC014: Login attempt with inactive account and verification of 'Account inactive' error message.
+# - TC015: Password masking verification and copy-paste restriction detection.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
 # - Strict locator mapping from Locators.json
 # - Defensive coding using Selenium WebDriverWait and exception handling
-# - Functions for navigation, UI validation, and error message workflow
-# - New/updated method: login_and_verify_inactive_account() implements TC014 steps
+# - Functions for navigation, UI validation, password field masking, and copy-paste restriction
+# - New/updated method: is_copy_paste_restricted_on_password() implements TC015 step 2
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use login_and_verify_inactive_account(email, password) to automate TC014 scenario
+# - Use enter_password(password) to automate TC015 step 1 (masking verification)
+# - Use is_copy_paste_restricted_on_password() to automate TC015 step 2 (copy-paste restriction)
 # - Example usage:
 #     page = LoginPage(driver)
-#     result = page.login_and_verify_inactive_account('inactiveuser@example.com', 'ValidPassword123')
-# - Returns True if 'Account inactive' error message is displayed, False otherwise
+#     page.enter_password('ValidPassword123')
+#     assert page.is_password_field_masked()
+#     assert page.is_copy_paste_restricted_on_password()
 
 # Quality Assurance Report:
 # - All locator references validated against Locators.json
@@ -39,6 +42,8 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, WebDriverException
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 import time
 import concurrent.futures
 from typing import List, Dict, Tuple
@@ -84,6 +89,43 @@ class LoginPage:
         # Verify password is masked
         input_type = password_input.get_attribute("type")
         assert input_type == "password", "Password field is not masked!"
+
+    def is_password_field_masked(self):
+        """
+        Returns True if password field is masked (type='password'), False otherwise.
+        """
+        password_field = self.driver.find_element(By.ID, "login-password")
+        return password_field.get_attribute("type") == "password"
+
+    def is_copy_paste_restricted_on_password(self):
+        """
+        Returns True if copy-paste is restricted on password field, False otherwise.
+        Attempts to paste and copy to/from password field and verifies restriction.
+        """
+        password_field = self.driver.find_element(By.ID, "login-password")
+        # Try to paste into the password field
+        password_field.clear()
+        ActionChains(self.driver).move_to_element(password_field).click().perform()
+        password_field.send_keys(Keys.CONTROL, 'v')  # Simulate paste
+        pasted_value = password_field.get_attribute("value")
+        paste_restricted = pasted_value == ''  # Should be empty if paste is blocked
+
+        # Try to copy from the password field
+        password_field.clear()
+        password_field.send_keys("TestPassword123")
+        password_field.send_keys(Keys.CONTROL, 'a')  # Select all
+        password_field.send_keys(Keys.CONTROL, 'c')  # Copy
+        # Try to paste into a temporary input to check clipboard
+        self.driver.execute_script("var temp=document.createElement('input'); temp.id='temp-input'; document.body.appendChild(temp);")
+        temp_input = self.driver.find_element(By.ID, "temp-input")
+        temp_input.click()
+        temp_input.send_keys(Keys.CONTROL, 'v')
+        copied_value = temp_input.get_attribute("value")
+        copy_restricted = copied_value == ''  # Should be empty if copy is blocked
+
+        # Clean up
+        self.driver.execute_script("document.body.removeChild(document.getElementById('temp-input'));")
+        return paste_restricted and copy_restricted
 
     def login(self, email: str, password: str) -> Tuple[bool, float, str]:
         """
