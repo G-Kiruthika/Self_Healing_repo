@@ -62,3 +62,20 @@ class TestLoginFunctionality:
         password = 'ValidPass123!'
         result = self.login_page.tc_login_001_valid_login_flow(url, email, password)
         assert result, 'Valid login flow failed: Dashboard/session not established.'
+
+    def test_tc_login_002_invalid_login_flow(self):
+        """
+        TC-LOGIN-002: Invalid login scenario
+        Steps:
+        1. Navigate to login page
+        2. Enter invalid email and password
+        3. Click Login button
+        4. Verify error message is displayed and user remains on login page
+        Test Data:
+            email: 'invaliduser@example.com'
+            password: 'SomePassword123'
+        """
+        email = 'invaliduser@example.com'
+        password = 'SomePassword123'
+        result = self.login_page.tc_login_002_invalid_login_flow(email, password)
+        assert result, 'Invalid login scenario failed: Error message not shown or user did not remain on login page.'
