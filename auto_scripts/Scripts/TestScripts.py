@@ -3,6 +3,7 @@
 
 import unittest
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from auto_scripts.Pages.LoginPage import LoginPage
 
 class TestLoginPage(unittest.TestCase):
@@ -24,24 +25,29 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    def test_tc019_login_with_unicode_and_special_characters(self):
+    def test_tc_login_07_remember_me_session_persistence(self):
         """
-        Test Case TC019:
+        Test Case TC_LOGIN_07:
         1. Navigate to login page.
-        2. Enter valid email and password containing special characters and Unicode (e.g., 'üser+name@example.com' / 'P@sswørd!🔒').
-        3. Verify that the fields accept input.
-        4. Submit login.
-        5. Assert that login is successful (dashboard and user profile icon are displayed).
+        2. Enter valid registered email and password.
+        3. Check the 'Remember Me' option.
+        4. Click on the 'Login' button.
+        5. Close and reopen the browser, revisit the site, and verify session persists.
         """
         driver = webdriver.Chrome()
         page = LoginPage(driver)
-        email = "üser+name@example.com"
-        password = "P@sswørd!🔒"
         try:
-            result = page.login_with_unicode_and_special_characters(email, password)
-            self.assertTrue(result, "TC019 failed: Unicode/special character login unsuccessful or fields did not accept input.")
+            page.login_with_remember_me_and_validate_session(
+                username='user1@example.com',
+                password='ValidPassword123',
+                home_url='https://example-ecommerce.com/',
+                user_profile_locator=(By.CSS_SELECTOR, '.user-profile-name')
+            )
         finally:
-            driver.quit()
+            try:
+                driver.quit()
+            except Exception:
+                pass
 
 if __name__ == "__main__":
     unittest.main()
