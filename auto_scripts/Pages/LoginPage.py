@@ -4,20 +4,21 @@
 # - TC014: Login attempt with inactive account and verification of 'Account inactive' error message.
 # - TC015: Password masking verification and copy-paste restriction detection.
 # - TC_LOGIN_05: Attempt to login with empty password and verify 'Password is required' error message.
+# - TC017: Invalid login triggers error message, validates clear text and accessibility for screen readers.
 # - All locators mapped from Locators.json, structured for maintainability and extensibility.
 
 # Detailed Analysis:
 # - Strict locator mapping from Locators.json
 # - Defensive coding using Selenium WebDriverWait and exception handling
 # - Functions for navigation, UI validation, password field masking, and copy-paste restriction
-# - New/updated method: tc_login_05_empty_password_error() implements TC_LOGIN_05 steps
+# - New/updated method: tc017_invalid_login_error_accessibility() implements TC017 steps
 
 # Implementation Guide:
 # - Instantiate LoginPage with a Selenium WebDriver instance
-# - Use tc_login_05_empty_password_error() to automate TC_LOGIN_05 scenario
+# - Use tc017_invalid_login_error_accessibility() to automate TC017 scenario
 # - Example usage:
 #     page = LoginPage(driver)
-#     page.tc_login_05_empty_password_error('user1@example.com')
+#     page.tc017_invalid_login_error_accessibility('user@example.com', 'WrongPassword')
 
 # Quality Assurance Report:
 # - All locator references validated against Locators.json
@@ -276,4 +277,48 @@ class LoginPage:
             return True
         except (TimeoutException, AssertionError) as e:
             print(f"TC_LOGIN_05 failed: {e}")
+            return False
+
+    # --- TC017: Invalid Login Error Message Accessibility Verification ---
+    def tc017_invalid_login_error_accessibility(self, email: str, password: str, expected_error: str = None) -> bool:
+        """
+        TC017: Trigger error message by invalid login and validate that error message is displayed in clear text and accessible to screen readers.
+        Steps:
+        1. Navigate to login page
+        2. Enter invalid credentials (user@example.com / WrongPassword)
+        3. Click on 'Login' button
+        4. Verify error message is displayed in clear text
+        5. Verify error message is accessible to screen readers (ARIA attributes)
+        Acceptance Criteria: 13
+        Args:
+            email (str): Email to use for login
+            password (str): Password to use for login
+            expected_error (str): Optionally, expected error message text
+        Returns:
+            bool: True if error message is displayed and accessible, False otherwise
+        """
+        self.go_to()
+        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_input.clear()
+        email_input.send_keys(email)
+        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_input.clear()
+        password_input.send_keys(password)
+        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT))
+        login_btn.click()
+        try:
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+            error_text = error_elem.text.strip()
+            assert error_text != "", "Error message is not displayed in clear text!"
+            if expected_error:
+                assert expected_error in error_text, f"Expected error '{expected_error}', got '{error_text}'"
+            # Accessibility check: ARIA attributes
+            aria_live = error_elem.get_attribute("aria-live")
+            aria_role = error_elem.get_attribute("role")
+            # Acceptable values: aria-live should be 'assertive' or 'polite', role should be 'alert'
+            assert aria_live in ["assertive", "polite"], f"Error message aria-live attribute not set correctly (got '{aria_live}')"
+            assert aria_role == "alert", f"Error message role attribute not set correctly (got '{aria_role}')"
+            return True
+        except (TimeoutException, AssertionError) as e:
+            print(f"TC017 failed: {e}")
             return False
