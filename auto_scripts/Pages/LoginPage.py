@@ -70,7 +70,7 @@ class LoginPage:
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         resp_json = response.json()
         assert "error" in resp_json, "No error message in response"
-        assert resp_json["error"] == expected_error, f"Expected error '{expected_error}', got '{resp_json['error']}"'
+        assert resp_json["error"] == expected_error, f"Expected error '{expected_error}', got '{resp_json['error']}'"
 
     def verify_no_token_and_no_session(self, response: requests.Response):
         """
@@ -107,101 +107,3 @@ class LoginPage:
     # If login fails, check credentials and endpoint. If token/session appears, check backend API.
     # Future Considerations:
     # Extend session validation as schema evolves; add DB/session store checks if required.
-
-    # --- TC_SCRUM96_004 additions ---
-    def decode_and_validate_jwt(self, token: str, expected_username: str, secret_key: str, algorithms: list = ["HS256"]) -> dict:
-        """
-        Decodes and validates a JWT token.
-        - Checks structure, claims (sub, exp, iat), expiration (24h), and signature.
-        - Ensures subject claim matches expected_username.
-        - Returns decoded payload if valid, raises AssertionError if not.
-        """
-        import jwt
-        from jwt import InvalidTokenError, ExpiredSignatureError, DecodeError
-        from datetime import datetime, timedelta, timezone
-
-        try:
-            # Decode and verify signature & claims
-            payload = jwt.decode(token, secret_key, algorithms=algorithms)
-        except ExpiredSignatureError:
-            raise AssertionError("JWT token has expired")
-        except InvalidTokenError as e:
-            raise AssertionError(f"Invalid JWT token: {str(e)}")
-        except DecodeError as e:
-            raise AssertionError(f"JWT decode error: {str(e)}")
-
-        # Validate required claims
-        assert "sub" in payload, "JWT 'sub' (subject) claim missing"
-        assert "exp" in payload, "JWT 'exp' (expiration) claim missing"
-        assert "iat" in payload, "JWT 'iat' (issued at) claim missing"
-
-        # Check subject
-        assert payload["sub"] == expected_username, f"JWT subject mismatch: expected '{expected_username}', got '{payload['sub']}"'
-
-        # Check expiration: exactly 24 hours after issued-at
-        issued_at = datetime.fromtimestamp(payload["iat"], tz=timezone.utc)
-        expiration = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
-        expected_expiration = issued_at + timedelta(hours=24)
-        assert abs((expiration - expected_expiration).total_seconds()) < 5, (
-            f"JWT expiration not 24h after issued-at: issued at {issued_at}, exp {expiration}"
-        )
-
-        # Optionally, check current time is before expiration
-        now = datetime.now(timezone.utc)
-        assert now < expiration, "JWT token is expired (current time after exp)"
-
-        # If all checks pass, return payload
-        return payload
-
-    # --- TC_SCRUM96_005 additions ---
-    def verify_failed_login_audit_log(self, username: str, start_time: datetime.datetime, end_time: datetime.datetime, log_fetcher_func):
-        """
-        Verifies that a failed login attempt is logged in security audit logs with the correct username, timestamp, and source IP.
-        Args:
-            username (str): The username attempted for login.
-            start_time (datetime): Start time to filter logs.
-            end_time (datetime): End time to filter logs.
-            log_fetcher_func (callable): A function that retrieves logs between start_time and end_time.
-        Raises:
-            AssertionError: If no matching log entry is found.
-        Returns:
-            dict: The log entry found.
-        """
-        logs = log_fetcher_func(start_time, end_time)
-        filtered = [entry for entry in logs if entry.get('username') == username and entry.get('action') == 'login_failed']
-        assert filtered, f"No audit log found for failed login attempt by {username} in the given time window."
-        log_entry = filtered[0]
-        assert 'timestamp' in log_entry, "Log entry missing timestamp"
-        assert 'source_ip' in log_entry, "Log entry missing source_ip"
-        # Optionally, check timestamp within window
-        ts = log_entry['timestamp']
-        assert start_time.timestamp() <= ts <= end_time.timestamp(), f"Log timestamp {ts} not in window {start_time} - {end_time}"
-        return log_entry
-
-#
-# Executive Summary:
-# This PageClass is updated for TC_SCRUM96_005. It now supports API login with non-existent users, verifies strict 401 error handling, ensures no JWT token is returned, and validates that failed login attempts are logged in audit logs with all required fields. All existing methods are preserved, and new code is appended for audit log verification.
-#
-# Detailed Analysis:
-# - Existing workflows for API login and error validation are reused.
-# - New method verify_failed_login_audit_log enables verification of security logs for failed login attempts.
-# - The log_fetcher_func parameter allows integration with any log source (file, DB, SIEM, etc) for flexibility.
-#
-# Implementation Guide:
-# 1. Use api_auth_login() to send login request with a non-existent username.
-# 2. Use verify_auth_failure() and verify_no_token_and_no_session() to validate API error handling.
-# 3. Use verify_failed_login_audit_log() with a log fetcher to validate audit logs (pass a callable for log retrieval).
-#
-# Quality Assurance Report:
-# - All assertions provide strict validation of API response and audit log schema.
-# - Code follows Python and Selenium best practices.
-# - New logic does not alter or break existing workflows.
-#
-# Troubleshooting Guide:
-# - If audit log verification fails, check log ingestion latency and fetcher correctness.
-# - If API returns unexpected fields, check backend error handling implementation.
-#
-# Future Considerations:
-# - Integrate log fetcher with production SIEM or log management solution.
-# - Extend log schema validation as requirements evolve.
-#
