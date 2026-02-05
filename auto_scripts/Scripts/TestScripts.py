@@ -17,22 +17,22 @@ class TestLoginPage(unittest.TestCase):
         1. Navigate to the login screen.
         2. Click on 'Forgot Username' link.
         3. Follow the instructions to recover username.
-        4. Assert that username recovery instructions are followed and confirmation or error is retrieved.
+        4. Assert that username recovery instructions are followed and username is retrieved.
         """
         driver = webdriver.Chrome()
         try:
             login_page = LoginPage(driver)
             login_page.open_login_page()
             self.assertTrue(login_page.is_on_login_page(), "Login screen is not displayed.")
-            clicked = login_page.click_forgot_username()
-            self.assertTrue(clicked, "Could not click 'Forgot Username' link.")
+            login_page.click_forgot_username()
             recovery_page = UsernameRecoveryPage(driver)
-            recovery_page.go_to_username_recovery()
-            recovery_page.enter_email('user@example.com')
-            recovery_page.submit_recovery()
-            confirmation = recovery_page.get_confirmation_message()
-            error = recovery_page.get_error_message()
-            self.assertTrue(confirmation or error, "No confirmation or error message received after username recovery.")
+            self.assertTrue(recovery_page.is_username_recovery_page_displayed(), "Username Recovery page is not displayed.")
+            results = recovery_page.recover_username_flow_tc_login_003(email='user@example.com')
+            self.assertTrue(results['clicked_forgot_username'], "Failed to click 'Forgot Username' link.")
+            self.assertTrue(results['recovery_page_displayed'], "Username Recovery page not displayed after clicking link.")
+            self.assertTrue(results['instructions_followed_and_email_submitted'], "Failed to follow instructions and submit email.")
+            self.assertIsNotNone(results['success_message'], "No success message after username recovery.")
+            self.assertIsNotNone(results['retrieved_username'], "No username retrieved after recovery.")
         finally:
             driver.quit()
 
@@ -52,23 +52,22 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
-    def test_tc_login_07_02_too_short_credentials_error(self):
+    def test_tc_login_07_02_short_email_and_password_error(self):
         """
         Test Case TC_LOGIN_07_02:
         1. Navigate to the login page.
         2. Enter an email address shorter than the minimum allowed length (e.g., 'a@').
         3. Enter a password shorter than the minimum allowed length (e.g., 'abc').
         4. Click the 'Login' button.
-        5. Assert that login is not allowed and the appropriate error message is shown.
+        5. Assert error is shown and login is not allowed.
         """
         driver = webdriver.Chrome()
         try:
             login_page = LoginPage(driver)
-            login_page.login_with_too_short_credentials_and_validate_error(
-                email="a@",
-                password="abc",
-                expected_error="Mandatory fields are required"
-            )
+            result = login_page.login_with_short_email_and_password_and_validate_error(email="a@", password="abc")
+            self.assertTrue(result["error_displayed"] or result["validation_displayed"], "Expected error or validation message, but none was displayed.")
+            self.assertFalse(login_page.is_dashboard_displayed(), "Dashboard should not be displayed for invalid login.")
+            self.assertFalse(login_page.is_user_profile_icon_displayed(), "User profile icon should not be displayed for invalid login.")
         finally:
             driver.quit()
 
