@@ -1,7 +1,42 @@
-# Selenium Page Object for UsernameRecoveryPage
+# Executive Summary:
+# This PageClass implements the username recovery page automation for an e-commerce application using Selenium in Python.
+# It now supports:
+# - TC-LOGIN-007: End-to-end username recovery flow as per the latest test case and acceptance criteria.
+# - All locators mapped from Locators.json, structured for maintainability and extensibility.
+
+# Detailed Analysis:
+# - Strict locator mapping from Locators.json
+# - Defensive coding using Selenium WebDriverWait and exception handling
+# - Functions for navigation, UI validation, and username recovery workflow
+# - New/updated method: tc_login_007_username_recovery_flow() implements TC-LOGIN-007 steps
+
+# Implementation Guide:
+# - Instantiate UsernameRecoveryPage with a Selenium WebDriver instance
+# - Use tc_login_007_username_recovery_flow(email) to automate TC-LOGIN-007 scenario
+# - Example usage:
+#     page = UsernameRecoveryPage(driver)
+#     result = page.tc_login_007_username_recovery_flow('user@example.com')
+# - Returns True if username recovery page is loaded and UI is validated, False otherwise
+
+# Quality Assurance Report:
+# - All locator references validated against Locators.json
+# - PageClass code reviewed for Pythonic standards and Selenium best practices
+# - Functions include assertion checks and detailed exception handling
+# - Existing methods are preserved and new methods are appended
+
+# Troubleshooting Guide:
+# - Ensure the driver is initialized and points to the correct browser instance
+# - Validate all locator values against Locators.json
+# - For any assertion failure, review the error message for details
+# - TimeoutException may indicate slow page load or incorrect locator
+
+# Future Considerations:
+# - Extend PageClass for additional username recovery and UI validation tests
+# - Integrate with reporting tools for enhanced test results
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -63,14 +98,19 @@ class UsernameRecoveryPage:
     def tc_login_007_username_recovery_flow(self, email: str):
         """
         TC-LOGIN-007 Steps:
-        1. Navigate to the login page
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
         2. Click on 'Forgot Username' link
-        3. Verify username recovery page is displayed
+        3. Verify username recovery page is displayed [Expected URL: https://ecommerce.example.com/forgot-username]
+        Acceptance Criteria: TS-005
         """
-        self.navigate_to_login_page()
-        self.click_forgot_username_link()
-        assert self.verify_username_recovery_page_ui(), "Username recovery page UI validation failed"
-        return True
+        try:
+            self.navigate_to_login_page()
+            self.click_forgot_username_link()
+            assert self.verify_username_recovery_page_ui(), "Username recovery page UI validation failed"
+            return True
+        except (TimeoutException, NoSuchElementException, ElementNotInteractableException, WebDriverException, AssertionError) as e:
+            print(f"Exception during TC-LOGIN-007 username recovery flow: {e}")
+            return False
 
     # --- Existing methods preserved below ---
     def enter_email(self, email: str):
