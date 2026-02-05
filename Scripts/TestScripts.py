@@ -12,7 +12,7 @@ class TestCartFunctionality(unittest.TestCase):
     def setUp(self):
         # Initialize WebDriver (adjust as needed for your environment)
         self.driver = webdriver.Chrome()
-        self.cart_page = CartPage()
+        self.cart_page = CartPage(self.driver)
 
     def tearDown(self):
         self.driver.quit()
@@ -39,6 +39,38 @@ class TestCartFunctionality(unittest.TestCase):
         self.assertTrue(error_detected, f"Expected error, got: {error_message}")
         self.assertTrue(product_not_in_cart, "Product should not be in cart after error.")
         print(f"Error message: {error_message}")
+
+    def test_TC_CART_006_cart_persistence(self):
+        """
+        TC_CART_006: Test cart persistence after sign out and sign in.
+        Steps:
+        1. Sign in as 'newuser1' with 'StrongPass123'.
+        2. Add product_id '111' with quantity 2 to the cart.
+        3. Sign out and sign in again as 'newuser1', 'StrongPass123'.
+        4. Query cart contents and verify that product_id '111' is present with quantity 2.
+        """
+        username = "newuser1"
+        password = "StrongPass123"
+        product_id = "111"
+        quantity = 2
+        expected_products = [f"{product_id} (x{quantity})"]
+
+        # Step 1: Sign in
+        self.cart_page.sign_in(username, password)
+        # Step 2: Add product to cart
+        self.cart_page.add_product_to_cart(product_id, quantity)
+        # Step 3: Sign out and sign in again
+        self.cart_page.sign_out()
+        self.cart_page.sign_in(username, password)
+        # Step 4: Query cart contents
+        cart_contents = self.cart_page.query_cart_contents()
+        # Validate cart contents
+        found = False
+        for item in cart_contents:
+            if product_id in item and str(quantity) in item:
+                found = True
+        self.assertTrue(found, f"Product {product_id} with quantity {quantity} not found in cart after sign out/in.")
+        print(f"Cart contents after re-login: {cart_contents}")
 
 if __name__ == "__main__":
     unittest.main()
