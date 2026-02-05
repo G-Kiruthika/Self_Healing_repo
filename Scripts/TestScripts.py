@@ -72,5 +72,27 @@ class TestProductSearchAPI(unittest.TestCase):
         finally:
             driver.quit()
 
+    def test_TC_CART_005_add_product_quantity_exceeds_stock_selenium(self):
+        """
+        TC_CART_005 (Selenium):
+        1. Attempt to add a product to cart with quantity greater than available stock using the UI.
+           Test Data: { "product_id": "12345", "quantity": 101 }
+        Expected: System returns error; product not added.
+        """
+        driver = webdriver.Chrome()
+        cart_page = CartPage(driver)
+        product_id = "12345"
+        quantity = 101
+        try:
+            # Step 1: Navigate to product page (placeholder, implement navigation as needed)
+            # Example: driver.get(f"https://yourshop.com/product/{product_id}")
+            # Step 2: Attempt to add product with excessive quantity via CartPage
+            error_message = cart_page.add_product_with_quantity_and_validate_error(product_id, quantity)
+            # Step 3: Assert that an error message is returned
+            self.assertIsNotNone(error_message, msg="Expected error message when adding quantity greater than stock, but got None.")
+            self.assertTrue(len(str(error_message).strip()) > 0, msg="Expected non-empty error message when adding quantity greater than stock.")
+        finally:
+            driver.quit()
+
 if __name__ == "__main__":
     unittest.main()
