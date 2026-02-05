@@ -1,67 +1,76 @@
 # LoginPage.py
 """
 Page Object for Login Page
-Updated to include TC_LOGIN_004: Validation when username and password are empty.
+Updated to include TC-SCRUM-115-002: Validation for invalid username and error message handling.
 """
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 class LoginPage:
     """
     Page class for the Login Page.
     """
-    LOGIN_URL = "https://app.example.com/login"
+    LOGIN_URL = "https://ecommerce.example.com/login"
+    USERNAME_INPUT = (By.ID, "login-email")
+    PASSWORD_INPUT = (By.ID, "login-password")
+    LOGIN_BUTTON = (By.ID, "login-submit")
+    ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
-        # Locators loaded from Locators.json (assumed structure)
-        self.username_input = (By.ID, "username")
-        self.password_input = (By.ID, "password")
-        self.login_button = (By.ID, "loginBtn")
-        self.error_message = (By.XPATH, "//div[@class='error-message']")
 
     def open_login_page(self):
         """Navigate to the login page."""
         self.driver.get(self.LOGIN_URL)
 
-    def login(self, username: str, password: str):
-        """Perform standard login."""
-        self.driver.find_element(*self.username_input).clear()
-        self.driver.find_element(*self.username_input).send_keys(username)
-        self.driver.find_element(*self.password_input).clear()
-        self.driver.find_element(*self.password_input).send_keys(password)
-        self.driver.find_element(*self.login_button).click()
+    def enter_username(self, username: str):
+        """Enter username in the username field."""
+        username_field = self.driver.find_element(*self.USERNAME_INPUT)
+        username_field.clear()
+        username_field.send_keys(username)
+
+    def enter_password(self, password: str):
+        """Enter password in the password field."""
+        password_field = self.driver.find_element(*self.PASSWORD_INPUT)
+        password_field.clear()
+        password_field.send_keys(password)
+
+    def click_login(self):
+        """Click the login button."""
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
 
     def get_error_message(self) -> str:
         """Return the error message text if present."""
         try:
-            error = WebDriverWait(self.driver, 5).until(
-                EC.visibility_of_element_located(self.error_message)
+            error = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(self.ERROR_MESSAGE)
             )
             return error.text
-        except Exception:
+        except (NoSuchElementException, TimeoutException):
             return ""
 
-    def validate_empty_fields_error(self) -> bool:
+    def login_with_invalid_username_and_validate_error(self, username: str, password: str, expected_error: str) -> bool:
         """
-        TC_LOGIN_004: Validates error when both username and password are empty.
+        TC-SCRUM-115-002: Test invalid/non-existent username login scenario.
         Steps:
-        1. Open login page.
-        2. Leave username and password empty.
-        3. Click Login.
-        4. Verify error message 'Username and password are required'.
-        Returns True if validation error is present and correct, else False.
+        1. Navigate to the login page.
+        2. Enter invalid/non-existent username.
+        3. Enter valid password.
+        4. Click Login.
+        5. Verify error message and that user remains on the login page.
+        Returns True if error message matches and user is not authenticated.
         """
         self.open_login_page()
-        # Ensure fields are empty
-        self.driver.find_element(*self.username_input).clear()
-        self.driver.find_element(*self.password_input).clear()
-        # Click login
-        self.driver.find_element(*self.login_button).click()
-        # Validate error
-        expected_error = "Username and password are required"
-        actual_error = self.get_error_message()
-        return actual_error.strip() == expected_error
+        self.enter_username(username)
+        self.enter_password(password)
+        self.click_login()
+        error_msg = self.get_error_message()
+        current_url = self.driver.current_url
+        fields_preserved = self.driver.find_element(*self.USERNAME_INPUT).get_attribute("value") == username and self.driver.find_element(*self.PASSWORD_INPUT).get_attribute("value") == ""
+        error_match = error_msg.strip() == expected_error.strip()
+        on_login_page = current_url.endswith("/login")
+        return error_match and on_login_page
