@@ -169,5 +169,20 @@ class TestLoginPage(unittest.TestCase):
         finally:
             driver.quit()
 
+    def test_tc016_session_timeout_logout(self):
+        """
+        Test Case TC016:
+        1. Login and remain inactive for session timeout duration.
+        2. Assert user is automatically logged out after timeout.
+        Acceptance Criteria: User is automatically logged out after timeout.
+        """
+        driver = webdriver.Chrome()
+        page = LoginPage(driver)
+        try:
+            result = page.verify_session_timeout_logout('user@example.com', 'ValidPassword123', 120)
+            self.assertTrue(result, "TC016 failed: User was not logged out after session timeout.")
+        finally:
+            driver.quit()
+
 if __name__ == "__main__":
     unittest.main()
