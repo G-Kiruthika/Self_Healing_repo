@@ -9,6 +9,7 @@ class LoginPage:
     PASSWORD_INPUT = (By.ID, "login-password")
     LOGIN_BUTTON = (By.ID, "login-submit")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
+    VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
 
@@ -52,7 +53,6 @@ class LoginPage:
         password_field = self.driver.find_element(*self.PASSWORD_INPUT)
         password_field.clear()
         password_field.send_keys(password)
-        # Selenium does not expose masking, but we can check input type
         is_masked = password_field.get_attribute("type") == "password"
         return is_masked and password_field.get_attribute("value") == password
 
@@ -62,7 +62,6 @@ class LoginPage:
         Acceptance Criteria: User is successfully authenticated and redirected to dashboard.
         """
         self.driver.find_element(*self.LOGIN_BUTTON).click()
-        # Wait for dashboard header or user profile icon
         return self.is_dashboard_displayed()
 
     def is_dashboard_displayed(self):
@@ -81,8 +80,6 @@ class LoginPage:
         Step 5: Verify user session is created.
         Acceptance Criteria: User session token is generated and stored, user profile is displayed.
         """
-        # Session token verification is usually handled outside Selenium.
-        # Here, we check for user profile display as a proxy.
         try:
             profile_icon = self.driver.find_element(*self.USER_PROFILE_ICON)
             return profile_icon.is_displayed()
@@ -126,9 +123,58 @@ class LoginPage:
         Step 5: Verify user remains on login page after failed login.
         Acceptance Criteria: User is not authenticated and stays on login page.
         """
-        # Confirm URL is still login page and dashboard/user profile not visible
         current_url = self.driver.current_url
         on_login_page = current_url.startswith(self.LOGIN_URL)
         dashboard_visible = self.is_dashboard_displayed()
         return on_login_page and not dashboard_visible
     # --- End of TC_LOGIN_002 steps ---
+
+    # --- Start of TC_LOGIN_003 steps ---
+    def leave_email_field_empty(self):
+        """
+        Step 2: Leave email field empty.
+        Acceptance Criteria: Email field remains empty.
+        """
+        email_field = self.driver.find_element(*self.EMAIL_INPUT)
+        email_field.clear()
+        return email_field.get_attribute("value") == ""
+
+    def enter_valid_password(self, password: str):
+        """
+        Step 3: Enter valid password.
+        Acceptance Criteria: Password is masked and accepted.
+        """
+        password_field = self.driver.find_element(*self.PASSWORD_INPUT)
+        password_field.clear()
+        password_field.send_keys(password)
+        is_masked = password_field.get_attribute("type") == "password"
+        return is_masked and password_field.get_attribute("value") == password
+
+    def click_login_button(self):
+        """
+        Step 4: Click on the Login button when email field is empty.
+        Acceptance Criteria: Validation error displayed: 'Email is required'.
+        """
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
+        return self.is_validation_error_displayed("Email is required")
+
+    def is_validation_error_displayed(self, expected_message: str):
+        """
+        Checks if the validation error message for empty email is displayed.
+        """
+        try:
+            validation_elem = self.driver.find_element(*self.VALIDATION_ERROR)
+            return validation_elem.is_displayed() and expected_message in validation_elem.text
+        except NoSuchElementException:
+            return False
+
+    def verify_login_prevented(self):
+        """
+        Step 5: Verify login is prevented and user remains on login page.
+        Acceptance Criteria: User cannot proceed, remains on login page.
+        """
+        current_url = self.driver.current_url
+        on_login_page = current_url.startswith(self.LOGIN_URL)
+        dashboard_visible = self.is_dashboard_displayed()
+        return on_login_page and not dashboard_visible
+    # --- End of TC_LOGIN_003 steps ---
