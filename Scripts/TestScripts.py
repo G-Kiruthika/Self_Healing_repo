@@ -87,14 +87,12 @@ class TestCartDuplicateSignup(unittest.TestCase):
         """
         self.driver.get('https://example-ecommerce.com')
         cart_api_page = CartAPIPage(self.driver)
-        # Simulate User A attempting to access User B's cart
         user_token = 'userA'
         cart_id = 'cart_of_userB'
         response = cart_api_page.access_cart(user_token, cart_id)
         expected_message = 'You do not have permission to access this cart.'
         access_denied = cart_api_page.validate_access_denied_error(response, expected_message)
-        self.assertTrue(access_denied, 'Access to another user's cart should be denied with the correct error message.')
-        # Optional: print response for debug
+        self.assertTrue(access_denied, 'Access to another user\'s cart should be denied with the correct error message.')
         print('TC_CART_009 Response:', response)
 
     def tearDown(self):
