@@ -93,3 +93,32 @@ def test_TC_SCRUM96_009_product_search_edge_cases():
         print(f"Missing query error message: {error_msg}")
     except AssertionError as e:
         print(f"AssertionError for missing query: {e}")
+
+# TC_SCRUM96_010: Product Search API Special Character, SQL Injection, DB Integrity, Log Validation Test
+from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
+import requests
+import pymysql
+import os
+import datetime
+
+def test_TC_SCRUM96_010_product_search_special_char_sql_injection_db_log():
+    """
+    Test Case TC_SCRUM96_010: Product Search API Special Character Handling, SQL Injection Protection, DB Integrity, Log Validation
+    Steps:
+    1. Insert test product with name 'C++ Programming Book' containing special characters
+    2. Send GET request to /api/products/search?query=C++ to search for product with special characters
+    3. Send GET request with SQL injection attempt: /api/products/search?query=' OR '1'='1
+    4. Verify database integrity by checking products table has not been modified or exposed
+    5. Check application logs for SQL injection attempt detection and logging
+    """
+    db_config = {
+        "host": "localhost",
+        "user": "testuser",
+        "password": "testpass",
+        "database": "testdb",
+        "log_path": "/var/log/app_security.log"
+    }
+    session = requests.Session()
+    product_page = ProductSearchAPIPage(session=session, db_config=db_config)
+    assert product_page.tc_scrum96_010_workflow(), "TC_SCRUM96_010 workflow failed"
+    print("TC_SCRUM96_010 special character, SQL injection, DB integrity, log validation test PASSED.")
