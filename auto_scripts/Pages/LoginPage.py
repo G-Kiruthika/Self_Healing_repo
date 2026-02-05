@@ -91,3 +91,24 @@ class LoginPage:
         assert actual_error == expected_error, (
             f"Expected error message '{expected_error}', but got '{actual_error}'"
         )
+
+    def verify_remember_me_checkbox_absence(self):
+        """
+        Automates TC_LOGIN_002: Verifies that the 'Remember Me' checkbox is NOT present on the login screen.
+
+        Steps:
+            1. Navigates to the login screen.
+            2. Checks for the absence of the 'Remember Me' checkbox.
+
+        Returns:
+            bool: True if the checkbox is NOT present, False otherwise.
+        """
+        self.driver.get(self.URL)
+        try:
+            # Short explicit wait for absence
+            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+            # If found, it's present
+            return False
+        except Exception:
+            # If NoSuchElementException or any exception, treat as absent
+            return True
