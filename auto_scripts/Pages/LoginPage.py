@@ -8,6 +8,7 @@ class LoginPage:
     EMAIL_INPUT = (By.ID, "login-email")
     PASSWORD_INPUT = (By.ID, "login-password")
     LOGIN_BUTTON = (By.ID, "login-submit")
+    ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
 
@@ -89,3 +90,45 @@ class LoginPage:
             return False
 
     # --- End of TC_LOGIN_001 steps ---
+
+    # --- Start of TC_LOGIN_002 steps ---
+    def enter_incorrect_password(self, password: str):
+        """
+        Step 3: Enter incorrect password in the password field.
+        Acceptance Criteria: Password is masked and accepted for submission.
+        """
+        password_field = self.driver.find_element(*self.PASSWORD_INPUT)
+        password_field.clear()
+        password_field.send_keys(password)
+        is_masked = password_field.get_attribute("type") == "password"
+        return is_masked and password_field.get_attribute("value") == password
+
+    def click_login_and_check_error(self):
+        """
+        Step 4: Click on the Login button and verify error message.
+        Acceptance Criteria: Error message 'Invalid email or password' is displayed.
+        """
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
+        return self.is_error_message_displayed("Invalid email or password")
+
+    def is_error_message_displayed(self, expected_message: str):
+        """
+        Checks if the error message is displayed and matches expected text.
+        """
+        try:
+            error_elem = self.driver.find_element(*self.ERROR_MESSAGE)
+            return error_elem.is_displayed() and expected_message in error_elem.text
+        except NoSuchElementException:
+            return False
+
+    def verify_user_stays_on_login_page(self):
+        """
+        Step 5: Verify user remains on login page after failed login.
+        Acceptance Criteria: User is not authenticated and stays on login page.
+        """
+        # Confirm URL is still login page and dashboard/user profile not visible
+        current_url = self.driver.current_url
+        on_login_page = current_url.startswith(self.LOGIN_URL)
+        dashboard_visible = self.is_dashboard_displayed()
+        return on_login_page and not dashboard_visible
+    # --- End of TC_LOGIN_002 steps ---
