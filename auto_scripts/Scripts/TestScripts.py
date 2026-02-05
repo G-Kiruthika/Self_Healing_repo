@@ -32,3 +32,20 @@ class TestLogin:
         recovery_page.enter_email("testuser@example.com")
         recovery_page.click_submit()
         assert recovery_page.verify_success_message(), "Success message not displayed or password reset email not sent."
+
+    def test_TC_LOGIN_012_sql_injection_prevention(self, driver):
+        """
+        Test Case TC-LOGIN-012: SQL Injection Prevention
+        Steps:
+        1. Instantiate LoginPage with driver
+        2. Call perform_sql_injection_test with email_payload="admin' OR '1'='1", password="password123", expected_error="Invalid credentials"
+        3. Assert error message is shown and unauthorized access is prevented
+        """
+        login_page = LoginPage(driver)
+        result = login_page.perform_sql_injection_test(
+            email_payload="admin' OR '1'='1",
+            password="password123",
+            expected_error="Invalid credentials"
+        )
+        assert result['verify_error_message'], "Error message for SQL injection not displayed."
+        assert result['verify_no_unauthorized_access'], "Unauthorized access was not prevented during SQL injection test."
