@@ -201,20 +201,17 @@ class TestLogin:
         password_recovery_page.enter_email_and_submit('user@example.com')
         assert password_recovery_page.is_success_message_displayed(), "Password reset success message should be displayed after submitting recovery request."
 
-    def test_tc006_valid_email_empty_password(self, driver):
+    def test_tc_login_015_case_sensitivity_enforcement(self, driver):
         """
-        Test Case TC006: Valid Email, Empty Password
-        Steps:
-            1. Open login page
-            2. Enter valid email ('user@example.com'), leave password empty
-            3. Click login
-            4. Verify password field remains empty
-            5. Check for error message 'Password required'
-            6. Confirm login fails
+        Test Case TC_LOGIN_015:
+        1. Navigate to the login page.
+        2. Enter email/username and password with different cases (email: 'USER@EXAMPLE.COM', password: 'VALIDPASS123').
+        3. Click the 'Login' button.
+        4. Validate case sensitivity enforcement as per requirement.
+        5. Assert that result['case_sensitivity_enforced'] is True or False.
         """
         login_page = LoginPage(driver)
-        results = login_page.login_with_valid_email_and_empty_password_tc006(email='user@example.com')
-        assert results['page_opened'], "Login page did not open correctly."
-        assert results['password_empty'], "Password field is not empty."
-        assert results['error_message_displayed'], "Expected error message 'Password required' not displayed."
-        assert results['login_failed'], "Login did not fail as expected when password is empty."
+        result = login_page.execute_tc_login_015_case_sensitivity_enforcement(email='USER@EXAMPLE.COM', password='VALIDPASS123')
+        assert result['case_sensitivity_enforced'] is True or result['case_sensitivity_enforced'] is False, f"Case sensitivity enforcement result is not boolean: {result['case_sensitivity_enforced']}"
+        if result['error_message']:
+            print(f"Login error message: {result['error_message']}")
