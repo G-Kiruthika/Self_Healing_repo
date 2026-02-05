@@ -1,76 +1,122 @@
 # LoginPage.py
 """
-Page Object for Login Page
-Updated to include TC-SCRUM-115-002: Validation for invalid username and error message handling.
+Page Object for Login Page using Selenium WebDriver
 """
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import TimeoutException
 
 class LoginPage:
-    """
-    Page class for the Login Page.
-    """
-    LOGIN_URL = "https://ecommerce.example.com/login"
-    USERNAME_INPUT = (By.ID, "login-email")
-    PASSWORD_INPUT = (By.ID, "login-password")
-    LOGIN_BUTTON = (By.ID, "login-submit")
+    URL = "https://example-ecommerce.com/login"
+    EMAIL_FIELD = (By.ID, "login-email")
+    PASSWORD_FIELD = (By.ID, "login-password")
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
+    LOGIN_SUBMIT = (By.ID, "login-submit")
+    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
+    VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
+    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
+    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
+    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    ACCOUNT_LOCKED_MESSAGE = (By.XPATH, "//*[contains(text(), 'Account locked due to multiple failed login attempts')]")
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
+        self.wait = WebDriverWait(driver, 10)
 
-    def open_login_page(self):
-        """Navigate to the login page."""
-        self.driver.get(self.LOGIN_URL)
+    def load(self):
+        self.driver.get(self.URL)
 
-    def enter_username(self, username: str):
-        """Enter username in the username field."""
-        username_field = self.driver.find_element(*self.USERNAME_INPUT)
-        username_field.clear()
-        username_field.send_keys(username)
+    def is_displayed(self):
+        try:
+            email_displayed = self.wait.until(EC.presence_of_element_located(self.EMAIL_FIELD))
+            password_displayed = self.wait.until(EC.presence_of_element_located(self.PASSWORD_FIELD))
+            return email_displayed and password_displayed
+        except TimeoutException:
+            return False
 
-    def enter_password(self, password: str):
-        """Enter password in the password field."""
-        password_field = self.driver.find_element(*self.PASSWORD_INPUT)
-        password_field.clear()
-        password_field.send_keys(password)
+    def enter_email(self, email):
+        email_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_elem.clear()
+        email_elem.send_keys(email)
+
+    def enter_password(self, password):
+        password_elem = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_elem.clear()
+        password_elem.send_keys(password)
 
     def click_login(self):
-        """Click the login button."""
-        self.driver.find_element(*self.LOGIN_BUTTON).click()
+        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT))
+        login_btn.click()
 
-    def get_error_message(self) -> str:
-        """Return the error message text if present."""
+    def get_error_message(self):
         try:
-            error = WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located(self.ERROR_MESSAGE)
-            )
-            return error.text
-        except (NoSuchElementException, TimeoutException):
-            return ""
+            return self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE)).text
+        except TimeoutException:
+            return None
 
-    def login_with_invalid_username_and_validate_error(self, username: str, password: str, expected_error: str) -> bool:
+    def get_validation_error(self):
+        try:
+            return self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR)).text
+        except TimeoutException:
+            return None
+
+    def get_empty_field_prompt(self):
+        try:
+            return self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT)).text
+        except TimeoutException:
+            return None
+
+    def is_dashboard_displayed(self):
+        try:
+            return self.wait.until(EC.presence_of_element_located(self.DASHBOARD_HEADER))
+        except TimeoutException:
+            return False
+
+    def is_user_profile_icon_displayed(self):
+        try:
+            return self.wait.until(EC.presence_of_element_located(self.USER_PROFILE_ICON))
+        except TimeoutException:
+            return False
+
+    def is_account_locked(self):
         """
-        TC-SCRUM-115-002: Test invalid/non-existent username login scenario.
-        Steps:
-        1. Navigate to the login page.
-        2. Enter invalid/non-existent username.
-        3. Enter valid password.
-        4. Click Login.
-        5. Verify error message and that user remains on the login page.
-        Returns True if error message matches and user is not authenticated.
+        Returns True if the account lockout message is displayed after multiple failed login attempts.
         """
-        self.open_login_page()
-        self.enter_username(username)
-        self.enter_password(password)
-        self.click_login()
-        error_msg = self.get_error_message()
-        current_url = self.driver.current_url
-        fields_preserved = self.driver.find_element(*self.USERNAME_INPUT).get_attribute("value") == username and self.driver.find_element(*self.PASSWORD_INPUT).get_attribute("value") == ""
-        error_match = error_msg.strip() == expected_error.strip()
-        on_login_page = current_url.endswith("/login")
-        return error_match and on_login_page
+        try:
+            lockout_message = self.wait.until(
+                EC.visibility_of_element_located(self.ACCOUNT_LOCKED_MESSAGE)
+            )
+            return lockout_message is not None
+        except TimeoutException:
+            return False
+
+    def get_account_locked_message(self):
+        """
+        Returns the account lockout message text if present.
+        """
+        try:
+            return self.wait.until(
+                EC.visibility_of_element_located(self.ACCOUNT_LOCKED_MESSAGE)
+            ).text
+        except TimeoutException:
+            return None
+
+    def attempt_login(self, email, password, attempts=1):
+        """
+        Attempts to login multiple times and checks for account lockout after failed attempts.
+        Returns a tuple (locked: bool, last_error: str)
+        """
+        last_error = None
+        for attempt in range(attempts):
+            self.enter_email(email)
+            self.enter_password(password)
+            self.click_login()
+            # Wait for error message or lockout
+            error = self.get_error_message()
+            if self.is_account_locked():
+                return True, self.get_account_locked_message()
+            last_error = error
+        return False, last_error
