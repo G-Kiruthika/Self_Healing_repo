@@ -81,20 +81,20 @@ class TestLogin:
         result = login_page.tc_login_011_max_length_username(username, password)
         assert result, "Max username length login test failed: Login attempt not processed as expected."
 
-    def test_TC_LOGIN_014_locked_account_login(self, driver):
+    def test_TC_LOGIN_014_locked_account(self, driver):
         """
-        Test Case TC-LOGIN-014: Locked Account Login
+        Test Case TC-LOGIN-014: Locked Account Login Attempt
         Steps:
-        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
-        2. Enter email of a locked account [Test Data: Email: lockeduser@example.com]
-        3. Enter correct password for the locked account [Test Data: Password: CorrectPassword123!]
-        4. Click on the Login button
-        5. Verify error message is displayed: 'Your account has been locked. Please contact support.'
-        6. Verify user is not authenticated and remains on login page
-        Acceptance Criteria: TS-012
+        1. Navigate to the login page [URL: https://ecommerce.example.com/login]
+        2. Enter email of a locked account [Email: lockeduser@example.com]
+        3. Enter correct password for the locked account [Password: CorrectPassword123!]
+        4. Click the Login button.
+        5. Verify error message: 'Your account has been locked. Please contact support.'
+        6. Verify user is not authenticated and remains on login page.
         """
         login_page = LoginPage(driver)
-        email = "lockeduser@example.com"
-        password = "CorrectPassword123!"
-        result = login_page.tc_login_014_locked_account_login(email, password)
-        assert result, "Locked account login test failed: Error message not displayed or user authenticated when account is locked."
+        result = login_page.tc_login_014_locked_account_login(
+            email="lockeduser@example.com",
+            password="CorrectPassword123!"
+        )
+        assert result, "Locked account login test failed: Error message not shown or user was authenticated."
