@@ -31,3 +31,22 @@ def test_TC_SCRUM_96_008_product_search_api():
     search_term = 'laptop'
     product_search_api = ProductSearchAPIPage()
     product_search_api.run_full_product_search_validation(search_term)
+
+def test_TC_SCRUM_96_008_product_search_api_v2():
+    """
+    Test Case TC-SCRUM-96-008: Product Search API Automation (Explicit Validation)
+    Steps:
+    1. Send GET request to /api/products/search with search term 'laptop' [Test Data: Query parameter: ?q=laptop]
+    2. Validate HTTP 200 response and list of products matching 'laptop'
+    3. Ensure all returned products have 'laptop' in name or description
+    4. Validate each product object contains id, name, price, description, category, imageUrl
+    Acceptance Criteria: AC-004 (Expanded)
+    """
+    search_term = 'laptop'
+    product_search_api = ProductSearchAPIPage()
+    # Step 1 & 2: Send GET request and validate HTTP 200
+    response = product_search_api.search_products(search_term)
+    # Step 3: Validate products match search
+    products = product_search_api.validate_products_match_search(response, search_term)
+    # Step 4: Validate each product object contains required fields
+    product_search_api.validate_product_schema(products)
