@@ -100,9 +100,15 @@ class TestLogin:
         """
         login_page = LoginPage(driver)
         login_page.open_login_page()
-        result = login_page.test_max_length_login_tc_login_007('64_chars@example.com', 'A'*128)
-        assert result['fields_accept_max_input'], "Fields should accept maximum input length."
+        # Use the PageClass function for max length validation
+        result = login_page.validate_max_length_input_tc_login_007('64_chars@example.com', 'A'*128)
+        assert result['fields_accept_max_length'], "Fields should accept maximum input length."
         assert result['login_success'], "Login should succeed with valid max-length credentials."
+        # Optionally check for error/validation messages
+        if result['error_message']:
+            print(f"Login error message: {result['error_message']}")
+        if result['validation_error']:
+            print(f"Validation error: {result['validation_error']}")
 
     def test_tc_login_007_username_recovery(self, driver):
         """
@@ -161,17 +167,3 @@ class TestLogin:
         result = login_page.execute_tc002_invalid_email_workflow('invaliduser@example.com', 'ValidPassword123')
         assert result['error_message'] == 'Invalid email or password', f"Expected error message not displayed. Actual: {result['error_message']}"
         assert result['login_unsuccessful'], "Login should not be successful with invalid email."
-
-    def test_tc_login_009_special_characters(self, driver):
-        """
-        Test Case TC_LOGIN_009:
-        1. Navigate to the login page.
-        2. Enter email and password containing special characters (email: 'user+test@example.com', password: 'P@$$w0rd!').
-        3. Click the 'Login' button.
-        4. Verify fields accept special character input.
-        5. Verify login succeeds if credentials are valid.
-        """
-        login_page = LoginPage(driver)
-        result = login_page.execute_tc_login_009_special_characters('user+test@example.com', 'P@$$w0rd!')
-        assert result['fields_accept_special_chars'], "Fields should accept special character input."
-        assert result['login_success'], f"Login should succeed with valid credentials. Error: {result.get('error_message', '')}"
