@@ -78,19 +78,19 @@ class TestCartFunctionality(unittest.TestCase):
         self.assertTrue(access_denied, "Access denied error message should be displayed when User A tries to access User B's cart.")
         print("Tested access denied for User A accessing User B's cart.")
 
-    def test_TC_CART_010_zero_quantity_error(self):
+    def test_TC_CART_010_add_zero_quantity(self):
         """
         TC_CART_010: Attempt to add a product to cart with quantity zero.
         Steps:
-        1. Attempt to add a product to cart with quantity zero. [Test Data: { 'product_id': '12345', 'quantity': 0 }]
-        Expected: System returns error; product not added.
+        1. Attempt to add product_id '12345' to cart with quantity 0.
+        2. System returns error; product not added.
         """
         product_id = '12345'
         try:
             self.cart_page.validate_add_zero_quantity(product_id)
         except AssertionError as e:
-            self.fail(f"System did not return error or product was added for zero quantity: {e}")
-        print(f"Validated zero quantity error for product_id {product_id}")
+            self.fail(f"Error or product added incorrectly when adding zero quantity: {e}")
+        print("TC_CART_010 executed: validated error and product absence for zero quantity.")
 
 if __name__ == "__main__":
     unittest.main()
