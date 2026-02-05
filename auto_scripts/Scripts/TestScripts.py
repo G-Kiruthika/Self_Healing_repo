@@ -51,41 +51,81 @@ def test_TC_SCRUM_96_008_product_search_api_v2():
     # Step 4: Validate each product object contains required fields
     product_search_api.validate_product_schema(products)
 
-# TC-SCRUM-96-001: User Registration API, DB, and Email Log Automation Test
-from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+# TC_SCRUM96_001: User Registration API Automation Test
+from PageClasses.UserRegistrationAPIPage import UserRegistrationAPIPage
 
-def test_TC_SCRUM_96_001_user_registration_api_db_email():
+def test_TC_SCRUM96_001_user_registration_api():
     """
-    Test Case TC_SCRUM96_001: User Registration API, DB, and Email Log Automation
+    Test Case TC_SCRUM96_001: User Registration API Automation
     Steps:
     1. Send POST request to /api/users/register with valid user registration data (username, email, password, firstName, lastName)
-    2. Validate HTTP 201 response and returned user object (userId, username, email, firstName, lastName, registration timestamp; password not present)
-    3. Query database for user record; verify username, correct email, hashed password, and ACTIVE account status
-    4. Check email logs for registration confirmation email sent to user
+    2. Validate HTTP 201 response and correct schema (userId, username, email, firstName, lastName, registrationTimestamp; password not present)
+    3. Query database to verify user creation, email stored, password hashed, account status 'ACTIVE'
+    4. Check email log for registration confirmation sent to user
     """
-    db_cfg = {"host": "localhost", "user": "root", "password": "pwd", "database": "ecommerce"}
-    email_log = "/var/log/email_service.log"
-    page = UserRegistrationAPIPage(db_config=db_cfg, email_log_path=email_log)
-    username = "testuser001"
-    email = "testuser001@example.com"
-    password = "SecurePass123!"
-    first_name = "John"
-    last_name = "Doe"
-    result = page.full_workflow(username, email, password, first_name, last_name)
-    api_resp = result["api_response"]
-    db_record = result["db_record"]
-    email_log_result = result["email_log"]
-    # Step 2: Validate API response
-    assert api_resp["username"] == username, "Username mismatch in API response"
-    assert api_resp["email"] == email, "Email mismatch in API response"
-    assert api_resp["firstName"] == first_name, "First name mismatch in API response"
-    assert api_resp["lastName"] == last_name, "Last name mismatch in API response"
-    assert "userId" in api_resp, "userId missing in API response"
-    assert "password" not in api_resp, "Password should not be returned in API response"
-    # Step 3: Validate DB record
-    assert db_record["username"] == username, "Username mismatch in DB"
-    assert db_record["email"] == email, "Email mismatch in DB"
-    assert db_record["account_status"] == "ACTIVE", f"Account status is not ACTIVE, got {db_record['account_status']}"
-    assert db_record["password_hash"] != password, "Password should be hashed in DB"
-    # Step 4: Validate email log
-    assert email_log_result is True, "Confirmation email not found in logs"
+    api_base_url = "http://localhost:5000"
+    db_config = {"host": "localhost", "user": "dbuser", "password": "dbpass", "database": "testdb"} # Example config
+    email_log_path = "/var/log/email_service.log" # Example log path
+    user_data = {
+        "username": "testuser001",
+        "email": "testuser001@example.com",
+        "password": "SecurePass123!",
+        "firstName": "John",
+        "lastName": "Doe"
+    }
+    page = UserRegistrationAPIPage(api_base_url, db_config, email_log_path)
+    # Step 1: Register user via API
+    api_resp = page.register_user(user_data)
+    # Step 2: Validate response schema
+    assert api_resp["userId"]
+    assert api_resp["username"] == user_data["username"]
+    assert api_resp["email"] == user_data["email"]
+    assert api_resp["firstName"] == user_data["firstName"]
+    assert api_resp["lastName"] == user_data["lastName"]
+    assert "registrationTimestamp" in api_resp
+    assert "password" not in api_resp
+    # Step 3: Verify user in DB
+    db_record = page.verify_user_in_db(user_data["username"], user_data["email"])
+    assert db_record is not None
+    assert db_record["email"] == user_data["email"]
+    assert db_record["password"] != user_data["password"]
+    assert db_record["account_status"] == "ACTIVE"
+    # Step 4: Verify confirmation email
+    assert page.verify_confirmation_email(user_data["email"])
+
+# TC_SCRUM96_002: Duplicate User Registration API Automation Test
+from auto_scripts.Pages.UserRegistrationAPIPage import UserRegistrationAPIPage
+
+def test_TC_SCRUM96_002_duplicate_user_registration_api():
+    """
+    Test Case TC_SCRUM96_002: Duplicate User Registration API Automation
+    Steps:
+    1. Register user with username 'duplicateuser' and email 'first@example.com'. Expect HTTP 201 Created.
+    2. Attempt to register another user with same username 'duplicateuser' and email 'second@example.com'. Expect HTTP 409 Conflict and error message.
+    3. Verify only one user record exists in database with username 'duplicateuser' and email 'first@example.com'.
+    """
+    db_config = {"host": "localhost", "user": "dbuser", "password": "dbpass", "database": "testdb"}
+    page = UserRegistrationAPIPage(db_config=db_config)
+    username = "duplicateuser"
+    email1 = "first@example.com"
+    password1 = "Pass123!"
+    first_name1 = "First"
+    last_name1 = "User"
+    email2 = "second@example.com"
+    password2 = "Pass456!"
+    first_name2 = "Second"
+    last_name2 = "User"
+    # Step 1 & 2: Register first user, then attempt duplicate
+    resp_json1, resp_json2 = page.register_duplicate_user_and_validate(
+        username, email1, password1, first_name1, last_name1,
+        email2, password2, first_name2, last_name2
+    )
+    assert resp_json1["username"] == username
+    assert resp_json1["email"] == email1
+    assert "userId" in resp_json1
+    assert resp_json2["error"]
+    assert "username already exists" in resp_json2["error"].lower()
+    # Step 3: DB validation
+    db_record = page.verify_single_user_record_in_db(username, email1)
+    assert db_record["count"] == 1
+    assert db_record["email"] == email1
