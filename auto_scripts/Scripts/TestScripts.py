@@ -87,23 +87,14 @@ class TestLoginFunctionality:
             raise
 
     def test_TC_SCRUM_115_002(self):
-        """Test Case TC-SCRUM-115-002: Invalid username and error message validation"""
+        """Test Case TC-SCRUM-115-002: Invalid username with valid password (error message validation)"""
         try:
-            # Step 1: Navigate to the login page
-            self.login_page.open_login_page()
-            assert self.login_page.is_on_login_page(), "Login page is not displayed."
-            # Step 2: Enter invalid username
-            invalid_username = 'invaliduser@example.com'
-            # Step 3: Enter valid password
-            valid_password = 'ValidPass123!'
-            self.login_page.login(invalid_username, valid_password)
-            # Step 4: Validate error message
-            assert self.login_page.validate_invalid_credentials_error(), (
-                "Expected error message not displayed for invalid username."
+            result = self.login_page.validate_invalid_username_valid_password(
+                invalid_username="invaliduser@example.com",
+                valid_password="ValidPass123!"
             )
-            # Step 5: Verify user remains on login page
-            assert self.login_page.is_on_login_page(), "User did not remain on login page after invalid login."
-            print("TC-SCRUM-115-002 passed: Invalid username error message validated and user remains on login page.")
+            assert result, "Error message for invalid username and valid password not displayed or incorrect, or user did not remain on login page."
+            print("TC-SCRUM-115-002 passed: Correct error message displayed and user remained on login page.")
         except Exception as e:
             print(f"TC-SCRUM-115-002 failed: {e}")
             raise
