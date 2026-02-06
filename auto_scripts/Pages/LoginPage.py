@@ -25,55 +25,28 @@ class LoginPage:
         self.wait = WebDriverWait(driver, timeout)
 
     def go_to_login_page(self):
-        """
-        Navigates to the login page and waits for the email and password fields to be visible.
-        """
         self.driver.get(self.URL)
         self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
-        self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
 
     def enter_email(self, email):
-        """
-        Enters the email into the email input field.
-        """
         email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
         email_input.clear()
         email_input.send_keys(email)
 
     def enter_password(self, password):
-        """
-        Enters the password into the password input field.
-        """
         password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
         password_input.clear()
         password_input.send_keys(password)
 
-    def click_remember_me(self):
-        """
-        Clicks the 'Remember Me' checkbox if not already selected.
-        """
-        checkbox = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_CHECKBOX))
-        if not checkbox.is_selected():
-            checkbox.click()
-
     def click_login(self):
-        """
-        Clicks the login submit button.
-        """
         login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
         login_btn.click()
 
-    def click_forgot_password(self):
-        """
-        Clicks the forgot password link.
-        """
-        link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_PASSWORD_LINK))
+    def click_forgot_username(self):
+        link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
     def get_error_message(self):
-        """
-        Returns the error message text if displayed, else None.
-        """
         try:
             error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
             return error_elem.text
@@ -81,9 +54,6 @@ class LoginPage:
             return None
 
     def is_on_login_page(self):
-        """
-        Checks if the login page is currently displayed.
-        """
         try:
             self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
             self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
@@ -92,65 +62,16 @@ class LoginPage:
             return False
 
     def login_with_credentials(self, email, password):
-        """
-        Performs login with provided credentials.
-        """
         self.go_to_login_page()
         self.enter_email(email)
         self.enter_password(password)
         self.click_login()
 
     def perform_invalid_login_and_validate(self, email, invalid_password, expected_error):
-        """
-        Performs invalid login and validates the error message and login page state.
-        Args:
-            email (str): Email to use.
-            invalid_password (str): Invalid password to use.
-            expected_error (str): Expected error message.
-        Raises:
-            AssertionError: If error message or login page state is not as expected.
-        """
         self.login_with_credentials(email, invalid_password)
         error_msg = self.get_error_message()
         assert error_msg == expected_error, f"Expected error '{expected_error}', got '{error_msg}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login."
-
-    # --- TC_LOGIN_001 Specific Methods ---
-    def navigate_to_login_screen(self):
-        """
-        TC_LOGIN_001 Step 2: Navigate to the login screen.
-        Expected result: Login screen is displayed.
-        Returns:
-            bool: True if login screen is displayed successfully.
-        """
-        self.go_to_login_page()
-        return self.is_on_login_page()
-
-    def login_with_invalid_credentials(self, username, password):
-        """
-        TC_LOGIN_001 Step 3: Enter invalid username and/or password.
-        Args:
-            username (str): Invalid username to enter.
-            password (str): Invalid password to enter.
-        """
-        self.enter_email(username)
-        self.enter_password(password)
-        self.click_login()
-
-    def verify_invalid_login_error(self, expected_error):
-        """
-        TC_LOGIN_001 Step 3: Verify error message is displayed.
-        Args:
-            expected_error (str): Expected error message text.
-        Returns:
-            bool: True if error message matches expected text.
-        """
-        error_msg = self.get_error_message()
-        if error_msg == expected_error:
-            return True
-        else:
-            print(f"Expected error: '{expected_error}', but got: '{error_msg}'")
-            return False
 
     @staticmethod
     def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
@@ -243,3 +164,24 @@ class LoginPage:
             return payload
         except Exception as e:
             raise AssertionError(f"JWT decode/validation failed: {e}")
+
+    # --- TC_LOGIN_002: Methods for Remember Me Checkbox ---
+    def is_remember_me_checkbox_present(self):
+        """
+        Returns True if 'Remember Me' checkbox is present on the login page, False otherwise.
+        """
+        try:
+            self.wait.until(EC.presence_of_element_located(self.REMEMBER_ME_CHECKBOX))
+            return True
+        except:
+            return False
+
+    def is_remember_me_checkbox_absent(self):
+        """
+        Returns True if 'Remember Me' checkbox is NOT present on the login page, False otherwise.
+        """
+        try:
+            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+            return False
+        except:
+            return True
