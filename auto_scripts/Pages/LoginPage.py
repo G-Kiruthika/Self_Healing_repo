@@ -1,49 +1,65 @@
-import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
-import datetime
-from JWTUtils import JWTUtils
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class LoginPage:
-    ...
-    # --- TC_SCRUM96_004 additions ---
-    def tc_scrum96_004_login_and_validate_tokens(self, username: str, password: str, expected_email: str):
-        """
-        Implements TC_SCRUM96_004 Step 2: Login and validate JWT, tokens, and user details.
-        Args:
-            username (str): Username for login
-            password (str): Password for login
-            expected_email (str): Expected email in response
-        Returns:
-            dict: {"status_code": int, "jwt_token": str, "refresh_token": str, "token_type": str, "user_details": dict}
-        Raises:
-            AssertionError: On validation failure
-        """
-        url = f"{self.base_url}/api/auth/login"
-        payload = {"username": username, "password": password}
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(url, json=payload, headers=headers)
-        assert response.status_code == 200, f"Login failed: {response.text}"
-        resp_json = response.json()
-        jwt_token = resp_json.get("accessToken") or resp_json.get("token")
-        refresh_token = resp_json.get("refreshToken")
-        token_type = resp_json.get("tokenType")
-        user_details = {
-            "userId": resp_json.get("userId"),
-            "username": resp_json.get("username"),
-            "email": resp_json.get("email")
-        }
-        assert jwt_token, "JWT access token missing"
-        assert refresh_token, "Refresh token missing"
-        assert token_type and token_type.lower() == "bearer", f"Token type should be 'Bearer', got '{token_type}'"
-        assert user_details["userId"] and user_details["username"] and user_details["email"], "User details missing in response"
-        assert user_details["username"] == username, f"Username mismatch: expected {username}, got {user_details['username']}"
-        assert user_details["email"] == expected_email, f"Email mismatch: expected {expected_email}, got {user_details['email']}"
-        JWTUtils.validate_jwt(jwt_token, username)
-        return {
-            "status_code": response.status_code,
-            "jwt_token": jwt_token,
-            "refresh_token": refresh_token,
-            "token_type": token_type,
-            "user_details": user_details
-        }
+    LOGIN_URL = "https://example-ecommerce.com/login"
+    EMAIL_FIELD = (By.ID, "login-email")
+    PASSWORD_FIELD = (By.ID, "login-password")
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
+    LOGIN_SUBMIT = (By.ID, "login-submit")
+    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
+    ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
+    VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
+    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
+    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
+    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+
+    def __init__(self, driver: WebDriver):
+        self.driver = driver
+        self.wait = WebDriverWait(driver, 10)
+
+    def navigate_to_login_screen(self):
+        self.driver.get(self.LOGIN_URL)
+        # Wait for email field to be present
+        self.wait.until(EC.presence_of_element_located(self.EMAIL_FIELD))
+        self.wait.until(EC.presence_of_element_located(self.PASSWORD_FIELD))
+        self.wait.until(EC.presence_of_element_located(self.LOGIN_SUBMIT))
+        return self.is_login_screen_displayed()
+
+    def is_login_screen_displayed(self) -> bool:
+        try:
+            email_present = self.wait.until(EC.presence_of_element_located(self.EMAIL_FIELD))
+            password_present = self.wait.until(EC.presence_of_element_located(self.PASSWORD_FIELD))
+            submit_present = self.wait.until(EC.presence_of_element_located(self.LOGIN_SUBMIT))
+            return email_present is not None and password_present is not None and submit_present is not None
+        except Exception:
+            return False
+
+    def enter_credentials(self, username: str, password: str):
+        email_elem = self.driver.find_element(*self.EMAIL_FIELD)
+        password_elem = self.driver.find_element(*self.PASSWORD_FIELD)
+        email_elem.clear()
+        email_elem.send_keys(username)
+        password_elem.clear()
+        password_elem.send_keys(password)
+
+    def submit_login(self):
+        submit_btn = self.driver.find_element(*self.LOGIN_SUBMIT)
+        submit_btn.click()
+
+    def login_with_invalid_credentials(self, username: str, password: str):
+        self.enter_credentials(username, password)
+        self.submit_login()
+
+    def get_error_message(self) -> str:
+        try:
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+            return error_elem.text.strip()
+        except Exception:
+            return ""
+
+    def verify_invalid_login_error(self, expected_message: str) -> bool:
+        actual_message = self.get_error_message()
+        return actual_message == expected_message
