@@ -48,39 +48,39 @@ def test_tc_login_001_invalid_credentials(driver):
         assert False, f"Test TC_LOGIN_001 failed: {str(e)}"
 
 
-def test_tc_login_002_remember_me_checkbox(driver):
+def test_tc_login_002_remember_me_checkbox_validation(driver):
     """
-    Test Case ID: TC_LOGIN_002 (ID: 107)
-    Title: Test Case TC_LOGIN_002
-    Description: Verify that 'Remember Me' checkbox is not present on login screen
-    
+    Test Case TC_LOGIN_002: Validate Remember Me checkbox is not present on login screen.
     Steps:
-    - Step 2: Navigate to the login screen (Expected: Login screen is displayed)
-    - Step 3: Check for the presence of 'Remember Me' checkbox (Expected: 'Remember Me' checkbox is not present)
+        1. Navigate to the login screen.
+        2. Check for the presence of 'Remember Me' checkbox.
+    Acceptance Criteria:
+        - Login screen is displayed successfully.
+        - 'Remember Me' checkbox is not present on the login screen.
+    Args:
+        driver: Selenium WebDriver instance.
+    Raises:
+        AssertionError: If any validation fails.
     """
     try:
         # Initialize LoginPage
         login_page = LoginPage(driver)
         
         # Step 2: Navigate to the login screen
-        login_page.go_to_login_page()
+        login_displayed = login_page.tc_login_002_navigate_to_login_screen()
+        assert login_displayed, "Login screen is not displayed after navigation."
         
-        # Verify login screen is displayed
-        assert login_page.is_on_login_page(), "Login screen is not displayed after navigation"
-        print("✓ Step 2 Passed: Login screen is displayed")
+        # Step 3: Check for the presence of 'Remember Me' checkbox (should NOT be present)
+        checkbox_absent = login_page.tc_login_002_check_remember_me_absence()
+        assert checkbox_absent, "'Remember Me' checkbox should not be present but was found on the login screen."
         
-        # Step 3: Check that Remember Me checkbox is NOT present
-        assert login_page.is_remember_me_checkbox_absent(), "'Remember Me' checkbox is present but should not be"
-        print("✓ Step 3 Passed: 'Remember Me' checkbox is not present as expected")
+        print("TC_LOGIN_002: Successfully validated that 'Remember Me' checkbox is not present on login screen.")
         
-        print("✓ Test Case TC_LOGIN_002 PASSED: Remember Me checkbox verification completed successfully")
-        
-    except AssertionError as ae:
-        print(f"✗ Test Case TC_LOGIN_002 FAILED: {str(ae)}")
-        raise
     except Exception as e:
-        print(f"✗ Test Case TC_LOGIN_002 ERROR: Unexpected error occurred - {str(e)}")
-        raise
+        # Log error and fail the test
+        import traceback
+        traceback.print_exc()
+        assert False, f"Test TC_LOGIN_002 failed: {str(e)}"
 
 
 def test_tc_scrum96_007_profile_api_validation(driver, db_connection):
