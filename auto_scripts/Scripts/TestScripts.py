@@ -83,6 +83,47 @@ def test_tc_login_002_remember_me_checkbox_validation(driver):
         assert False, f"Test TC_LOGIN_002 failed: {str(e)}"
 
 
+def test_tc_login_003_forgot_username_workflow(driver):
+    """
+    Test Case TC_LOGIN_003: Validate Forgot Username workflow.
+    Steps:
+        1. Navigate to the login screen.
+        2. Click on 'Forgot Username' link.
+        3. Follow the instructions to recover username.
+    Acceptance Criteria:
+        - Login screen is displayed successfully.
+        - 'Forgot Username' workflow is initiated when link is clicked.
+        - Username recovery instructions are followed and username is retrieved.
+    Args:
+        driver: Selenium WebDriver instance.
+    Raises:
+        AssertionError: If any validation fails.
+    """
+    try:
+        # Initialize LoginPage
+        login_page = LoginPage(driver)
+        
+        # Step 2: Navigate to the login screen
+        login_displayed = login_page.tc_login_003_navigate_to_login_screen()
+        assert login_displayed, "Login screen is not displayed after navigation."
+        
+        # Step 3: Click on 'Forgot Username' link
+        forgot_username_initiated = login_page.tc_login_003_click_forgot_username_link()
+        assert forgot_username_initiated, "'Forgot Username' workflow was not initiated successfully."
+        
+        # Step 4: Follow the instructions to recover username
+        username_retrieved = login_page.tc_login_003_follow_username_recovery_instructions()
+        assert username_retrieved, "Username recovery instructions were not followed successfully or username was not retrieved."
+        
+        print("TC_LOGIN_003: Successfully validated Forgot Username workflow and username recovery.")
+        
+    except Exception as e:
+        # Log error and fail the test
+        import traceback
+        traceback.print_exc()
+        assert False, f"Test TC_LOGIN_003 failed: {str(e)}"
+
+
 def test_tc_scrum96_007_profile_api_validation(driver, db_connection):
     """
     Test Case TC_SCRUM96_007: Profile API returns correct user profile and excludes password.
