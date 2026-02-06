@@ -26,7 +26,7 @@ class LoginPage:
 
     def go_to_login_page(self):
         """
-        Navigates to the login page and waits for the email and password fields to be visible.
+        Navigates to the login page and waits for the email field to be visible.
         """
         self.driver.get(self.URL)
         self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
@@ -151,6 +151,61 @@ class LoginPage:
         else:
             print(f"Expected error: '{expected_error}', but got: '{error_msg}'")
             return False
+
+    def run_tc_login_001_full_test(self, invalid_username, invalid_password, expected_error="Invalid username or password. Please try again."):
+        """
+        Executes the complete TC_LOGIN_001 test case:
+        1. Navigate to the login screen
+        2. Enter invalid username and/or password
+        3. Verify error message is displayed
+        Returns:
+            dict: Test results with step-by-step validation
+        """
+        results = {
+            "test_case_id": "TC_LOGIN_001",
+            "step_2_navigate_to_login": False,
+            "step_3_invalid_login": False,
+            "step_3_error_message_validation": False,
+            "overall_pass": False,
+            "errors": []
+        }
+        
+        try:
+            # Step 2: Navigate to login screen
+            step_2_result = self.navigate_to_login_screen()
+            results["step_2_navigate_to_login"] = step_2_result
+            
+            if not step_2_result:
+                results["errors"].append("Step 2 failed: Could not navigate to login screen")
+                return results
+                
+        except Exception as e:
+            results["errors"].append(f"Step 2 error: {str(e)}")
+            return results
+        
+        try:
+            # Step 3: Enter invalid credentials and verify error
+            self.login_with_invalid_credentials(invalid_username, invalid_password)
+            results["step_3_invalid_login"] = True
+            
+            # Verify error message
+            error_validation_result = self.verify_invalid_login_error(expected_error)
+            results["step_3_error_message_validation"] = error_validation_result
+            
+            if not error_validation_result:
+                results["errors"].append(f"Step 3 failed: Error message validation failed. Expected: '{expected_error}'")
+                
+        except Exception as e:
+            results["errors"].append(f"Step 3 error: {str(e)}")
+            results["step_3_invalid_login"] = False
+            results["step_3_error_message_validation"] = False
+        
+        # Overall test result
+        results["overall_pass"] = (results["step_2_navigate_to_login"] and 
+                                  results["step_3_invalid_login"] and 
+                                  results["step_3_error_message_validation"])
+        
+        return results
 
     @staticmethod
     def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
