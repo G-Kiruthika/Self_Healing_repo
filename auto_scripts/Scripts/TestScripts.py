@@ -3,8 +3,50 @@
 
 from auto_scripts.PageClasses.ProfileAPIValidationPage import ProfileAPIValidationPage
 from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
+from auto_scripts.Pages.LoginPage import LoginPage
 
 # ... (existing test classes and methods) ...
+
+def test_tc_login_001_invalid_credentials(driver):
+    """
+    Test Case TC_LOGIN_001: Test login functionality with invalid credentials.
+    Steps:
+        1. Navigate to the login screen.
+        2. Enter an invalid username and/or password.
+        3. Verify error message 'Invalid username or password. Please try again.' is displayed.
+    Acceptance Criteria:
+        - Login screen is displayed successfully.
+        - Invalid credentials trigger appropriate error message.
+        - Error message matches expected text exactly.
+    Args:
+        driver: Selenium WebDriver instance.
+    Raises:
+        AssertionError: If any validation fails.
+    """
+    try:
+        # Initialize LoginPage
+        login_page = LoginPage(driver)
+        
+        # Step 1: Navigate to the login screen
+        login_displayed = login_page.navigate_to_login_screen()
+        assert login_displayed, "Login screen is not displayed after navigation."
+        
+        # Step 2: Enter invalid username and/or password
+        invalid_username = "invalid_user@example.com"
+        invalid_password = "wrongpassword123"
+        login_page.login_with_invalid_credentials(invalid_username, invalid_password)
+        
+        # Step 3: Verify error message
+        expected_error = "Invalid username or password. Please try again."
+        error_displayed = login_page.verify_invalid_login_error(expected_error)
+        assert error_displayed, f"Expected error message '{expected_error}' was not displayed correctly."
+        
+    except Exception as e:
+        # Log error and fail the test
+        import traceback
+        traceback.print_exc()
+        assert False, f"Test TC_LOGIN_001 failed: {str(e)}"
+
 
 def test_tc_scrum96_007_profile_api_validation(driver, db_connection):
     """
