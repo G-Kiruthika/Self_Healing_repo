@@ -115,6 +115,77 @@ class LoginPage:
         assert error_msg == expected_error, f"Expected error '{expected_error}', got '{error_msg}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login."
 
+    # --- TC_LOGIN_001: Navigate to login screen and test invalid credentials ---
+    def tc_login_001_navigate_to_login_screen(self):
+        """
+        TC_LOGIN_001 Step 2: Navigate to the login screen.
+        Expected result: Login screen is displayed.
+        """
+        self.go_to_login_page()
+        # Verify login screen is displayed by checking key elements
+        assert self.is_on_login_page(), "Login screen is not displayed"
+        return True
+
+    def tc_login_001_enter_invalid_credentials(self, invalid_username, invalid_password):
+        """
+        TC_LOGIN_001 Step 3: Enter an invalid username and/or password.
+        Expected result: Error message 'Invalid username or password. Please try again.' is displayed.
+        """
+        expected_error = "Invalid username or password. Please try again."
+        
+        # Enter invalid credentials
+        self.enter_email(invalid_username)
+        self.enter_password(invalid_password)
+        self.click_login()
+        
+        # Wait for and validate error message
+        error_msg = self.get_error_message()
+        assert error_msg == expected_error, f"Expected error '{expected_error}', got '{error_msg}'"
+        
+        # Ensure user remains on login page
+        assert self.is_on_login_page(), "User should remain on login page after invalid login"
+        
+        return error_msg
+
+    def tc_login_001_complete_test(self, invalid_username="invalid@test.com", invalid_password="wrongpassword"):
+        """
+        Complete TC_LOGIN_001 test execution:
+        1. Navigate to login screen
+        2. Enter invalid credentials and validate error message
+        
+        Args:
+            invalid_username (str): Invalid username/email to test
+            invalid_password (str): Invalid password to test
+            
+        Returns:
+            dict: Test results with step outcomes
+        """
+        results = {
+            "test_case_id": "TC_LOGIN_001",
+            "step_2_navigate_success": False,
+            "step_3_invalid_login_success": False,
+            "error_message": None,
+            "overall_pass": False
+        }
+        
+        try:
+            # Step 2: Navigate to login screen
+            self.tc_login_001_navigate_to_login_screen()
+            results["step_2_navigate_success"] = True
+            
+            # Step 3: Enter invalid credentials
+            error_msg = self.tc_login_001_enter_invalid_credentials(invalid_username, invalid_password)
+            results["step_3_invalid_login_success"] = True
+            results["error_message"] = error_msg
+            
+            # Overall test pass
+            results["overall_pass"] = True
+            
+        except Exception as e:
+            results["error"] = str(e)
+            
+        return results
+
     @staticmethod
     def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
         if algorithms is None:
