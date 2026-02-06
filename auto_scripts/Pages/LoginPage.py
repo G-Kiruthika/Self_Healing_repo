@@ -152,20 +152,6 @@ class LoginPage:
             print(f"Expected error: '{expected_error}', but got: '{error_msg}'")
             return False
 
-    # --- TC_LOGIN_002 Specific Methods ---
-    def is_remember_me_checkbox_present(self):
-        """
-        TC_LOGIN_002 Step 3: Check for the presence of 'Remember Me' checkbox.
-        Expected result: 'Remember Me' checkbox is not present.
-        Returns:
-            bool: True if checkbox is present, False otherwise.
-        """
-        try:
-            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
-            return True
-        except:
-            return False
-
     @staticmethod
     def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
         if algorithms is None:
@@ -257,3 +243,78 @@ class LoginPage:
             return payload
         except Exception as e:
             raise AssertionError(f"JWT decode/validation failed: {e}")
+
+    # --- TC_LOGIN_002: New Methods Below ---
+    def tc_login_002_navigate_to_login_screen(self):
+        """
+        TC_LOGIN_002 Step 2: Navigate to the login screen.
+        Expected result: Login screen is displayed.
+        Returns:
+            bool: True if login screen is displayed successfully.
+        """
+        self.go_to_login_page()
+        return self.is_on_login_page()
+
+    def tc_login_002_check_remember_me_absence(self):
+        """
+        TC_LOGIN_002 Step 3: Check for the presence of 'Remember Me' checkbox.
+        Expected result: 'Remember Me' checkbox is not present.
+        Returns:
+            bool: True if checkbox is NOT present (test passes).
+        Raises:
+            AssertionError: If checkbox is found when it should not be present.
+        """
+        try:
+            # Try to find the Remember Me checkbox
+            remember_me_elements = self.driver.find_elements(*self.REMEMBER_ME_CHECKBOX)
+            if len(remember_me_elements) > 0:
+                raise AssertionError("'Remember Me' checkbox should NOT be present, but was found.")
+            return True
+        except Exception as e:
+            if "'Remember Me' checkbox should NOT be present" in str(e):
+                raise e
+            # If element not found (NoSuchElementException or similar), that's expected
+            return True
+
+    def run_tc_login_002_full_test(self):
+        """
+        Executes the complete TC_LOGIN_002 test case:
+        1. Navigate to the login screen
+        2. Verify that the 'Remember Me' checkbox is NOT present
+        Returns:
+            dict: Test results with step-by-step validation
+        """
+        results = {
+            "test_case_id": "TC_LOGIN_002",
+            "step_2_navigate_to_login": False,
+            "step_3_remember_me_absent": False,
+            "overall_pass": False,
+            "errors": []
+        }
+        
+        try:
+            # Step 2: Navigate to login screen
+            step_2_result = self.tc_login_002_navigate_to_login_screen()
+            results["step_2_navigate_to_login"] = step_2_result
+            
+            if not step_2_result:
+                results["errors"].append("Step 2 failed: Could not navigate to login screen")
+                return results
+                
+        except Exception as e:
+            results["errors"].append(f"Step 2 error: {str(e)}")
+            return results
+        
+        try:
+            # Step 3: Check Remember Me checkbox absence
+            step_3_result = self.tc_login_002_check_remember_me_absence()
+            results["step_3_remember_me_absent"] = step_3_result
+            
+        except Exception as e:
+            results["errors"].append(f"Step 3 error: {str(e)}")
+            results["step_3_remember_me_absent"] = False
+        
+        # Overall test result
+        results["overall_pass"] = results["step_2_navigate_to_login"] and results["step_3_remember_me_absent"]
+        
+        return results
