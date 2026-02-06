@@ -48,6 +48,39 @@ def test_tc_login_001_invalid_credentials(driver):
         assert False, f"Test TC_LOGIN_001 failed: {str(e)}"
 
 
+def test_tc_login_002_remember_me_checkbox(driver):
+    """
+    Test Case TC_LOGIN_002: Verify Remember Me checkbox presence on login screen.
+    Steps:
+        1. Navigate to the login screen.
+        2. Check for the presence of 'Remember Me' checkbox.
+    Acceptance Criteria:
+        - Login screen is displayed successfully.
+        - 'Remember Me' checkbox is not present on the login screen.
+    Args:
+        driver: Selenium WebDriver instance.
+    Raises:
+        AssertionError: If any validation fails.
+    """
+    try:
+        # Initialize LoginPage
+        login_page = LoginPage(driver)
+        
+        # Step 1: Navigate to the login screen
+        login_displayed = login_page.navigate_to_login_screen()
+        assert login_displayed, "Login screen is not displayed after navigation."
+        
+        # Step 2: Check for the presence of 'Remember Me' checkbox
+        remember_me_present = login_page.is_remember_me_checkbox_present()
+        assert not remember_me_present, "'Remember Me' checkbox should not be present on the login screen."
+        
+    except Exception as e:
+        # Log error and fail the test
+        import traceback
+        traceback.print_exc()
+        assert False, f"Test TC_LOGIN_002 failed: {str(e)}"
+
+
 def test_tc_scrum96_007_profile_api_validation(driver, db_connection):
     """
     Test Case TC_SCRUM96_007: Profile API returns correct user profile and excludes password.
