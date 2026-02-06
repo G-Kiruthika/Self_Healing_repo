@@ -164,3 +164,22 @@ class LoginPage:
             return payload
         except Exception as e:
             raise AssertionError(f"JWT decode/validation failed: {e}")
+
+    # --- TC_LOGIN_003: Forgot Username Workflow ---
+    def start_forgot_username_workflow(self, email):
+        """
+        TC_LOGIN_003: End-to-end Forgot Username workflow.
+        Steps:
+            1. Navigate to Login page
+            2. Click on 'Forgot Username' link
+            3. Use UsernameRecoveryPage to recover username
+        Args:
+            email (str): Email address for username recovery
+        Returns:
+            str: Confirmation or error message from UsernameRecoveryPage
+        """
+        from PageClasses.UsernameRecoveryPage import UsernameRecoveryPage
+        self.go_to_login_page()
+        self.click_forgot_username()
+        recovery_page = UsernameRecoveryPage(self.driver)
+        return recovery_page.recover_username(email)

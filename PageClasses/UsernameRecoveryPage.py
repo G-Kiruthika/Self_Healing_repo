@@ -6,6 +6,7 @@ class UsernameRecoveryPage:
     """
     Page Object for the 'Forgot Username' workflow.
     Provides methods to interact with the username recovery process.
+    Updated for TC_LOGIN_003 to support structured end-to-end automation.
     """
     URL = "https://example-ecommerce.com/forgot-username"
     EMAIL_FIELD = (By.ID, "recovery-email")
@@ -66,7 +67,16 @@ class UsernameRecoveryPage:
 
     def recover_username(self, email):
         """
-        Complete workflow: enter email, submit, return confirmation or error.
+        TC_LOGIN_003: Complete workflow for username recovery.
+        Steps:
+            1. Navigate to Username Recovery page
+            2. Enter email
+            3. Submit recovery
+            4. Return confirmation or error message
+        Args:
+            email (str): Email address for username recovery
+        Returns:
+            str: Confirmation or error message
         """
         self.go_to_username_recovery()
         self.enter_email(email)
