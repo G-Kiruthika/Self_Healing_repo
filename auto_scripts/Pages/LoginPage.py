@@ -115,6 +115,43 @@ class LoginPage:
         assert error_msg == expected_error, f"Expected error '{expected_error}', got '{error_msg}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login."
 
+    # --- TC_LOGIN_001 Specific Methods ---
+    def navigate_to_login_screen(self):
+        """
+        TC_LOGIN_001 Step 2: Navigate to the login screen.
+        Expected result: Login screen is displayed.
+        Returns:
+            bool: True if login screen is displayed successfully.
+        """
+        self.go_to_login_page()
+        return self.is_on_login_page()
+
+    def login_with_invalid_credentials(self, username, password):
+        """
+        TC_LOGIN_001 Step 3: Enter invalid username and/or password.
+        Args:
+            username (str): Invalid username to enter.
+            password (str): Invalid password to enter.
+        """
+        self.enter_email(username)
+        self.enter_password(password)
+        self.click_login()
+
+    def verify_invalid_login_error(self, expected_error):
+        """
+        TC_LOGIN_001 Step 3: Verify error message is displayed.
+        Args:
+            expected_error (str): Expected error message text.
+        Returns:
+            bool: True if error message matches expected text.
+        """
+        error_msg = self.get_error_message()
+        if error_msg == expected_error:
+            return True
+        else:
+            print(f"Expected error: '{expected_error}', but got: '{error_msg}'")
+            return False
+
     @staticmethod
     def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
         if algorithms is None:
