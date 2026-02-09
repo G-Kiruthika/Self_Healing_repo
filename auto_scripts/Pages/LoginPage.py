@@ -5,7 +5,6 @@ import jwt
 import datetime
 from typing import Optional, Dict, Any
 import requests
-from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
 
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
@@ -44,6 +43,11 @@ class LoginPage:
         login_btn.click()
 
     def click_forgot_username(self):
+        """
+        Clicks the 'Forgot Username' link on the Login page.
+        Returns:
+            None
+        """
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
@@ -69,6 +73,22 @@ class LoginPage:
         self.click_login()
 
     def perform_invalid_login_and_validate(self, email, invalid_password):
+        """
+        TC_LOGIN_001: Performs invalid login and validates error message.
+        Steps:
+            1. Navigate to the login screen.
+            2. Enter invalid username and/or password.
+            3. Click Login button.
+            4. Validate error message 'Invalid username or password. Please try again.' is displayed.
+            5. Assert user remains on login page after failed login.
+        Args:
+            email (str): Invalid email/username.
+            invalid_password (str): Invalid password.
+        Returns:
+            None
+        Raises:
+            AssertionError: If error message is not as expected or user is not on login page.
+        """
         expected_error = "Invalid username or password. Please try again."
         self.login_with_credentials(email, invalid_password)
         error_msg = self.get_error_message()
@@ -129,46 +149,21 @@ class LoginPage:
         results["overall_pass"] = True
         return results
 
-    # TC_LOGIN_003 functionality
-    def execute_tc_login_003(self, email):
+    # --- TC_LOGIN_003: Forgot Username Workflow ---
+    def start_forgot_username_workflow(self, email):
         """
-        Complete execution of TC_LOGIN_003 test case.
+        TC_LOGIN_003: End-to-end Forgot Username workflow for Selenium automation.
         Steps:
-            1. Navigate to login screen
-            2. Click on 'Forgot Username' link
-            3. Follow the instructions to recover username
+            1. Navigate to the login screen.
+            2. Click on 'Forgot Username' link.
+            3. Follow instructions to recover username via UsernameRecoveryPage.
         Args:
-            email (str): Email address for username recovery
+            email (str): Email address for username recovery.
         Returns:
-            dict: Step-wise results and overall pass/fail status
+            str: Confirmation or error message from UsernameRecoveryPage.
         """
-        results = {}
-        try:
-            # Step 1: Navigate to login screen
-            self.go_to_login_page()
-            results["step_1_navigate_login"] = self.is_on_login_page()
-            assert results["step_1_navigate_login"], "Login screen is not displayed"
-
-            # Step 2: Click 'Forgot Username' link
-            self.click_forgot_username()
-            results["step_2_forgot_username_clicked"] = True
-
-            # Step 3: Follow instructions to recover username
-            username_recovery_page = UsernameRecoveryPage(self.driver)
-            username_recovery_page.go_to_username_recovery()
-            username_recovery_page.enter_email(email)
-            username_recovery_page.submit_recovery()
-            confirmation = username_recovery_page.get_confirmation_message()
-            error = username_recovery_page.get_error_message()
-            if confirmation:
-                results["step_3_recovery_success"] = True
-                results["confirmation_message"] = confirmation
-                results["overall_pass"] = True
-            else:
-                results["step_3_recovery_success"] = False
-                results["error_message"] = error
-                results["overall_pass"] = False
-        except Exception as e:
-            results["overall_pass"] = False
-            results["exception"] = str(e)
-        return results
+        from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
+        self.go_to_login_page()
+        self.click_forgot_username()
+        recovery_page = UsernameRecoveryPage(self.driver)
+        return recovery_page.recover_username(email)

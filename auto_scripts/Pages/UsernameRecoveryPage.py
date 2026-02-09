@@ -14,6 +14,7 @@ class UsernameRecoveryPage:
     CONFIRMATION_MESSAGE = (By.CSS_SELECTOR, "div.recovery-success")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.recovery-error")
     INSTRUCTIONS_TEXT = (By.CSS_SELECTOR, "div.recovery-instructions")
+    USERNAME_RESULT = (By.CSS_SELECTOR, "span.recovered-username")
 
     def __init__(self, driver, timeout=10):
         """
@@ -65,6 +66,16 @@ class UsernameRecoveryPage:
         except:
             return None
 
+    def get_recovered_username(self):
+        """
+        Retrieves the recovered username from the result display.
+        """
+        try:
+            username_elem = self.wait.until(EC.visibility_of_element_located(self.USERNAME_RESULT))
+            return username_elem.text
+        except:
+            return None
+
     def recover_username(self, email):
         """
         TC_LOGIN_003: Complete workflow for username recovery.
@@ -86,3 +97,50 @@ class UsernameRecoveryPage:
             return confirmation
         else:
             return self.get_error_message()
+
+    def execute_tc_login_003(self, email):
+        """
+        Complete execution of TC_LOGIN_003 test case.
+        Steps:
+            1. Navigate to the login screen (handled by LoginPage)
+            2. Click on 'Forgot Username' link (handled by LoginPage)
+            3. Follow the instructions to recover username
+        Args:
+            email (str): Email address for username recovery
+        Returns:
+            dict: Results with step outcomes and recovered username
+        """
+        results = {}
+        
+        try:
+            # Step 3: Navigate to username recovery and verify page
+            self.go_to_username_recovery()
+            results["step_3_navigate_recovery"] = True
+            
+            # Step 4: Follow instructions to recover username
+            self.enter_email(email)
+            self.submit_recovery()
+            
+            # Check for success or error
+            confirmation = self.get_confirmation_message()
+            error = self.get_error_message()
+            recovered_username = self.get_recovered_username()
+            
+            if confirmation:
+                results["step_4_recovery_success"] = True
+                results["confirmation_message"] = confirmation
+                results["recovered_username"] = recovered_username
+            elif error:
+                results["step_4_recovery_success"] = False
+                results["error_message"] = error
+            else:
+                results["step_4_recovery_success"] = False
+                results["error_message"] = "No response received"
+                
+        except Exception as e:
+            results["step_3_navigate_recovery"] = False
+            results["step_4_recovery_success"] = False
+            results["error"] = str(e)
+        
+        results["overall_pass"] = results.get("step_3_navigate_recovery", False) and results.get("step_4_recovery_success", False)
+        return results
