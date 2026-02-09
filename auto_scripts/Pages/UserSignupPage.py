@@ -1,14 +1,13 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import re
 import requests
+import re
 
 class UserSignupPage:
     """
     Page Object for the User Signup workflow.
     Provides methods to interact with the user registration process.
-    Implements email format validation in registration step.
     """
     URL = "https://example-ecommerce.com/signup"
     USERNAME_FIELD = (By.ID, "signup-username")
@@ -18,7 +17,7 @@ class UserSignupPage:
     SUCCESS_MESSAGE = (By.CSS_SELECTOR, "div.signup-success")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.signup-error")
     EMAIL_EXISTS_MESSAGE = (By.XPATH, "//*[contains(text(), 'Email already exists')]")
-    EMAIL_FORMAT_ERROR = (By.CSS_SELECTOR, "div.email-format-error")  # UI element for email format error, if exists
+    EMAIL_FORMAT_ERROR_MESSAGE = (By.CSS_SELECTOR, "div.email-format-error")
 
     EMAIL_REGEX = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
 
@@ -74,35 +73,29 @@ class UserSignupPage:
 
     def get_email_format_error_message(self):
         try:
-            format_error_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FORMAT_ERROR))
-            return format_error_elem.text
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FORMAT_ERROR_MESSAGE))
+            return error_elem.text
         except Exception:
             return None
 
     @staticmethod
-    def is_valid_email_format(email):
-        """
-        Validates email format using regex.
-        Returns True if valid, False otherwise.
-        """
+    def is_valid_email(email):
         return re.match(UserSignupPage.EMAIL_REGEX, email) is not None
 
-    def register_user_with_email_validation(self, username, email, password):
+    def register_user(self, username, email, password):
         """
-        Registration workflow with pre-validation of email format.
-        If email format is invalid, does not submit form and returns error.
+        Complete workflow: go to signup, fill fields, submit, return result.
+        Enhanced: Validates email format before submission.
         """
         self.go_to_signup_page()
         self.enter_username(username)
         self.enter_email(email)
         self.enter_password(password)
-        if not self.is_valid_email_format(email):
-            # Optionally, check if UI shows email format error
-            self.click_signup()
-            ui_error = self.get_email_format_error_message()
-            error_msg = ui_error if ui_error else "Invalid email format."
-            return {"status": "error", "message": error_msg}
+        # Email format validation before clicking signup
+        if not self.is_valid_email(email):
+            return {"status": "invalid_email_format", "message": "Invalid email format. Registration not submitted."}
         self.click_signup()
+        # Check for either success or error message
         success_msg = self.get_success_message()
         if success_msg:
             return {"status": "success", "message": success_msg}
@@ -112,6 +105,9 @@ class UserSignupPage:
         email_exists_msg = self.get_email_exists_message()
         if email_exists_msg:
             return {"status": "conflict", "message": email_exists_msg}
+        email_format_error_msg = self.get_email_format_error_message()
+        if email_format_error_msg:
+            return {"status": "invalid_email_format", "message": email_format_error_msg}
         return {"status": "unknown", "message": "No clear result returned"}
 
     @staticmethod
@@ -128,15 +124,11 @@ class UserSignupPage:
 
     def signup_with_invalid_email_and_validate(self, invalid_email, username, password, db_connection):
         """
-        Implements email format validation for registration:
-        1. Validates email format locally
-        2. Attempts registration via API and UI
-        3. Verifies error message indicates email format issue
-        4. Verifies no user record is created in the database
+        Implements TC-SCRUM-96-003:
+        1. Send POST request to /api/users/signup with invalid email
+        2. Verify error message indicates email format issue
+        3. Verify no user record is created in the database
         """
-        # Local validation
-        assert not self.is_valid_email_format(invalid_email), f"Email '{invalid_email}' should be invalid format."
-        # API validation
         api_url = "https://example-ecommerce.com/api/users/signup"
         payload = {
             "username": username,
@@ -146,15 +138,13 @@ class UserSignupPage:
         response = requests.post(api_url, json=payload)
         assert response.status_code == 400, f"Expected 400 Bad Request, got {response.status_code}"
         assert "email format" in response.text.lower() or "invalid email" in response.text.lower(), f"Expected email format error, got: {response.text}"
-        # UI validation
+        # Optionally, use Selenium to verify the error message on the UI
         self.go_to_signup_page()
         self.enter_username(username)
         self.enter_email(invalid_email)
         self.enter_password(password)
         self.click_signup()
-        error_msg = self.get_email_format_error_message()
-        if not error_msg:
-            error_msg = self.get_error_message()
+        error_msg = self.get_error_message()
         assert error_msg is not None, "No error message displayed for invalid email."
         assert "email format" in error_msg.lower() or "invalid email" in error_msg.lower(), f"Expected email format error in UI, got: {error_msg}"
         # DB validation
