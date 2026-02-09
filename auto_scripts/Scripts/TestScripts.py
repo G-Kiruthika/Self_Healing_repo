@@ -1,11 +1,6 @@
-
-# ... (existing imports and code) ...
-
 from auto_scripts.PageClasses.ProfileAPIValidationPage import ProfileAPIValidationPage
 from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
 from auto_scripts.Pages.LoginPage import LoginPage
-
-# ... (existing test classes and methods) ...
 
 def test_tc_login_001_invalid_credentials(driver):
     """
