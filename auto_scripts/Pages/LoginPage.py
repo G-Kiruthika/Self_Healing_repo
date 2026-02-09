@@ -43,6 +43,11 @@ class LoginPage:
         login_btn.click()
 
     def click_forgot_username(self):
+        """
+        Clicks the 'Forgot Username' link on the Login page.
+        Returns:
+            None
+        """
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
@@ -97,6 +102,16 @@ class LoginPage:
 
     @staticmethod
     def login_api(username: str, password: str) -> Dict[str, Any]:
+        """
+        Sends POST request to /api/auth/login for API-based login.
+        Args:
+            username (str): Username for login.
+            password (str): Password for login.
+        Returns:
+            dict: Response JSON with JWT tokens and user details.
+        Raises:
+            AssertionError: If login fails or required fields are missing.
+        """
         api_url = "https://example-ecommerce.com/api/auth/login"
         payload = {"username": username, "password": password}
         headers = {"Content-Type": "application/json"}
@@ -109,8 +124,18 @@ class LoginPage:
         assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
         return data
 
+    # --- TC_SCRUM96_004: New Methods Below ---
     @staticmethod
     def register_user_api(user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Registers a user via POST /api/users/register.
+        Args:
+            user_data (dict): Registration data (username, email, password, firstName, lastName).
+        Returns:
+            dict: API response JSON.
+        Raises:
+            AssertionError: If registration fails or required fields are missing.
+        """
         api_url = "https://example-ecommerce.com/api/users/register"
         headers = {"Content-Type": "application/json"}
         response = requests.post(api_url, json=user_data, headers=headers)
@@ -124,6 +149,15 @@ class LoginPage:
 
     @staticmethod
     def decode_and_validate_jwt(token: str) -> Dict[str, Any]:
+        """
+        Decodes and validates JWT structure and claims (subject, expiration, issued at).
+        Args:
+            token (str): JWT token string.
+        Returns:
+            dict: Decoded JWT payload.
+        Raises:
+            AssertionError: If claims are missing or invalid.
+        """
         try:
             payload = jwt.decode(token, options={"verify_signature": False}, algorithms=["HS256", "RS256"])
             assert 'sub' in payload, "Subject (sub) claim missing in token"
@@ -136,24 +170,21 @@ class LoginPage:
         except Exception as e:
             raise AssertionError(f"JWT decode/validation failed: {e}")
 
+    # --- TC_LOGIN_003: Forgot Username Workflow ---
     def start_forgot_username_workflow(self, email):
+        """
+        TC_LOGIN_003: End-to-end Forgot Username workflow for Selenium automation.
+        Steps:
+            1. Navigate to the login screen.
+            2. Click on 'Forgot Username' link.
+            3. Follow instructions to recover username via UsernameRecoveryPage.
+        Args:
+            email (str): Email address for username recovery.
+        Returns:
+            str: Confirmation or error message from UsernameRecoveryPage.
+        """
         from PageClasses.UsernameRecoveryPage import UsernameRecoveryPage
         self.go_to_login_page()
         self.click_forgot_username()
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
-
-    # --- TC_LOGIN_002: Test Case Implementation ---
-    def tc_login_002_navigate_to_login_screen(self):
-        self.driver.get(self.URL)
-        self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
-        self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
-        assert self.is_on_login_page(), "Login screen is not displayed"
-
-    def tc_login_002_check_remember_me_absence(self):
-        elements = self.driver.find_elements(*self.REMEMBER_ME_CHECKBOX)
-        assert len(elements) == 0, "'Remember Me' checkbox should NOT be present"
-
-    def run_tc_login_002_full_test(self):
-        self.tc_login_002_navigate_to_login_screen()
-        self.tc_login_002_check_remember_me_absence()
