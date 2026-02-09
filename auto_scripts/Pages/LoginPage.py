@@ -25,46 +25,28 @@ class LoginPage:
         self.wait = WebDriverWait(driver, timeout)
 
     def go_to_login_page(self):
-        """
-        Navigates to the login page and waits for essential elements.
-        """
         self.driver.get(self.URL)
         self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
 
     def enter_email(self, email):
-        """
-        Enters email in the email field.
-        """
         email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
         email_input.clear()
         email_input.send_keys(email)
 
     def enter_password(self, password):
-        """
-        Enters password in the password field.
-        """
         password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
         password_input.clear()
         password_input.send_keys(password)
 
     def click_login(self):
-        """
-        Clicks the login button.
-        """
         login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
         login_btn.click()
 
     def click_forgot_username(self):
-        """
-        Clicks the 'Forgot Username' link on the Login page.
-        """
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
     def is_on_login_page(self):
-        """
-        Checks if the user is on the login page.
-        """
         try:
             self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
             self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
@@ -73,9 +55,6 @@ class LoginPage:
             return False
 
     def get_error_message(self):
-        """
-        Retrieves error message from login page.
-        """
         try:
             error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
             return error_elem.text
@@ -83,18 +62,12 @@ class LoginPage:
             return None
 
     def login_with_credentials(self, email, password):
-        """
-        Performs login with provided credentials.
-        """
         self.go_to_login_page()
         self.enter_email(email)
         self.enter_password(password)
         self.click_login()
 
     def perform_invalid_login_and_validate(self, email, invalid_password):
-        """
-        TC_LOGIN_001: Performs invalid login and validates error message.
-        """
         expected_error = "Invalid username or password. Please try again."
         self.login_with_credentials(email, invalid_password)
         error_msg = self.get_error_message()
@@ -166,17 +139,6 @@ class LoginPage:
             raise AssertionError(f"JWT decode/validation failed: {e}")
 
     def start_forgot_username_workflow(self, email):
-        """
-        TC_LOGIN_003: End-to-end Forgot Username workflow for Selenium automation.
-        Steps:
-            1. Navigate to the login screen.
-            2. Click on 'Forgot Username' link.
-            3. Follow instructions to recover username via UsernameRecoveryPage.
-        Args:
-            email (str): Email address for username recovery.
-        Returns:
-            str: Confirmation or error message from UsernameRecoveryPage.
-        """
         from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
         self.go_to_login_page()
         self.click_forgot_username()
@@ -184,9 +146,6 @@ class LoginPage:
         return recovery_page.recover_username(email)
 
     def check_remember_me_checkbox_absence(self):
-        """
-        TC_LOGIN_002: Checks for the absence of the 'Remember Me' checkbox on the login screen.
-        """
         self.go_to_login_page()
         elements = self.driver.find_elements(*self.REMEMBER_ME_CHECKBOX)
         assert len(elements) == 0, "'Remember Me' checkbox IS present, but expected to be ABSENT."

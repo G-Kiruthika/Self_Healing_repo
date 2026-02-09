@@ -20,13 +20,6 @@ class TC_LOGIN_003_TestPage:
         self.username_recovery_page = UsernameRecoveryPage(driver, timeout)
 
     def execute_tc_login_003(self, email):
-        """
-        Executes TC_LOGIN_003 end-to-end workflow.
-        Args:
-            email (str): Email address for username recovery
-        Returns:
-            dict: Structured results with step details, confirmation/error, and overall status
-        """
         results = {
             "step_1_navigate_login": None,
             "step_2_forgot_username_clicked": None,
@@ -55,7 +48,6 @@ class TC_LOGIN_003_TestPage:
 
             # Step 3: Recover username
             try:
-                # UsernameRecoveryPage expects to be on the recovery page
                 self.username_recovery_page.enter_email(email)
                 self.username_recovery_page.submit_recovery()
                 confirmation = self.username_recovery_page.get_confirmation_message()
