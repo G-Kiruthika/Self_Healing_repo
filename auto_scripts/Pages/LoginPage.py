@@ -207,3 +207,81 @@ class LoginPage:
         else:
             error_msg = self.get_error_message()
             assert error_msg is None or error_msg.strip() == "", "Unexpected error message for valid password with special character."
+
+    def execute_tc_101_basic_login_test(self, email, password):
+        """
+        TC-101: Basic Login Test - Validates successful login functionality.
+        Steps:
+            1. Navigate to the login page.
+            2. Enter valid email and password.
+            3. Click Login button.
+            4. Validate successful login by checking dashboard elements.
+            5. Verify user profile icon is displayed.
+        Args:
+            email (str): Valid email address.
+            password (str): Valid password.
+        Returns:
+            dict: Test results with step-by-step validation.
+        Raises:
+            AssertionError: If any validation step fails.
+        """
+        results = {
+            "test_case_id": "1298",
+            "test_case_description": "Test Case TC-101",
+            "step_1_navigate": False,
+            "step_2_enter_credentials": False,
+            "step_3_click_login": False,
+            "step_4_validate_dashboard": False,
+            "step_5_verify_profile_icon": False,
+            "overall_pass": False,
+            "error_message": None
+        }
+        
+        try:
+            # Step 1: Navigate to login page
+            self.go_to_login_page()
+            results["step_1_navigate"] = self.is_on_login_page()
+            assert results["step_1_navigate"], "Failed to navigate to login page"
+            
+            # Step 2: Enter credentials
+            self.enter_email(email)
+            self.enter_password(password)
+            results["step_2_enter_credentials"] = True
+            
+            # Step 3: Click login
+            self.click_login()
+            results["step_3_click_login"] = True
+            
+            # Step 4: Validate dashboard header is displayed
+            try:
+                dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+                results["step_4_validate_dashboard"] = dashboard_header.is_displayed()
+                assert results["step_4_validate_dashboard"], "Dashboard header not displayed after login"
+            except Exception as e:
+                results["error_message"] = f"Dashboard validation failed: {str(e)}"
+                raise AssertionError(f"Dashboard validation failed: {str(e)}")
+            
+            # Step 5: Verify user profile icon
+            try:
+                profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+                results["step_5_verify_profile_icon"] = profile_icon.is_displayed()
+                assert results["step_5_verify_profile_icon"], "User profile icon not displayed after login"
+            except Exception as e:
+                results["error_message"] = f"Profile icon validation failed: {str(e)}"
+                raise AssertionError(f"Profile icon validation failed: {str(e)}")
+            
+            # Overall pass if all steps successful
+            results["overall_pass"] = all([
+                results["step_1_navigate"],
+                results["step_2_enter_credentials"],
+                results["step_3_click_login"],
+                results["step_4_validate_dashboard"],
+                results["step_5_verify_profile_icon"]
+            ])
+            
+        except Exception as e:
+            results["error_message"] = str(e)
+            results["overall_pass"] = False
+            raise AssertionError(f"TC-101 execution failed: {str(e)}")
+        
+        return results
