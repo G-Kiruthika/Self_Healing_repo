@@ -142,7 +142,6 @@ class LoginPage:
         assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
         return data
 
-    # --- TC_SCRUM96_004: New Methods Below ---
     @staticmethod
     def register_user_api(user_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -207,21 +206,8 @@ class LoginPage:
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
 
-    # --- TC_LOGIN_002: Check Remember Me Checkbox Absence ---
     def check_remember_me_checkbox_absence(self):
-        """
-        TC_LOGIN_002: Checks for the absence of the 'Remember Me' checkbox on the login screen.
-        Steps:
-            1. Navigate to the login screen.
-            2. Assert that the 'Remember Me' checkbox is NOT present.
-        Returns:
-            None
-        Raises:
-            AssertionError: If the 'Remember Me' checkbox is present.
-        """
         self.go_to_login_page()
-        # Use find_elements to avoid exception if element not found
         elements = self.driver.find_elements(*self.REMEMBER_ME_CHECKBOX)
         assert len(elements) == 0, "'Remember Me' checkbox IS present, but expected to be ABSENT."
-        # Optionally, log success
         print("'Remember Me' checkbox is absent as expected.")
