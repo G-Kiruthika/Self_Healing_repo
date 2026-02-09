@@ -43,11 +43,6 @@ class LoginPage:
         login_btn.click()
 
     def click_forgot_username(self):
-        """
-        Clicks the 'Forgot Username' link on the Login page.
-        Returns:
-            None
-        """
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
@@ -55,7 +50,7 @@ class LoginPage:
         try:
             error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
             return error_elem.text
-        except:
+        except Exception:
             return None
 
     def is_on_login_page(self):
@@ -63,7 +58,7 @@ class LoginPage:
             self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
             self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
             return True
-        except:
+        except Exception:
             return False
 
     def login_with_credentials(self, email, password):
@@ -72,34 +67,10 @@ class LoginPage:
         self.enter_password(password)
         self.click_login()
 
-    def perform_invalid_login_and_validate(self, email, invalid_password, expected_error):
+    def perform_invalid_login_and_validate(self, email, invalid_password):
+        expected_error = "Invalid username or password. Please try again."
         self.login_with_credentials(email, invalid_password)
         error_msg = self.get_error_message()
-        assert error_msg == expected_error, f"Expected error '{expected_error}', got '{error_msg}'"
+        assert error_msg is not None, "Error message not found after invalid login."
+        assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login."
-
-    def tc_login_001_invalid_login(self, email, password):
-        """
-        TC_LOGIN_001: Attempt invalid login and validate error message.
-        Steps:
-            1. Navigate to the login screen.
-            2. Enter invalid username and/or password.
-            3. Click Login.
-            4. Validate error message 'Invalid username or password. Please try again.' is displayed.
-        Args:
-            email (str): Invalid email/username.
-            password (str): Invalid password.
-        Returns:
-            str: Error message displayed.
-        Raises:
-            AssertionError: If error message is not as expected or login page is not displayed.
-        """
-        expected_error = "Invalid username or password. Please try again."
-        self.go_to_login_page()
-        self.enter_email(email)
-        self.enter_password(password)
-        self.click_login()
-        error_msg = self.get_error_message()
-        assert error_msg == expected_error, f"Expected error '{expected_error}', got '{error_msg}'"
-        assert self.is_on_login_page(), "User is not on the login page after failed login."
-        return error_msg
