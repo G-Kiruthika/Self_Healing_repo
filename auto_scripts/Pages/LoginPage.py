@@ -96,58 +96,97 @@ class LoginPage:
         assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login."
 
-    # TC_LOGIN_002 functionality
-    def navigate_and_verify_login_screen(self):
-        """
-        Step 2: Navigate to the login screen and verify it's displayed.
-        Returns True if both email and password fields are visible, False otherwise.
-        """
-        self.go_to_login_page()
-        return self.is_on_login_page()
-
-    def verify_remember_me_checkbox_absence(self):
-        """
-        Step 3: Check for the presence of 'Remember Me' checkbox and verify it's NOT present.
-        Returns True if checkbox is absent, False if present.
-        """
+    @staticmethod
+    def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
+        if algorithms is None:
+            algorithms = ['HS256']
         try:
-            # Try to find the checkbox, wait 2 seconds max
-            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
-            return False  # Checkbox found, should NOT be present
-        except Exception:
-            return True  # Checkbox not found, as expected
-
-    def execute_tc_login_002(self):
-        """
-        Complete execution of TC_LOGIN_002 test case.
-        Returns dict with step results and overall pass/fail status.
-        """
-        results = {}
-        
-        # Step 2: Navigate to login screen
-        try:
-            step2_result = self.navigate_and_verify_login_screen()
-            results["step_2_navigate_login"] = step2_result
-            assert step2_result, "Login screen is not displayed"
+            if secret:
+                payload = jwt.decode(token, secret, algorithms=algorithms)
+            else:
+                payload = jwt.decode(token, options={"verify_signature": False}, algorithms=algorithms)
+            assert 'userId' in payload, "userId claim missing in token"
+            assert 'email' in payload, "email claim missing in token"
+            assert 'exp' in payload, "Expiration (exp) claim missing in token"
+            exp_time = datetime.datetime.fromtimestamp(payload['exp'])
+            assert exp_time > datetime.datetime.utcnow(), "Token has expired"
+            return payload
+        except jwt.ExpiredSignatureError:
+            raise AssertionError("Token has expired")
+        except jwt.DecodeError as e:
+            raise AssertionError(f"Invalid JWT token: {e}")
         except Exception as e:
-            results["step_2_navigate_login"] = False
-            results["step_2_error"] = str(e)
-            results["overall_pass"] = False
-            return results
-        
-        # Step 3: Verify Remember Me checkbox absence
+            raise AssertionError(f"JWT validation failed: {e}")
+
+    @staticmethod
+    def login_api(username: str, password: str) -> Dict[str, Any]:
+        """
+        Sends POST request to /api/auth/login for API-based login.
+        Args:
+            username (str): Username for login.
+            password (str): Password for login.
+        Returns:
+            dict: Response JSON with JWT tokens and user details.
+        Raises:
+            AssertionError: If login fails or required fields are missing.
+        """
+        api_url = "https://example-ecommerce.com/api/auth/login"
+        payload = {"username": username, "password": password}
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(api_url, json=payload, headers=headers)
+        assert response.status_code == 200, f"Expected HTTP 200, got {response.status_code}. Response: {response.text}"
+        data = response.json()
+        required_fields = ["accessToken", "refreshToken", "tokenType", "userId", "username", "email"]
+        for field in required_fields:
+            assert field in data, f"Missing field {field} in login response"
+        assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
+        return data
+
+    # --- TC_SCRUM96_004: New Methods Below ---
+    @staticmethod
+    def register_user_api(user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Registers a user via POST /api/users/register.
+        Args:
+            user_data (dict): Registration data (username, email, password, firstName, lastName).
+        Returns:
+            dict: API response JSON.
+        Raises:
+            AssertionError: If registration fails or required fields are missing.
+        """
+        api_url = "https://example-ecommerce.com/api/users/register"
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(api_url, json=user_data, headers=headers)
+        assert response.status_code == 201, f"Expected HTTP 201, got {response.status_code}. Response: {response.text}"
+        data = response.json()
+        required_fields = ["userId", "username", "email", "firstName", "lastName", "accountStatus"]
+        for field in required_fields:
+            assert field in data, f"Missing field {field} in registration response"
+        assert data["accountStatus"] == "ACTIVE", "Account status must be ACTIVE"
+        return data
+
+    @staticmethod
+    def decode_and_validate_jwt(token: str) -> Dict[str, Any]:
+        """
+        Decodes and validates JWT structure and claims (subject, expiration, issued at).
+        Args:
+            token (str): JWT token string.
+        Returns:
+            dict: Decoded JWT payload.
+        Raises:
+            AssertionError: If claims are missing or invalid.
+        """
         try:
-            step3_result = self.verify_remember_me_checkbox_absence()
-            results["step_3_checkbox_absent"] = step3_result
-            assert step3_result, "'Remember Me' checkbox is present but should NOT be present"
+            payload = jwt.decode(token, options={"verify_signature": False}, algorithms=["HS256", "RS256"])
+            assert 'sub' in payload, "Subject (sub) claim missing in token"
+            assert 'exp' in payload, "Expiration (exp) claim missing in token"
+            assert 'iat' in payload, "Issued at (iat) claim missing in token"
+            assert isinstance(payload['exp'], int), "Expiration (exp) must be integer timestamp"
+            exp_time = datetime.datetime.fromtimestamp(payload['exp'])
+            assert exp_time > datetime.datetime.utcnow(), "Token has expired"
+            return payload
         except Exception as e:
-            results["step_3_checkbox_absent"] = False
-            results["step_3_error"] = str(e)
-            results["overall_pass"] = False
-            return results
-        
-        results["overall_pass"] = True
-        return results
+            raise AssertionError(f"JWT decode/validation failed: {e}")
 
     # --- TC_LOGIN_003: Forgot Username Workflow ---
     def start_forgot_username_workflow(self, email):
@@ -162,7 +201,7 @@ class LoginPage:
         Returns:
             str: Confirmation or error message from UsernameRecoveryPage.
         """
-        from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
+        from PageClasses.UsernameRecoveryPage import UsernameRecoveryPage
         self.go_to_login_page()
         self.click_forgot_username()
         recovery_page = UsernameRecoveryPage(self.driver)
