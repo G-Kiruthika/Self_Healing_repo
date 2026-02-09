@@ -5,6 +5,7 @@ import jwt
 import datetime
 from typing import Optional, Dict, Any
 import requests
+import re
 
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
@@ -176,13 +177,13 @@ class LoginPage:
 
     def validate_password_special_characters(self, password, expected_message=None):
         """
-        Validates the password field for special characters.
+        Enhanced password validation logic to ensure password includes at least one special character.
         Steps:
             1. Navigate to the login page.
             2. Enter email (dummy or valid).
-            3. Enter password (with or without special characters).
+            3. Enter password.
             4. Click login or trigger validation.
-            5. Assert validation error message if expected.
+            5. Assert validation error message if password does not meet special character requirement.
         Args:
             password (str): Password to test.
             expected_message (str): Expected validation error message (if any).
@@ -195,10 +196,14 @@ class LoginPage:
         self.enter_email("test@example.com")  # Using dummy email
         self.enter_password(password)
         self.click_login()
-        if expected_message:
+
+        # Enhanced validation logic: check for at least one special character
+        special_char_pattern = r"[!@#$%^&*(),.?\":{}|<>]"
+        if not re.search(special_char_pattern, password):
             validation_error = self.get_validation_error()
-            assert validation_error is not None, "No validation error found for password validation."
-            assert expected_message in validation_error, f"Expected message '{expected_message}', got '{validation_error}'"
+            assert validation_error is not None, "No validation error found for password missing special characters."
+            expected = expected_message or "Password must contain at least one special character."
+            assert expected in validation_error, f"Expected message '{expected}', got '{validation_error}'"
         else:
             error_msg = self.get_error_message()
-            assert error_msg is None or error_msg.strip() == "", "Unexpected error message for valid password."
+            assert error_msg is None or error_msg.strip() == "", "Unexpected error message for valid password with special character."
