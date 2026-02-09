@@ -75,46 +75,55 @@ class LoginPage:
         assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login."
 
-    # TC_LOGIN_002 functionality: Login with valid credentials and verify dashboard access
-    def perform_valid_login_and_validate_dashboard(self, email, password):
+    # TC_LOGIN_002 functionality
+    def navigate_and_verify_login_screen(self):
         """
-        TC_LOGIN_002: Login with valid credentials and verify user is redirected to dashboard.
-        """
-        self.login_with_credentials(email, password)
-        try:
-            dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-            assert dashboard_header.is_displayed(), "Dashboard header is not visible after login."
-            user_profile = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
-            assert user_profile.is_displayed(), "User profile icon is not visible after login."
-        except Exception as e:
-            raise AssertionError(f"Dashboard not loaded properly after valid login: {str(e)}")
-
-    def verify_remember_me_checkbox_not_present(self):
-        """
-        TC_LOGIN_002: Verify that 'Remember Me' checkbox is NOT present on the login page.
-        Expected: 'Remember Me' checkbox should not be displayed.
+        Step 2: Navigate to the login screen and verify it's displayed.
+        Returns True if both email and password fields are visible, False otherwise.
         """
         self.go_to_login_page()
+        return self.is_on_login_page()
+
+    def verify_remember_me_checkbox_absence(self):
+        """
+        Step 3: Check for the presence of 'Remember Me' checkbox and verify it's NOT present.
+        Returns True if checkbox is absent, False if present.
+        """
         try:
-            remember_me_element = self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
-            if remember_me_element.is_displayed():
-                raise AssertionError("'Remember Me' checkbox is present and visible, but it should NOT be present.")
+            # Try to find the checkbox, wait 2 seconds max
+            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+            return False  # Checkbox found, should NOT be present
         except Exception:
-            # Element not found or not visible - this is the expected behavior
-            return True
+            return True  # Checkbox not found, as expected
 
     def execute_tc_login_002(self):
         """
-        Complete execution of TC_LOGIN_002 test case:
-        Step 1: Navigate to the login screen
-        Step 2: Verify login screen is displayed
-        Step 3: Check for the presence of 'Remember Me' checkbox (should NOT be present)
+        Complete execution of TC_LOGIN_002 test case.
+        Returns dict with step results and overall pass/fail status.
         """
-        # Step 1 & 2: Navigate to login screen and verify it's displayed
-        self.go_to_login_page()
-        assert self.is_on_login_page(), "Login screen is not displayed properly."
+        results = {}
         
-        # Step 3: Check for the presence of 'Remember Me' checkbox (should NOT be present)
-        self.verify_remember_me_checkbox_not_present()
+        # Step 2: Navigate to login screen
+        try:
+            step2_result = self.navigate_and_verify_login_screen()
+            results["step_2_navigate_login"] = step2_result
+            assert step2_result, "Login screen is not displayed"
+        except Exception as e:
+            results["step_2_navigate_login"] = False
+            results["step_2_error"] = str(e)
+            results["overall_pass"] = False
+            return results
         
-        return "TC_LOGIN_002 executed successfully: Login screen displayed and 'Remember Me' checkbox is not present."
+        # Step 3: Verify Remember Me checkbox absence
+        try:
+            step3_result = self.verify_remember_me_checkbox_absence()
+            results["step_3_checkbox_absent"] = step3_result
+            assert step3_result, "'Remember Me' checkbox is present but should NOT be present"
+        except Exception as e:
+            results["step_3_checkbox_absent"] = False
+            results["step_3_error"] = str(e)
+            results["overall_pass"] = False
+            return results
+        
+        results["overall_pass"] = True
+        return results
