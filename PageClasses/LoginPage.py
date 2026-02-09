@@ -43,6 +43,11 @@ class LoginPage:
         login_btn.click()
 
     def click_forgot_username(self):
+        """
+        Clicks the 'Forgot Username' link on the Login page.
+        Returns:
+            None
+        """
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
@@ -168,15 +173,15 @@ class LoginPage:
     # --- TC_LOGIN_003: Forgot Username Workflow ---
     def start_forgot_username_workflow(self, email):
         """
-        TC_LOGIN_003: End-to-end Forgot Username workflow.
+        TC_LOGIN_003: End-to-end Forgot Username workflow for Selenium automation.
         Steps:
-            1. Navigate to Login page
-            2. Click on 'Forgot Username' link
-            3. Use UsernameRecoveryPage to recover username
+            1. Navigate to the login screen.
+            2. Click on 'Forgot Username' link.
+            3. Follow instructions to recover username via UsernameRecoveryPage.
         Args:
-            email (str): Email address for username recovery
+            email (str): Email address for username recovery.
         Returns:
-            str: Confirmation or error message from UsernameRecoveryPage
+            str: Confirmation or error message from UsernameRecoveryPage.
         """
         from PageClasses.UsernameRecoveryPage import UsernameRecoveryPage
         self.go_to_login_page()
