@@ -5,14 +5,6 @@ from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
 
 class TC_LOGIN_003_TestPage:
-    """
-    Comprehensive PageClass for TC_LOGIN_003.
-    Orchestrates the end-to-end test flow:
-      1. Navigate to login screen
-      2. Click on 'Forgot Username' link
-      3. Recover username using UsernameRecoveryPage
-    Returns structured results for downstream automation.
-    """
     def __init__(self, driver, timeout=10):
         self.driver = driver
         self.timeout = timeout

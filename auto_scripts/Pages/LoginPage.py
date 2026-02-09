@@ -44,11 +44,6 @@ class LoginPage:
         login_btn.click()
 
     def click_forgot_username(self):
-        """
-        Clicks the 'Forgot Username' link on the Login page.
-        Returns:
-            None
-        """
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
@@ -74,22 +69,6 @@ class LoginPage:
         self.click_login()
 
     def perform_invalid_login_and_validate(self, email, invalid_password):
-        """
-        TC_LOGIN_001: Performs invalid login and validates error message.
-        Steps:
-            1. Navigate to the login screen.
-            2. Enter invalid username and/or password.
-            3. Click Login button.
-            4. Validate error message 'Invalid username or password. Please try again.' is displayed.
-            5. Assert user remains on login page after failed login.
-        Args:
-            email (str): Invalid email/username.
-            invalid_password (str): Invalid password.
-        Returns:
-            None
-        Raises:
-            AssertionError: If error message is not as expected or user is not on login page.
-        """
         expected_error = "Invalid username or password. Please try again."
         self.login_with_credentials(email, invalid_password)
         error_msg = self.get_error_message()
@@ -121,16 +100,6 @@ class LoginPage:
 
     @staticmethod
     def login_api(username: str, password: str) -> Dict[str, Any]:
-        """
-        Sends POST request to /api/auth/login for API-based login.
-        Args:
-            username (str): Username for login.
-            password (str): Password for login.
-        Returns:
-            dict: Response JSON with JWT tokens and user details.
-        Raises:
-            AssertionError: If login fails or required fields are missing.
-        """
         api_url = "https://example-ecommerce.com/api/auth/login"
         payload = {"username": username, "password": password}
         headers = {"Content-Type": "application/json"}
@@ -143,18 +112,8 @@ class LoginPage:
         assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
         return data
 
-    # --- TC_SCRUM96_004: New Methods Below ---
     @staticmethod
     def register_user_api(user_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Registers a user via POST /api/users/register.
-        Args:
-            user_data (dict): Registration data (username, email, password, firstName, lastName).
-        Returns:
-            dict: API response JSON.
-        Raises:
-            AssertionError: If registration fails or required fields are missing.
-        """
         api_url = "https://example-ecommerce.com/api/users/register"
         headers = {"Content-Type": "application/json"}
         response = requests.post(api_url, json=user_data, headers=headers)
@@ -168,15 +127,6 @@ class LoginPage:
 
     @staticmethod
     def decode_and_validate_jwt(token: str) -> Dict[str, Any]:
-        """
-        Decodes and validates JWT structure and claims (subject, expiration, issued at).
-        Args:
-            token (str): JWT token string.
-        Returns:
-            dict: Decoded JWT payload.
-        Raises:
-            AssertionError: If claims are missing or invalid.
-        """
         try:
             payload = jwt.decode(token, options={"verify_signature": False}, algorithms=["HS256", "RS256"])
             assert 'sub' in payload, "Subject (sub) claim missing in token"
@@ -191,71 +141,8 @@ class LoginPage:
 
     # --- TC_LOGIN_003: Forgot Username Workflow ---
     def start_forgot_username_workflow(self, email):
-        """
-        TC_LOGIN_003: End-to-end Forgot Username workflow for Selenium automation.
-        Steps:
-            1. Navigate to the login screen.
-            2. Click on 'Forgot Username' link.
-            3. Follow instructions to recover username via UsernameRecoveryPage.
-        Args:
-            email (str): Email address for username recovery.
-        Returns:
-            str: Confirmation or error message from UsernameRecoveryPage.
-        """
-        from PageClasses.UsernameRecoveryPage import UsernameRecoveryPage
+        from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
         self.go_to_login_page()
         self.click_forgot_username()
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
-
-    # --- TC-102: Stub for Test Case 1299 ---
-    def tc_102_stub(self):
-        """
-        TC-102 (testCaseId: 1299): Placeholder for test steps.
-        Steps:
-            No steps defined yet. This method is auto-generated for traceability.
-        Returns:
-            None
-        """
-        # TODO: Implement test steps for TC-102 when defined
-        pass
-
-    # --- TC001: Password Validation Logic with Special Characters ---
-    @staticmethod
-    def validate_password_special_characters(password: str) -> bool:
-        """
-        TC001: Validates that the password includes at least one special character.
-
-        Args:
-            password (str): Password string to validate.
-
-        Returns:
-            bool: True if password contains at least one special character, False otherwise.
-
-        Raises:
-            AssertionError: If password does not contain any special characters.
-        """
-        # Define special characters set
-        special_char_pattern = r"[!@#$%^&*()_+\-={}|\[\]:;'<>?,./]"
-        if re.search(special_char_pattern, password):
-            return True
-        else:
-            raise AssertionError("Password must contain at least one special character.")
-
-    def enter_and_validate_password(self, password: str) -> None:
-        """
-        Enters the password into the password field and validates it for special characters as per TC001.
-
-        Args:
-            password (str): Password to enter and validate.
-
-        Returns:
-            None
-
-        Raises:
-            AssertionError: If password validation fails.
-        """
-        self.validate_password_special_characters(password)
-        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
-        password_input.clear()
-        password_input.send_keys(password)
