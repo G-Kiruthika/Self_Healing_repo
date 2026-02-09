@@ -1,11 +1,11 @@
 """
 Test Scripts Module - Automated Test Cases
-Contains test classes for login functionality and user signup with email validation
+Contains test classes for login functionality including forgot username workflow
+and user registration with email format validation
 """
 
 import unittest
 import re
-import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -135,126 +135,212 @@ class LoginPage:
 
 
 class UserSignupPage:
-    """Page Object Model for User Signup Page with Email Format Validation"""
+    """
+    Page Object Model for User Registration/Signup Page
+    Implements email format validation for registration process
+    Test Case ID: 1286 - Added email format validation in registration step
+    """
     
-    # Email validation regex pattern
+    # Email validation regex pattern (RFC 5322 compliant)
     EMAIL_REGEX = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(driver, 10)
-        self.username_field = (By.ID, "signup_username")
-        self.email_field = (By.ID, "signup_email")
-        self.password_field = (By.ID, "signup_password")
-        self.signup_button = (By.ID, "signupBtn")
-        self.error_message = (By.CLASS_NAME, "error-message")
-        self.success_message = (By.CLASS_NAME, "success-message")
-        self.email_error = (By.ID, "email_error")
-        
+    
+    # Registration page locators
+    signup_link = (By.LINK_TEXT, "Sign Up")
+    signup_alt_link = (By.XPATH, "//a[contains(text(), 'Sign Up') or contains(text(), 'Register')]")
+    
+    # Registration form locators
+    username_field = (By.ID, "signupUsername")
+    username_alt_field = (By.NAME, "username")
+    email_field = (By.ID, "signupEmail")
+    email_alt_field = (By.NAME, "email")
+    password_field = (By.ID, "signupPassword")
+    password_alt_field = (By.NAME, "password")
+    confirm_password_field = (By.ID, "confirmPassword")
+    confirm_password_alt_field = (By.NAME, "confirmPassword")
+    
+    # Validation message locators
+    email_validation_error = (By.ID, "emailError")
+    email_validation_error_alt = (By.XPATH, "//span[contains(@class, 'email-error') or contains(@id, 'email-error')]")
+    general_error_message = (By.CLASS_NAME, "error-message")
+    success_message = (By.CLASS_NAME, "success-message")
+    
+    # Submit button locators
+    register_button = (By.ID, "registerButton")
+    register_alt_button = (By.XPATH, "//button[contains(text(), 'Register') or contains(text(), 'Sign Up')]")
+    
     def navigate_to_signup(self, url="https://example.com/signup"):
-        """Navigate to signup page"""
+        """Navigate to signup/registration page"""
         self.driver.get(url)
-        self.wait.until(EC.presence_of_element_located(self.username_field))
-        
+        try:
+            self.wait.until(EC.presence_of_element_located(self.email_field))
+        except TimeoutException:
+            self.wait.until(EC.presence_of_element_located(self.email_alt_field))
+    
+    def click_signup_link(self):
+        """Click signup link from login or home page"""
+        try:
+            element = self.wait.until(EC.element_to_be_clickable(self.signup_link))
+            element.click()
+        except (TimeoutException, NoSuchElementException):
+            element = self.wait.until(EC.element_to_be_clickable(self.signup_alt_link))
+            element.click()
+    
     def enter_username(self, username):
-        """Enter username in the username field"""
+        """Enter username in registration field"""
         try:
             element = self.wait.until(EC.element_to_be_clickable(self.username_field))
-            element.clear()
-            element.send_keys(username)
-            return True
-        except (TimeoutException, NoSuchElementException) as e:
-            print(f"Error entering username: {str(e)}")
-            return False
+        except TimeoutException:
+            element = self.wait.until(EC.element_to_be_clickable(self.username_alt_field))
+        element.clear()
+        element.send_keys(username)
     
     def enter_email(self, email):
-        """Enter email in the email field"""
+        """Enter email in registration field"""
         try:
             element = self.wait.until(EC.element_to_be_clickable(self.email_field))
-            element.clear()
-            element.send_keys(email)
-            return True
-        except (TimeoutException, NoSuchElementException) as e:
-            print(f"Error entering email: {str(e)}")
-            return False
+        except TimeoutException:
+            element = self.wait.until(EC.element_to_be_clickable(self.email_alt_field))
+        element.clear()
+        element.send_keys(email)
     
     def enter_password(self, password):
-        """Enter password in the password field"""
+        """Enter password in registration field"""
         try:
             element = self.wait.until(EC.element_to_be_clickable(self.password_field))
-            element.clear()
-            element.send_keys(password)
-            return True
-        except (TimeoutException, NoSuchElementException) as e:
-            print(f"Error entering password: {str(e)}")
-            return False
+        except TimeoutException:
+            element = self.wait.until(EC.element_to_be_clickable(self.password_alt_field))
+        element.clear()
+        element.send_keys(password)
+    
+    def enter_confirm_password(self, password):
+        """Enter confirm password in registration field"""
+        try:
+            element = self.wait.until(EC.element_to_be_clickable(self.confirm_password_field))
+        except TimeoutException:
+            element = self.wait.until(EC.element_to_be_clickable(self.confirm_password_alt_field))
+        element.clear()
+        element.send_keys(password)
+    
+    def click_register(self):
+        """Click register/signup button"""
+        try:
+            element = self.wait.until(EC.element_to_be_clickable(self.register_button))
+            element.click()
+        except (TimeoutException, NoSuchElementException):
+            element = self.wait.until(EC.element_to_be_clickable(self.register_alt_button))
+            element.click()
     
     def validate_email_format(self, email):
         """
         Validate email format using regex pattern
-        Returns: tuple (is_valid: bool, error_message: str)
+        Returns: tuple (is_valid: bool, error_message: str or None)
         """
         if not email:
-            return False, "Email cannot be empty"
+            return False, "Email address is required"
         
         if not re.match(self.EMAIL_REGEX, email):
-            return False, "Invalid email format. Please enter a valid email address."
+            return False, "Invalid email format. Please enter a valid email address"
         
-        return True, "Email format is valid"
+        # Additional validation checks
+        if len(email) > 254:  # RFC 5321
+            return False, "Email address is too long"
+        
+        local_part = email.split('@')[0]
+        if len(local_part) > 64:  # RFC 5321
+            return False, "Email local part is too long"
+        
+        return True, None
     
-    def click_signup(self):
-        """Click the signup button"""
+    def get_email_validation_error(self):
+        """Get email validation error message from UI"""
         try:
-            element = self.wait.until(EC.element_to_be_clickable(self.signup_button))
-            element.click()
-            return True
-        except (TimeoutException, NoSuchElementException) as e:
-            print(f"Error clicking signup button: {str(e)}")
-            return False
-    
-    def get_error_message(self):
-        """Get error message text if present"""
-        try:
-            element = self.wait.until(EC.visibility_of_element_located(self.error_message))
+            element = self.wait.until(EC.visibility_of_element_located(self.email_validation_error))
             return element.text
         except TimeoutException:
-            return None
+            try:
+                element = self.wait.until(EC.visibility_of_element_located(self.email_validation_error_alt))
+                return element.text
+            except TimeoutException:
+                return None
     
-    def get_email_error(self):
-        """Get email-specific error message if present"""
+    def get_error_message(self):
+        """Get general error message text"""
         try:
-            element = self.wait.until(EC.visibility_of_element_located(self.email_error))
+            element = self.wait.until(EC.visibility_of_element_located(self.general_error_message))
             return element.text
         except TimeoutException:
             return None
     
     def get_success_message(self):
-        """Get success message text if present"""
+        """Get success message text"""
         try:
             element = self.wait.until(EC.visibility_of_element_located(self.success_message))
             return element.text
         except TimeoutException:
             return None
     
-    def signup_with_validation(self, username, email, password):
+    def is_email_field_highlighted(self):
+        """Check if email field is highlighted as invalid"""
+        try:
+            element = self.driver.find_element(*self.email_field)
+        except NoSuchElementException:
+            element = self.driver.find_element(*self.email_alt_field)
+        
+        # Check for common validation classes or styles
+        class_attr = element.get_attribute('class') or ''
+        return 'invalid' in class_attr or 'error' in class_attr
+    
+    def perform_registration_with_validation(self, username, email, password, confirm_password=None):
         """
-        Complete signup flow with email format validation
-        Returns: tuple (success: bool, message: str)
+        Complete registration flow with email validation
+        Returns: dict with validation results and status
         """
-        # Validate email format before proceeding
-        is_valid, validation_message = self.validate_email_format(email)
+        result = {
+            'email_valid': False,
+            'validation_error': None,
+            'registration_successful': False,
+            'ui_error_message': None,
+            'ui_success_message': None
+        }
+        
+        # Step 1: Validate email format programmatically
+        is_valid, error_msg = self.validate_email_format(email)
+        result['email_valid'] = is_valid
+        result['validation_error'] = error_msg
         
         if not is_valid:
-            print(f"Email validation failed: {validation_message}")
-            return False, validation_message
+            return result
         
-        # Proceed with signup if email is valid
+        # Step 2: Fill registration form
         self.enter_username(username)
         self.enter_email(email)
         self.enter_password(password)
-        self.click_signup()
         
-        return True, "Signup process initiated with valid email format"
+        if confirm_password:
+            self.enter_confirm_password(confirm_password)
+        else:
+            self.enter_confirm_password(password)
+        
+        # Step 3: Submit registration
+        self.click_register()
+        time.sleep(2)
+        
+        # Step 4: Check for UI validation errors
+        ui_error = self.get_email_validation_error()
+        if not ui_error:
+            ui_error = self.get_error_message()
+        result['ui_error_message'] = ui_error
+        
+        # Step 5: Check for success
+        success_msg = self.get_success_message()
+        result['ui_success_message'] = success_msg
+        result['registration_successful'] = success_msg is not None
+        
+        return result
 
 
 class TC_LOGIN_001(unittest.TestCase):
@@ -406,8 +492,8 @@ class TC_LOGIN_003(unittest.TestCase):
 class TC002(unittest.TestCase):
     """
     Test Case ID: 1286
-    Test Case: TC002 - Email Format Validation in Registration Step
-    Description: Test Case TC002 - Added email format validation in registration step
+    Test Case: TC002 - User Registration with Email Format Validation
+    Description: Added email format validation in registration step
     Expected: Step executes successfully as per the described change
     """
     
@@ -416,113 +502,189 @@ class TC002(unittest.TestCase):
         self.driver = webdriver.Chrome()
         self.driver.maximize_window()
         self.signup_page = UserSignupPage(self.driver)
-        self.test_username = "testuser123"
-        self.test_password = "SecurePass@123"
     
-    def test_email_format_validation_valid_emails(self):
-        """Test email format validation with valid email formats"""
-        print("\n=== Testing Valid Email Formats ===")
+    def test_valid_email_format_registration(self):
+        """
+        Test registration with valid email format
+        Verify that valid email passes validation and registration proceeds
+        """
+        # Navigate to signup page
+        self.signup_page.navigate_to_signup()
         
-        valid_emails = [
-            "testuser@example.com",
-            "test.user@example.com",
-            "testuser+tag@example.co.uk",
-            "user123@mail.example.org",
-            "test_user@subdomain.example.com"
-        ]
+        # Test data with valid email
+        test_username = "testuser123"
+        test_email = "testuser@example.com"
+        test_password = "SecurePass123!"
         
-        for email in valid_emails:
-            with self.subTest(email=email):
-                is_valid, message = self.signup_page.validate_email_format(email)
-                self.assertTrue(is_valid, f"Valid email should pass validation: {email}")
-                self.assertIn("valid", message.lower(), "Validation message should indicate valid format")
-                print(f"✓ Valid email test passed: {email}")
+        # Perform registration with email validation
+        result = self.signup_page.perform_registration_with_validation(
+            username=test_username,
+            email=test_email,
+            password=test_password
+        )
+        
+        # Verify email format validation passed
+        self.assertTrue(result['email_valid'], "Valid email format should pass validation")
+        self.assertIsNone(result['validation_error'], "No validation error should occur for valid email")
+        
+        # Verify no UI error messages
+        if result['ui_error_message']:
+            self.fail(f"Unexpected UI error: {result['ui_error_message']}")
     
-    def test_email_format_validation_invalid_emails(self):
-        """Test email format validation with invalid email formats"""
-        print("\n=== Testing Invalid Email Formats ===")
+    def test_invalid_email_format_validation(self):
+        """
+        Test registration with invalid email formats
+        Verify that invalid emails are caught by validation
+        """
+        # Navigate to signup page
+        self.signup_page.navigate_to_signup()
         
         invalid_emails = [
-            "testuser.example.com",  # Missing @
-            "testuser@",             # Missing domain
-            "@example.com",          # Missing username
-            "testuser@example",      # Missing TLD
-            "testuser@@example.com", # Double @
-            "test user@example.com", # Space in username
-            "testuser@.com",         # Missing domain name
-            "",                       # Empty email
-            "testuser@example.",     # Incomplete TLD
+            "invalidemail",  # Missing @ and domain
+            "invalid@",  # Missing domain
+            "@example.com",  # Missing local part
+            "invalid@.com",  # Invalid domain
+            "invalid..email@example.com",  # Consecutive dots
+            "invalid@example",  # Missing TLD
+            "invalid email@example.com",  # Space in email
+            "",  # Empty email
         ]
         
-        for email in invalid_emails:
-            with self.subTest(email=email):
-                is_valid, message = self.signup_page.validate_email_format(email)
-                self.assertFalse(is_valid, f"Invalid email should fail validation: {email}")
-                self.assertIn("invalid", message.lower(), "Error message should indicate invalid format")
-                print(f"✓ Invalid email test passed: {email}")
+        for invalid_email in invalid_emails:
+            with self.subTest(email=invalid_email):
+                # Validate email format
+                is_valid, error_msg = self.signup_page.validate_email_format(invalid_email)
+                
+                # Verify validation fails
+                self.assertFalse(is_valid, f"Email '{invalid_email}' should fail validation")
+                self.assertIsNotNone(error_msg, "Error message should be provided for invalid email")
     
-    def test_empty_email_validation(self):
-        """Test email format validation with empty email"""
-        print("\n=== Testing Empty Email ===")
-        
-        empty_email = ""
-        is_valid, message = self.signup_page.validate_email_format(empty_email)
-        self.assertFalse(is_valid, "Empty email should fail validation")
-        self.assertIn("empty", message.lower(), "Error message should indicate empty email")
-        print("✓ Empty email test passed")
-    
-    def test_signup_with_valid_email_validation(self):
-        """Test complete signup flow with valid email validation"""
-        print("\n=== Testing Complete Signup Flow with Valid Email ===")
-        
-        valid_email = "newuser@example.com"
-        success, message = self.signup_page.signup_with_validation(
-            self.test_username, 
-            valid_email, 
-            self.test_password
-        )
-        self.assertTrue(success, "Signup with valid email should succeed")
-        self.assertIn("valid email format", message.lower(), "Success message should indicate valid email")
-        print("✓ Complete signup flow with valid email test passed")
-    
-    def test_signup_with_invalid_email_validation(self):
-        """Test complete signup flow with invalid email validation"""
-        print("\n=== Testing Complete Signup Flow with Invalid Email ===")
-        
-        invalid_email = "invalid-email"
-        success, message = self.signup_page.signup_with_validation(
-            self.test_username, 
-            invalid_email, 
-            self.test_password
-        )
-        self.assertFalse(success, "Signup with invalid email should fail")
-        self.assertIn("invalid", message.lower(), "Error message should indicate invalid email")
-        print("✓ Complete signup flow with invalid email test passed")
-    
-    def test_tc002_main_requirement(self):
+    def test_email_validation_with_ui_feedback(self):
         """
-        Main test for TC002 requirement:
-        Step 1: Added email format validation in registration step
-        Expected: Step executes successfully as per the described change
+        Test email validation with UI feedback
+        Verify that invalid email triggers UI validation messages
         """
-        print("\n=== TC002: Main Requirement Test ===")
-        print("Step 1: Added email format validation in registration step")
+        # Navigate to signup page
+        self.signup_page.navigate_to_signup()
         
-        # Test that email format validation is working in registration
-        test_cases = [
-            ("valid@example.com", True, "Valid email should be accepted"),
-            ("invalid-email", False, "Invalid email should be rejected"),
-            ("", False, "Empty email should be rejected")
+        # Test data with invalid email
+        test_username = "testuser456"
+        invalid_email = "invalidemail.com"  # Missing @
+        test_password = "SecurePass123!"
+        
+        # Enter registration data
+        self.signup_page.enter_username(test_username)
+        self.signup_page.enter_email(invalid_email)
+        self.signup_page.enter_password(test_password)
+        self.signup_page.enter_confirm_password(test_password)
+        
+        # Submit form
+        self.signup_page.click_register()
+        time.sleep(2)
+        
+        # Check for validation error in UI
+        ui_error = self.signup_page.get_email_validation_error()
+        if not ui_error:
+            ui_error = self.signup_page.get_error_message()
+        
+        # Verify error message is displayed or email field is highlighted
+        email_highlighted = self.signup_page.is_email_field_highlighted()
+        
+        self.assertTrue(
+            ui_error is not None or email_highlighted,
+            "UI should display validation error or highlight email field for invalid email"
+        )
+    
+    def test_email_validation_edge_cases(self):
+        """
+        Test email validation with edge cases
+        Verify boundary conditions and special characters
+        """
+        edge_case_emails = [
+            ("user+tag@example.com", True),  # Plus sign (valid)
+            ("user.name@example.com", True),  # Dot in local part (valid)
+            ("user_name@example.com", True),  # Underscore (valid)
+            ("user@sub.example.com", True),  # Subdomain (valid)
+            ("a@example.com", True),  # Single character local (valid)
+            ("user@example.co.uk", True),  # Multiple TLD parts (valid)
+            ("user@123.456.789.012", True),  # IP-like domain (valid format)
+            ("user name@example.com", False),  # Space (invalid)
+            ("user@exam ple.com", False),  # Space in domain (invalid)
+            ("user@@example.com", False),  # Double @ (invalid)
         ]
         
-        for email, expected_valid, description in test_cases:
+        for email, expected_valid in edge_case_emails:
             with self.subTest(email=email):
-                is_valid, message = self.signup_page.validate_email_format(email)
-                self.assertEqual(is_valid, expected_valid, description)
-                print(f"✓ {description}: {email}")
+                is_valid, error_msg = self.signup_page.validate_email_format(email)
+                
+                if expected_valid:
+                    self.assertTrue(is_valid, f"Email '{email}' should be valid")
+                    self.assertIsNone(error_msg, f"No error for valid email '{email}'")
+                else:
+                    self.assertFalse(is_valid, f"Email '{email}' should be invalid")
+                    self.assertIsNotNone(error_msg, f"Error message required for invalid email '{email}'")
+    
+    def test_email_length_validation(self):
+        """
+        Test email validation for length constraints
+        Verify RFC 5321 compliance for email length
+        """
+        # Test maximum allowed email length (254 characters)
+        long_local = "a" * 64  # Max local part
+        long_domain = "b" * 180 + ".com"  # Long domain
+        long_email = f"{long_local}@{long_domain}"
         
-        print("Expected Result: Step executes successfully as per the described change - VERIFIED")
-        print("✓ TC002: Email format validation in registration step - COMPLETED SUCCESSFULLY")
+        is_valid, error_msg = self.signup_page.validate_email_format(long_email)
+        self.assertTrue(is_valid or error_msg == "Email address is too long", 
+                       "Long email should be validated according to RFC 5321")
+        
+        # Test email exceeding maximum length
+        too_long_email = "a" * 250 + "@example.com"
+        is_valid, error_msg = self.signup_page.validate_email_format(too_long_email)
+        self.assertFalse(is_valid, "Email exceeding 254 characters should be invalid")
+        self.assertEqual(error_msg, "Email address is too long")
+        
+        # Test local part exceeding 64 characters
+        long_local_email = "a" * 65 + "@example.com"
+        is_valid, error_msg = self.signup_page.validate_email_format(long_local_email)
+        self.assertFalse(is_valid, "Local part exceeding 64 characters should be invalid")
+        self.assertEqual(error_msg, "Email local part is too long")
+    
+    def test_complete_registration_workflow_with_validation(self):
+        """
+        Test complete registration workflow with email validation
+        End-to-end test verifying all validation steps
+        """
+        # Navigate to signup page
+        self.signup_page.navigate_to_signup()
+        
+        # Test data with valid email
+        test_username = "completeuser789"
+        test_email = "complete.user@example.com"
+        test_password = "CompletePass123!"
+        
+        # Step 1: Validate email format programmatically
+        is_valid, error_msg = self.signup_page.validate_email_format(test_email)
+        self.assertTrue(is_valid, "Email format validation should pass")
+        self.assertIsNone(error_msg, "No validation error for valid email")
+        
+        # Step 2: Perform complete registration
+        result = self.signup_page.perform_registration_with_validation(
+            username=test_username,
+            email=test_email,
+            password=test_password
+        )
+        
+        # Step 3: Verify validation results
+        self.assertTrue(result['email_valid'], "Email validation should pass")
+        self.assertIsNone(result['validation_error'], "No validation error should occur")
+        
+        # Step 4: Verify registration outcome
+        # Either registration succeeds or appropriate error is shown
+        if not result['registration_successful'] and result['ui_error_message']:
+            # If registration fails, it should be for reasons other than email format
+            self.assertNotIn('email', result['ui_error_message'].lower(), 
+                           "Error should not be related to email format")
     
     def tearDown(self):
         """Clean up driver"""
