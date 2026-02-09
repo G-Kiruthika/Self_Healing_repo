@@ -31,12 +31,15 @@ import requests
 import json
 import logging
 import pymysql
+import re
 from typing import Dict, Any, Optional
 
 class UserRegistrationAPIPage:
     """
     PageClass for automating user registration API, DB verification, and email log check.
     """
+    EMAIL_REGEX = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+
     def __init__(self, api_base_url: str, db_config: Dict[str, Any], email_log_path: str):
         """
         Args:
@@ -49,6 +52,17 @@ class UserRegistrationAPIPage:
         self.email_log_path = email_log_path
         self.logger = logging.getLogger(self.__class__.__name__)
 
+    @staticmethod
+    def validate_email_format(email: str) -> bool:
+        """
+        Validates the email format using a regular expression.
+        Args:
+            email (str): Email address to validate.
+        Returns:
+            bool: True if email format is valid, False otherwise.
+        """
+        return re.match(UserRegistrationAPIPage.EMAIL_REGEX, email) is not None
+
     def register_user_api(self, user_data: Dict[str, str]) -> Dict[str, Any]:
         """
         Sends POST request to /api/users/register with user registration data.
@@ -58,7 +72,11 @@ class UserRegistrationAPIPage:
             dict: API response JSON.
         Raises:
             AssertionError: If response status is not 201 or required fields are missing.
+            ValueError: If email format is invalid.
         """
+        email = user_data.get('email')
+        if not self.validate_email_format(email):
+            raise ValueError(f"Invalid email format: {email}")
         url = f"{self.api_base_url}/api/users/register"
         headers = {'Content-Type': 'application/json'}
         self.logger.info(f"Registering user at {url} with data {user_data}")
@@ -132,7 +150,12 @@ class UserRegistrationAPIPage:
         Executes the end-to-end registration, DB check, and email confirmation.
         Args:
             user_data (dict): Registration data.
+        Raises:
+            ValueError: If email format is invalid.
         """
+        email = user_data.get('email')
+        if not self.validate_email_format(email):
+            raise ValueError(f"Invalid email format: {email}")
         api_resp = self.register_user_api(user_data)
         self.verify_user_in_db(user_data['username'], user_data['email'])
         self.verify_confirmation_email(user_data['email'])
