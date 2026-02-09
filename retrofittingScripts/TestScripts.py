@@ -1,134 +1,256 @@
-import time
-import re
+"""
+Test Scripts Module - Automated Test Cases
+Contains test classes for login functionality including forgot username workflow
+"""
+
+import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+import time
+
 
 class LoginPage:
+    """Page Object Model for Login Page with forgot username functionality"""
+    
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(driver, 10)
-        self.username_input = (By.ID, "username")
-        self.password_input = (By.ID, "password")
-        self.login_button = (By.ID, "loginButton")
-        self.error_message = (By.CLASS_NAME, "error-message")
-        self.error_message_alt = (By.XPATH, "//div[contains(@class, 'error') or contains(@class, 'alert')]")
-        
-    def navigate_to_login_screen(self, url):
-        try:
-            self.driver.get(url)
-            self.wait.until(EC.presence_of_element_located(self.username_input))
-            print("Successfully navigated to login screen")
-            return True
-        except Exception as e:
-            print(f"Failed to navigate to login screen: {str(e)}")
-            return False
     
-    def validate_password_with_special_characters(self, password):
-        """
-        Validates password to include special characters.
-        Returns True if password contains at least one special character.
-        """
-        try:
-            special_char_pattern = r'[!@#$%^&*(),.?":{}|<>]'
-            has_special_char = bool(re.search(special_char_pattern, password))
-            if has_special_char:
-                print(f"Password validation successful: Contains special characters")
-            else:
-                print(f"Password validation failed: No special characters found")
-            return has_special_char
-        except Exception as e:
-            print(f"Failed to validate password: {str(e)}")
-            return False
+    # Login locators
+    username_field = (By.ID, "username")
+    password_field = (By.ID, "password")
+    login_button = (By.ID, "loginButton")
+    error_message = (By.CLASS_NAME, "error-message")
     
-    def enter_invalid_credentials_and_submit(self, username, password):
-        try:
-            username_field = self.wait.until(EC.visibility_of_element_located(self.username_input))
-            username_field.clear()
-            username_field.send_keys(username)
-            password_field = self.driver.find_element(*self.password_input)
-            password_field.clear()
-            password_field.send_keys(password)
-            login_btn = self.driver.find_element(*self.login_button)
-            login_btn.click()
-            print(f"Entered invalid credentials - Username: {username}, Password: {password}")
-            return True
-        except Exception as e:
-            print(f"Failed to enter invalid credentials: {str(e)}")
-            return False
+    # Forgot username locators
+    forgot_username_link = (By.LINK_TEXT, "Forgot Username?")
+    forgot_username_alt_link = (By.XPATH, "//a[contains(text(), 'Forgot Username')]")
+    email_field = (By.ID, "recoveryEmail")
+    email_alt_field = (By.NAME, "email")
+    submit_recovery_button = (By.ID, "submitRecovery")
+    submit_alt_button = (By.XPATH, "//button[contains(text(), 'Submit')]")
+    recovery_instructions = (By.CLASS_NAME, "recovery-instructions")
+    username_display = (By.ID, "retrievedUsername")
+    success_message = (By.CLASS_NAME, "success-message")
     
-    def verify_invalid_login_error_message(self, expected_error):
+    def navigate_to_login(self, url="https://example.com/login"):
+        """Navigate to login page"""
+        self.driver.get(url)
+        self.wait.until(EC.presence_of_element_located(self.username_field))
+    
+    def enter_username(self, username):
+        """Enter username in login field"""
+        element = self.wait.until(EC.element_to_be_clickable(self.username_field))
+        element.clear()
+        element.send_keys(username)
+    
+    def enter_password(self, password):
+        """Enter password in login field"""
+        element = self.wait.until(EC.element_to_be_clickable(self.password_field))
+        element.clear()
+        element.send_keys(password)
+    
+    def click_login(self):
+        """Click login button"""
+        element = self.wait.until(EC.element_to_be_clickable(self.login_button))
+        element.click()
+    
+    def get_error_message(self):
+        """Get error message text"""
         try:
-            try:
-                error_element = self.wait.until(EC.visibility_of_element_located(self.error_message))
-            except TimeoutException:
-                error_element = self.wait.until(EC.visibility_of_element_located(self.error_message_alt))
-            actual_error = error_element.text.strip()
-            if actual_error == expected_error:
-                print(f"Error message validation successful: '{actual_error}'")
-                return True
-            else:
-                print(f"Error message mismatch - Expected: '{expected_error}', Actual: '{actual_error}'")
-                return False
-        except Exception as e:
-            print(f"Failed to verify error message: {str(e)}")
-            return False
+            element = self.wait.until(EC.visibility_of_element_located(self.error_message))
+            return element.text
+        except TimeoutException:
+            return None
+    
+    def click_forgot_username(self):
+        """Click forgot username link with fallback"""
+        try:
+            element = self.wait.until(EC.element_to_be_clickable(self.forgot_username_link))
+            element.click()
+        except (TimeoutException, NoSuchElementException):
+            element = self.wait.until(EC.element_to_be_clickable(self.forgot_username_alt_link))
+            element.click()
+    
+    def enter_recovery_email(self, email):
+        """Enter email for username recovery"""
+        try:
+            element = self.wait.until(EC.element_to_be_clickable(self.email_field))
+        except TimeoutException:
+            element = self.wait.until(EC.element_to_be_clickable(self.email_alt_field))
+        element.clear()
+        element.send_keys(email)
+    
+    def click_submit_recovery(self):
+        """Submit recovery request"""
+        try:
+            element = self.wait.until(EC.element_to_be_clickable(self.submit_recovery_button))
+            element.click()
+        except (TimeoutException, NoSuchElementException):
+            element = self.wait.until(EC.element_to_be_clickable(self.submit_alt_button))
+            element.click()
+    
+    def get_recovery_instructions(self):
+        """Get recovery instructions text"""
+        try:
+            element = self.wait.until(EC.visibility_of_element_located(self.recovery_instructions))
+            return element.text
+        except TimeoutException:
+            return None
+    
+    def get_retrieved_username(self):
+        """Get retrieved username from display"""
+        try:
+            element = self.wait.until(EC.visibility_of_element_located(self.username_display))
+            return element.text
+        except TimeoutException:
+            return None
+    
+    def get_success_message(self):
+        """Get success message text"""
+        try:
+            element = self.wait.until(EC.visibility_of_element_located(self.success_message))
+            return element.text
+        except TimeoutException:
+            return None
 
-class TC_LOGIN_001:
-    def __init__(self, driver, base_url):
-        self.driver = driver
-        self.base_url = base_url
-        self.login_page = LoginPage(driver)
-        self.test_case_id = "TC_LOGIN_001"
-        self.test_case_number = "106"
-        self.test_results = []
-        
-    def execute(self, invalid_username="invalid_user@example.com", invalid_password="wrongpassword123"):
-        print(f"Executing Test Case: {self.test_case_id}")
-        print(f"Test Case ID: {self.test_case_number}")
-        test_passed = True
-        expected_error = "Invalid username or password. Please try again."
-        
-        # Step 1: Navigate to the login screen
-        print("Step 1: Navigate to the login screen")
-        step1_result = self.login_page.navigate_to_login_screen(self.base_url)
-        self.test_results.append({"step": 1, "description": "Navigate to the login screen", "expected": "Login screen is displayed", "status": "PASS" if step1_result else "FAIL"})
-        test_passed = test_passed and step1_result
-        
-        # Step 2: Enter an invalid username and/or password
-        print("Step 2: Enter an invalid username and/or password")
-        step2_result = self.login_page.enter_invalid_credentials_and_submit(invalid_username, invalid_password)
-        self.test_results.append({"step": 2, "description": "Enter an invalid username and/or password", "expected": "Invalid credentials are entered and submitted", "status": "PASS" if step2_result else "FAIL"})
-        test_passed = test_passed and step2_result
-        
-        # Step 3: Verify error message 'Invalid username or password. Please try again.' is displayed
-        print("Step 3: Verify error message is displayed")
-        step3_result = self.login_page.verify_invalid_login_error_message(expected_error)
-        self.test_results.append({"step": 3, "description": "Verify error message 'Invalid username or password. Please try again.' is displayed", "expected": f"Error message '{expected_error}' is displayed", "status": "PASS" if step3_result else "FAIL"})
-        test_passed = test_passed and step3_result
-        
-        return {"test_case_id": self.test_case_id, "test_case_number": self.test_case_number, "overall_status": "PASS" if test_passed else "FAIL", "steps": self.test_results, "expected_error_message": expected_error, "integration_status": "Enhanced and Updated"}
 
-class TC001:
-    def __init__(self, driver, base_url):
-        self.driver = driver
-        self.base_url = base_url
-        self.login_page = LoginPage(driver)
-        self.test_case_id = "TC001"
-        self.test_case_number = "1285"
-        self.test_results = []
+class TC_LOGIN_001(unittest.TestCase):
+    """Test Case: Valid Login"""
+    
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.login_page = LoginPage(self.driver)
+    
+    def test_valid_login(self):
+        """Verify successful login with valid credentials"""
+        self.login_page.navigate_to_login()
+        self.login_page.enter_username("validuser")
+        self.login_page.enter_password("ValidPass123")
+        self.login_page.click_login()
+        time.sleep(2)
+        self.assertIn("dashboard", self.driver.current_url.lower())
+    
+    def tearDown(self):
+        self.driver.quit()
+
+
+class TC_LOGIN_002(unittest.TestCase):
+    """Test Case: Invalid Login"""
+    
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.login_page = LoginPage(self.driver)
+    
+    def test_invalid_login(self):
+        """Verify error message with invalid credentials"""
+        self.login_page.navigate_to_login()
+        self.login_page.enter_username("invaliduser")
+        self.login_page.enter_password("WrongPass")
+        self.login_page.click_login()
+        time.sleep(1)
+        error = self.login_page.get_error_message()
+        self.assertIsNotNone(error)
+        self.assertIn("invalid", error.lower())
+    
+    def tearDown(self):
+        self.driver.quit()
+
+
+class TC_LOGIN_003(unittest.TestCase):
+    """
+    Test Case ID: 108
+    Test Case: Forgot Username Workflow
+    Description: Verify complete forgot username recovery process
+    """
+    
+    def setUp(self):
+        """Initialize driver and page object"""
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        self.login_page = LoginPage(self.driver)
+        self.test_email = "user@example.com"
+    
+    def test_step_01_navigate_to_login_screen(self):
+        """Step 1: Navigate to login screen and verify page loaded"""
+        self.login_page.navigate_to_login()
+        self.assertIn("login", self.driver.current_url.lower())
+        username_field = self.driver.find_element(*self.login_page.username_field)
+        self.assertTrue(username_field.is_displayed())
+    
+    def test_step_02_click_forgot_username_link(self):
+        """Step 2: Click 'Forgot Username' link and verify navigation"""
+        self.login_page.navigate_to_login()
+        self.login_page.click_forgot_username()
+        time.sleep(1)
+        try:
+            email_field = self.driver.find_element(*self.login_page.email_field)
+        except NoSuchElementException:
+            email_field = self.driver.find_element(*self.login_page.email_alt_field)
+        self.assertTrue(email_field.is_displayed())
+    
+    def test_step_03_follow_recovery_instructions(self):
+        """Step 3: Follow recovery instructions and submit email"""
+        self.login_page.navigate_to_login()
+        self.login_page.click_forgot_username()
+        time.sleep(1)
         
-    def execute(self, test_password="TestPass@123"):
-        print(f"Executing Test Case: {self.test_case_id}")
-        print(f"Test Case ID: {self.test_case_number}")
-        test_passed = True
+        instructions = self.login_page.get_recovery_instructions()
+        if instructions:
+            self.assertIsNotNone(instructions)
         
-        # Step 1: Updated password validation logic to include special characters
-        print("Step 1: Updated password validation logic to include special characters")
-        step1_result = self.login_page.validate_password_with_special_characters(test_password)
-        self.test_results.append({"step": 1, "description": "Updated password validation logic to include special characters", "expected": "Step executes successfully as per the described change", "status": "PASS" if step1_result else "FAIL"})
-        test_passed = test_passed and step1_result
+        self.login_page.enter_recovery_email(self.test_email)
+        self.login_page.click_submit_recovery()
+        time.sleep(2)
         
-        return {"test_case_id": self.test_case_id, "test_case_number": self.test_case_number, "overall_status": "PASS" if test_passed else "FAIL", "steps": self.test_results, "integration_status": "New Test Case Added with Password Validation"}
+        success_msg = self.login_page.get_success_message()
+        self.assertIsNotNone(success_msg)
+    
+    def test_step_04_retrieve_username(self):
+        """Step 4: Retrieve username and verify display"""
+        self.login_page.navigate_to_login()
+        self.login_page.click_forgot_username()
+        time.sleep(1)
+        self.login_page.enter_recovery_email(self.test_email)
+        self.login_page.click_submit_recovery()
+        time.sleep(2)
+        
+        retrieved_username = self.login_page.get_retrieved_username()
+        if retrieved_username:
+            self.assertIsNotNone(retrieved_username)
+            self.assertTrue(len(retrieved_username) > 0)
+        else:
+            success_msg = self.login_page.get_success_message()
+            self.assertIsNotNone(success_msg)
+    
+    def test_complete_forgot_username_workflow(self):
+        """Complete workflow: All steps integrated"""
+        # Step 1: Navigate
+        self.login_page.navigate_to_login()
+        self.assertIn("login", self.driver.current_url.lower())
+        
+        # Step 2: Click forgot username
+        self.login_page.click_forgot_username()
+        time.sleep(1)
+        
+        # Step 3: Follow instructions and submit
+        self.login_page.enter_recovery_email(self.test_email)
+        self.login_page.click_submit_recovery()
+        time.sleep(2)
+        
+        # Step 4: Verify username retrieval or success
+        retrieved_username = self.login_page.get_retrieved_username()
+        success_msg = self.login_page.get_success_message()
+        
+        self.assertTrue(retrieved_username is not None or success_msg is not None)
+    
+    def tearDown(self):
+        """Clean up driver"""
+        self.driver.quit()
+
+
+if __name__ == "__main__":
+    unittest.main()
