@@ -147,16 +147,12 @@ class LoginPage:
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
 
-    def enter_and_validate_password(self, password: str) -> None:
-        self.validate_password_special_characters(password)
-        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
-        password_input.clear()
-        password_input.send_keys(password)
-
-    @staticmethod
-    def validate_password_special_characters(password: str) -> bool:
-        special_char_pattern = r"[!@#$%^&*()_+\-={}|\[\]:;'<>?,./]"
-        if re.search(special_char_pattern, password):
-            return True
-        else:
-            raise AssertionError("Password must contain at least one special character.")
+    # --- TC_LOGIN_002: Check absence of 'Remember Me' checkbox ---
+    def check_remember_me_absence(self):
+        """
+        Navigate to login page and assert that 'Remember Me' checkbox is NOT present.
+        """
+        self.go_to_login_page()
+        # Use find_elements to avoid NoSuchElementException, assert length == 0
+        elements = self.driver.find_elements(*self.REMEMBER_ME_CHECKBOX)
+        assert len(elements) == 0, "'Remember Me' checkbox SHOULD NOT be present on the login page, but it was found."
