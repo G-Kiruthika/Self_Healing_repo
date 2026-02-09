@@ -8,46 +8,18 @@ import re
 import datetime
 
 class PasswordRecoveryPage:
-    PASSWORD_RECOVERY_URL = "https://ecommerce.example.com/forgot-password"
+    # Locators from Locators.json
+    PASSWORD_RECOVERY_URL = "https://example-ecommerce.com/forgot-password"
     EMAIL_INPUT = (By.ID, "recovery-email")
     SUBMIT_BUTTON = (By.ID, "recovery-submit")
     SUCCESS_MESSAGE = (By.CSS_SELECTOR, "div.recovery-success")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.recovery-error")
-    GENERIC_MESSAGE = (By.CSS_SELECTOR, "div.recovery-success")  # Assuming generic message is shown in success div
-    INSTRUCTIONS = (By.CSS_SELECTOR, "div.instructions")
+    USERNAME_RESULT = (By.CSS_SELECTOR, "span.recovered-username")
+    INSTRUCTIONS_TEXT = (By.CSS_SELECTOR, "div.recovery-instructions")
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
         self.wait = WebDriverWait(self.driver, 10)
-
-    # --- Existing methods preserved ---
-    # ... [existing code preserved, see previous content] ...
-
-    # --- TC-LOGIN-006: Verify Password Recovery Page UI ---
-    def tc_login_006_verify_password_recovery_page_ui(self) -> bool:
-        """
-        TC-LOGIN-006 Step 3:
-        Verify password recovery page displays email input field and instructions
-        Acceptance Criteria: TS-004
-        """
-        try:
-            # Step 1: Verify URL
-            correct_url = self.driver.current_url.startswith(self.PASSWORD_RECOVERY_URL)
-            assert correct_url, f"Current URL does not match Password Recovery page: {self.driver.current_url}"
-
-            # Step 2: Verify email input field is visible
-            email_visible = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT)).is_displayed()
-            assert email_visible, "Email input field is not visible on Password Recovery page"
-
-            # Step 3: Verify instructions are visible
-            instructions_visible = True
-            if self.driver.find_elements(*self.INSTRUCTIONS):
-                instructions_elem = self.driver.find_element(*self.INSTRUCTIONS)
-                instructions_visible = instructions_elem.is_displayed()
-            assert instructions_visible, "Instructions are not visible on Password Recovery page"
-            return email_visible and instructions_visible
-        except Exception as e:
-            raise AssertionError(f"TC-LOGIN-006 (Password Recovery UI) failed: {str(e)}")
 
     # --- TC003: Verify Reset Link Expiry Time Change from 24h to 12h ---
     def tc003_verify_reset_link_expiry_time(self, test_email: str) -> bool:
@@ -98,7 +70,7 @@ class PasswordRecoveryPage:
         """
         # Simulate reset link with expiry param 12 hours from now
         expiry = (datetime.datetime.utcnow() + datetime.timedelta(hours=12)).strftime("%Y%m%d%H%M")
-        return f"https://ecommerce.example.com/reset-password?token=mocktoken&expires={expiry}"
+        return f"https://example-ecommerce.com/reset-password?token=mocktoken&expires={expiry}"
 
     def _parse_expiry_from_link(self, link: str) -> datetime.datetime:
         """
@@ -109,3 +81,24 @@ class PasswordRecoveryPage:
             expiry_str = match.group(1)
             return datetime.datetime.strptime(expiry_str, "%Y%m%d%H%M")
         return None
+
+    # --- Example: UI Verification Method ---
+    def verify_password_recovery_page_ui(self) -> bool:
+        """
+        Verify password recovery page displays email input field and instructions
+        """
+        try:
+            # Verify URL
+            correct_url = self.driver.current_url.startswith(self.PASSWORD_RECOVERY_URL)
+            assert correct_url, f"Current URL does not match Password Recovery page: {self.driver.current_url}"
+
+            # Verify email input field is visible
+            email_visible = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT)).is_displayed()
+            assert email_visible, "Email input field is not visible on Password Recovery page"
+
+            # Verify instructions are visible
+            instructions_visible = self.wait.until(EC.visibility_of_element_located(self.INSTRUCTIONS_TEXT)).is_displayed()
+            assert instructions_visible, "Instructions are not visible on Password Recovery page"
+            return email_visible and instructions_visible
+        except Exception as e:
+            raise AssertionError(f"Password Recovery UI verification failed: {str(e)}")
