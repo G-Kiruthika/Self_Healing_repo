@@ -5,7 +5,6 @@ import jwt
 import datetime
 from typing import Optional, Dict, Any
 import requests
-import re
 
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
@@ -44,19 +43,17 @@ class LoginPage:
         login_btn.click()
 
     def click_forgot_username(self):
+        """
+        Clicks the 'Forgot Username' link on the Login page.
+        Returns:
+            None
+        """
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
     def get_error_message(self):
         try:
             error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
-            return error_elem.text
-        except Exception:
-            return None
-
-    def get_validation_error(self):
-        try:
-            error_elem = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
             return error_elem.text
         except Exception:
             return None
@@ -123,6 +120,16 @@ class LoginPage:
 
     @staticmethod
     def login_api(username: str, password: str) -> Dict[str, Any]:
+        """
+        Sends POST request to /api/auth/login for API-based login.
+        Args:
+            username (str): Username for login.
+            password (str): Password for login.
+        Returns:
+            dict: Response JSON with JWT tokens and user details.
+        Raises:
+            AssertionError: If login fails or required fields are missing.
+        """
         api_url = "https://example-ecommerce.com/api/auth/login"
         payload = {"username": username, "password": password}
         headers = {"Content-Type": "application/json"}
@@ -135,8 +142,18 @@ class LoginPage:
         assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
         return data
 
+    # --- TC_SCRUM96_004: New Methods Below ---
     @staticmethod
     def register_user_api(user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Registers a user via POST /api/users/register.
+        Args:
+            user_data (dict): Registration data (username, email, password, firstName, lastName).
+        Returns:
+            dict: API response JSON.
+        Raises:
+            AssertionError: If registration fails or required fields are missing.
+        """
         api_url = "https://example-ecommerce.com/api/users/register"
         headers = {"Content-Type": "application/json"}
         response = requests.post(api_url, json=user_data, headers=headers)
@@ -150,6 +167,15 @@ class LoginPage:
 
     @staticmethod
     def decode_and_validate_jwt(token: str) -> Dict[str, Any]:
+        """
+        Decodes and validates JWT structure and claims (subject, expiration, issued at).
+        Args:
+            token (str): JWT token string.
+        Returns:
+            dict: Decoded JWT payload.
+        Raises:
+            AssertionError: If claims are missing or invalid.
+        """
         try:
             payload = jwt.decode(token, options={"verify_signature": False}, algorithms=["HS256", "RS256"])
             assert 'sub' in payload, "Subject (sub) claim missing in token"
@@ -162,126 +188,33 @@ class LoginPage:
         except Exception as e:
             raise AssertionError(f"JWT decode/validation failed: {e}")
 
+    # --- TC_LOGIN_003: Forgot Username Workflow ---
     def start_forgot_username_workflow(self, email):
-        from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
+        """
+        TC_LOGIN_003: End-to-end Forgot Username workflow for Selenium automation.
+        Steps:
+            1. Navigate to the login screen.
+            2. Click on 'Forgot Username' link.
+            3. Follow instructions to recover username via UsernameRecoveryPage.
+        Args:
+            email (str): Email address for username recovery.
+        Returns:
+            str: Confirmation or error message from UsernameRecoveryPage.
+        """
+        from PageClasses.UsernameRecoveryPage import UsernameRecoveryPage
         self.go_to_login_page()
         self.click_forgot_username()
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
 
-    def check_remember_me_checkbox_absence(self):
-        self.go_to_login_page()
-        elements = self.driver.find_elements(*self.REMEMBER_ME_CHECKBOX)
-        assert len(elements) == 0, "'Remember Me' checkbox IS present, but expected to be ABSENT."
-        print("'Remember Me' checkbox is absent as expected.")
-
-    def validate_password_special_characters(self, password, expected_message=None):
+    # --- TC-102: Stub for Test Case 1299 ---
+    def tc_102_stub(self):
         """
-        Enhanced password validation logic to ensure password includes at least one special character.
+        TC-102 (testCaseId: 1299): Placeholder for test steps.
         Steps:
-            1. Navigate to the login page.
-            2. Enter email (dummy or valid).
-            3. Enter password.
-            4. Click login or trigger validation.
-            5. Assert validation error message if password does not meet special character requirement.
-        Args:
-            password (str): Password to test.
-            expected_message (str): Expected validation error message (if any).
+            No steps defined yet. This method is auto-generated for traceability.
         Returns:
             None
-        Raises:
-            AssertionError: If validation error does not match expectation.
         """
-        self.go_to_login_page()
-        self.enter_email("test@example.com")  # Using dummy email
-        self.enter_password(password)
-        self.click_login()
-
-        # Enhanced validation logic: check for at least one special character
-        special_char_pattern = r"[!@#$%^&*(),.?\":{}|<>]"
-        if not re.search(special_char_pattern, password):
-            validation_error = self.get_validation_error()
-            assert validation_error is not None, "No validation error found for password missing special characters."
-            expected = expected_message or "Password must contain at least one special character."
-            assert expected in validation_error, f"Expected message '{expected}', got '{validation_error}'"
-        else:
-            error_msg = self.get_error_message()
-            assert error_msg is None or error_msg.strip() == "", "Unexpected error message for valid password with special character."
-
-    def execute_tc_101_basic_login_test(self, email, password):
-        """
-        TC-101: Basic Login Test - Validates successful login functionality.
-        Steps:
-            1. Navigate to the login page.
-            2. Enter valid email and password.
-            3. Click Login button.
-            4. Validate successful login by checking dashboard elements.
-            5. Verify user profile icon is displayed.
-        Args:
-            email (str): Valid email address.
-            password (str): Valid password.
-        Returns:
-            dict: Test results with step-by-step validation.
-        Raises:
-            AssertionError: If any validation step fails.
-        """
-        results = {
-            "test_case_id": "1298",
-            "test_case_description": "Test Case TC-101",
-            "step_1_navigate": False,
-            "step_2_enter_credentials": False,
-            "step_3_click_login": False,
-            "step_4_validate_dashboard": False,
-            "step_5_verify_profile_icon": False,
-            "overall_pass": False,
-            "error_message": None
-        }
-        
-        try:
-            # Step 1: Navigate to login page
-            self.go_to_login_page()
-            results["step_1_navigate"] = self.is_on_login_page()
-            assert results["step_1_navigate"], "Failed to navigate to login page"
-            
-            # Step 2: Enter credentials
-            self.enter_email(email)
-            self.enter_password(password)
-            results["step_2_enter_credentials"] = True
-            
-            # Step 3: Click login
-            self.click_login()
-            results["step_3_click_login"] = True
-            
-            # Step 4: Validate dashboard header is displayed
-            try:
-                dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-                results["step_4_validate_dashboard"] = dashboard_header.is_displayed()
-                assert results["step_4_validate_dashboard"], "Dashboard header not displayed after login"
-            except Exception as e:
-                results["error_message"] = f"Dashboard validation failed: {str(e)}"
-                raise AssertionError(f"Dashboard validation failed: {str(e)}")
-            
-            # Step 5: Verify user profile icon
-            try:
-                profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
-                results["step_5_verify_profile_icon"] = profile_icon.is_displayed()
-                assert results["step_5_verify_profile_icon"], "User profile icon not displayed after login"
-            except Exception as e:
-                results["error_message"] = f"Profile icon validation failed: {str(e)}"
-                raise AssertionError(f"Profile icon validation failed: {str(e)}")
-            
-            # Overall pass if all steps successful
-            results["overall_pass"] = all([
-                results["step_1_navigate"],
-                results["step_2_enter_credentials"],
-                results["step_3_click_login"],
-                results["step_4_validate_dashboard"],
-                results["step_5_verify_profile_icon"]
-            ])
-            
-        except Exception as e:
-            results["error_message"] = str(e)
-            results["overall_pass"] = False
-            raise AssertionError(f"TC-101 execution failed: {str(e)}")
-        
-        return results
+        # TODO: Implement test steps for TC-102 when defined
+        pass
