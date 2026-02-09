@@ -25,7 +25,7 @@ class UsernameRecoveryPage:
 
     def go_to_username_recovery(self):
         """
-        Navigates to the Username Recovery page.
+        Navigates to the Username Recovery page and waits for essential elements.
         """
         self.driver.get(self.URL)
         self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
@@ -111,21 +111,14 @@ class UsernameRecoveryPage:
             dict: Results with step outcomes and recovered username
         """
         results = {}
-        
         try:
-            # Step 3: Navigate to username recovery and verify page
             self.go_to_username_recovery()
             results["step_3_navigate_recovery"] = True
-            
-            # Step 4: Follow instructions to recover username
             self.enter_email(email)
             self.submit_recovery()
-            
-            # Check for success or error
             confirmation = self.get_confirmation_message()
             error = self.get_error_message()
             recovered_username = self.get_recovered_username()
-            
             if confirmation:
                 results["step_4_recovery_success"] = True
                 results["confirmation_message"] = confirmation
@@ -136,11 +129,9 @@ class UsernameRecoveryPage:
             else:
                 results["step_4_recovery_success"] = False
                 results["error_message"] = "No response received"
-                
         except Exception as e:
             results["step_3_navigate_recovery"] = False
             results["step_4_recovery_success"] = False
             results["error"] = str(e)
-        
         results["overall_pass"] = results.get("step_3_navigate_recovery", False) and results.get("step_4_recovery_success", False)
         return results
