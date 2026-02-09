@@ -146,3 +146,17 @@ class LoginPage:
         self.click_forgot_username()
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
+
+    def enter_and_validate_password(self, password: str) -> None:
+        self.validate_password_special_characters(password)
+        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_input.clear()
+        password_input.send_keys(password)
+
+    @staticmethod
+    def validate_password_special_characters(password: str) -> bool:
+        special_char_pattern = r"[!@#$%^&*()_+\-={}|\[\]:;'<>?,./]"
+        if re.search(special_char_pattern, password):
+            return True
+        else:
+            raise AssertionError("Password must contain at least one special character.")
