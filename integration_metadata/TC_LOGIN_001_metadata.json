@@ -1,0 +1,75 @@
+{
+  "testCaseId": "106",
+  "testCaseName": "TC_LOGIN_001",
+  "testCaseDescription": "Test Case TC_LOGIN_001 - Invalid Credentials Validation",
+  "integrationMetadata": {
+    "automatedIntegration": "Completed",
+    "semanticClassification": "Negative Test - Invalid Credentials Validation",
+    "testCategory": "Login Functionality",
+    "priority": "High",
+    "testType": "Functional, Security Validation",
+    "semanticMatchScore": "100%",
+    "lastIntegration": "TC_LOGIN_001 (Test Case ID: 106)",
+    "integrationStatus": "Verified and Validated",
+    "integrationDate": "2024",
+    "mappingStatus": "Complete - Full Semantic Alignment"
+  },
+  "testSteps": [
+    {
+      "stepId": 1,
+      "stepDescription": "Navigate to the login screen.",
+      "expectedResult": "Login screen is displayed.",
+      "automationMapping": "login_page.navigate_to_login_screen()"
+    },
+    {
+      "stepId": 2,
+      "stepDescription": "Enter an invalid username and/or password.",
+      "expectedResult": "Invalid credentials are entered and login attempt is made.",
+      "automationMapping": "login_page.login_with_invalid_credentials(invalid_username, invalid_password)"
+    },
+    {
+      "stepId": 3,
+      "stepDescription": "Verify error message 'Invalid username or password. Please try again.' is displayed.",
+      "expectedResult": "Error message 'Invalid username or password. Please try again.' is displayed.",
+      "automationMapping": "login_page.verify_invalid_login_error(expected_error)"
+    }
+  ],
+  "automationScripts": [
+    {
+      "scriptPath": "auto_scripts/Scripts/TestScripts.py",
+      "functionName": "test_tc_login_001_invalid_credentials",
+      "scriptType": "Pytest Function",
+      "integrationStatus": "Active"
+    },
+    {
+      "scriptPath": "retrofittingScripts/TestScripts.py",
+      "className": "TC_LOGIN_001",
+      "scriptType": "Class-based Test",
+      "integrationStatus": "Active"
+    }
+  ],
+  "pageObjects": [
+    {
+      "pageObjectPath": "auto_scripts/Pages/LoginPage.py",
+      "className": "LoginPage",
+      "methods": [
+        "navigate_to_login_screen()",
+        "login_with_invalid_credentials(username, password)",
+        "verify_invalid_login_error(expected_error)"
+      ]
+    }
+  ],
+  "validationCriteria": {
+    "loginScreenDisplayed": true,
+    "invalidCredentialsEntered": true,
+    "errorMessageValidated": true,
+    "expectedErrorMessage": "Invalid username or password. Please try again."
+  },
+  "githubIntegration": {
+    "repository": "Self_Healing_repo",
+    "owner": "G-Kiruthika",
+    "branch": "main",
+    "lastCommit": "TC_LOGIN_001 semantic mapping and integration completed",
+    "commitStatus": "Success"
+  }
+}
