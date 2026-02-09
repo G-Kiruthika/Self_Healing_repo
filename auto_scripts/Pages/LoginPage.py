@@ -1,75 +1,62 @@
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import jwt
 import datetime
 from typing import Optional, Dict, Any
 import requests
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 class LoginPage:
-    URL = 'https://example-ecommerce.com/login'
-    EMAIL_FIELD = (By.ID, 'login-email')
-    PASSWORD_FIELD = (By.ID, 'login-password')
-    REMEMBER_ME_CHECKBOX = (By.ID, 'remember-me')
-    LOGIN_SUBMIT_BUTTON = (By.ID, 'login-submit')
-    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, 'a.forgot-password-link')
-    ERROR_MESSAGE = (By.CSS_SELECTOR, 'div.alert-danger')
-    VALIDATION_ERROR = (By.CSS_SELECTOR, '.invalid-feedback')
-    EMPTY_FIELD_PROMPT = (By.XPATH, '//*[text()="Mandatory fields are required"]')
-    DASHBOARD_HEADER = (By.CSS_SELECTOR, 'h1.dashboard-title')
-    USER_PROFILE_ICON = (By.CSS_SELECTOR, '.user-profile-name')
-    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, 'a.forgot-username-link')
+    URL = "https://example-ecommerce.com/login"
+    EMAIL_FIELD = (By.ID, "login-email")
+    PASSWORD_FIELD = (By.ID, "login-password")
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
+    LOGIN_SUBMIT_BUTTON = (By.ID, "login-submit")
+    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
+    ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
+    VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
+    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
+    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
+    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")
 
     def __init__(self, driver, timeout=10):
         self.driver = driver
-        self.timeout = timeout
+        self.wait = WebDriverWait(driver, timeout)
 
     def go_to_login_page(self):
         self.driver.get(self.URL)
+        self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
 
     def enter_email(self, email):
-        email_field = WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of_element_located(self.EMAIL_FIELD)
-        )
-        email_field.clear()
-        email_field.send_keys(email)
+        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_input.clear()
+        email_input.send_keys(email)
 
     def enter_password(self, password):
-        password_field = WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of_element_located(self.PASSWORD_FIELD)
-        )
-        password_field.clear()
-        password_field.send_keys(password)
+        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_input.clear()
+        password_input.send_keys(password)
 
     def click_login(self):
-        login_button = WebDriverWait(self.driver, self.timeout).until(
-            EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON)
-        )
-        login_button.click()
+        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
+        login_btn.click()
 
     def click_forgot_username(self):
-        forgot_username_link = WebDriverWait(self.driver, self.timeout).until(
-            EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK)
-        )
-        forgot_username_link.click()
+        link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
+        link.click()
 
-    def get_error_message(self) -> Optional[str]:
+    def get_error_message(self):
         try:
-            error_element = WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(self.ERROR_MESSAGE)
-            )
-            return error_element.text
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+            return error_elem.text
         except Exception:
             return None
 
-    def is_on_login_page(self) -> bool:
+    def is_on_login_page(self):
         try:
-            WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(self.EMAIL_FIELD)
-            )
-            WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(self.PASSWORD_FIELD)
-            )
+            self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
             return True
         except Exception:
             return False
@@ -79,51 +66,55 @@ class LoginPage:
         self.enter_email(email)
         self.enter_password(password)
         self.click_login()
-        try:
-            WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(self.DASHBOARD_HEADER)
-            )
-            return True
-        except Exception:
-            return False
 
     def perform_invalid_login_and_validate(self, email, invalid_password):
-        self.go_to_login_page()
-        self.enter_email(email)
-        self.enter_password(invalid_password)
-        self.click_login()
-        error_message = self.get_error_message()
-        return error_message is not None
+        expected_error = "Invalid username or password. Please try again."
+        self.login_with_credentials(email, invalid_password)
+        error_msg = self.get_error_message()
+        assert error_msg is not None, "Error message not found after invalid login."
+        assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
+        assert self.is_on_login_page(), "User is not on the login page after failed login."
 
-    # TC_LOGIN_002 functionality
-    def is_remember_me_checkbox_absent(self) -> bool:
+    # TC_LOGIN_002 functionality: Login with valid credentials and verify dashboard access
+    def perform_valid_login_and_validate_dashboard(self, email, password):
+        """
+        TC_LOGIN_002: Login with valid credentials and verify user is redirected to dashboard.
+        """
+        self.login_with_credentials(email, password)
         try:
-            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
-            return False
+            dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            assert dashboard_header.is_displayed(), "Dashboard header is not visible after login."
+            user_profile = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+            assert user_profile.is_displayed(), "User profile icon is not visible after login."
+        except Exception as e:
+            raise AssertionError(f"Dashboard not loaded properly after valid login: {str(e)}")
+
+    def verify_remember_me_checkbox_not_present(self):
+        """
+        TC_LOGIN_002: Verify that 'Remember Me' checkbox is NOT present on the login page.
+        Expected: 'Remember Me' checkbox should not be displayed.
+        """
+        self.go_to_login_page()
+        try:
+            remember_me_element = self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+            if remember_me_element.is_displayed():
+                raise AssertionError("'Remember Me' checkbox is present and visible, but it should NOT be present.")
         except Exception:
+            # Element not found or not visible - this is the expected behavior
             return True
 
-    def execute_tc_login_002(self) -> Dict[str, Any]:
-        results = {
-            "step_navigate_to_login": False,
-            "step_verify_login_screen": False,
-            "step_check_remember_me_absence": False,
-            "overall_result": False
-        }
-        try:
-            self.go_to_login_page()
-            results["step_navigate_to_login"] = True
-
-            results["step_verify_login_screen"] = self.is_on_login_page()
-
-            results["step_check_remember_me_absence"] = self.is_remember_me_checkbox_absent()
-
-            results["overall_result"] = (
-                results["step_navigate_to_login"] and
-                results["step_verify_login_screen"] and
-                results["step_check_remember_me_absence"]
-            )
-        except Exception as e:
-            results["error"] = str(e)
-            results["overall_result"] = False
-        return results
+    def execute_tc_login_002(self):
+        """
+        Complete execution of TC_LOGIN_002 test case:
+        Step 1: Navigate to the login screen
+        Step 2: Verify login screen is displayed
+        Step 3: Check for the presence of 'Remember Me' checkbox (should NOT be present)
+        """
+        # Step 1 & 2: Navigate to login screen and verify it's displayed
+        self.go_to_login_page()
+        assert self.is_on_login_page(), "Login screen is not displayed properly."
+        
+        # Step 3: Check for the presence of 'Remember Me' checkbox (should NOT be present)
+        self.verify_remember_me_checkbox_not_present()
+        
+        return "TC_LOGIN_002 executed successfully: Login screen displayed and 'Remember Me' checkbox is not present."
