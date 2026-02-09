@@ -8,6 +8,7 @@ class UserSignupPage:
     """
     Page Object for the User Signup workflow.
     Provides methods to interact with the user registration process.
+    Enhanced for TC002: Added email format validation in registration step.
     """
     URL = "https://example-ecommerce.com/signup"
     USERNAME_FIELD = (By.ID, "signup-username")
@@ -80,12 +81,17 @@ class UserSignupPage:
 
     @staticmethod
     def is_valid_email(email):
+        """
+        Validates the email format using a regex pattern.
+        Returns True if valid, False otherwise.
+        """
         return re.match(UserSignupPage.EMAIL_REGEX, email) is not None
 
     def register_user(self, username, email, password):
         """
         Complete workflow: go to signup, fill fields, submit, return result.
         Enhanced: Validates email format before submission.
+        Returns status and message.
         """
         self.go_to_signup_page()
         self.enter_username(username)
@@ -124,7 +130,7 @@ class UserSignupPage:
 
     def signup_with_invalid_email_and_validate(self, invalid_email, username, password, db_connection):
         """
-        Implements TC-SCRUM-96-003:
+        Implements TC002:
         1. Send POST request to /api/users/signup with invalid email
         2. Verify error message indicates email format issue
         3. Verify no user record is created in the database
@@ -155,3 +161,10 @@ class UserSignupPage:
             "ui_error_message": error_msg,
             "db_user_count": user_count
         }
+
+    def validate_email_format_on_registration_step(self, email):
+        """
+        Explicit method for TC002: Validates email format during registration step.
+        Returns True if valid, False otherwise.
+        """
+        return self.is_valid_email(email)
