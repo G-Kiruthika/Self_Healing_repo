@@ -1,4 +1,5 @@
 import time
+import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -23,6 +24,23 @@ class LoginPage:
             return True
         except Exception as e:
             print(f"Failed to navigate to login screen: {str(e)}")
+            return False
+    
+    def validate_password_with_special_characters(self, password):
+        """
+        Validates password to include special characters.
+        Returns True if password contains at least one special character.
+        """
+        try:
+            special_char_pattern = r'[!@#$%^&*(),.?":{}|<>]'
+            has_special_char = bool(re.search(special_char_pattern, password))
+            if has_special_char:
+                print(f"Password validation successful: Contains special characters")
+            else:
+                print(f"Password validation failed: No special characters found")
+            return has_special_char
+        except Exception as e:
+            print(f"Failed to validate password: {str(e)}")
             return False
     
     def enter_invalid_credentials_and_submit(self, username, password):
@@ -92,3 +110,25 @@ class TC_LOGIN_001:
         test_passed = test_passed and step3_result
         
         return {"test_case_id": self.test_case_id, "test_case_number": self.test_case_number, "overall_status": "PASS" if test_passed else "FAIL", "steps": self.test_results, "expected_error_message": expected_error, "integration_status": "Enhanced and Updated"}
+
+class TC001:
+    def __init__(self, driver, base_url):
+        self.driver = driver
+        self.base_url = base_url
+        self.login_page = LoginPage(driver)
+        self.test_case_id = "TC001"
+        self.test_case_number = "1285"
+        self.test_results = []
+        
+    def execute(self, test_password="TestPass@123"):
+        print(f"Executing Test Case: {self.test_case_id}")
+        print(f"Test Case ID: {self.test_case_number}")
+        test_passed = True
+        
+        # Step 1: Updated password validation logic to include special characters
+        print("Step 1: Updated password validation logic to include special characters")
+        step1_result = self.login_page.validate_password_with_special_characters(test_password)
+        self.test_results.append({"step": 1, "description": "Updated password validation logic to include special characters", "expected": "Step executes successfully as per the described change", "status": "PASS" if step1_result else "FAIL"})
+        test_passed = test_passed and step1_result
+        
+        return {"test_case_id": self.test_case_id, "test_case_number": self.test_case_number, "overall_status": "PASS" if test_passed else "FAIL", "steps": self.test_results, "integration_status": "New Test Case Added with Password Validation"}
