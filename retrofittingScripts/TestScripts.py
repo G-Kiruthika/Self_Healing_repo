@@ -24,6 +24,8 @@ class LoginPage:
     password_field = (By.ID, "password")
     login_button = (By.ID, "loginButton")
     error_message = (By.CLASS_NAME, "error-message")
+    remember_me_checkbox = (By.ID, "rememberMe")
+    remember_me_alt_checkbox = (By.XPATH, "//input[@type='checkbox' and contains(@name, 'remember')]")
     
     # Forgot username locators
     forgot_username_link = (By.LINK_TEXT, "Forgot Username?")
@@ -65,6 +67,18 @@ class LoginPage:
             return element.text
         except TimeoutException:
             return None
+    
+    def is_remember_me_present(self):
+        """Check if Remember Me checkbox is present on the page"""
+        try:
+            self.driver.find_element(*self.remember_me_checkbox)
+            return True
+        except NoSuchElementException:
+            try:
+                self.driver.find_element(*self.remember_me_alt_checkbox)
+                return True
+            except NoSuchElementException:
+                return False
     
     def click_forgot_username(self):
         """Click forgot username link with fallback"""
@@ -139,24 +153,36 @@ class TC_LOGIN_001(unittest.TestCase):
 
 
 class TC_LOGIN_002(unittest.TestCase):
-    """Test Case: Invalid Login"""
+    """
+    Test Case ID: 107
+    Test Case: TC_LOGIN_002 - Remember Me Checkbox Verification
+    Description: Verify that 'Remember Me' checkbox is not present on login screen
+    """
     
     def setUp(self):
+        """Initialize driver and page object"""
         self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
         self.login_page = LoginPage(self.driver)
     
-    def test_invalid_login(self):
-        """Verify error message with invalid credentials"""
+    def test_remember_me_checkbox_not_present(self):
+        """Verify Remember Me checkbox is not present on login screen"""
+        # Step 1: Navigate to the login screen
         self.login_page.navigate_to_login()
-        self.login_page.enter_username("invaliduser")
-        self.login_page.enter_password("WrongPass")
-        self.login_page.click_login()
-        time.sleep(1)
-        error = self.login_page.get_error_message()
-        self.assertIsNotNone(error)
-        self.assertIn("invalid", error.lower())
+        
+        # Step 2: Verify login screen is displayed
+        self.assertIn("login", self.driver.current_url.lower())
+        username_field = self.driver.find_element(*self.login_page.username_field)
+        self.assertTrue(username_field.is_displayed(), "Login screen is displayed.")
+        
+        # Step 3: Check for the presence of 'Remember Me' checkbox
+        remember_me_present = self.login_page.is_remember_me_present()
+        
+        # Step 4: Verify 'Remember Me' checkbox is not present
+        self.assertFalse(remember_me_present, "'Remember Me' checkbox is not present.")
     
     def tearDown(self):
+        """Clean up driver"""
         self.driver.quit()
 
 
