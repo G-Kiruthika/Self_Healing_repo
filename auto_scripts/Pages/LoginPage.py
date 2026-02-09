@@ -5,6 +5,7 @@ import jwt
 import datetime
 from typing import Optional, Dict, Any
 import requests
+from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
 
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
@@ -126,4 +127,48 @@ class LoginPage:
             return results
         
         results["overall_pass"] = True
+        return results
+
+    # TC_LOGIN_003 functionality
+    def execute_tc_login_003(self, email):
+        """
+        Complete execution of TC_LOGIN_003 test case.
+        Steps:
+            1. Navigate to login screen
+            2. Click on 'Forgot Username' link
+            3. Follow the instructions to recover username
+        Args:
+            email (str): Email address for username recovery
+        Returns:
+            dict: Step-wise results and overall pass/fail status
+        """
+        results = {}
+        try:
+            # Step 1: Navigate to login screen
+            self.go_to_login_page()
+            results["step_1_navigate_login"] = self.is_on_login_page()
+            assert results["step_1_navigate_login"], "Login screen is not displayed"
+
+            # Step 2: Click 'Forgot Username' link
+            self.click_forgot_username()
+            results["step_2_forgot_username_clicked"] = True
+
+            # Step 3: Follow instructions to recover username
+            username_recovery_page = UsernameRecoveryPage(self.driver)
+            username_recovery_page.go_to_username_recovery()
+            username_recovery_page.enter_email(email)
+            username_recovery_page.submit_recovery()
+            confirmation = username_recovery_page.get_confirmation_message()
+            error = username_recovery_page.get_error_message()
+            if confirmation:
+                results["step_3_recovery_success"] = True
+                results["confirmation_message"] = confirmation
+                results["overall_pass"] = True
+            else:
+                results["step_3_recovery_success"] = False
+                results["error_message"] = error
+                results["overall_pass"] = False
+        except Exception as e:
+            results["overall_pass"] = False
+            results["exception"] = str(e)
         return results
