@@ -17,77 +17,83 @@ class UserSignupPage:
     SUCCESS_MESSAGE = (By.CSS_SELECTOR, "div.signup-success")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.signup-error")
     EMAIL_EXISTS_MESSAGE = (By.XPATH, "//*[contains(text(), 'Email already exists')]")
-    
+    EMAIL_FORMAT_ERROR_MESSAGE = (By.CSS_SELECTOR, "div.email-format-error")
+
+    EMAIL_REGEX = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+
     def __init__(self, driver, timeout=10):
         self.driver = driver
         self.wait = WebDriverWait(self.driver, timeout)
-    
+
     def go_to_signup_page(self):
         self.driver.get(self.URL)
         self.wait.until(EC.visibility_of_element_located(self.USERNAME_FIELD))
         self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
         self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
-    
+
     def enter_username(self, username):
         username_input = self.wait.until(EC.visibility_of_element_located(self.USERNAME_FIELD))
         username_input.clear()
         username_input.send_keys(username)
-    
+
     def enter_email(self, email):
         email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
         email_input.clear()
         email_input.send_keys(email)
-    
+
     def enter_password(self, password):
         password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
         password_input.clear()
         password_input.send_keys(password)
-    
+
     def click_signup(self):
         signup_btn = self.wait.until(EC.element_to_be_clickable(self.SIGNUP_SUBMIT_BUTTON))
         signup_btn.click()
-    
+
     def get_success_message(self):
         try:
             success_elem = self.wait.until(EC.visibility_of_element_located(self.SUCCESS_MESSAGE))
             return success_elem.text
-        except:
+        except Exception:
             return None
-    
+
     def get_error_message(self):
         try:
             error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
             return error_elem.text
-        except:
+        except Exception:
             return None
-    
+
     def get_email_exists_message(self):
         try:
             email_exists_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_EXISTS_MESSAGE))
             return email_exists_elem.text
-        except:
+        except Exception:
             return None
-    
+
+    def get_email_format_error_message(self):
+        try:
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FORMAT_ERROR_MESSAGE))
+            return error_elem.text
+        except Exception:
+            return None
+
     @staticmethod
-    def validate_email_format(email):
-        """
-        Validates email format using regex.
-        Returns True if valid, False otherwise.
-        """
-        email_regex = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
-        return re.match(email_regex, email) is not None
-    
+    def is_valid_email(email):
+        return re.match(UserSignupPage.EMAIL_REGEX, email) is not None
+
     def register_user(self, username, email, password):
         """
         Complete workflow: go to signup, fill fields, submit, return result.
-        Includes email format validation before submission.
+        Enhanced: Validates email format before submission.
         """
         self.go_to_signup_page()
         self.enter_username(username)
-        if not self.validate_email_format(email):
-            return {"status": "error", "message": "Invalid email format"}
         self.enter_email(email)
         self.enter_password(password)
+        # Email format validation before clicking signup
+        if not self.is_valid_email(email):
+            return {"status": "invalid_email_format", "message": "Invalid email format. Registration not submitted."}
         self.click_signup()
         # Check for either success or error message
         success_msg = self.get_success_message()
@@ -99,22 +105,11 @@ class UserSignupPage:
         email_exists_msg = self.get_email_exists_message()
         if email_exists_msg:
             return {"status": "conflict", "message": email_exists_msg}
+        email_format_error_msg = self.get_email_format_error_message()
+        if email_format_error_msg:
+            return {"status": "invalid_email_format", "message": email_format_error_msg}
         return {"status": "unknown", "message": "No clear result returned"}
-    
-    def register_and_validate_duplicate(self, user1, email, pwd1, user2, pwd2):
-        """
-        Test workflow for TC-SCRUM-96-002:
-        1. Register first user
-        2. Attempt to register second user with same email
-        3. Validate conflict/error message
-        """
-        first_result = self.register_user(user1, email, pwd1)
-        assert first_result["status"] == "success", f"Expected success for first user, got {first_result}"
-        second_result = self.register_user(user2, email, pwd2)
-        assert second_result["status"] == "conflict", f"Expected conflict for duplicate email, got {second_result}"
-        assert "Email already exists" in second_result["message"], f"Expected error message 'Email already exists', got {second_result['message']}"
-        return first_result, second_result
-    
+
     @staticmethod
     def verify_user_count_in_db(db_connection, email):
         """

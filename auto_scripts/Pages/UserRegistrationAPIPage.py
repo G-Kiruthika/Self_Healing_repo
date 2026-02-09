@@ -6,7 +6,19 @@ class UserRegistrationAPIPage:
     LOGIN_API_URL = "https://example-ecommerce.com/api/auth/login"
     DB_SIMULATION = {}
     DB_EMAIL_SIM = {}
-    ...
+
+    EMAIL_REGEX = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+
+    @staticmethod
+    def is_valid_email(email):
+        return re.match(UserRegistrationAPIPage.EMAIL_REGEX, email) is not None
+
+    def _validate_user_data(self, user_data):
+        assert "username" in user_data, "Username is required"
+        assert "email" in user_data, "Email is required"
+        assert "password" in user_data, "Password is required"
+        assert self.is_valid_email(user_data["email"]), f"Invalid email format: {user_data['email']}"
+
     # --- TC_SCRUM96_004 additions ---
     def tc_scrum96_004_register_user_and_get_jwt(self, user_data):
         """
