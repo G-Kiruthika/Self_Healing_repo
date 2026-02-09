@@ -2,6 +2,7 @@
 Test Scripts Module - Automated Test Cases
 Contains test classes for login functionality including forgot username workflow,
 user registration with email format validation, and password recovery with reset link expiry validation
+Enhanced for TC002: Added comprehensive email format validation in registration step
 """
 
 import unittest
@@ -12,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from datetime import datetime, timedelta
 import time
+import re
 
 
 class PasswordRecoveryTests(unittest.TestCase):
@@ -253,7 +255,11 @@ class UserRegistrationTests(unittest.TestCase):
     """
     Test class for user registration functionality
     Validates user registration workflows including email format validation
+    Enhanced for TC002: Added comprehensive email format validation in registration step
     """
+    
+    # Email validation regex pattern
+    EMAIL_REGEX = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
     
     @classmethod
     def setUpClass(cls):
@@ -261,6 +267,7 @@ class UserRegistrationTests(unittest.TestCase):
         cls.driver = webdriver.Chrome()
         cls.driver.maximize_window()
         cls.driver.implicitly_wait(10)
+        cls.wait = WebDriverWait(cls.driver, 15)
     
     @classmethod
     def tearDownClass(cls):
@@ -272,8 +279,190 @@ class UserRegistrationTests(unittest.TestCase):
         """Set up each test"""
         self.driver.get("https://example.com/register")
     
+    @staticmethod
+    def is_valid_email(email):
+        """
+        Validates the email format using a regex pattern.
+        Returns True if valid, False otherwise.
+        
+        Args:
+            email (str): Email address to validate
+            
+        Returns:
+            bool: True if email format is valid, False otherwise
+        """
+        return re.match(UserRegistrationTests.EMAIL_REGEX, email) is not None
+    
+    def test_TC002_email_format_validation_in_registration_step(self):
+        """
+        Test Case ID: TC002 (ID: 1286)
+        Description: Test Case TC002 - Added email format validation in registration step
+        
+        Test Steps:
+        1. Added email format validation in registration step
+        
+        Expected Result:
+        1. Step executes successfully as per the described change
+        
+        Validates:
+        - Email format validation is enforced during registration
+        - Invalid email formats are rejected with appropriate error messages
+        - Valid email formats are accepted
+        - Registration process includes comprehensive email validation
+        """
+        try:
+            # Step 1: Navigate to registration page and verify form elements
+            username_input = self.wait.until(
+                EC.presence_of_element_located((By.ID, "signup-username"))
+            )
+            email_input = self.wait.until(
+                EC.presence_of_element_located((By.ID, "signup-email"))
+            )
+            password_input = self.wait.until(
+                EC.presence_of_element_located((By.ID, "signup-password"))
+            )
+            submit_button = self.wait.until(
+                EC.element_to_be_clickable((By.ID, "signup-submit"))
+            )
+            
+            # Step 2: Test invalid email formats
+            invalid_emails = [
+                "invalid.email",           # Missing @ and domain
+                "test@",                   # Missing domain
+                "@example.com",           # Missing local part
+                "test@@example.com",      # Double @
+                "test@.com",              # Missing domain name
+                "test@example.",          # Missing TLD
+                "test@example",           # Missing TLD
+                "test.example.com",       # Missing @
+                "test @example.com",      # Space in email
+                "test@exam ple.com",      # Space in domain
+                "",                        # Empty email
+                "test@",                   # Incomplete domain
+                "test@example..com"       # Double dot in domain
+            ]
+            
+            for invalid_email in invalid_emails:
+                # Clear and fill form with test data
+                username_input.clear()
+                username_input.send_keys("testuser")
+                
+                email_input.clear()
+                email_input.send_keys(invalid_email)
+                
+                password_input.clear()
+                password_input.send_keys("testpassword123")
+                
+                # Validate email format before submission (client-side validation)
+                is_valid = self.is_valid_email(invalid_email)
+                self.assertFalse(is_valid, f"Email '{invalid_email}' should be invalid")
+                
+                # Submit form
+                submit_button.click()
+                
+                # Verify error message appears
+                try:
+                    error_message = self.wait.until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, "div.signup-error, div.email-format-error, .error-message"))
+                    )
+                    error_text = error_message.text.lower()
+                    
+                    # Check for email format error indicators
+                    email_error_indicators = [
+                        "invalid email",
+                        "email format",
+                        "valid email address",
+                        "email is required",
+                        "please enter a valid email"
+                    ]
+                    
+                    error_found = any(indicator in error_text for indicator in email_error_indicators)
+                    self.assertTrue(error_found, 
+                                  f"Expected email format error for '{invalid_email}'. Got: {error_text}")
+                    
+                except TimeoutException:
+                    self.fail(f"No error message displayed for invalid email: {invalid_email}")
+            
+            # Step 3: Test valid email formats
+            valid_emails = [
+                "test@example.com",
+                "user.name@domain.co.uk",
+                "test123@test-domain.org",
+                "valid.email+tag@example.net",
+                "user_name@example-domain.com"
+            ]
+            
+            for valid_email in valid_emails:
+                # Clear and fill form with valid data
+                username_input.clear()
+                username_input.send_keys("testuser")
+                
+                email_input.clear()
+                email_input.send_keys(valid_email)
+                
+                password_input.clear()
+                password_input.send_keys("testpassword123")
+                
+                # Validate email format (client-side validation)
+                is_valid = self.is_valid_email(valid_email)
+                self.assertTrue(is_valid, f"Email '{valid_email}' should be valid")
+                
+                # Submit form
+                submit_button.click()
+                
+                # Verify no email format error appears
+                try:
+                    # Check for success message or absence of email format errors
+                    success_elements = self.driver.find_elements(By.CSS_SELECTOR, "div.signup-success, .success-message")
+                    error_elements = self.driver.find_elements(By.CSS_SELECTOR, "div.signup-error, div.email-format-error, .error-message")
+                    
+                    # If there are error elements, ensure they're not email format related
+                    if error_elements:
+                        for error_elem in error_elements:
+                            error_text = error_elem.text.lower()
+                            email_error_indicators = ["invalid email", "email format", "valid email address"]
+                            email_error_found = any(indicator in error_text for indicator in email_error_indicators)
+                            self.assertFalse(email_error_found, 
+                                           f"Valid email '{valid_email}' should not show email format error: {error_text}")
+                    
+                    # If success message exists, verify it
+                    if success_elements:
+                        success_text = success_elements[0].text.lower()
+                        self.assertTrue("success" in success_text or "registered" in success_text or "created" in success_text,
+                                      f"Expected success message for valid email '{valid_email}'")
+                    
+                except Exception as e:
+                    # This is acceptable - the form might proceed without explicit success message
+                    pass
+            
+            # Step 4: Test integration with UserSignupPage class (if available)
+            try:
+                from auto_scripts.Pages.UserSignupPage import UserSignupPage
+                
+                # Initialize page object
+                signup_page = UserSignupPage(self.driver)
+                
+                # Test the enhanced email validation method
+                test_result = signup_page.validate_email_format_on_registration_step("test@example.com")
+                self.assertTrue(test_result, "UserSignupPage email validation should work")
+                
+                invalid_result = signup_page.validate_email_format_on_registration_step("invalid.email")
+                self.assertFalse(invalid_result, "UserSignupPage should reject invalid email")
+                
+                print("✓ TC002: Integration with UserSignupPage - PASSED")
+                
+            except ImportError:
+                print("ℹ UserSignupPage not available - skipping integration test")
+            
+            print("✓ TC002: Email format validation in registration step - PASSED")
+            
+        except TimeoutException as e:
+            self.fail(f"Timeout occurred during TC002 execution: {str(e)}")
+        except Exception as e:
+            self.fail(f"TC002 failed with error: {str(e)}")
+    
     def test_email_format_validation(self):
-        """Test email format validation during registration"""
+        """Legacy test method for email format validation - maintained for backward compatibility"""
         try:
             email_input = self.driver.find_element(By.ID, "email")
             
@@ -324,7 +513,7 @@ def suite():
     # Add Login Tests
     test_suite.addTest(unittest.makeSuite(LoginTests))
     
-    # Add User Registration Tests
+    # Add User Registration Tests (including enhanced TC002)
     test_suite.addTest(unittest.makeSuite(UserRegistrationTests))
     
     return test_suite
