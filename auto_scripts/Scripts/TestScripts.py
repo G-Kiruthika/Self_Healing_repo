@@ -30,6 +30,7 @@ def test_tc_login_001_invalid_credentials(driver):
         - Integration Status: Verified and Validated
         - Integration Date: 2024
         - Mapping Status: Complete - Full Semantic Alignment
+        - Enhancement: Updated with robust error handling and validation
     
     Args:
         driver: Selenium WebDriver instance.
@@ -54,6 +55,9 @@ def test_tc_login_001_invalid_credentials(driver):
         expected_error = "Invalid username or password. Please try again."
         error_displayed = login_page.verify_invalid_login_error(expected_error)
         assert error_displayed, f"Expected error message '{expected_error}' was not displayed correctly."
+        
+        # Additional validation: Ensure user remains on login page after failed login
+        assert login_page.is_on_login_page(), "User should remain on login page after failed login attempt."
         
         print(f"TC_LOGIN_001: Successfully validated invalid login with error message: '{expected_error}'")
         
