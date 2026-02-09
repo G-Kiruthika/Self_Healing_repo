@@ -53,6 +53,13 @@ class LoginPage:
         except Exception:
             return None
 
+    def get_validation_error(self):
+        try:
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
+            return error_elem.text
+        except Exception:
+            return None
+
     def is_on_login_page(self):
         try:
             self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
@@ -166,3 +173,32 @@ class LoginPage:
         elements = self.driver.find_elements(*self.REMEMBER_ME_CHECKBOX)
         assert len(elements) == 0, "'Remember Me' checkbox IS present, but expected to be ABSENT."
         print("'Remember Me' checkbox is absent as expected.")
+
+    def validate_password_special_characters(self, password, expected_message=None):
+        """
+        Validates the password field for special characters.
+        Steps:
+            1. Navigate to the login page.
+            2. Enter email (dummy or valid).
+            3. Enter password (with or without special characters).
+            4. Click login or trigger validation.
+            5. Assert validation error message if expected.
+        Args:
+            password (str): Password to test.
+            expected_message (str): Expected validation error message (if any).
+        Returns:
+            None
+        Raises:
+            AssertionError: If validation error does not match expectation.
+        """
+        self.go_to_login_page()
+        self.enter_email("test@example.com")  # Using dummy email
+        self.enter_password(password)
+        self.click_login()
+        if expected_message:
+            validation_error = self.get_validation_error()
+            assert validation_error is not None, "No validation error found for password validation."
+            assert expected_message in validation_error, f"Expected message '{expected_message}', got '{validation_error}'"
+        else:
+            error_msg = self.get_error_message()
+            assert error_msg is None or error_msg.strip() == "", "Unexpected error message for valid password."
