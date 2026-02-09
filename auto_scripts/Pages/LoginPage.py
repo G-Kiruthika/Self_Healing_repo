@@ -238,3 +238,98 @@ class LoginPage:
             results["step_3_remember_me_absent"] = False
         results["overall_pass"] = results["step_2_navigate_to_login"] and results["step_3_remember_me_absent"]
         return results
+
+    # --- TC_LOGIN_003 Specific Methods ---
+    def tc_login_003_navigate_to_login_screen(self):
+        """
+        TC_LOGIN_003 Step 2: Navigate to the login screen.
+        Expected result: Login screen is displayed.
+        Returns:
+            bool: True if login screen is displayed successfully.
+        """
+        self.go_to_login_page()
+        return self.is_on_login_page()
+
+    def tc_login_003_click_forgot_username_link(self):
+        """
+        TC_LOGIN_003 Step 3: Click on 'Forgot Username' link.
+        Expected result: 'Forgot Username' workflow is initiated.
+        Returns:
+            bool: True if the forgot username link was clicked successfully.
+        """
+        try:
+            self.click_forgot_username()
+            return True
+        except Exception as e:
+            print(f"Error clicking forgot username link: {str(e)}")
+            return False
+
+    def run_tc_login_003_full_test(self, recovery_email):
+        """
+        Executes the complete TC_LOGIN_003 test case:
+        1. Navigate to the login screen
+        2. Click on 'Forgot Username' link
+        3. Follow the instructions to recover username
+        Args:
+            recovery_email (str): Email address to use for username recovery
+        Returns:
+            dict: Test results with step-by-step validation
+        """
+        results = {
+            "test_case_id": "TC_LOGIN_003",
+            "step_2_navigate_to_login": False,
+            "step_3_click_forgot_username": False,
+            "step_4_username_recovery": False,
+            "overall_pass": False,
+            "errors": [],
+            "recovery_result": None
+        }
+        
+        try:
+            # Step 2: Navigate to login screen
+            step_2_result = self.tc_login_003_navigate_to_login_screen()
+            results["step_2_navigate_to_login"] = step_2_result
+            
+            if not step_2_result:
+                results["errors"].append("Step 2 failed: Could not navigate to login screen")
+                return results
+                
+        except Exception as e:
+            results["errors"].append(f"Step 2 error: {str(e)}")
+            return results
+        
+        try:
+            # Step 3: Click forgot username link
+            step_3_result = self.tc_login_003_click_forgot_username_link()
+            results["step_3_click_forgot_username"] = step_3_result
+            
+            if not step_3_result:
+                results["errors"].append("Step 3 failed: Could not click forgot username link")
+                return results
+                
+        except Exception as e:
+            results["errors"].append(f"Step 3 error: {str(e)}")
+            results["step_3_click_forgot_username"] = False
+            return results
+        
+        try:
+            # Step 4: Follow instructions to recover username
+            from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
+            username_recovery_page = UsernameRecoveryPage(self.driver)
+            recovery_result = username_recovery_page.run_tc_login_003_username_recovery(recovery_email)
+            results["recovery_result"] = recovery_result
+            results["step_4_username_recovery"] = recovery_result.get("success", False)
+            
+            if not results["step_4_username_recovery"]:
+                results["errors"].append(f"Step 4 failed: {recovery_result.get('message', 'Username recovery failed')}")
+                
+        except Exception as e:
+            results["errors"].append(f"Step 4 error: {str(e)}")
+            results["step_4_username_recovery"] = False
+        
+        # Overall test result
+        results["overall_pass"] = (results["step_2_navigate_to_login"] and 
+                                  results["step_3_click_forgot_username"] and 
+                                  results["step_4_username_recovery"])
+        
+        return results
