@@ -5,6 +5,7 @@ import jwt
 import datetime
 from typing import Optional, Dict, Any
 import requests
+import re
 
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
@@ -218,3 +219,43 @@ class LoginPage:
         """
         # TODO: Implement test steps for TC-102 when defined
         pass
+
+    # --- TC001: Password Validation Logic with Special Characters ---
+    @staticmethod
+    def validate_password_special_characters(password: str) -> bool:
+        """
+        TC001: Validates that the password includes at least one special character.
+
+        Args:
+            password (str): Password string to validate.
+
+        Returns:
+            bool: True if password contains at least one special character, False otherwise.
+
+        Raises:
+            AssertionError: If password does not contain any special characters.
+        """
+        # Define special characters set
+        special_char_pattern = r"[!@#$%^&*()_+\-={}|\[\]:;'<>?,./]"
+        if re.search(special_char_pattern, password):
+            return True
+        else:
+            raise AssertionError("Password must contain at least one special character.")
+
+    def enter_and_validate_password(self, password: str) -> None:
+        """
+        Enters the password into the password field and validates it for special characters as per TC001.
+
+        Args:
+            password (str): Password to enter and validate.
+
+        Returns:
+            None
+
+        Raises:
+            AssertionError: If password validation fails.
+        """
+        self.validate_password_special_characters(password)
+        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_input.clear()
+        password_input.send_keys(password)
