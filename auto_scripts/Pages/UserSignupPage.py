@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import requests
+import re
 
 class UserSignupPage:
     """
@@ -67,12 +68,24 @@ class UserSignupPage:
         except:
             return None
     
+    @staticmethod
+    def validate_email_format(email):
+        """
+        Validates email format using regex.
+        Returns True if valid, False otherwise.
+        """
+        email_regex = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+        return re.match(email_regex, email) is not None
+    
     def register_user(self, username, email, password):
         """
         Complete workflow: go to signup, fill fields, submit, return result.
+        Includes email format validation before submission.
         """
         self.go_to_signup_page()
         self.enter_username(username)
+        if not self.validate_email_format(email):
+            return {"status": "error", "message": "Invalid email format"}
         self.enter_email(email)
         self.enter_password(password)
         self.click_signup()
