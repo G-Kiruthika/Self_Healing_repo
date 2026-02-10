@@ -7,7 +7,7 @@ from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
 class TC_101_TestPage(unittest.TestCase):
     """
     Test Page for TC-101
-    Test Case ID: 1298
+    Test Case ID: 1433
     Description: Basic scaffold for TC-101. No test steps defined yet.
     This class is structured to be extended once test steps are provided.
     Strict adherence to Selenium Python automation standards.
