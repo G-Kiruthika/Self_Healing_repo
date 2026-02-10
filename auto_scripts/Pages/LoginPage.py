@@ -206,3 +206,23 @@ class LoginPage:
         self.click_forgot_username()
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
+
+    # --- TC_LOGIN_002: Validate Absence of Remember Me Checkbox ---
+    def validate_remember_me_checkbox_absence(self):
+        """
+        TC_LOGIN_002: Validates that the 'Remember Me' checkbox is NOT present on the login screen.
+        Steps:
+            1. Navigate to the login screen.
+            2. Check for presence of 'Remember Me' checkbox.
+            3. Validate that the checkbox is NOT present.
+        Raises:
+            AssertionError: If the checkbox is present.
+        """
+        self.go_to_login_page()
+        # Try to find the checkbox, fail if found
+        try:
+            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+            raise AssertionError("'Remember Me' checkbox IS present on the login screen, but it should NOT be.")
+        except Exception:
+            # If NoSuchElementException or similar, this is expected
+            pass
