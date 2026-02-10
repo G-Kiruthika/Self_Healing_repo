@@ -443,6 +443,133 @@ class TestCase_TC_LOGIN_003(unittest.TestCase):
             self.fail(f"[TC_LOGIN_003] Validation scenario error: {str(e)}")
 
 
+class TestCase_TC_LOGIN_002(unittest.TestCase):
+    """
+    Test Case ID: 107
+    Test Case: TC_LOGIN_002 - Validate absence of 'Remember Me' checkbox on login screen
+    Description: Test Case TC_LOGIN_002
+    
+    This test case validates that the 'Remember Me' checkbox is NOT present on the login screen:
+    1. Navigate to the login screen
+    2. Check for the presence of 'Remember Me' checkbox
+    3. Validate that the checkbox is NOT present
+    
+    Semantic Analysis Result: New test case - no existing match found
+    Classification: New test case - separate class created
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """Set up test fixtures before running test case"""
+        cls.driver = webdriver.Chrome()
+        cls.driver.maximize_window()
+        cls.driver.implicitly_wait(10)
+        cls.wait = WebDriverWait(cls.driver, 20)
+        print(f"\n{'*'*80}")
+        print(f"Initializing Test Case TC_LOGIN_002")
+        print(f"Test Case ID: 107")
+        print(f"{'*'*80}\n")
+        
+    @classmethod
+    def tearDownClass(cls):
+        """Clean up after test case execution"""
+        if cls.driver:
+            cls.driver.quit()
+        print(f"\n{'*'*80}")
+        print(f"Test Case TC_LOGIN_002 Execution Completed")
+        print(f"{'*'*80}\n")
+    
+    def setUp(self):
+        """Set up before each test method"""
+        self.test_start_time = datetime.now()
+        self.test_data = {}
+        self.test_results = []
+        print(f"\n{'='*80}")
+        print(f"Starting Test: {self._testMethodName}")
+        print(f"Test Case: TC_LOGIN_002")
+        print(f"Start Time: {self.test_start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"{'='*80}")
+    
+    def tearDown(self):
+        """Clean up after each test method"""
+        test_end_time = datetime.now()
+        duration = (test_end_time - self.test_start_time).total_seconds()
+        status = 'PASSED' if self._outcome.success else 'FAILED'
+        
+        print(f"\n{'='*80}")
+        print(f"Test Completed: {self._testMethodName}")
+        print(f"Duration: {duration:.2f} seconds")
+        print(f"Status: {status}")
+        
+        if self.test_results:
+            print(f"\nTest Results Summary:")
+            for idx, result in enumerate(self.test_results, 1):
+                print(f"  {idx}. {result}")
+        
+        print(f"{'='*80}\n")
+    
+    def test_tc_login_002_remember_me_checkbox_absence(self):
+        """
+        Main test execution for TC_LOGIN_002 - Validate absence of 'Remember Me' checkbox
+        
+        Test Steps:
+        1. Navigate to the login screen
+        2. Check for the presence of 'Remember Me' checkbox
+        3. Validate that the checkbox is NOT present
+        
+        Expected Results:
+        1. Login screen is displayed
+        2. 'Remember Me' checkbox is not present
+        """
+        try:
+            print("\n[TC_LOGIN_002] Starting remember me checkbox absence validation test...")
+            
+            # Step 1: Navigate to the login screen
+            print("[TC_LOGIN_002] Step 1: Navigate to the login screen")
+            self.driver.get("https://example-ecommerce.com/login")
+            
+            # Wait for login screen to be displayed
+            email_field = self.wait.until(
+                EC.presence_of_element_located((By.ID, "login-email"))
+            )
+            password_field = self.wait.until(
+                EC.presence_of_element_located((By.ID, "login-password"))
+            )
+            
+            # Verify login screen is displayed
+            self.assertTrue(email_field.is_displayed(), "Email field should be visible on login screen")
+            self.assertTrue(password_field.is_displayed(), "Password field should be visible on login screen")
+            print("[TC_LOGIN_002] ✓ Step 1 Passed: Login screen is displayed")
+            self.test_results.append("Step 1: Login screen displayed successfully")
+            
+            # Step 2: Check for the presence of 'Remember Me' checkbox
+            print("[TC_LOGIN_002] Step 2: Check for the presence of 'Remember Me' checkbox")
+            
+            # Try to find the 'Remember Me' checkbox - it should NOT be present
+            remember_me_checkbox_found = False
+            try:
+                remember_me_checkbox = self.driver.find_element(By.ID, "remember-me")
+                if remember_me_checkbox.is_displayed():
+                    remember_me_checkbox_found = True
+                    print("[TC_LOGIN_002] ✗ 'Remember Me' checkbox IS present on the login screen")
+                    self.test_results.append("Step 2: FAILED - 'Remember Me' checkbox is present")
+                    self.fail("'Remember Me' checkbox IS present on the login screen, but it should NOT be.")
+            except NoSuchElementException:
+                # This is the expected behavior - checkbox should not be found
+                print("[TC_LOGIN_002] ✓ Step 2 Passed: 'Remember Me' checkbox is NOT present")
+                self.test_results.append("Step 2: 'Remember Me' checkbox is not present (as expected)")
+            
+            print("\n[TC_LOGIN_002] ✓ All test steps completed successfully")
+            print("[TC_LOGIN_002] Remember Me checkbox absence validation passed")
+            
+        except TimeoutException as e:
+            self.fail(f"[TC_LOGIN_002] Timeout occurred during test execution: {str(e)}")
+        except NoSuchElementException as e:
+            self.fail(f"[TC_LOGIN_002] Element not found during test execution: {str(e)}")
+        except Exception as e:
+            self.fail(f"[TC_LOGIN_002] Unexpected error during test execution: {str(e)}")
+
+
 # Test Suite Configuration
 def suite():
     """
@@ -458,6 +585,9 @@ def suite():
     
     # Add TC_LOGIN_003 test case
     test_suite.addTest(unittest.makeSuite(TestCase_TC_LOGIN_003))
+    
+    # Add TC_LOGIN_002 test case
+    test_suite.addTest(unittest.makeSuite(TestCase_TC_LOGIN_002))
     
     return test_suite
 
