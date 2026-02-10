@@ -206,3 +206,65 @@ class LoginPage:
         self.click_forgot_username()
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
+
+    # --- TC-101: Execute Test Case 1444 ---
+    def execute_tc_101(self, email: str, password: str) -> Dict[str, Any]:
+        """
+        TC-101: Test Case 1444
+        Steps:
+            1. Navigate to login page
+            2. Enter valid username and password
+            3. Click on login button
+            4. Verify user is redirected to dashboard
+        Args:
+            email (str): Valid email address
+            password (str): Valid password
+        Returns:
+            dict: Structured results for validation
+        """
+        results = {
+            "test_case_id": "1444",
+            "test_case_description": "Test Case TC-101",
+            "step_1_navigate_login": False,
+            "step_2_enter_credentials": False,
+            "step_3_click_login": False,
+            "step_4_dashboard_redirect": False,
+            "overall_pass": False,
+            "error_message": None
+        }
+        try:
+            # Step 1: Navigate to login page
+            self.go_to_login_page()
+            results["step_1_navigate_login"] = self.is_on_login_page()
+            if not results["step_1_navigate_login"]:
+                results["error_message"] = "Login page is not displayed."
+                return results
+
+            # Step 2: Enter valid username and password
+            self.enter_email(email)
+            self.enter_password(password)
+            results["step_2_enter_credentials"] = True
+
+            # Step 3: Click on login button
+            self.click_login()
+            results["step_3_click_login"] = True
+
+            # Step 4: Verify user is redirected to dashboard
+            try:
+                dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+                user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+                results["step_4_dashboard_redirect"] = dashboard_header.is_displayed() and user_profile_icon.is_displayed()
+            except Exception:
+                results["step_4_dashboard_redirect"] = False
+                results["error_message"] = "Dashboard not displayed after login."
+
+            # Overall pass if all steps pass
+            results["overall_pass"] = (
+                results["step_1_navigate_login"] and
+                results["step_2_enter_credentials"] and
+                results["step_3_click_login"] and
+                results["step_4_dashboard_redirect"]
+            )
+        except Exception as e:
+            results["error_message"] = f"Test execution failed: {str(e)}"
+        return results
