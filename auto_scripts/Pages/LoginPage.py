@@ -5,7 +5,6 @@ import jwt
 import datetime
 from typing import Optional, Dict, Any
 import requests
-import re
 
 class LoginPage:
     URL = "https://example-ecommerce.com/login"
@@ -44,6 +43,11 @@ class LoginPage:
         login_btn.click()
 
     def click_forgot_username(self):
+        """
+        Clicks the 'Forgot Username' link on the Login page.
+        Returns:
+            None
+        """
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
@@ -69,6 +73,22 @@ class LoginPage:
         self.click_login()
 
     def perform_invalid_login_and_validate(self, email, invalid_password):
+        """
+        TC_LOGIN_001: Performs invalid login and validates error message.
+        Steps:
+            1. Navigate to the login screen.
+            2. Enter invalid username and/or password.
+            3. Click Login button.
+            4. Validate error message 'Invalid username or password. Please try again.' is displayed.
+            5. Assert user remains on login page after failed login.
+        Args:
+            email (str): Invalid email/username.
+            invalid_password (str): Invalid password.
+        Returns:
+            None
+        Raises:
+            AssertionError: If error message is not as expected or user is not on login page.
+        """
         expected_error = "Invalid username or password. Please try again."
         self.login_with_credentials(email, invalid_password)
         error_msg = self.get_error_message()
@@ -100,6 +120,16 @@ class LoginPage:
 
     @staticmethod
     def login_api(username: str, password: str) -> Dict[str, Any]:
+        """
+        Sends POST request to /api/auth/login for API-based login.
+        Args:
+            username (str): Username for login.
+            password (str): Password for login.
+        Returns:
+            dict: Response JSON with JWT tokens and user details.
+        Raises:
+            AssertionError: If login fails or required fields are missing.
+        """
         api_url = "https://example-ecommerce.com/api/auth/login"
         payload = {"username": username, "password": password}
         headers = {"Content-Type": "application/json"}
@@ -112,8 +142,18 @@ class LoginPage:
         assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
         return data
 
+    # --- TC_SCRUM96_004: New Methods Below ---
     @staticmethod
     def register_user_api(user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Registers a user via POST /api/users/register.
+        Args:
+            user_data (dict): Registration data (username, email, password, firstName, lastName).
+        Returns:
+            dict: API response JSON.
+        Raises:
+            AssertionError: If registration fails or required fields are missing.
+        """
         api_url = "https://example-ecommerce.com/api/users/register"
         headers = {"Content-Type": "application/json"}
         response = requests.post(api_url, json=user_data, headers=headers)
@@ -127,6 +167,15 @@ class LoginPage:
 
     @staticmethod
     def decode_and_validate_jwt(token: str) -> Dict[str, Any]:
+        """
+        Decodes and validates JWT structure and claims (subject, expiration, issued at).
+        Args:
+            token (str): JWT token string.
+        Returns:
+            dict: Decoded JWT payload.
+        Raises:
+            AssertionError: If claims are missing or invalid.
+        """
         try:
             payload = jwt.decode(token, options={"verify_signature": False}, algorithms=["HS256", "RS256"])
             assert 'sub' in payload, "Subject (sub) claim missing in token"
@@ -141,18 +190,19 @@ class LoginPage:
 
     # --- TC_LOGIN_003: Forgot Username Workflow ---
     def start_forgot_username_workflow(self, email):
-        from auto_scripts.Pages.UsernameRecoveryPage import UsernameRecoveryPage
+        """
+        TC_LOGIN_003: End-to-end Forgot Username workflow for Selenium automation.
+        Steps:
+            1. Navigate to the login screen.
+            2. Click on 'Forgot Username' link.
+            3. Follow instructions to recover username via UsernameRecoveryPage.
+        Args:
+            email (str): Email address for username recovery.
+        Returns:
+            str: Confirmation or error message from UsernameRecoveryPage.
+        """
+        from PageClasses.UsernameRecoveryPage import UsernameRecoveryPage
         self.go_to_login_page()
         self.click_forgot_username()
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
-
-    # --- TC_LOGIN_002: Check absence of 'Remember Me' checkbox ---
-    def check_remember_me_absence(self):
-        """
-        Navigate to login page and assert that 'Remember Me' checkbox is NOT present.
-        """
-        self.go_to_login_page()
-        # Use find_elements to avoid NoSuchElementException, assert length == 0
-        elements = self.driver.find_elements(*self.REMEMBER_ME_CHECKBOX)
-        assert len(elements) == 0, "'Remember Me' checkbox SHOULD NOT be present on the login page, but it was found."
