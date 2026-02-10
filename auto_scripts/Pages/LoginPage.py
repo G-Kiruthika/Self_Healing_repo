@@ -226,3 +226,28 @@ class LoginPage:
         except Exception:
             # If NoSuchElementException or similar, this is expected
             pass
+
+    # --- TC_SCRUM-1_006: Empty Fields Login Validation ---
+    def validate_empty_fields_login(self):
+        """
+        TC_SCRUM-1_006: Validates login with empty username and/or password fields.
+        Steps:
+            1. Navigate to the login page.
+            2. Leave username and password fields blank.
+            3. Click the 'Login' button.
+            4. Validate error message 'Username and password are required.' is displayed.
+        Raises:
+            AssertionError: If error message is not as expected or user is not on login page.
+        """
+        self.go_to_login_page()
+        # Clear email and password fields to ensure they are empty
+        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_input.clear()
+        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_input.clear()
+        self.click_login()
+        error_msg = self.get_error_message()
+        expected_error = "Username and password are required."
+        assert error_msg is not None, "Error message not found after login with empty fields."
+        assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
+        assert self.is_on_login_page(), "User is not on the login page after failed login with empty fields."
