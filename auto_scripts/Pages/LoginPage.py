@@ -251,3 +251,46 @@ class LoginPage:
         assert error_msg is not None, "Error message not found after login with empty fields."
         assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login with empty fields."
+
+    # --- TC_SCRUM-1_009: Combined Steps for Test Case ---
+    def execute_tc_scrum_1_009(self):
+        """
+        TC_SCRUM-1_009: Combined steps for navigating to login page and validating absence of 'Remember Me' checkbox.
+        Steps:
+            1. Navigate to the login page.
+            2. Verify the login page is displayed.
+            3. Check that the 'Remember Me' checkbox is NOT present.
+        Returns:
+            dict: Structured result with step statuses.
+        Raises:
+            AssertionError: If any validation fails.
+        """
+        result = {
+            'step_1': {'desc': 'Navigate to the login page.', 'status': None, 'details': ''},
+            'step_2': {'desc': "Check for the presence of 'Remember Me' checkbox.", 'status': None, 'details': ''}
+        }
+        try:
+            # Step 1: Navigate to login page
+            self.go_to_login_page()
+            if self.is_on_login_page():
+                result['step_1']['status'] = 'PASS'
+                result['step_1']['details'] = 'Login page is displayed.'
+            else:
+                result['step_1']['status'] = 'FAIL'
+                result['step_1']['details'] = 'Login page is not displayed.'
+                raise AssertionError('Login page is not displayed.')
+            # Step 2: Validate absence of Remember Me checkbox
+            try:
+                self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+                result['step_2']['status'] = 'FAIL'
+                result['step_2']['details'] = "'Remember Me' checkbox IS present on the login page, but it should NOT be."
+                raise AssertionError("'Remember Me' checkbox IS present on the login page, but it should NOT be.")
+            except Exception:
+                # Expected: checkbox not found
+                result['step_2']['status'] = 'PASS'
+                result['step_2']['details'] = "'Remember Me' checkbox is NOT present on the login page."
+        except AssertionError as e:
+            result['error'] = str(e)
+        except Exception as ex:
+            result['error'] = f"Unexpected error: {ex}"
+        return result
