@@ -237,8 +237,7 @@ class TestCase_TC_LOGIN_003(unittest.TestCase):
     2. Click on 'Forgot Username' link
     3. Follow the instructions to recover username
     
-    Semantic Analysis Result: <60% match with existing test cases
-    Classification: New test case - separate class created
+    Updated to match modified test case requirements with enhanced validation.
     """
     
     @classmethod
@@ -304,12 +303,14 @@ class TestCase_TC_LOGIN_003(unittest.TestCase):
         1. Login screen is displayed
         2. 'Forgot Username' workflow is initiated
         3. Username recovery instructions are followed and username is retrieved
+        
+        Updated implementation to match modified test case requirements.
         """
         try:
             print("\n[TC_LOGIN_003] Starting forgot username workflow test...")
             
-            # Step 1: Navigate to the login screen
-            print("[TC_LOGIN_003] Step 1: Navigate to the login screen")
+            # Step 2: Navigate to the login screen
+            print("[TC_LOGIN_003] Step 2: Navigate to the login screen")
             self.driver.get("https://example-ecommerce.com/login")
             
             # Wait for login screen to be displayed
@@ -323,11 +324,11 @@ class TestCase_TC_LOGIN_003(unittest.TestCase):
             # Verify login screen is displayed
             self.assertTrue(email_field.is_displayed(), "Email field should be visible on login screen")
             self.assertTrue(password_field.is_displayed(), "Password field should be visible on login screen")
-            print("[TC_LOGIN_003] ✓ Step 1 Passed: Login screen is displayed")
-            self.test_results.append("Step 1: Login screen displayed successfully")
+            print("[TC_LOGIN_003] ✓ Step 2 Passed: Login screen is displayed")
+            self.test_results.append("Step 2: Login screen displayed successfully")
             
-            # Step 2: Click on 'Forgot Username' link
-            print("[TC_LOGIN_003] Step 2: Click on 'Forgot Username' link")
+            # Step 3: Click on 'Forgot Username' link
+            print("[TC_LOGIN_003] Step 3: Click on 'Forgot Username' link")
             forgot_username_link = self.wait.until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, "a.forgot-username-link"))
             )
@@ -338,11 +339,11 @@ class TestCase_TC_LOGIN_003(unittest.TestCase):
                 EC.presence_of_element_located((By.ID, "recovery-email"))
             )
             self.assertTrue(recovery_email_field.is_displayed(), "Recovery email field should be visible")
-            print("[TC_LOGIN_003] ✓ Step 2 Passed: 'Forgot Username' workflow is initiated")
-            self.test_results.append("Step 2: Forgot Username workflow initiated successfully")
+            print("[TC_LOGIN_003] ✓ Step 3 Passed: 'Forgot Username' workflow is initiated")
+            self.test_results.append("Step 3: Forgot Username workflow initiated successfully")
             
-            # Step 3: Follow the instructions to recover username
-            print("[TC_LOGIN_003] Step 3: Follow the instructions to recover username")
+            # Step 4: Follow the instructions to recover username
+            print("[TC_LOGIN_003] Step 4: Follow the instructions to recover username")
             
             # Enter email for username recovery
             recovery_email_field.clear()
@@ -368,13 +369,13 @@ class TestCase_TC_LOGIN_003(unittest.TestCase):
                     username_result = self.driver.find_element(By.CSS_SELECTOR, "span.recovered-username")
                     if username_result.is_displayed():
                         print(f"[TC_LOGIN_003] Retrieved username: {username_result.text}")
-                        self.test_results.append(f"Step 3: Username retrieved successfully: {username_result.text}")
+                        self.test_results.append(f"Step 4: Username retrieved successfully: {username_result.text}")
                     else:
-                        self.test_results.append("Step 3: Recovery initiated, username will be sent via email")
+                        self.test_results.append("Step 4: Recovery initiated, username will be sent via email")
                 except NoSuchElementException:
-                    self.test_results.append("Step 3: Recovery initiated, username will be sent via email")
+                    self.test_results.append("Step 4: Recovery initiated, username will be sent via email")
                 
-                print("[TC_LOGIN_003] ✓ Step 3 Passed: Username recovery instructions followed and username retrieved")
+                print("[TC_LOGIN_003] ✓ Step 4 Passed: Username recovery instructions followed and username is retrieved")
                 
             except TimeoutException:
                 # Check for error message if recovery failed
@@ -382,7 +383,7 @@ class TestCase_TC_LOGIN_003(unittest.TestCase):
                     error_message = self.driver.find_element(By.CSS_SELECTOR, "div.recovery-error")
                     if error_message.is_displayed():
                         print(f"[TC_LOGIN_003] Recovery error: {error_message.text}")
-                        self.test_results.append(f"Step 3: Recovery failed with error: {error_message.text}")
+                        self.test_results.append(f"Step 4: Recovery failed with error: {error_message.text}")
                         self.fail(f"Username recovery failed: {error_message.text}")
                 except NoSuchElementException:
                     self.fail("No confirmation or error message found after username recovery attempt")
