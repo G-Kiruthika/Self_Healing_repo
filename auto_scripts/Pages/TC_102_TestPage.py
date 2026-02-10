@@ -6,14 +6,16 @@ from auto_scripts.Pages.LoginPage import LoginPage
 class TC_102_TestPage(unittest.TestCase):
     """
     Test Page for TC-102
-    Test Case ID: 1299
-    Description: Basic scaffold for TC-102. No test steps defined yet.
+    Test Case ID: 1434
+    Description: Test Case TC-102
+    Comprehensive scaffold for TC-102. No test steps defined yet.
     This class is structured to be extended once test steps are provided.
     Strict adherence to Selenium Python automation standards.
     """
     def setUp(self):
         self.driver = webdriver.Chrome()
         self.login_page = LoginPage(self.driver)
+        # Add additional page objects if required
 
     def tearDown(self):
         try:
