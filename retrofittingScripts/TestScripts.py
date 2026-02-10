@@ -424,6 +424,234 @@ class TestCase_TC_LOGIN_002(unittest.TestCase):
             self.fail(f"TC_LOGIN_002 error: {str(e)}")
 
 
+class TestCase_TC_SCRUM_1_006_EmptyFieldValidation(unittest.TestCase):
+    """
+    Test Case ID: 1438
+    Test Case: TC_SCRUM-1_006 - Empty Field Validation
+    Description: Validates that appropriate error messages are displayed when login fields are left empty
+    
+    This test case verifies that the login form properly validates empty username and password fields
+    and displays the correct error message to the user.
+    
+    Semantic Analysis Result: Related to login validation - similar to TC_LOGIN_002 and TC_LOGIN_003
+    Classification: New test case - separate class created for empty field validation
+    
+    Test Steps:
+    1. Navigate to the login page
+    2. Leave username and/or password fields blank
+    3. Click the 'Login' button
+    4. Verify error message 'Username and password are required.' is displayed
+    """
+    
+    @classmethod
+    def setUpClass(cls):
+        """Set up test fixtures before running test case"""
+        cls.driver = webdriver.Chrome()
+        cls.driver.maximize_window()
+        cls.driver.implicitly_wait(10)
+        cls.wait = WebDriverWait(cls.driver, 20)
+        print(f"\n{'*'*80}")
+        print(f"Initializing Test Case TC_SCRUM-1_006")
+        print(f"Test Case ID: 1438")
+        print(f"Description: Empty Field Validation for Login")
+        print(f"{'*'*80}\n")
+        
+    @classmethod
+    def tearDownClass(cls):
+        """Clean up after test case execution"""
+        if cls.driver:
+            cls.driver.quit()
+        print(f"\n{'*'*80}")
+        print(f"Test Case TC_SCRUM-1_006 Execution Completed")
+        print(f"{'*'*80}\n")
+    
+    def setUp(self):
+        """Set up before each test method"""
+        self.test_start_time = datetime.now()
+        self.test_data = {}
+        self.test_results = []
+        print(f"\n{'='*80}")
+        print(f"Starting Test: {self._testMethodName}")
+        print(f"Test Case: TC_SCRUM-1_006")
+        print(f"Start Time: {self.test_start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"{'='*80}")
+    
+    def tearDown(self):
+        """Clean up after each test method"""
+        test_end_time = datetime.now()
+        duration = (test_end_time - self.test_start_time).total_seconds()
+        status = 'PASSED' if self._outcome.success else 'FAILED'
+        
+        print(f"\n{'='*80}")
+        print(f"Test Completed: {self._testMethodName}")
+        print(f"Duration: {duration:.2f} seconds")
+        print(f"Status: {status}")
+        
+        if self.test_results:
+            print(f"\nTest Results Summary:")
+            for idx, result in enumerate(self.test_results, 1):
+                print(f"  {idx}. {result}")
+        
+        print(f"{'='*80}\n")
+    
+    def test_empty_field_validation(self):
+        """
+        Main test execution for TC_SCRUM-1_006 - Empty Field Validation
+        
+        Test Steps:
+        1. Navigate to the login page
+        2. Leave username and/or password fields blank
+        3. Click the 'Login' button
+        4. Verify error message 'Username and password are required.' is displayed
+        
+        Expected Results:
+        - Login page is displayed
+        - Fields remain empty
+        - Error message 'Username and password are required.' is displayed
+        """
+        try:
+            print("\n[TC_SCRUM-1_006] Starting empty field validation test...")
+            
+            # Step 1: Navigate to the login page
+            print("[TC_SCRUM-1_006] Step 1: Navigate to the login page")
+            self.driver.get("https://example.com/login")
+            
+            # Wait for page to load and verify login page is displayed
+            login_page_title = self.wait.until(
+                EC.presence_of_element_located((By.TAG_NAME, "h1"))
+            )
+            self.assertIsNotNone(login_page_title, "Login page should be displayed")
+            print("[TC_SCRUM-1_006] ✓ Step 1 Passed: Login page is displayed")
+            self.test_results.append("Step 1: Login page displayed successfully")
+            
+            # Step 2: Leave username and/or password fields blank
+            print("[TC_SCRUM-1_006] Step 2: Leave username and/or password fields blank")
+            
+            # Locate username and password fields
+            username_field = self.wait.until(
+                EC.presence_of_element_located((By.ID, "username"))
+            )
+            password_field = self.driver.find_element(By.ID, "password")
+            
+            # Verify fields are empty (do not enter any data)
+            self.assertEqual(username_field.get_attribute("value"), "", "Username field should be empty")
+            self.assertEqual(password_field.get_attribute("value"), "", "Password field should be empty")
+            print("[TC_SCRUM-1_006] ✓ Step 2 Passed: Fields remain empty")
+            self.test_results.append("Step 2: Username and password fields are empty")
+            
+            # Step 3: Click the 'Login' button
+            print("[TC_SCRUM-1_006] Step 3: Click the 'Login' button")
+            login_button = self.driver.find_element(By.ID, "login-button")
+            login_button.click()
+            print("[TC_SCRUM-1_006] ✓ Step 3 Passed: Login button clicked")
+            self.test_results.append("Step 3: Login button clicked successfully")
+            
+            # Step 4: Verify error message is displayed
+            print("[TC_SCRUM-1_006] Step 4: Verify error message 'Username and password are required.' is displayed")
+            error_message = self.wait.until(
+                EC.presence_of_element_located((By.CLASS_NAME, "error-message"))
+            )
+            
+            expected_error = "Username and password are required."
+            actual_error = error_message.text
+            
+            self.assertEqual(actual_error, expected_error, 
+                           f"Error message should be '{expected_error}' but got '{actual_error}'")
+            print(f"[TC_SCRUM-1_006] ✓ Step 4 Passed: Error message '{expected_error}' is displayed")
+            self.test_results.append(f"Step 4: Error message '{expected_error}' displayed correctly")
+            
+            # Test completed successfully
+            print("\n[TC_SCRUM-1_006] ✓ Empty field validation test completed successfully")
+            print("[TC_SCRUM-1_006] All test steps passed")
+            
+        except TimeoutException as e:
+            self.fail(f"[TC_SCRUM-1_006] Timeout occurred during test execution: {str(e)}")
+        except NoSuchElementException as e:
+            self.fail(f"[TC_SCRUM-1_006] Element not found during test execution: {str(e)}")
+        except AssertionError as e:
+            self.fail(f"[TC_SCRUM-1_006] Assertion failed: {str(e)}")
+        except Exception as e:
+            self.fail(f"[TC_SCRUM-1_006] Unexpected error during test execution: {str(e)}")
+    
+    def test_empty_username_only(self):
+        """
+        Additional validation test for empty username field only
+        
+        This test verifies the behavior when only the username field is left empty
+        while the password field contains data.
+        """
+        try:
+            print("\n[TC_SCRUM-1_006] Starting empty username validation test...")
+            
+            # Navigate to login page
+            self.driver.get("https://example.com/login")
+            
+            # Locate fields
+            username_field = self.wait.until(
+                EC.presence_of_element_located((By.ID, "username"))
+            )
+            password_field = self.driver.find_element(By.ID, "password")
+            
+            # Leave username empty but enter password
+            password_field.send_keys("testpassword123")
+            
+            # Click login
+            login_button = self.driver.find_element(By.ID, "login-button")
+            login_button.click()
+            
+            # Verify error message
+            error_message = self.wait.until(
+                EC.presence_of_element_located((By.CLASS_NAME, "error-message"))
+            )
+            
+            self.assertIn("username", error_message.text.lower(), 
+                         "Error message should mention username field")
+            
+            print("[TC_SCRUM-1_006] ✓ Empty username validation test passed")
+            
+        except Exception as e:
+            self.fail(f"[TC_SCRUM-1_006] Empty username validation error: {str(e)}")
+    
+    def test_empty_password_only(self):
+        """
+        Additional validation test for empty password field only
+        
+        This test verifies the behavior when only the password field is left empty
+        while the username field contains data.
+        """
+        try:
+            print("\n[TC_SCRUM-1_006] Starting empty password validation test...")
+            
+            # Navigate to login page
+            self.driver.get("https://example.com/login")
+            
+            # Locate fields
+            username_field = self.wait.until(
+                EC.presence_of_element_located((By.ID, "username"))
+            )
+            password_field = self.driver.find_element(By.ID, "password")
+            
+            # Enter username but leave password empty
+            username_field.send_keys("testuser")
+            
+            # Click login
+            login_button = self.driver.find_element(By.ID, "login-button")
+            login_button.click()
+            
+            # Verify error message
+            error_message = self.wait.until(
+                EC.presence_of_element_located((By.CLASS_NAME, "error-message"))
+            )
+            
+            self.assertIn("password", error_message.text.lower(), 
+                         "Error message should mention password field")
+            
+            print("[TC_SCRUM-1_006] ✓ Empty password validation test passed")
+            
+        except Exception as e:
+            self.fail(f"[TC_SCRUM-1_006] Empty password validation error: {str(e)}")
+
+
 # Test Suite Configuration
 def suite():
     """
@@ -445,6 +673,9 @@ def suite():
     
     # Add TC_LOGIN_002 test case
     test_suite.addTest(unittest.makeSuite(TestCase_TC_LOGIN_002))
+    
+    # Add TC_SCRUM-1_006 test case
+    test_suite.addTest(unittest.makeSuite(TestCase_TC_SCRUM_1_006_EmptyFieldValidation))
     
     return test_suite
 
