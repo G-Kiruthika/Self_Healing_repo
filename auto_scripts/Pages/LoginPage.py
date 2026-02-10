@@ -227,27 +227,32 @@ class LoginPage:
             # If NoSuchElementException or similar, this is expected
             pass
 
-    # --- TC_SCRUM-1_006: Empty Fields Login Validation ---
-    def validate_empty_fields_login(self):
+    # --- TC_SCRUM-1_006: Login with empty username/password fields ---
+    def login_with_empty_fields_and_validate(self):
         """
-        TC_SCRUM-1_006: Validates login with empty username and/or password fields.
+        TC_SCRUM-1_006: Login with empty username/password fields and validate error message.
         Steps:
             1. Navigate to the login page.
-            2. Leave username and password fields blank.
+            2. Ensure username and password fields are blank.
             3. Click the 'Login' button.
             4. Validate error message 'Username and password are required.' is displayed.
         Raises:
-            AssertionError: If error message is not as expected or user is not on login page.
+            AssertionError: If error message is not as expected or fields are not empty.
         """
         self.go_to_login_page()
-        # Clear email and password fields to ensure they are empty
+        # Ensure email field is blank
         email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
         email_input.clear()
+        assert email_input.get_attribute("value") == "", "Email field is not empty."
+        # Ensure password field is blank
         password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
         password_input.clear()
+        assert password_input.get_attribute("value") == "", "Password field is not empty."
+        # Click login button
         self.click_login()
-        error_msg = self.get_error_message()
+        # Validate error message
         expected_error = "Username and password are required."
-        assert error_msg is not None, "Error message not found after login with empty fields."
+        error_msg = self.get_error_message()
+        assert error_msg is not None, "Error message not found after submitting empty fields."
         assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login with empty fields."
