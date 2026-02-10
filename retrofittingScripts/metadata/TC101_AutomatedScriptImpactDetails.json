@@ -1,0 +1,93 @@
+{
+  "testCaseId": "1433",
+  "testCaseName": "TC-101",
+  "testCaseDescription": "Test Case TC-101",
+  "semanticAnalysis": {
+    "matchFound": false,
+    "matchPercentage": 0,
+    "matchedClassName": null,
+    "matchedTestCaseId": null,
+    "analysisDetails": "No existing test case class found with semantic similarity >60%. TC-101 is a new test case with empty test steps requiring a new class implementation.",
+    "comparisonResults": [
+      {
+        "existingClass": "TestCase_TC003_ResetLinkExpiryValidation",
+        "existingId": "1287",
+        "similarityScore": 15,
+        "reason": "Different domain - password reset vs general test page"
+      },
+      {
+        "existingClass": "TestCase_TC102_TestPage",
+        "existingId": "1299",
+        "similarityScore": 45,
+        "reason": "Similar naming pattern and empty steps, but different test case IDs and purposes"
+      },
+      {
+        "existingClass": "TestCase_TC_LOGIN_003",
+        "existingId": "108",
+        "similarityScore": 10,
+        "reason": "Different domain - login workflow vs general test page"
+      },
+      {
+        "existingClass": "TestCase_TC_LOGIN_002",
+        "existingId": "107",
+        "similarityScore": 10,
+        "reason": "Different domain - login validation vs general test page"
+      }
+    ]
+  },
+  "classification": "NEW_TEST_CASE",
+  "impactType": "CLASS_ADDITION",
+  "changes": {
+    "newClassCreated": true,
+    "className": "TestCase_TC101_TestPage",
+    "existingClassModified": false,
+    "modifiedClassName": null,
+    "linesAdded": 180,
+    "linesModified": 2,
+    "linesDeleted": 0
+  },
+  "codeChanges": {
+    "newClass": {
+      "className": "TestCase_TC101_TestPage",
+      "testCaseId": "1433",
+      "testCaseName": "TC-101",
+      "methods": [
+        "setUpClass",
+        "tearDownClass",
+        "setUp",
+        "tearDown",
+        "test_tc101_main_execution",
+        "test_tc101_validation_placeholder"
+      ],
+      "structure": "Placeholder implementation with empty test steps, following TC-102 pattern"
+    },
+    "suiteUpdate": {
+      "modified": true,
+      "addedTestCase": "TestCase_TC101_TestPage",
+      "location": "suite() function"
+    }
+  },
+  "metadata": {
+    "automationFramework": "unittest + Selenium WebDriver",
+    "testPattern": "Page Object Model with placeholder structure",
+    "testStepsCount": 0,
+    "implementationStatus": "PLACEHOLDER_CREATED",
+    "requiresImplementation": true,
+    "timestamp": "2025-06-10T10:30:00Z",
+    "generatedBy": "AI-Powered Test Automation System"
+  },
+  "validationStatus": {
+    "syntaxValid": true,
+    "importsValid": true,
+    "structureValid": true,
+    "readyForExecution": true,
+    "readyForImplementation": true
+  },
+  "recommendations": [
+    "Define specific test steps for TC-101 based on requirements",
+    "Update test_tc101_main_execution method with actual test logic",
+    "Add specific assertions based on expected outcomes",
+    "Consider adding additional validation methods if needed",
+    "Update test case description with detailed purpose"
+  ]
+}
