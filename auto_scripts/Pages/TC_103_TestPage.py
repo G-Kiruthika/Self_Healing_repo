@@ -6,8 +6,8 @@ from auto_scripts.Pages.LoginPage import LoginPage
 class TC_103_TestPage(unittest.TestCase):
     """
     Test Page for TC-103
-    Test Case ID: 1435
-    Description: Test Case TC-103
+    Test Case ID: 1448
+    Description: Test Case 103
     Comprehensive scaffold for TC-103. No test steps defined yet.
     This class is structured to be extended once test steps are provided.
     Strict adherence to Selenium Python automation standards.
