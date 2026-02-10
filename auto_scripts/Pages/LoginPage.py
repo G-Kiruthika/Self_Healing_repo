@@ -252,45 +252,53 @@ class LoginPage:
         assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login with empty fields."
 
-    # --- TC_SCRUM-1_009: Combined Steps for Test Case ---
+    # --- TC_SCRUM-1_009: Validate Remember Me Checkbox Absence ---
     def execute_tc_scrum_1_009(self):
         """
-        TC_SCRUM-1_009: Combined steps for navigating to login page and validating absence of 'Remember Me' checkbox.
+        TC_SCRUM-1_009: Test Case TC_SCRUM-1_009
         Steps:
             1. Navigate to the login page.
-            2. Verify the login page is displayed.
-            3. Check that the 'Remember Me' checkbox is NOT present.
+            2. Check for the presence of 'Remember Me' checkbox.
+        Expected:
+            1. Login page is displayed.
+            2. 'Remember Me' checkbox is not present on the login page.
         Returns:
-            dict: Structured result with step statuses.
+            dict: Test execution results
         Raises:
-            AssertionError: If any validation fails.
+            AssertionError: If test steps fail
         """
-        result = {
-            'step_1': {'desc': 'Navigate to the login page.', 'status': None, 'details': ''},
-            'step_2': {'desc': "Check for the presence of 'Remember Me' checkbox.", 'status': None, 'details': ''}
+        results = {
+            "test_case_id": "1439",
+            "test_case_description": "Test Case TC_SCRUM-1_009",
+            "step_1_navigate_login": False,
+            "step_2_checkbox_absent": False,
+            "overall_pass": False,
+            "error_message": None
         }
+        
         try:
-            # Step 1: Navigate to login page
+            # Step 1: Navigate to the login page
             self.go_to_login_page()
-            if self.is_on_login_page():
-                result['step_1']['status'] = 'PASS'
-                result['step_1']['details'] = 'Login page is displayed.'
-            else:
-                result['step_1']['status'] = 'FAIL'
-                result['step_1']['details'] = 'Login page is not displayed.'
-                raise AssertionError('Login page is not displayed.')
-            # Step 2: Validate absence of Remember Me checkbox
+            results["step_1_navigate_login"] = self.is_on_login_page()
+            
+            if not results["step_1_navigate_login"]:
+                results["error_message"] = "Failed to navigate to login page or login page not displayed"
+                return results
+            
+            # Step 2: Check for the presence of 'Remember Me' checkbox (should NOT be present)
             try:
                 self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
-                result['step_2']['status'] = 'FAIL'
-                result['step_2']['details'] = "'Remember Me' checkbox IS present on the login page, but it should NOT be."
-                raise AssertionError("'Remember Me' checkbox IS present on the login page, but it should NOT be.")
+                # If we reach here, checkbox was found - this is a failure
+                results["step_2_checkbox_absent"] = False
+                results["error_message"] = "'Remember Me' checkbox IS present on the login page, but it should NOT be"
             except Exception:
-                # Expected: checkbox not found
-                result['step_2']['status'] = 'PASS'
-                result['step_2']['details'] = "'Remember Me' checkbox is NOT present on the login page."
-        except AssertionError as e:
-            result['error'] = str(e)
-        except Exception as ex:
-            result['error'] = f"Unexpected error: {ex}"
-        return result
+                # If NoSuchElementException or similar, checkbox is not present - this is expected
+                results["step_2_checkbox_absent"] = True
+            
+            # Overall pass if both steps pass
+            results["overall_pass"] = results["step_1_navigate_login"] and results["step_2_checkbox_absent"]
+            
+        except Exception as e:
+            results["error_message"] = f"Test execution failed: {str(e)}"
+            
+        return results
