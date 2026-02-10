@@ -303,22 +303,23 @@ class LoginPage:
             
         return results
 
-    # --- TC_SCRUM-1_010: Locked User Account Login Validation ---
+    # --- TC_SCRUM-1_010: Locked User Account Login Scenario ---
     def execute_tc_scrum_1_010(self, locked_email: str, locked_password: str) -> dict:
         """
-        TC_SCRUM-1_010: Test Case TC_SCRUM-1_010
+        TC_SCRUM-1_010: Test Case TC_SCRUM-1_010 - Locked User Account Login Scenario
+
         Steps:
             1. Navigate to the login page.
             2. Enter credentials for a locked user account.
             3. Click the 'Login' button.
-            4. Validate the error message 'Your account is locked. Please contact support.' is displayed.
+            4. Validate error message 'Your account is locked. Please contact support.' is displayed.
+
         Args:
-            locked_email (str): Email of locked user account.
-            locked_password (str): Password of locked user account.
+            locked_email (str): Email address of locked user account.
+            locked_password (str): Password for locked user account.
+
         Returns:
-            dict: Test execution results
-        Raises:
-            AssertionError: If error message is not as expected or user is not on login page after failed login.
+            dict: Structured results for downstream automation, including step status and error message.
         """
         results = {
             "test_case_id": "1440",
@@ -327,39 +328,56 @@ class LoginPage:
             "step_2_enter_credentials": False,
             "step_3_click_login": False,
             "step_4_validate_error": False,
-            "overall_pass": False,
             "actual_error_message": None,
+            "overall_pass": False,
             "error_message": None
         }
-        expected_error = "Your account is locked. Please contact support."
+
         try:
             # Step 1: Navigate to the login page
             self.go_to_login_page()
             results["step_1_navigate_login"] = self.is_on_login_page()
             if not results["step_1_navigate_login"]:
-                results["error_message"] = "Failed to navigate to login page or login page not displayed"
+                results["error_message"] = "Login page not displayed."
                 return results
-            # Step 2: Enter credentials for locked user account
-            self.enter_email(locked_email)
-            self.enter_password(locked_password)
-            results["step_2_enter_credentials"] = True
+
+            # Step 2: Enter locked account credentials
+            try:
+                self.enter_email(locked_email)
+                self.enter_password(locked_password)
+                results["step_2_enter_credentials"] = True
+            except Exception as e:
+                results["error_message"] = f"Failed to enter credentials: {str(e)}"
+                return results
+
             # Step 3: Click the 'Login' button
-            self.click_login()
-            results["step_3_click_login"] = True
+            try:
+                self.click_login()
+                results["step_3_click_login"] = True
+            except Exception as e:
+                results["error_message"] = f"Failed to click login: {str(e)}"
+                return results
+
             # Step 4: Validate error message
+            expected_error = "Your account is locked. Please contact support."
             error_msg = self.get_error_message()
             results["actual_error_message"] = error_msg
             if error_msg is not None and error_msg.strip() == expected_error:
                 results["step_4_validate_error"] = True
             else:
-                results["error_message"] = f"Expected error '{expected_error}', got '{error_msg.strip() if error_msg else None}'"
-            # Overall pass if all steps pass
+                results["error_message"] = (
+                    f"Expected error '{expected_error}', got '{error_msg.strip() if error_msg else error_msg}'"
+                )
+
+            # Overall pass if all steps succeed
             results["overall_pass"] = (
                 results["step_1_navigate_login"] and
                 results["step_2_enter_credentials"] and
                 results["step_3_click_login"] and
                 results["step_4_validate_error"]
             )
+
         except Exception as e:
             results["error_message"] = f"Test execution failed: {str(e)}"
+
         return results
