@@ -303,22 +303,22 @@ class LoginPage:
             
         return results
 
-    # --- TC_SCRUM-1_010: Locked User Account Login Scenario ---
-    def execute_tc_scrum_1_010(self, locked_email, locked_password):
+    # --- TC_SCRUM-1_010: Locked User Account Login Validation ---
+    def execute_tc_scrum_1_010(self, locked_email: str, locked_password: str) -> dict:
         """
         TC_SCRUM-1_010: Test Case TC_SCRUM-1_010
         Steps:
             1. Navigate to the login page.
             2. Enter credentials for a locked user account.
             3. Click the 'Login' button.
-            4. Validate error message 'Your account is locked. Please contact support.' is displayed.
+            4. Validate the error message 'Your account is locked. Please contact support.' is displayed.
         Args:
-            locked_email (str): Email address of the locked user.
-            locked_password (str): Password of the locked user.
+            locked_email (str): Email of locked user account.
+            locked_password (str): Password of locked user account.
         Returns:
             dict: Test execution results
         Raises:
-            AssertionError: If test steps fail
+            AssertionError: If error message is not as expected or user is not on login page after failed login.
         """
         results = {
             "test_case_id": "1440",
@@ -328,33 +328,31 @@ class LoginPage:
             "step_3_click_login": False,
             "step_4_validate_error": False,
             "overall_pass": False,
+            "actual_error_message": None,
             "error_message": None
         }
+        expected_error = "Your account is locked. Please contact support."
         try:
-            # Step 1: Navigate to login page
+            # Step 1: Navigate to the login page
             self.go_to_login_page()
             results["step_1_navigate_login"] = self.is_on_login_page()
             if not results["step_1_navigate_login"]:
-                results["error_message"] = "Login page is not displayed."
+                results["error_message"] = "Failed to navigate to login page or login page not displayed"
                 return results
-
-            # Step 2: Enter locked user credentials
+            # Step 2: Enter credentials for locked user account
             self.enter_email(locked_email)
             self.enter_password(locked_password)
             results["step_2_enter_credentials"] = True
-
             # Step 3: Click the 'Login' button
             self.click_login()
             results["step_3_click_login"] = True
-
-            # Step 4: Validate locked account error message
+            # Step 4: Validate error message
             error_msg = self.get_error_message()
-            expected_error = "Your account is locked. Please contact support."
+            results["actual_error_message"] = error_msg
             if error_msg is not None and error_msg.strip() == expected_error:
                 results["step_4_validate_error"] = True
             else:
-                results["error_message"] = f"Expected error '{expected_error}', got '{error_msg.strip() if error_msg else 'None'}'"
-
+                results["error_message"] = f"Expected error '{expected_error}', got '{error_msg.strip() if error_msg else None}'"
             # Overall pass if all steps pass
             results["overall_pass"] = (
                 results["step_1_navigate_login"] and
