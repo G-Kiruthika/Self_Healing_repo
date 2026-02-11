@@ -118,3 +118,32 @@ def test_tc_login_005_empty_password():
         assert login_page.login_with_empty_password_and_validate_error(), "Proper error message was not displayed for empty password."
     finally:
         driver.quit()
+
+# TC_LOGIN_006: Remember Me and session persistence
+def test_tc_login_006_remember_me_session_persistence():
+    """
+    TC_LOGIN_006: Validation of 'Remember Me' functionality and session persistence
+    Steps:
+        1. Navigate to login page (https://ecommerce.example.com/login)
+        2. Enter valid username (validuser@example.com)
+        3. Enter valid password (ValidPass123!)
+        4. Check 'Remember Me' checkbox
+        5. Click Login
+        6. Close and reopen browser, navigate to website
+        7. Validate session persistence and user remains logged in
+    """
+    def driver_factory():
+        return webdriver.Chrome()
+
+    driver = driver_factory()
+    try:
+        login_page = LoginPage(driver)
+        results = login_page.run_tc_login_006(
+            email="validuser@example.com",
+            password="ValidPass123!",
+            driver_factory=driver_factory
+        )
+        assert results['session_persisted'], "Session was not persisted after browser reopen."
+        assert results['pass'], "Test case did not pass."
+    finally:
+        driver.quit()
