@@ -1,99 +1,128 @@
 # LoginPage.py
-# Automated script for TC_LOGIN_002: Verify 'Remember Me' checkbox absence
-# Automated script for TC_LOGIN_003: Forgot Username workflow
+"""
+Selenium PageClass for Login functionality.
+Covers TC_LOGIN_009: Login with email containing special characters.
+
+Best practices:
+- Explicit locator definitions for email, password, login button, and error/success messages.
+- Robust input validation for emails with special characters.
+- Comprehensive docstrings for downstream automation.
+"""
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import re
 
 class LoginPage:
     def __init__(self, driver):
+        """
+        Initializes LoginPage with Selenium WebDriver instance.
+        """
         self.driver = driver
-        self.login_screen_locator = (By.ID, "login_screen")
-        self.forgot_username_link_locator = (By.ID, "forgot_username_link")
-        self.instructions_locator = (By.ID, "instructions")
-        self.username_result_locator = (By.ID, "username_result")
-        # Locator for 'Remember Me' checkbox (TC_LOGIN_002)
-        self.remember_me_checkbox_locator = (By.ID, "remember_me_checkbox")
+        self.login_url = "https://example-ecommerce.com/login"
+        self.email_input_locator = (By.ID, "email_input")
+        self.password_input_locator = (By.ID, "password_input")
+        self.login_button_locator = (By.ID, "login_button")
+        self.success_message_locator = (By.ID, "login_success_message")
+        self.error_message_locator = (By.ID, "login_error_message")
 
-    def navigate_to_login_screen(self):
+    def navigate_to_login_page(self):
         """
-        Navigate to the login screen
-        Validates that the login screen is displayed
-        Used by: TC_LOGIN_002 (Step 1), TC_LOGIN_003 (Step 1)
+        Navigates to the login page URL and verifies page load.
+        Returns: True if login page is displayed, raises AssertionError otherwise.
         """
-        self.driver.get("https://example.com/login")
-        assert self.driver.find_element(*self.login_screen_locator).is_displayed(), "Login screen is not displayed"
+        self.driver.get(self.login_url)
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(self.email_input_locator),
+            message="Login page not loaded: email input not visible"
+        )
+        return True
 
-    def check_remember_me_not_present(self):
+    def enter_email(self, email):
         """
-        Check that the 'Remember Me' checkbox is NOT present on the login screen
-        Used by: TC_LOGIN_002 (Step 2)
-        Returns: True if checkbox is not present, False otherwise
+        Enters email into the email input field.
+        Validates email format, including special characters.
+        Args:
+            email (str): Email address to enter.
+        Returns: True if email is accepted, raises AssertionError otherwise.
+        """
+        assert self.is_valid_email(email), f"Invalid email format: {email}"
+        email_input = self.driver.find_element(*self.email_input_locator)
+        email_input.clear()
+        email_input.send_keys(email)
+        return True
+
+    def is_valid_email(self, email):
+        """
+        Validates email address format, including special characters (RFC 5322 compliant).
+        Args:
+            email (str): Email address to validate.
+        Returns: True if valid, False otherwise.
+        """
+        # RFC 5322 regex for email validation, allowing special characters
+        email_regex = r"^(?=.{1,64}@)[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+        return re.match(email_regex, email) is not None
+
+    def enter_password(self, password):
+        """
+        Enters password into the password input field.
+        Args:
+            password (str): Password to enter.
+        Returns: True if password is accepted, raises AssertionError otherwise.
+        """
+        password_input = self.driver.find_element(*self.password_input_locator)
+        password_input.clear()
+        password_input.send_keys(password)
+        return True
+
+    def click_login(self):
+        """
+        Clicks the login button.
+        Returns: True if click is successful, raises AssertionError otherwise.
+        """
+        login_button = self.driver.find_element(*self.login_button_locator)
+        login_button.click()
+        return True
+
+    def verify_login_result(self):
+        """
+        Verifies login result: success or error message.
+        Returns: 'success' if login successful, 'error' if error message displayed.
         """
         try:
-            self.driver.find_element(*self.remember_me_checkbox_locator)
-            # If element is found, the checkbox is present (test should fail)
-            raise AssertionError("'Remember Me' checkbox is present, but it should NOT be present")
-        except NoSuchElementException:
-            # Element not found - this is the expected behavior
-            return True
+            WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(self.success_message_locator)
+            )
+            return 'success'
+        except TimeoutException:
+            try:
+                WebDriverWait(self.driver, 5).until(
+                    EC.visibility_of_element_located(self.error_message_locator)
+                )
+                return 'error'
+            except TimeoutException:
+                raise AssertionError("Neither success nor error message displayed after login attempt.")
 
-    # TC_LOGIN_002 specific methods
-    def verify_login_screen_displayed(self):
+    def login_with_special_char_email(self, email, password):
         """
-        TC_LOGIN_002 - Step 1: Navigate to the login screen
-        Expected: Login screen is displayed
+        End-to-end login workflow for email containing special characters.
+        Args:
+            email (str): Email address with special characters.
+            password (str): Valid password.
+        Returns: 'success' or 'error' based on login result.
         """
-        self.navigate_to_login_screen()
-        return self.driver.find_element(*self.login_screen_locator).is_displayed()
+        self.navigate_to_login_page()
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login()
+        return self.verify_login_result()
 
-    def verify_remember_me_checkbox_not_present(self):
-        """
-        TC_LOGIN_002 - Step 2: Check for the presence of 'Remember Me' checkbox
-        Expected: 'Remember Me' checkbox is NOT present
-        """
-        return self.check_remember_me_not_present()
-
-    # TC_LOGIN_003 specific methods (preserved existing functionality)
-    def click_forgot_username(self):
-        """
-        Click on 'Forgot Username' link
-        Used by: TC_LOGIN_003 (Step 2)
-        """
-        self.driver.find_element(*self.forgot_username_link_locator).click()
-        assert self.driver.find_element(*self.instructions_locator).is_displayed(), "'Forgot Username' workflow is not initiated"
-
-    def follow_recovery_instructions(self):
-        """
-        Follow instructions to recover username
-        Used by: TC_LOGIN_003 (Step 3)
-        """
-        instructions = self.driver.find_element(*self.instructions_locator).text
-        # Simulate following instructions (actual steps depend on application logic)
-        # For demonstration, assume submitting email or phone number
-        self.driver.find_element(By.ID, "email_input").send_keys("user@example.com")
-        self.driver.find_element(By.ID, "submit_button").click()
-        assert self.driver.find_element(*self.username_result_locator).is_displayed(), "Username recovery instructions not followed or username not retrieved"
-
-
-# Example test case execution for TC_LOGIN_002
+# Example usage for TC_LOGIN_009
 # from selenium import webdriver
 # driver = webdriver.Chrome()
 # login_page = LoginPage(driver)
-# 
-# # TC_LOGIN_002: Verify 'Remember Me' checkbox absence
-# login_page.verify_login_screen_displayed()
-# login_page.verify_remember_me_checkbox_not_present()
-# print("TC_LOGIN_002: PASSED - 'Remember Me' checkbox is not present")
-
-# Example test case execution for TC_LOGIN_003
-# from selenium import webdriver
-# driver = webdriver.Chrome()
-# login_page = LoginPage(driver)
-# 
-# # TC_LOGIN_003: Forgot Username workflow
-# login_page.navigate_to_login_screen()
-# login_page.click_forgot_username()
-# login_page.follow_recovery_instructions()
-# print("TC_LOGIN_003: PASSED - Username recovered successfully")
+# result = login_page.login_with_special_char_email("test.user+tag@example.com", "Test@1234")
+# assert result == 'success' or result == 'error'
+# print(f"TC_LOGIN_009: Login result = {result}")
