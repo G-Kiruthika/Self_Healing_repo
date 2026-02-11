@@ -100,3 +100,27 @@ def test_tc_login_004_empty_username_valid_password():
         assert result.get('on_login_page'), 'User is not on login page after failed login.'
     finally:
         driver.quit()
+
+# TC_LOGIN_005: Empty password field validation
+
+def test_tc_login_005_empty_password():
+    """
+    TC_LOGIN_005: Validation of empty password field and error message
+    Steps:
+        1. Navigate to login page (https://ecommerce.example.com/login)
+        2. Enter valid username ('validuser@example.com')
+        3. Leave password field empty
+        4. Click Login
+        5. Validate error message 'Password is required' is displayed
+    """
+    driver = webdriver.Chrome()
+    try:
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        login_page.enter_email('validuser@example.com')
+        login_page.leave_password_empty()
+        login_page.click_login()
+        error_text = login_page.validate_password_required_error()
+        assert 'Password is required' in error_text, f"Expected error 'Password is required', got '{error_text}'"
+    finally:
+        driver.quit()
