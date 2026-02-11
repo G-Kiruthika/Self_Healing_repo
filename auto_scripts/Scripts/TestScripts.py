@@ -331,3 +331,36 @@ def test_tc_login_010_network_disconnection_and_retry(driver):
     assert results["step_5_login_success"], "Step 5 failed: Login did not succeed after restoring network."
     assert results["overall_pass"], f"TC_LOGIN_010 overall validation failed. Error: {results.get('error', '')}"
     print(f"TC_LOGIN_010: Passed. Stepwise results: {results}")
+
+
+# New method for TC_LOGIN_001 using Page Object class
+from auto_scripts.Pages.TC_LOGIN_001_TestPage import TC_LOGIN_001_TestPage
+
+def test_tc_login_001_valid_login_pageobject(driver):
+    """
+    Test Case TC_LOGIN_001: Valid Login Attempt (Page Object Reference)
+
+    Steps:
+        1. Navigate to the login page (https://ecommerce.example.com/login)
+        2. Enter valid username (validuser@example.com)
+        3. Enter valid password (ValidPass123!)
+        4. Click Login
+        5. Validate dashboard/home page is displayed
+        6. Assert session is established (cookie check)
+
+    Args:
+        driver: Selenium WebDriver instance
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    test_page = TC_LOGIN_001_TestPage(driver)
+    results = test_page.run_tc_login_001(username="validuser@example.com", password="ValidPass123!")
+    assert results['step_1_navigate'], "Step 1 failed: Login page was not displayed."
+    assert results['step_2_enter_username'], "Step 2 failed: Username was not entered."
+    assert results['step_3_enter_password'], "Step 3 failed: Password was not entered."
+    assert results['step_4_click_login'], "Step 4 failed: Login button click failed."
+    assert results['step_5_dashboard_displayed'], "Step 5 failed: Dashboard was not displayed."
+    assert results['step_6_session_established'], "Step 6 failed: Session was not established."
+    assert results['overall_pass'], f"TC_LOGIN_001 overall validation failed. Error: {results.get('error', '')}"
+    print(f"TC_LOGIN_001: Passed for valid login. Username: validuser@example.com")
