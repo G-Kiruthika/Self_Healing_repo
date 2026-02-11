@@ -47,3 +47,24 @@ def test_TC_LOGIN_010_session_timeout(driver):
     page = TC_LOGIN_010_TestPage(driver)
     results = page.run_tc_login_010_session_timeout()
     print("TC_LOGIN_010 Results:", results)
+
+# Test method for TC_LOGIN_007: Account lock after multiple failed login attempts
+def test_TC_LOGIN_007_account_lock(driver):
+    """
+    Automated test for TC_LOGIN_007: Account lock after multiple failed login attempts
+    Steps:
+      1. Navigate to the login page
+      2. Enter valid username and five invalid passwords in sequence
+      3. Attempt login with valid credentials
+      4. Validate account lock and error message
+    Test Data:
+      - username: 'validuser@example.com'
+      - invalid_passwords: ['WrongPass1!', 'WrongPass2!', 'WrongPass3!', 'WrongPass4!', 'WrongPass5!']
+      - valid_password: 'ValidPass123!'
+    """
+    page = LoginPage(driver)
+    username = 'validuser@example.com'
+    invalid_passwords = ['WrongPass1!', 'WrongPass2!', 'WrongPass3!', 'WrongPass4!', 'WrongPass5!']
+    valid_password = 'ValidPass123!'
+    results = page.run_tc_login_007(username, invalid_passwords, valid_password)
+    print("TC_LOGIN_007 Results:", results)
