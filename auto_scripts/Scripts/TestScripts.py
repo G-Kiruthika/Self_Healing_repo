@@ -239,16 +239,17 @@ def test_tc_login_007_account_lockout(driver):
     print("TC_LOGIN_007: Account lockout scenario passed.")
 
 
-def test_tc_login_008_password_masking_toggle_visibility(driver):
+def test_tc_login_008_password_visibility_toggle(driver):
     """
-    Test Case TC_LOGIN_008: Password Masking & Toggle Visibility
+    Test Case TC_LOGIN_008: Password Visibility Toggle
 
     Steps:
-        1. Navigate to login page
-        2. Enter password (masked by default)
-        3. Click show password toggle (should reveal password)
-        4. Click hide password toggle (should mask password again)
-        5. Repeat toggle multiple times and validate
+        1. Navigate to the login page (https://example-ecommerce.com/login)
+        2. Enter password in password field (Test@1234)
+        3. Validate password is masked by default
+        4. Click 'Show Password' icon/toggle and validate password is visible
+        5. Click 'Hide Password' icon/toggle and validate password is masked again
+        6. Verify toggle works multiple times
 
     Args:
         driver: Selenium WebDriver instance
@@ -260,9 +261,10 @@ def test_tc_login_008_password_masking_toggle_visibility(driver):
     password = "Test@1234"
     results = login_page.run_tc_login_008(password)
     assert results["step_1_navigate_login"], "Step 1 failed: Login page is not displayed."
-    assert results["step_2_enter_password"], "Step 2 failed: Password field is not masked by default."
-    assert results["step_3_show_password"], "Step 3 failed: Password is not visible after clicking show toggle."
-    assert results["step_4_hide_password"], "Step 4 failed: Password is not masked after clicking hide toggle."
-    assert results["step_5_multiple_toggle"], "Step 5 failed: Password visibility toggle failed on repeated clicks."
-    assert results["overall_pass"], f"TC_LOGIN_008 overall validation failed. Errors: {results['errors']}"
-    print(f"TC_LOGIN_008: Passed for password masking and toggle visibility. Errors: {results['errors']}")
+    assert results["step_2_enter_password"], "Step 2 failed: Password field did not accept input."
+    assert results["step_3_password_masked"], "Step 3 failed: Password not masked by default."
+    assert results["step_4_toggle_show_password"], "Step 4 failed: Password not visible after show toggle."
+    assert results["step_5_toggle_hide_password"], "Step 5 failed: Password not masked after hide toggle."
+    assert results["step_6_toggle_multiple"], f"Step 6 failed: Toggle did not work multiple times. Errors: {results['errors']}"
+    assert results["overall_pass"], "TC_LOGIN_008 overall validation failed."
+    print(f"TC_LOGIN_008: Passed for password visibility toggle. Stepwise results: {results}")
