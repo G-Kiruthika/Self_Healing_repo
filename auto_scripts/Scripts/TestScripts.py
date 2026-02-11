@@ -137,3 +137,28 @@ def test_tc_login_005_empty_password_pageobject(driver):
     assert result.get("step_5_password_required_error"), "Error message 'Password is required' not displayed as expected."
     assert result.get("overall_pass"), "Test case did not pass overall validation."
     print("TC_LOGIN_005_PageObject: Passed for valid username and empty password.")
+
+# TC_LOGIN_006: Remember Me and Session Persistence scenario (Page Object Reference)
+def test_tc_login_006_remember_me_session_persistence(driver):
+    """
+    Test Case TC_LOGIN_006: Validates 'Remember Me' checkbox and session persistence after browser restart (Page Object Reference)
+
+    Steps:
+        1. Navigate to login page (https://ecommerce.example.com/login)
+        2. Enter valid username (validuser@example.com)
+        3. Enter valid password (ValidPass123!)
+        4. Check 'Remember Me' checkbox
+        5. Click Login
+        6. Close browser, reopen, navigate to website
+        7. Validate session persistence (user remains logged in)
+
+    Args:
+        driver: Selenium WebDriver instance
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    login_page = LoginPage(driver)
+    results = login_page.run_tc_login_006()
+    assert results.get("overall_pass"), f"TC_LOGIN_006 failed. Details: {results}"
+    print("TC_LOGIN_006_PageObject: Passed for session persistence and 'Remember Me'.")
