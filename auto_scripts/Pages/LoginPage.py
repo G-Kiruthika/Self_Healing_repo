@@ -168,31 +168,108 @@ class LoginPage:
         )
         return results
 
+    def perform_empty_email_login_and_validate(self, password):
+        """
+        Implements TC_LOGIN_005:
+        1. Navigate to login page
+        2. Leave email field empty
+        3. Enter valid password
+        4. Click Login button
+        5. Validate error message 'Email is required' or field is highlighted
+        6. Ensure login is prevented (user remains on login page)
+
+        Args:
+            password (str): Valid password to test
+        Returns:
+            dict: Stepwise results for downstream automation
+        """
+        results = {}
+        self.open_login_page()
+        results['login_page_opened'] = self.is_on_login_page()
+        # Leave email empty
+        email_input = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(self.email_field)
+        )
+        email_input.clear()
+        # Enter valid password
+        self.enter_password(password)
+        # Click login
+        self.click_login()
+        time.sleep(1)  # Wait for error message/validation
+        # Try to get validation error from multiple sources
+        error_msg = self.get_error_message()
+        validation_msg = self.get_validation_error_message()
+        # Try to detect prompt for empty field
+        empty_field_prompt = None
+        try:
+            empty_field_prompt_elem = WebDriverWait(self.driver, 3).until(
+                EC.visibility_of_element_located((By.XPATH, "//*[text()='Email is required']"))
+            )
+            empty_field_prompt = empty_field_prompt_elem.text
+        except TimeoutException:
+            pass
+        # Check if email field is visually highlighted (e.g., has 'invalid' class)
+        email_highlighted = False
+        try:
+            email_input_class = email_input.get_attribute('class')
+            if email_input_class and ('invalid' in email_input_class or 'error' in email_input_class):
+                email_highlighted = True
+        except Exception:
+            pass
+        # Check user remains on login page
+        on_login_page = self.is_on_login_page()
+        user_logged_in = self.is_user_logged_in()
+        # Build results
+        results['error_message'] = error_msg
+        results['validation_error_message'] = validation_msg
+        results['empty_field_prompt'] = empty_field_prompt
+        results['email_highlighted'] = email_highlighted
+        results['user_logged_in'] = user_logged_in
+        results['on_login_page'] = on_login_page
+        # Validate acceptance criteria
+        results['validation_pass'] = (
+            (empty_field_prompt is not None and 'Email is required' in empty_field_prompt) or
+            (validation_msg is not None and 'Email is required' in validation_msg) or
+            (error_msg is not None and 'Email is required' in error_msg) or
+            email_highlighted
+        )
+        results['login_prevented'] = on_login_page and not user_logged_in
+        results['overall_pass'] = (
+            results['login_page_opened'] and
+            results['validation_pass'] and
+            results['login_prevented']
+        )
+        return results
+
 """
 Executive Summary:
-- LoginPage.py updated for TC_LOGIN_003 with strict invalid email format validation, error message checks, and session validation.
-- All imports validated; code follows Selenium Python automation standards and best practices.
+- LoginPage.py now supports TC_LOGIN_005 with the new method perform_empty_email_login_and_validate.
+- This method automates the workflow: leave email empty, enter valid password, click login, verify validation error, ensure login is prevented.
+- Strict adherence to Selenium Python automation standards and best practices.
 
 Detailed Analysis:
-- New method perform_invalid_email_login_and_validate implements full TC_LOGIN_003 logic.
-- Existing methods reused for navigation, input, and error handling.
-- Email format validation added for robustness.
+- Existing LoginPage structure reused for navigation, input, and error handling.
+- Validation checks leverage Locators.json and UI patterns (error message, validation error, prompt, field highlight).
+- Results are structured for downstream automation, supporting stepwise validation and reporting.
 
 Implementation Guide:
 1. Instantiate LoginPage with Selenium WebDriver.
-2. Call perform_invalid_email_login_and_validate(email, password) for each invalid email format.
-3. Use returned dict for stepwise validation in downstream automation.
+2. Call perform_empty_email_login_and_validate(password) for the TC_LOGIN_005 scenario.
+3. Use returned dict for stepwise validation: login page opened, error/prompt/highlight detected, login prevented.
 
 Quality Assurance Report:
-- All fields validated; code tested for error handling and UI response.
-- Peer review recommended before deployment.
+- All fields validated; method tested for error handling and UI response.
+- Multiple error sources checked for robustness (prompt, validation error, field highlight).
+- Peer review and static analysis recommended before deployment.
 
 Troubleshooting Guide:
-- If error message not found, check locators and UI state.
-- If session persists after invalid login, check backend/session logic.
+- If error/prompt not found, validate locators and UI state.
+- If login is not prevented, check backend/session logic.
 - Increase WebDriverWait for slow environments.
+- Validate highlight class in email field for UI changes.
 
 Future Considerations:
 - Parameterize URLs and locators for multi-environment support.
 - Extend with reporting and session analysis for deeper validation.
+- Integrate with CI/CD for full E2E coverage.
 """
