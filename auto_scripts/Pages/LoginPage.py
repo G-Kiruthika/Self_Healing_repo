@@ -91,3 +91,34 @@ class LoginPage:
             self.lock_message_text in lock_msg
         ])
         return results
+
+    def run_tc_login_004(self, valid_password):
+        """
+        Executes TC_LOGIN_004 end-to-end:
+        1. Navigate to login page
+        2. Leave username field empty
+        3. Enter valid password
+        4. Click Login
+        5. Validate error message 'Username is required' is displayed
+        Returns dict with results
+        """
+        results = {'username_empty': False, 'password_entered': False, 'error_message': None, 'pass': False}
+        self.navigate()
+        # Leave username empty
+        email_input = self.driver.find_element(*self.email_field)
+        email_input.clear()
+        results['username_empty'] = email_input.get_attribute('value') == ''
+        # Enter valid password
+        password_input = self.driver.find_element(*self.password_field)
+        password_input.clear()
+        password_input.send_keys(valid_password)
+        results['password_entered'] = password_input.get_attribute('value') == valid_password
+        # Click Login
+        self.click_login()
+        # Validate error message
+        error_msg = self.get_error_message()
+        results['error_message'] = error_msg
+        expected_error = 'Username is required'
+        results['pass'] = (results['username_empty'] and results['password_entered'] and error_msg is not None and expected_error in error_msg)
+        assert results['pass'], f"TC_LOGIN_004 failed: {results}"
+        return results
