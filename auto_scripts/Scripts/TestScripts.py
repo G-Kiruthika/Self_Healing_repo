@@ -113,3 +113,32 @@ def test_tc_login_004_empty_username_valid_password(driver):
     result = test_page.run_test_case()
     assert result, "Error message 'Username is required' not displayed as expected."
     print("TC_LOGIN_004_PageObject: Passed for empty username and valid password.")
+
+# New method for TC_LOGIN_005 using Page Object class
+from auto_scripts.Pages.TC_LOGIN_005_TestPage import TC_LOGIN_005_TestPage
+
+def test_tc_login_005_valid_username_empty_password(driver):
+    """
+    Test Case TC_LOGIN_005: Login with valid username and empty password (Page Object Reference)
+
+    Steps:
+        1. Navigate to login page
+        2. Enter valid username (validuser@example.com)
+        3. Leave password field empty
+        4. Click Login
+        5. Validate error message 'Password is required' is displayed
+
+    Args:
+        driver: Selenium WebDriver instance
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    test_page = TC_LOGIN_005_TestPage(driver)
+    result = test_page.run_tc_login_005("validuser@example.com")
+    assert result['step_1_navigate'], "Failed to navigate to login page."
+    assert result['step_2_enter_username'], "Failed to enter valid username."
+    assert result['step_3_leave_password_empty'], "Failed to leave password field empty."
+    assert result['step_4_click_login'], "Failed to click login button."
+    assert result['step_5_error_found'], "Validation error 'Password is required' not displayed."
+    print(f"TC_LOGIN_005_PageObject: Passed. Error Text: {result['step_5_error_text']}")
