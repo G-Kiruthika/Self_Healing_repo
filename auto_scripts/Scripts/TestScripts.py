@@ -88,3 +88,33 @@ def test_tc_login_003_invalid_email_pageobject(driver):
         assert checks["error_displayed"], f"Error message not displayed for email: {email}"
         assert checks["remain_on_login"], f"User did not remain on login page for email: {email}"
         print(f"TC_LOGIN_003_PageObject: Passed for invalid email: {email}")
+
+
+def test_tc_login_004_negative_login_valid_email_invalid_password(driver):
+    """
+    Test Case TC_LOGIN_004: Negative Login (Valid Email, Invalid Password)
+
+    Steps:
+        1. Navigate to the login page (https://example-ecommerce.com/login)
+        2. Enter valid email address (testuser@example.com)
+        3. Enter incorrect password (WrongPass@123)
+        4. Click Login button
+        5. Validate error message ('Invalid email or password')
+        6. Verify user remains on login page
+
+    Args:
+        driver: Selenium WebDriver instance
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    login_page = LoginPage(driver)
+    results = login_page.run_tc_login_004(email="testuser@example.com", password="WrongPass@123")
+    assert results["navigate"], "Step 1 failed: Login page was not displayed."
+    assert results["enter_email"], "Step 2 failed: Email was not accepted."
+    assert results["enter_password"], "Step 3 failed: Password was not accepted."
+    assert results["click_login"], "Step 4 failed: Login button click failed."
+    assert results["error_message"], f"Step 5 failed: Error message incorrect. Expected 'Invalid email or password', got: {results['actual_error_message']}"
+    assert results["is_on_login_page"], f"Step 6 failed: User did not remain on login page. Current URL: {results['current_url']}"
+    assert results["overall_pass"], "TC_LOGIN_004 overall validation failed."
+    print(f"TC_LOGIN_004: Passed for valid email and invalid password. Error Message: {results['actual_error_message']}, Current URL: {results['current_url']}")
