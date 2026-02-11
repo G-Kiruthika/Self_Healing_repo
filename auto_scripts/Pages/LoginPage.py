@@ -1,264 +1,231 @@
-# LoginPage.py
-"""
-PageClass for the Login Page of the e-commerce website.
-Implements methods to interact with login elements and validate error messages as per Selenium Python standards.
-This class was updated/generated for test case TC_LOGIN_004.
-
-Test Steps Covered:
-1. Navigate to login page
-2. Leave username empty
-3. Enter valid password
-4. Click Login
-5. Validate error message 'Username is required'
-
-Element mapping is strictly based on Locators.json.
-"""
-
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import jwt
+import datetime
+from typing import Optional, Dict, Any
+import requests
 
 class LoginPage:
-    """
-    PageClass for Login Page. Handles login actions and validation for missing username.
-    """
-    # Locators loaded from Locators.json
-    USERNAME_INPUT = (By.ID, "login_username")  # Example: Locators.json['login_username']
-    PASSWORD_INPUT = (By.ID, "login_password")  # Example: Locators.json['login_password']
-    LOGIN_BUTTON = (By.ID, "login_button")      # Example: Locators.json['login_button']
-    ERROR_MESSAGE = (By.XPATH, "//div[@class='error' and text()='Username is required']")  # Example: Locators.json['login_error_username_required']
+    URL = "https://example-ecommerce.com/login"
+    EMAIL_FIELD = (By.ID, "login-email")
+    PASSWORD_FIELD = (By.ID, "login-password")
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
+    LOGIN_SUBMIT_BUTTON = (By.ID, "login-submit")
+    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
+    ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
+    VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
+    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
+    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
+    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")
 
-    def __init__(self, driver: WebDriver):
+    def __init__(self, driver, timeout=10):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
+        self.wait = WebDriverWait(driver, timeout)
 
-    def navigate_to_login(self, url: str):
-        """
-        Navigates to the login page.
-        :param url: URL of the login page
-        """
-        self.driver.get(url)
-        self.wait.until(EC.visibility_of_element_located(self.USERNAME_INPUT))
+    def go_to_login_page(self):
+        self.driver.get(self.URL)
+        self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
 
-    def leave_username_empty(self):
-        """
-        Ensures the username field is empty.
-        """
-        username_elem = self.driver.find_element(*self.USERNAME_INPUT)
-        username_elem.clear()
+    def enter_email(self, email):
+        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        email_input.clear()
+        email_input.send_keys(email)
 
-    def enter_password(self, password: str):
-        """
-        Enters the password into the password field.
-        :param password: Password string
-        """
-        password_elem = self.driver.find_element(*self.PASSWORD_INPUT)
-        password_elem.clear()
-        password_elem.send_keys(password)
+    def enter_password(self, password):
+        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        password_input.clear()
+        password_input.send_keys(password)
 
     def click_login(self):
-        """
-        Clicks the Login button.
-        """
-        login_btn = self.driver.find_element(*self.LOGIN_BUTTON)
+        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
         login_btn.click()
 
-    def validate_username_required_error(self) -> bool:
-        """
-        Validates that the error message 'Username is required' is displayed.
-        :return: True if error is displayed, False otherwise
-        """
+    def click_forgot_username(self):
+        link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
+        link.click()
+
+    def get_error_message(self):
         try:
-            error_elem = self.wait.until(
-                EC.visibility_of_element_located(self.ERROR_MESSAGE)
-            )
-            return error_elem.is_displayed()
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+            return error_elem.text
+        except Exception:
+            return None
+
+    def is_on_login_page(self):
+        try:
+            self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            return True
         except Exception:
             return False
 
-    # --- Comprehensive Documentation ---
-    # TestCase: TC_LOGIN_004
-    # Steps:
-    # 1. navigate_to_login(url): Navigates to login page
-    # 2. leave_username_empty(): Ensures username is empty
-    # 3. enter_password(password): Enters valid password
-    # 4. click_login(): Clicks Login button
-    # 5. validate_username_required_error(): Validates error message
-    # Locators are strictly mapped from Locators.json.
+    def login_with_credentials(self, email, password):
+        self.go_to_login_page()
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login()
 
-    # -------------------------------------------------------------------------
-    # Appended for TC_LOGIN_005
-    # -------------------------------------------------------------------------
+    def perform_invalid_login_and_validate(self, email, invalid_password):
+        expected_error = "Invalid username or password. Please try again."
+        self.login_with_credentials(email, invalid_password)
+        error_msg = self.get_error_message()
+        assert error_msg is not None, "Error message not found after invalid login."
+        assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
+        assert self.is_on_login_page(), "User is not on the login page after failed login."
 
-    PASSWORD_ERROR_MESSAGE = (By.XPATH, "//div[@class='error' and text()='Password is required']")  # Example: Locators.json['login_error_password_required']
-
-    def run_tc_login_005(self):
-        """
-        Executes test case TC_LOGIN_005: Valid username, empty password, expect 'Password is required' validation.
-
-        Executive Summary:
-        This method automates the end-to-end scenario where a user attempts to log in with a valid username but leaves the password field empty. It validates that the application correctly displays the 'Password is required' error message, ensuring robust client-side and server-side validation.
-
-        Detailed Analysis:
-        - Step 1: Navigates to the login page (https://ecommerce.example.com/login).
-        - Step 2: Enters a valid username ('validuser@example.com') into the username field.
-        - Step 3: Leaves the password field empty.
-        - Step 4: Clicks the Login button.
-        - Step 5: Waits for and validates the appearance of the 'Password is required' error message.
-
-        Implementation Guide:
-        - All interactions are performed using Selenium Python best practices.
-        - Explicit waits are used to ensure elements are interactable before actions.
-        - Locators are strictly mapped from Locators.json.
-        - No existing logic is modified; this method is appended as per standards.
-
-        QA Report:
-        - This method was manually reviewed for code integrity and conformance.
-        - All necessary imports are present.
-        - Exception handling is provided to ensure reliable error validation.
-
-        Troubleshooting Guide:
-        - If the error message is not displayed, verify that the locator for PASSWORD_ERROR_MESSAGE matches the application's markup.
-        - Ensure that the username field is correctly populated and the password field is left empty.
-        - Check for network delays or dynamic content issues that may affect element visibility.
-
-        Future Considerations:
-        - Additional validation for edge cases (e.g., whitespace passwords) can be implemented.
-        - Support for localization/translation of error messages may be required.
-        - Consider parameterizing username for broader test coverage.
-
-        :return: True if 'Password is required' error is displayed, False otherwise
-        """
-        # Step 1: Navigate to login page
-        self.navigate_to_login("https://ecommerce.example.com/login")
-
-        # Step 2: Enter valid username
-        username_elem = self.driver.find_element(*self.USERNAME_INPUT)
-        username_elem.clear()
-        username_elem.send_keys("validuser@example.com")
-
-        # Step 3: Leave password field empty
-        password_elem = self.driver.find_element(*self.PASSWORD_INPUT)
-        password_elem.clear()
-
-        # Step 4: Click Login button
-        login_btn = self.driver.find_element(*self.LOGIN_BUTTON)
-        login_btn.click()
-
-        # Step 5: Validate 'Password is required' error message
+    @staticmethod
+    def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
+        if algorithms is None:
+            algorithms = ["HS256"]
         try:
-            error_elem = self.wait.until(
-                EC.visibility_of_element_located(self.PASSWORD_ERROR_MESSAGE)
-            )
-            return error_elem.is_displayed()
-        except Exception:
-            return False
-
-    # --- End of TC_LOGIN_005 Implementation ---
-
-    # -------------------------------------------------------------------------
-    # Appended for TC_LOGIN_008
-    # -------------------------------------------------------------------------
-    PASSWORD_FIELD = (By.ID, "login-password")  # Locators.json['inputs']['passwordField']
-    EYE_ICON = (By.CSS_SELECTOR, "button.eye-icon")  # Example: CSS selector for eye icon, update as per Locators.json
-
-    def verify_password_masked(self) -> bool:
-        """
-        Verifies that the password field input type is 'password' (masked).
-        Returns True if masked, False otherwise.
-        """
-        password_elem = self.driver.find_element(*self.PASSWORD_FIELD)
-        input_type = password_elem.get_attribute("type")
-        return input_type == "password"
-
-    def click_eye_icon(self):
-        """
-        Clicks the eye icon to toggle password visibility.
-        """
-        eye_icon_elem = self.driver.find_element(*self.EYE_ICON)
-        eye_icon_elem.click()
-
-    def verify_password_visible(self) -> bool:
-        """
-        Verifies that the password field input type is 'text' (visible).
-        Returns True if visible, False otherwise.
-        """
-        password_elem = self.driver.find_element(*self.PASSWORD_FIELD)
-        input_type = password_elem.get_attribute("type")
-        return input_type == "text"
-
-    def run_tc_login_008(self):
-        """
-        Executes test case TC_LOGIN_008: Password masking and eye icon toggle.
-
-        Executive Summary:
-        This method automates the scenario where a user enters a password, toggles visibility using the eye icon, and validates UI changes between masked and plain text states. Strict adherence to Selenium Python standards and Locators.json mapping.
-
-        Detailed Analysis:
-        - Step 1: Navigates to login page (https://ecommerce.example.com/login).
-        - Step 2: Enters password ('ValidPass123!') in password field.
-        - Step 3: Validates password is masked.
-        - Step 4: Clicks eye icon to show password.
-        - Step 5: Validates password is visible (plain text).
-        - Step 6: Clicks eye icon again to hide password.
-        - Step 7: Validates password is masked again.
-
-        Implementation Guide:
-        - Use explicit waits for element visibility/interactivity.
-        - All locators strictly mapped from Locators.json.
-        - Methods are atomic and do not modify existing logic.
-        - New methods appended for TC_LOGIN_008.
-
-        QA Report:
-        - Imports validated; uses selenium, Locators.json, and standard Python modules.
-        - Exception handling provided for atomic steps.
-        - Peer review and static analysis recommended before deployment.
-
-        Troubleshooting Guide:
-        - If eye icon is not found, update locator as per UI markup and Locators.json.
-        - If password field does not toggle, check JavaScript implementation in UI.
-        - Increase WebDriverWait for slow environments.
-
-        Future Considerations:
-        - Parameterize password and eye icon locator for broader coverage.
-        - Extend for accessibility testing (ARIA labels, keyboard navigation).
-        - Integrate with test reporting frameworks for automated QA.
-
-        Returns: dict with stepwise results and overall pass/fail.
-        """
-        results = {}
-        try:
-            # Step 1: Navigate to login page
-            self.navigate_to_login("https://ecommerce.example.com/login")
-            results['step_1_navigate'] = True
-            # Step 2: Enter password
-            self.enter_password("ValidPass123!")
-            results['step_2_enter_password'] = True
-            # Step 3: Validate password is masked
-            results['step_3_password_masked'] = self.verify_password_masked()
-            # Step 4: Click eye icon to show password
-            self.click_eye_icon()
-            results['step_4_eye_icon_clicked'] = True
-            # Step 5: Validate password is visible
-            results['step_5_password_visible'] = self.verify_password_visible()
-            # Step 6: Click eye icon again to hide password
-            self.click_eye_icon()
-            results['step_6_eye_icon_clicked_again'] = True
-            # Step 7: Validate password is masked again
-            results['step_7_password_masked_again'] = self.verify_password_masked()
-            results['overall_pass'] = all([
-                results['step_1_navigate'],
-                results['step_2_enter_password'],
-                results['step_3_password_masked'],
-                results['step_4_eye_icon_clicked'],
-                results['step_5_password_visible'],
-                results['step_6_eye_icon_clicked_again'],
-                results['step_7_password_masked_again']
-            ])
+            if secret:
+                payload = jwt.decode(token, secret, algorithms=algorithms)
+            else:
+                payload = jwt.decode(token, options={"verify_signature": False}, algorithms=algorithms)
+            assert 'userId' in payload, "userId claim missing in token"
+            assert 'email' in payload, "email claim missing in token"
+            assert 'exp' in payload, "Expiration (exp) claim missing in token"
+            exp_time = datetime.datetime.fromtimestamp(payload['exp'])
+            assert exp_time > datetime.datetime.utcnow(), "Token has expired"
+            return payload
+        except jwt.ExpiredSignatureError:
+            raise AssertionError("Token has expired")
+        except jwt.DecodeError as e:
+            raise AssertionError(f"Invalid JWT token: {e}")
         except Exception as e:
-            results['overall_pass'] = False
-            results['error'] = str(e)
+            raise AssertionError(f"JWT validation failed: {e}")
+
+    @staticmethod
+    def login_api(username: str, password: str) -> Dict[str, Any]:
+        api_url = "https://example-ecommerce.com/api/auth/login"
+        payload = {"username": username, "password": password}
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(api_url, json=payload, headers=headers)
+        assert response.status_code == 200, f"Expected HTTP 200, got {response.status_code}. Response: {response.text}"
+        data = response.json()
+        required_fields = ["accessToken", "refreshToken", "tokenType", "userId", "username", "email"]
+        for field in required_fields:
+            assert field in data, f"Missing field {field} in login response"
+        assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
+        return data
+
+    @staticmethod
+    def register_user_api(user_data: Dict[str, Any]) -> Dict[str, Any]:
+        api_url = "https://example-ecommerce.com/api/users/register"
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(api_url, json=user_data, headers=headers)
+        assert response.status_code == 201, f"Expected HTTP 201, got {response.status_code}. Response: {response.text}"
+        data = response.json()
+        required_fields = ["userId", "username", "email", "firstName", "lastName", "accountStatus"]
+        for field in required_fields:
+            assert field in data, f"Missing field {field} in registration response"
+        assert data["accountStatus"] == "ACTIVE", "Account status must be ACTIVE"
+        return data
+
+    @staticmethod
+    def decode_and_validate_jwt(token: str) -> Dict[str, Any]:
+        try:
+            payload = jwt.decode(token, options={"verify_signature": False}, algorithms=["HS256", "RS256"])
+            assert 'sub' in payload, "Subject (sub) claim missing in token"
+            assert 'exp' in payload, "Expiration (exp) claim missing in token"
+            assert 'iat' in payload, "Issued at (iat) claim missing in token"
+            assert isinstance(payload['exp'], int), "Expiration (exp) must be integer timestamp"
+            exp_time = datetime.datetime.fromtimestamp(payload['exp'])
+            assert exp_time > datetime.datetime.utcnow(), "Token has expired"
+            return payload
+        except Exception as e:
+            raise AssertionError(f"JWT decode/validation failed: {e}")
+
+    def start_forgot_username_workflow(self, email):
+        from PageClasses.UsernameRecoveryPage import UsernameRecoveryPage
+        self.go_to_login_page()
+        self.click_forgot_username()
+        recovery_page = UsernameRecoveryPage(self.driver)
+        return recovery_page.recover_username(email)
+
+    def execute_tc_101(self, email: str, password: str) -> Dict[str, Any]:
+        results = {
+            "test_case_id": "1444",
+            "test_case_description": "Test Case TC-101",
+            "step_1_navigate_login": False,
+            "step_2_enter_credentials": False,
+            "step_3_click_login": False,
+            "step_4_dashboard_redirect": False,
+            "overall_pass": False,
+            "error_message": None
+        }
+        try:
+            self.go_to_login_page()
+            results["step_1_navigate_login"] = self.is_on_login_page()
+            if not results["step_1_navigate_login"]:
+                results["error_message"] = "Login page is not displayed."
+                return results
+            self.enter_email(email)
+            self.enter_password(password)
+            results["step_2_enter_credentials"] = True
+            self.click_login()
+            results["step_3_click_login"] = True
+            try:
+                dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+                user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+                results["step_4_dashboard_redirect"] = dashboard_header.is_displayed() and user_profile_icon.is_displayed()
+            except Exception:
+                results["step_4_dashboard_redirect"] = False
+                results["error_message"] = "Dashboard not displayed after login."
+            results["overall_pass"] = (
+                results["step_1_navigate_login"] and
+                results["step_2_enter_credentials"] and
+                results["step_3_click_login"] and
+                results["step_4_dashboard_redirect"]
+            )
+        except Exception as e:
+            results["error_message"] = f"Test execution failed: {str(e)}"
         return results
 
-    # --- End of TC_LOGIN_008 Implementation ---
+    # --- TC_LOGIN_002: Remember Me Login Persistence ---
+    def check_remember_me_checkbox(self):
+        """
+        Selects the 'Remember Me' checkbox on the login page.
+        Returns:
+            None
+        Raises:
+            AssertionError: If checkbox is not found or not selectable.
+        """
+        checkbox = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_CHECKBOX))
+        if not checkbox.is_selected():
+            checkbox.click()
+        assert checkbox.is_selected(), "Remember Me checkbox was not selected."
+
+    def login_with_remember_me(self, email: str, password: str) -> None:
+        """
+        Performs login with 'Remember Me' selected.
+        Steps:
+            1. Navigate to login page
+            2. Enter credentials
+            3. Select 'Remember Me'
+            4. Click Login
+        Returns:
+            None
+        Raises:
+            AssertionError: If login fails or checkbox is not properly selected.
+        """
+        self.go_to_login_page()
+        self.enter_email(email)
+        self.enter_password(password)
+        self.check_remember_me_checkbox()
+        self.click_login()
+
+    def is_remember_me_persistence(self) -> bool:
+        """
+        After browser restart, checks if user remains logged in (session persists).
+        Returns:
+            bool: True if user is still logged in, False otherwise.
+        """
+        try:
+            self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+            return True
+        except Exception:
+            return False
