@@ -10,7 +10,6 @@ def test_tc_login_001_invalid_credentials(driver):
     """
     # [existing logic]
 
-
 def test_tc_login_001_valid_credentials(driver):
     """
     Test Case TC_LOGIN_001: Test login functionality with valid credentials.
@@ -95,3 +94,48 @@ def test_tc_login_001_valid_credentials(driver):
         results["error_message"] = f"Test execution failed: {str(e)}"
         assert False, f"Test TC_LOGIN_001 failed: {str(e)}"
     return results
+
+
+def test_tc_login_002_remember_me_persistence(driver_factory):
+    """
+    Test Case TC_LOGIN_002: Persistent login with 'Remember Me' functionality.
+
+    Steps:
+        1. Navigate to login page.
+        2. Enter valid credentials (email: testuser@example.com, password: Test@1234).
+        3. Check 'Remember Me' checkbox.
+        4. Click Login.
+        5. Save cookies.
+        6. Close browser, reopen, load cookies, navigate to site.
+        7. Validate user remains logged in without re-entering credentials.
+
+    Args:
+        driver_factory: Callable that returns a new Selenium WebDriver instance.
+
+    Raises:
+        AssertionError: If persistent login fails.
+    """
+    cookies_path = "cookies.pkl"
+    # Step 1-5: Login and save cookies
+    driver = driver_factory()
+    try:
+        login_page = LoginPage(driver)
+        login_page.validate_remember_me_persistence(
+            email="testuser@example.com",
+            password="Test@1234",
+            cookies_path=cookies_path
+        )
+        print("Cookies saved. Closing browser...")
+    finally:
+        driver.quit()
+
+    # Step 6-7: Simulate browser restart, load cookies, validate persistent login
+    driver2 = driver_factory()
+    try:
+        login_page2 = LoginPage(driver2)
+        login_page2.load_cookies(cookies_path)
+        login_page2.driver.get(login_page2.URL)
+        assert login_page2.is_logged_in(), "User is not logged in after browser restart (persistent session failed)."
+        print("TC_LOGIN_002: Persistent login validated after browser restart.")
+    finally:
+        driver2.quit()
