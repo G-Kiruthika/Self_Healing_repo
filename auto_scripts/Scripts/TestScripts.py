@@ -269,19 +269,20 @@ def test_tc_login_008_password_visibility_toggle(driver):
     assert results["overall_pass"], "TC_LOGIN_008 overall validation failed."
     print(f"TC_LOGIN_008: Passed for password visibility toggle. Stepwise results: {results}")
 
-# New method using Page Object class TC_LOGIN_009_TestPage
+
+# New method for TC_LOGIN_009 using Page Object class
 from auto_scripts.Pages.TC_LOGIN_009_TestPage import TC_LOGIN_009_TestPage
 
-def test_tc_login_009_special_char_email_pageobject(driver):
+def test_tc_login_009_special_character_email(driver):
     """
-    Test Case TC_LOGIN_009: Login with email containing special characters (Page Object Reference)
+    Test Case TC_LOGIN_009: Login with Email Containing Special Characters (Page Object Reference)
 
     Steps:
         1. Navigate to the login page (https://example-ecommerce.com/login)
         2. Enter email with special characters (test.user+tag@example.com)
         3. Enter valid password (Test@1234)
         4. Click Login
-        5. Validate successful login or appropriate error message
+        5. Validate successful login (dashboard header) or error message
 
     Args:
         driver: Selenium WebDriver instance
@@ -290,14 +291,11 @@ def test_tc_login_009_special_char_email_pageobject(driver):
         AssertionError: If any step fails
     """
     test_page = TC_LOGIN_009_TestPage(driver)
-    results = test_page.run_tc_login_009("test.user+tag@example.com", "Test@1234")
-    assert results["step_1_navigate_login"], "Step 1 failed: Login page was not displayed."
-    assert results["step_2_enter_email"], "Step 2 failed: Email with special characters was not accepted."
-    assert results["step_3_enter_password"], "Step 3 failed: Password was not accepted."
-    assert results["step_4_click_login"], "Step 4 failed: Login button click failed."
-    assert results["step_5_post_login_validation"], "Step 5 failed: Post-login validation failed."
-    if results["login_success"]:
-        print(f"TC_LOGIN_009: Login successful. Dashboard Header: {results['dashboard_header']}, User Profile Icon: {results['user_profile_icon']}")
+    result = test_page.run_special_character_email_login_test()
+    if result["login_success"]:
+        assert result["dashboard_header"] is not None, "Dashboard header not found after login."
+        print(f"TC_LOGIN_009: Passed. Dashboard Header: {result['dashboard_header']}")
     else:
-        print(f"TC_LOGIN_009: Login failed. Error Message: {results['error_message']}")
-    assert results["overall_pass"], "TC_LOGIN_009 overall validation failed."
+        assert result["error_displayed"], "Expected error message not displayed."
+        assert result["error_message"] is not None and result["error_message"].strip() != "", "Error message is empty."
+        print(f"TC_LOGIN_009: Failed login. Error Message: {result['error_message']}")
