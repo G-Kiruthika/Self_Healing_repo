@@ -237,3 +237,32 @@ def test_tc_login_007_account_lockout(driver):
     lockout_error_2 = login_page.get_error_message()
     assert lockout_error_2 == "Account temporarily locked due to multiple failed attempts. Try again after 15 minutes", f"Post-lockout: Expected lockout, got: {lockout_error_2}"
     print("TC_LOGIN_007: Account lockout scenario passed.")
+
+
+def test_tc_login_008_password_masking_toggle_visibility(driver):
+    """
+    Test Case TC_LOGIN_008: Password Masking & Toggle Visibility
+
+    Steps:
+        1. Navigate to login page
+        2. Enter password (masked by default)
+        3. Click show password toggle (should reveal password)
+        4. Click hide password toggle (should mask password again)
+        5. Repeat toggle multiple times and validate
+
+    Args:
+        driver: Selenium WebDriver instance
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    login_page = LoginPage(driver)
+    password = "Test@1234"
+    results = login_page.run_tc_login_008(password)
+    assert results["step_1_navigate_login"], "Step 1 failed: Login page is not displayed."
+    assert results["step_2_enter_password"], "Step 2 failed: Password field is not masked by default."
+    assert results["step_3_show_password"], "Step 3 failed: Password is not visible after clicking show toggle."
+    assert results["step_4_hide_password"], "Step 4 failed: Password is not masked after clicking hide toggle."
+    assert results["step_5_multiple_toggle"], "Step 5 failed: Password visibility toggle failed on repeated clicks."
+    assert results["overall_pass"], f"TC_LOGIN_008 overall validation failed. Errors: {results['errors']}"
+    print(f"TC_LOGIN_008: Passed for password masking and toggle visibility. Errors: {results['errors']}")
