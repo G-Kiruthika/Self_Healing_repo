@@ -13,24 +13,19 @@ def test_tc_login_003_invalid_email_formats(driver):
     ...
 
 def test_tc_login_004_invalid_password(driver):
-    ...
-
-def test_tc_login_005_empty_email_field(driver):
     """
-    Test Case TC_LOGIN_005: Attempts login with empty email field, verifies validation error and login prevention.
+    Test Case TC_LOGIN_004: Attempts login with valid email and incorrect password, verifies error message and user remains on login page.
     Test Steps:
         1. Navigate to the login page [URL: https://example-ecommerce.com/login]
-        2. Leave email field empty
-        3. Enter valid password [Password: Test@1234]
+        2. Enter valid email address [Email: testuser@example.com]
+        3. Enter incorrect password [Password: WrongPass@123]
         4. Click Login button
-        5. Validate error message 'Email is required' or field is highlighted
-        6. Ensure login is prevented (user remains on login page)
+        5. Verify error message 'Invalid email or password'
+        6. Verify user remains on login page and is not authenticated
     Expected Results:
         - Login page is displayed
-        - Email field remains blank
-        - Password is accepted
-        - Validation error displayed: 'Email is required' or email field is highlighted
-        - User cannot proceed with login and remains on login page
+        - Error message is shown: 'Invalid email or password'
+        - User remains on login page, not authenticated
     Args:
         driver: Selenium WebDriver instance.
     Raises:
@@ -38,15 +33,18 @@ def test_tc_login_005_empty_email_field(driver):
     """
     login_page = LoginPage(driver)
     # Step 1: Open login page
-    login_page.open_login_page()
+    login_page.navigate_to_login("https://example-ecommerce.com/login")
     assert login_page.is_on_login_page(), "Login page not displayed"
-    # Step 2: Leave email field empty (handled in method)
-    # Step 3: Enter valid password
+    # Step 2: Enter valid email address
+    login_page.enter_email("testuser@example.com")
+    # Step 3: Enter incorrect password
+    login_page.enter_password("WrongPass@123")
     # Step 4: Click Login button
-    results = login_page.perform_empty_email_login_and_validate(password="Test@1234")
-    # Step 5: Validate error message or field highlight
-    assert results["validation_pass"], f"Validation failed: {results}"
-    # Step 6: Ensure login is prevented
-    assert results["login_prevented"], "Login was not prevented, user did not remain on login page"
-    assert results["overall_pass"], "Overall TC_LOGIN_005 validation failed"
-    print("TC_LOGIN_005: Successfully validated login with empty email field.")
+    login_page.click_login()
+    # Step 5: Verify error message
+    error_msg = login_page.get_error_message()
+    expected_error = "Invalid email or password"
+    assert error_msg is not None and expected_error in error_msg, f"Expected error message not found. Got: '{error_msg}'"
+    # Step 6: Verify user remains on login page and is not authenticated
+    assert login_page.is_on_login_page(), "User did not remain on login page after invalid login"
+    print("TC_LOGIN_004: Successfully validated login with invalid password.")
