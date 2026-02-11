@@ -64,3 +64,41 @@ def test_tc_login_002_remember_me_session_persistence(driver, driver_factory):
         import traceback
         traceback.print_exc()
         assert False, f"Test TC_LOGIN_002 failed: {str(e)}"
+
+def test_tc_login_003_invalid_email_formats(driver):
+    """
+    Test Case TC_LOGIN_003: Negative login validation for invalid email formats.
+    Test Case ID: 4154
+    Description: Test Case TC_LOGIN_003
+    Test Steps:
+        1. Navigate to the login page [Test Data: URL: https://example-ecommerce.com/login]
+        2. Enter invalid email format in email field [Test Data: Email: invalidemail@com, testuser.example.com, @example.com]
+        3. Enter valid password [Test Data: Password: Test@1234]
+        4. Click Login button
+        5. Verify error message and session absence
+    Expected Results:
+        - Login page is displayed
+        - Email field accepts the input
+        - Password is accepted
+        - Error message displayed: 'Please enter a valid email address'
+        - User remains on login page, no session is created
+    Args:
+        driver: Selenium WebDriver instance.
+    Raises:
+        AssertionError: If any validation fails.
+    """
+    invalid_emails = ["invalidemail@com", "testuser.example.com", "@example.com"]
+    password = "Test@1234"
+    login_page = LoginPage(driver)
+    for email in invalid_emails:
+        try:
+            login_page.validate_invalid_email(email, password)
+            print(f"TC_LOGIN_003: Successfully validated negative login for invalid email format: {email}")
+        except AssertionError as ae:
+            import traceback
+            traceback.print_exc()
+            assert False, f"Test TC_LOGIN_003 failed for email '{email}': {str(ae)}"
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            assert False, f"Unexpected error in TC_LOGIN_003 for email '{email}': {str(e)}"
