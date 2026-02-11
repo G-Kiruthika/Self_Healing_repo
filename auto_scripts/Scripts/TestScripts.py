@@ -193,3 +193,47 @@ def test_tc_login_006_empty_fields_validation(driver):
     assert results["step_6_prevent_login"], f"Step 6 failed: User did not remain on login page. Error: {results['error_message_text']}"
     assert results["overall_pass"], f"TC_LOGIN_006 overall validation failed."
     print(f"TC_LOGIN_006: Passed for empty email and password. Errors: {results['errors']}, Highlights: {results['highlights']}, Error Message: {results['error_message_text']}")
+
+
+def test_tc_login_007_account_lockout(driver):
+    """
+    Test Case TC_LOGIN_007: Account Lockout after Multiple Failed Login Attempts
+
+    Steps:
+        1. Navigate to login page (https://example-ecommerce.com/login)
+        2. Enter valid email and incorrect password
+        3. Click Login button and repeat 5 times (expect 'Invalid email or password' error each time)
+        4. Attempt 6th login (expect lockout message)
+        5. Try correct password after lockout (lockout message persists)
+
+    Args:
+        driver: Selenium WebDriver instance
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    login_page = LoginPage(driver)
+    valid_email = "testuser@example.com"
+    incorrect_password = "WrongPass@1"
+    correct_password = "Test@1234"
+    login_page.navigate_to_login()
+    # Step 2 & 3: 5 failed login attempts
+    for attempt in range(5):
+        login_page.enter_email(valid_email)
+        login_page.enter_password(incorrect_password)
+        login_page.click_login()
+        error = login_page.get_error_message()
+        assert error == "Invalid email or password", f"Attempt {attempt+1}: Expected invalid credentials error, got: {error}"
+    # Step 4: 6th login triggers lockout
+    login_page.enter_email(valid_email)
+    login_page.enter_password(incorrect_password)
+    login_page.click_login()
+    lockout_error = login_page.get_error_message()
+    assert lockout_error == "Account temporarily locked due to multiple failed attempts. Try again after 15 minutes", f"6th attempt: Expected lockout, got: {lockout_error}"
+    # Step 5: Try correct password after lockout
+    login_page.enter_email(valid_email)
+    login_page.enter_password(correct_password)
+    login_page.click_login()
+    lockout_error_2 = login_page.get_error_message()
+    assert lockout_error_2 == "Account temporarily locked due to multiple failed attempts. Try again after 15 minutes", f"Post-lockout: Expected lockout, got: {lockout_error_2}"
+    print("TC_LOGIN_007: Account lockout scenario passed.")
