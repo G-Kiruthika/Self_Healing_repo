@@ -25,7 +25,7 @@ def test_tc_login_001_valid_login(driver):
     except Exception as e:
         ...
 
-def test_tc_login_002_remember_me_session_persistence(driver):
+def test_tc_login_002_remember_me_session_persistence(driver, driver_factory):
     """
     Test Case TC_LOGIN_002: Valid login, 'Remember Me' selection, and session persistence validation after browser reopen.
     Test Case ID: 4153
@@ -45,26 +45,20 @@ def test_tc_login_002_remember_me_session_persistence(driver):
         - User remains logged in after browser reopen
     Args:
         driver: Selenium WebDriver instance.
+        driver_factory: Callable to instantiate a new WebDriver instance.
     Raises:
         AssertionError: If any validation fails.
     """
     try:
         login_page = LoginPage(driver)
-        # Step 1: Navigate to login page
-        login_page.go_to_login_page()
-        assert login_page.is_on_login_page(), "Login page is not displayed."
-        # Step 2: Enter valid credentials
         email = "testuser@example.com"
         password = "Test@1234"
-        login_page.enter_email(email)
-        login_page.enter_password(password)
-        # Step 3: Select 'Remember Me' checkbox
-        login_page.select_remember_me()
-        # Step 4: Click Login and verify successful login
-        login_page.click_login()
-        assert login_page.verify_successful_login(), "Login failed or dashboard not displayed."
-        # Step 5 & 6: Validate session persistence after browser reopen
-        login_page.validate_remember_me_session_persistence(email, password)
+        results = login_page.login_with_remember_me_and_validate_persistence(email, password, driver_factory)
+        assert results['login_page_opened'], "Login page is not displayed."
+        assert results['credentials_entered'], "Credentials were not entered properly."
+        assert results['remember_me_checked'], "'Remember Me' checkbox was not checked."
+        assert results['user_logged_in'], "User is not logged in after login attempt."
+        assert results['user_still_logged_in_after_reopen'], "User is not logged in after browser reopen (session persistence failed)."
         print("TC_LOGIN_002: Successfully validated login with 'Remember Me' and session persistence after browser reopen.")
     except Exception as e:
         import traceback
