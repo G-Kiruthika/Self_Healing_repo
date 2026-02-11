@@ -53,3 +53,34 @@ def test_tc_login_003_invalid_email_formats(driver):
         assert not login_page.is_user_logged_in(), f"User unexpectedly logged in with invalid email: {email}"
         assert login_page.is_on_login_page(), f"User did not remain on login page for email: {email}"
     print("TC_LOGIN_003: Successfully validated login with invalid email formats.")
+
+
+def test_tc_login_004_invalid_login(driver):
+    """
+    Test Case TC_LOGIN_004: Invalid login scenario validation
+    Test Case ID: 4155
+    Description: Attempt login with valid email and invalid password.
+    Test Steps:
+        1. Navigate to the login page [Test Data: URL: https://example-ecommerce.com/login]
+        2. Enter valid email address [Test Data: Email: testuser@example.com]
+        3. Enter incorrect password [Test Data: Password: WrongPass@123]
+        4. Click Login button
+        5. Validate error message 'Invalid email or password'
+        6. Verify user remains on login page
+    Expected Results:
+        - Login page is displayed
+        - Error message: 'Invalid email or password' is shown
+        - User remains on login page, not authenticated
+    Args:
+        driver: Selenium WebDriver instance.
+    Raises:
+        AssertionError: If any validation fails.
+    """
+    login_page = LoginPage(driver)
+    result = login_page.login_with_invalid_password('testuser@example.com', 'WrongPass@123')
+    # Step 5: Validate error message
+    assert result['error_message'] == 'Invalid email or password', f"Expected error message not found. Got: '{result['error_message']}'"
+    assert result['error_message_valid'], f"Error message validation failed. Got: '{result['error_message']}'"
+    # Step 6: Verify user remains on login page
+    assert result['on_login_page'], "User did not remain on login page after invalid login attempt."
+    print("TC_LOGIN_004: Successfully validated invalid login scenario.")
