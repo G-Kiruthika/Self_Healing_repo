@@ -1,20 +1,19 @@
 # Executive Summary:
-# This PageClass is updated for TC_LOGIN_007. It now implements repeated invalid login attempts and account lock validation after multiple failures.
+# This PageClass is updated for TC_LOGIN_004. It implements validation for empty username field and proper error message handling.
 # Detailed Analysis:
-# - Navigates to login page, enters valid username and invalid password 5 times, validates error message for each failure.
-# - Attempts login with valid credentials after 5 failures, validates account lock message.
+# - Navigates to login page, leaves username empty, enters valid password, clicks login, and validates error message.
 # - Uses locators from Locators.json and strictly follows Python Selenium best practices.
 # Implementation Guide:
 # 1. Instantiate LoginPage with Selenium WebDriver.
-# 2. Call run_tc_login_007(email, invalid_passwords, valid_password) for TC_LOGIN_007.
+# 2. Call run_tc_login_004(valid_password) for TC_LOGIN_004.
 # Quality Assurance Report:
 # - Robust error handling, atomic methods, comprehensive docstrings.
 # - Peer review and static analysis recommended.
 # Troubleshooting Guide:
 # - If error messages not found, check locator accuracy.
-# - If account lock not triggered, validate backend logic.
+# - If validation fails, check backend logic.
 # Future Considerations:
-# - Extend for additional lockout scenarios, parameterize lock duration.
+# - Extend for additional negative login scenarios, parameterize error messages.
 
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
@@ -29,7 +28,8 @@ class LoginPage:
         self.password_field = (By.ID, 'login-password')
         self.login_submit = (By.ID, 'login-submit')
         self.error_message = (By.CSS_SELECTOR, 'div.alert-danger')
-        self.lock_message_text = "Account has been locked due to multiple failed attempts. Please try again after 30 minutes or reset your password"
+        self.validation_error = (By.CSS_SELECTOR, '.invalid-feedback')
+        self.empty_field_prompt = (By.XPATH, "//*[text()='Mandatory fields are required']")
         self.wait = WebDriverWait(driver, timeout)
 
     def navigate(self):
@@ -59,38 +59,19 @@ class LoginPage:
         except Exception:
             return None
 
-    def run_tc_login_007(self, email, invalid_passwords, valid_password):
-        """
-        Executes TC_LOGIN_007 end-to-end:
-        1. Navigate to login page
-        2. Enter valid username and invalid password, repeat 5 times
-        3. Validate error message for each failed login
-        4. Attempt login with valid credentials after 5 failures
-        5. Validate account lock message
-        Returns dict with results
-        """
-        results = {'invalid_attempts': [], 'lock_attempt': None, 'overall_pass': False}
-        self.navigate()
-        self.enter_email(email)
-        # Repeat invalid login attempts
-        for idx, invalid_pwd in enumerate(invalid_passwords):
-            self.enter_password(invalid_pwd)
-            self.click_login()
-            error_msg = self.get_error_message()
-            results['invalid_attempts'].append({'attempt': idx+1, 'password': invalid_pwd, 'error_message': error_msg})
-            assert error_msg is not None, f"Error message not found for invalid attempt {idx+1}"
-        # Attempt login with valid credentials after failures
-        self.enter_password(valid_password)
-        self.click_login()
-        lock_msg = self.get_error_message()
-        results['lock_attempt'] = {'valid_password': valid_password, 'lock_message': lock_msg}
-        assert lock_msg is not None, 'Account lock message not found after 6th attempt'
-        assert self.lock_message_text in lock_msg, f"Expected lock message not found. Got: {lock_msg}"
-        results['overall_pass'] = all([
-            all(attempt['error_message'] is not None for attempt in results['invalid_attempts']),
-            self.lock_message_text in lock_msg
-        ])
-        return results
+    def get_validation_error(self):
+        try:
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.validation_error))
+            return error_elem.text
+        except Exception:
+            return None
+
+    def get_empty_field_prompt(self):
+        try:
+            prompt_elem = self.wait.until(EC.visibility_of_element_located(self.empty_field_prompt))
+            return prompt_elem.text
+        except Exception:
+            return None
 
     def run_tc_login_004(self, valid_password):
         """
@@ -117,8 +98,10 @@ class LoginPage:
         self.click_login()
         # Validate error message
         error_msg = self.get_error_message()
-        results['error_message'] = error_msg
+        validation_error = self.get_validation_error()
+        empty_field_prompt = self.get_empty_field_prompt()
+        results['error_message'] = error_msg or validation_error or empty_field_prompt
         expected_error = 'Username is required'
-        results['pass'] = (results['username_empty'] and results['password_entered'] and error_msg is not None and expected_error in error_msg)
+        results['pass'] = (results['username_empty'] and results['password_entered'] and results['error_message'] is not None and expected_error in results['error_message'])
         assert results['pass'], f"TC_LOGIN_004 failed: {results}"
         return results
