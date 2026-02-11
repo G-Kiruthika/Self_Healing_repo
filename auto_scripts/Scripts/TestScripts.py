@@ -299,3 +299,35 @@ def test_tc_login_009_special_character_email(driver):
         assert result["error_displayed"], "Expected error message not displayed."
         assert result["error_message"] is not None and result["error_message"].strip() != "", "Error message is empty."
         print(f"TC_LOGIN_009: Failed login. Error Message: {result['error_message']}")
+
+
+# New method for TC_LOGIN_010 using Page Object class
+from auto_scripts.Pages.TC_LOGIN_010_TestPage import TC_LOGIN_010_TestPage
+
+def test_tc_login_010_network_disconnection_and_retry(driver):
+    """
+    Test Case TC_LOGIN_010: Login with Network Disconnection/Throttling and Retry (Page Object Reference)
+
+    Steps:
+        1. Navigate to the login page (https://example-ecommerce.com/login)
+        2. Enter valid credentials (Email: testuser@example.com, Password: Test@1234)
+        3. Simulate network disconnection or throttling (Offline/2G)
+        4. Click login, validate network error message
+        5. Restore network, retry login, validate successful login
+
+    Args:
+        driver: Selenium WebDriver instance (Chrome required for DevTools Protocol)
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    test_page = TC_LOGIN_010_TestPage(driver)
+    results = test_page.run_tc_login_010()
+    assert results["step_1_navigate"], "Step 1 failed: Login page not displayed."
+    assert results["step_2_enter_credentials"], "Step 2 failed: Credentials were not entered correctly."
+    assert results["step_3_network_offline"], "Step 3 failed: Network offline simulation failed."
+    assert results["step_4_network_error_validated"], f"Step 4 failed: Expected network error message not found. Got: {results['step_4_error_message']}"
+    assert results["step_5_network_restored"], "Step 5 failed: Network restoration failed."
+    assert results["step_5_login_success"], "Step 5 failed: Login did not succeed after restoring network."
+    assert results["overall_pass"], f"TC_LOGIN_010 overall validation failed. Error: {results.get('error', '')}"
+    print(f"TC_LOGIN_010: Passed. Stepwise results: {results}")
