@@ -3,6 +3,7 @@
 from auto_scripts.Pages.TC_LOGIN_009_SQLInjectionTestPage import TC_LOGIN_009_SQLInjectionTestPage
 from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.TC_LOGIN_010_TestPage import TC_LOGIN_010_TestPage
+from auto_scripts.Pages.TC_LOGIN_002_TestPage import TC_LOGIN_002_TestPage
 
 # Test method for TC_LOGIN_009: SQL Injection in login fields
 def test_TC_LOGIN_009_SQLInjection(driver):
@@ -48,23 +49,17 @@ def test_TC_LOGIN_010_session_timeout(driver):
     results = page.run_tc_login_010_session_timeout()
     print("TC_LOGIN_010 Results:", results)
 
-# Test method for TC_LOGIN_007: Account lock after multiple failed login attempts
-def test_TC_LOGIN_007_account_lock(driver):
+# Test method for TC_LOGIN_002: Invalid login attempt and error validation
+def test_TC_LOGIN_002_invalid_login(driver):
     """
-    Automated test for TC_LOGIN_007: Account lock after multiple failed login attempts
+    Automated test for TC_LOGIN_002: Invalid login attempt, error message validation, and page state check
     Steps:
-      1. Navigate to the login page
-      2. Enter valid username and five invalid passwords in sequence
-      3. Attempt login with valid credentials
-      4. Validate account lock and error message
-    Test Data:
-      - username: 'validuser@example.com'
-      - invalid_passwords: ['WrongPass1!', 'WrongPass2!', 'WrongPass3!', 'WrongPass4!', 'WrongPass5!']
-      - valid_password: 'ValidPass123!'
+      1. Navigate to the e-commerce website login page [URL: https://ecommerce.example.com/login]
+      2. Enter invalid username in the username field [Username: invaliduser@example.com]
+      3. Enter valid password in the password field [Password: ValidPass123!]
+      4. Click on the Login button
+      5. Validate error message 'Invalid username or password' and ensure user remains on login page
     """
-    page = LoginPage(driver)
-    username = 'validuser@example.com'
-    invalid_passwords = ['WrongPass1!', 'WrongPass2!', 'WrongPass3!', 'WrongPass4!', 'WrongPass5!']
-    valid_password = 'ValidPass123!'
-    results = page.run_tc_login_007(username, invalid_passwords, valid_password)
-    print("TC_LOGIN_007 Results:", results)
+    page = TC_LOGIN_002_TestPage(driver)
+    results = page.run_tc_login_002("invaliduser@example.com", "ValidPass123!")
+    print("TC_LOGIN_002 Results:", results)
