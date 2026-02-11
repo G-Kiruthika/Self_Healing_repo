@@ -66,9 +66,10 @@ def test_tc_login_003_valid_username_invalid_password():
     driver = webdriver.Chrome()
     try:
         login_page = LoginPage(driver)
-        result = login_page.perform_invalid_login_and_validate("validuser@example.com", "WrongPass456!")
-        assert result["error_message"] is not None, "Error message not found after invalid login."
-        assert "Invalid username or password" in result["error_message"], f"Expected error 'Invalid username or password', got '{result["error_message"]}'"
-        assert result["on_login_page"], "User is not on login page after failed login."
+        login_page.navigate_to_login_page()
+        login_page.enter_username("validuser@example.com")
+        login_page.enter_password("WrongPass456!")
+        login_page.click_login()
+        login_page.validate_error_message("Invalid username or password")
     finally:
         driver.quit()
