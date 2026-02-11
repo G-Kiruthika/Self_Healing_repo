@@ -7,7 +7,6 @@ from auto_scripts.PageObjects.DashboardPage import DashboardPage
 # Existing test functions...
 # (Assume all previous code is preserved here)
 
-
 def test_tc_login_001_valid_credentials():
     """
     TC_LOGIN_001: Valid Login
@@ -29,5 +28,26 @@ def test_tc_login_001_valid_credentials():
         dashboard_page = DashboardPage(driver)
         assert dashboard_page.is_displayed(), "Dashboard page was not displayed after login."
         assert dashboard_page.is_session_active(), "Session was not established after login."
+    finally:
+        driver.quit()
+
+
+def test_tc_login_002_invalid_credentials():
+    """
+    TC_LOGIN_002: Invalid Login Attempt
+    Steps:
+        1. Navigate to login page (https://ecommerce.example.com/login)
+        2. Enter invalid username (invaliduser@example.com)
+        3. Enter valid password (ValidPass123!)
+        4. Click Login
+        5. Validate error message 'Invalid username or password' is displayed and user remains on login page
+    """
+    driver = webdriver.Chrome()
+    try:
+        login_page = LoginPage(driver)
+        result = login_page.perform_invalid_login_and_validate("invaliduser@example.com", "ValidPass123!")
+        assert result["error_message"] is not None, "Error message not found after invalid login."
+        assert "Invalid username or password" in result["error_message"], f"Expected error 'Invalid username or password', got '{result["error_message"]}'"
+        assert result["on_login_page"], "User is not on login page after failed login."
     finally:
         driver.quit()
