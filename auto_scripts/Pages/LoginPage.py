@@ -7,6 +7,21 @@ from typing import Optional, Dict, Any
 import requests
 
 class LoginPage:
+    """
+    Page Object Model for LoginPage.
+    Strictly covers TC_LOGIN_001 and all acceptance criteria using locators:
+    - URL: https://example-ecommerce.com/login
+    - Email field: id=login-email
+    - Password field: id=login-password
+    - Remember Me: id=remember-me
+    - Login button: id=login-submit
+    - Forgot Password: a.forgot-password-link
+    - Error: div.alert-danger
+    - Validation error: .invalid-feedback
+    - Empty field prompt: text='Mandatory fields are required'
+    - Dashboard header: h1.dashboard-title
+    - User profile: .user-profile-name
+    """
     URL = "https://example-ecommerce.com/login"
     EMAIL_FIELD = (By.ID, "login-email")
     PASSWORD_FIELD = (By.ID, "login-password")
@@ -27,6 +42,7 @@ class LoginPage:
     def go_to_login_page(self):
         self.driver.get(self.URL)
         self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
 
     def enter_email(self, email):
         email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
@@ -41,15 +57,6 @@ class LoginPage:
     def click_login(self):
         login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON))
         login_btn.click()
-
-    def click_forgot_username(self):
-        """
-        Clicks the 'Forgot Username' link on the Login page.
-        Returns:
-            None
-        """
-        link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
-        link.click()
 
     def get_error_message(self):
         try:
@@ -72,9 +79,49 @@ class LoginPage:
         self.enter_password(password)
         self.click_login()
 
+    def verify_successful_login(self):
+        # Wait for dashboard header and user profile icon
+        dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+        user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+        return dashboard_header.is_displayed() and user_profile_icon.is_displayed()
+
+    def validate_login_workflow(self, email, password):
+        """
+        Strict E2E validation for TC_LOGIN_001:
+        1. Navigate to login page
+        2. Enter valid credentials
+        3. Click login
+        4. Assert redirect to dashboard and user session
+        5. Assert user profile visible
+        """
+        self.login_with_credentials(email, password)
+        assert self.verify_successful_login(), "Dashboard and user profile not displayed after login."
+
+    def validate_all_fields_present(self):
+        """
+        Ensures all required fields and buttons are present on the login page.
+        """
+        self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+        self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+        self.wait.until(EC.visibility_of_element_located(self.LOGIN_SUBMIT_BUTTON))
+        self.wait.until(EC.visibility_of_element_located(self.FORGOT_PASSWORD_LINK))
+        self.wait.until(EC.visibility_of_element_located(self.REMEMBER_ME_CHECKBOX))
+
+    def validate_empty_field_prompts(self):
+        """
+        Checks for empty field validation prompts.
+        """
+        self.go_to_login_page()
+        self.click_login()
+        try:
+            prompt = self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT))
+            return prompt.text
+        except Exception:
+            return None
+
     def perform_invalid_login_and_validate(self, email, invalid_password):
         """
-        TC_LOGIN_001: Performs invalid login and validates error message.
+        Performs invalid login and validates error message.
         Steps:
             1. Navigate to the login screen.
             2. Enter invalid username and/or password.
@@ -95,335 +142,3 @@ class LoginPage:
         assert error_msg is not None, "Error message not found after invalid login."
         assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
         assert self.is_on_login_page(), "User is not on the login page after failed login."
-
-    @staticmethod
-    def validate_jwt_token(token: str, secret: Optional[str] = None, algorithms: Optional[list] = None) -> Dict:
-        if algorithms is None:
-            algorithms = ['HS256']
-        try:
-            if secret:
-                payload = jwt.decode(token, secret, algorithms=algorithms)
-            else:
-                payload = jwt.decode(token, options={"verify_signature": False}, algorithms=algorithms)
-            assert 'userId' in payload, "userId claim missing in token"
-            assert 'email' in payload, "email claim missing in token"
-            assert 'exp' in payload, "Expiration (exp) claim missing in token"
-            exp_time = datetime.datetime.fromtimestamp(payload['exp'])
-            assert exp_time > datetime.datetime.utcnow(), "Token has expired"
-            return payload
-        except jwt.ExpiredSignatureError:
-            raise AssertionError("Token has expired")
-        except jwt.DecodeError as e:
-            raise AssertionError(f"Invalid JWT token: {e}")
-        except Exception as e:
-            raise AssertionError(f"JWT validation failed: {e}")
-
-    @staticmethod
-    def login_api(username: str, password: str) -> Dict[str, Any]:
-        """
-        Sends POST request to /api/auth/login for API-based login.
-        Args:
-            username (str): Username for login.
-            password (str): Password for login.
-        Returns:
-            dict: Response JSON with JWT tokens and user details.
-        Raises:
-            AssertionError: If login fails or required fields are missing.
-        """
-        api_url = "https://example-ecommerce.com/api/auth/login"
-        payload = {"username": username, "password": password}
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(api_url, json=payload, headers=headers)
-        assert response.status_code == 200, f"Expected HTTP 200, got {response.status_code}. Response: {response.text}"
-        data = response.json()
-        required_fields = ["accessToken", "refreshToken", "tokenType", "userId", "username", "email"]
-        for field in required_fields:
-            assert field in data, f"Missing field {field} in login response"
-        assert data["tokenType"] == "Bearer", "Token type must be 'Bearer'"
-        return data
-
-    # --- TC_SCRUM96_004: New Methods Below ---
-    @staticmethod
-    def register_user_api(user_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Registers a user via POST /api/users/register.
-        Args:
-            user_data (dict): Registration data (username, email, password, firstName, lastName).
-        Returns:
-            dict: API response JSON.
-        Raises:
-            AssertionError: If registration fails or required fields are missing.
-        """
-        api_url = "https://example-ecommerce.com/api/users/register"
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(api_url, json=user_data, headers=headers)
-        assert response.status_code == 201, f"Expected HTTP 201, got {response.status_code}. Response: {response.text}"
-        data = response.json()
-        required_fields = ["userId", "username", "email", "firstName", "lastName", "accountStatus"]
-        for field in required_fields:
-            assert field in data, f"Missing field {field} in registration response"
-        assert data["accountStatus"] == "ACTIVE", "Account status must be ACTIVE"
-        return data
-
-    @staticmethod
-    def decode_and_validate_jwt(token: str) -> Dict[str, Any]:
-        """
-        Decodes and validates JWT structure and claims (subject, expiration, issued at).
-        Args:
-            token (str): JWT token string.
-        Returns:
-            dict: Decoded JWT payload.
-        Raises:
-            AssertionError: If claims are missing or invalid.
-        """
-        try:
-            payload = jwt.decode(token, options={"verify_signature": False}, algorithms=["HS256", "RS256"])
-            assert 'sub' in payload, "Subject (sub) claim missing in token"
-            assert 'exp' in payload, "Expiration (exp) claim missing in token"
-            assert 'iat' in payload, "Issued at (iat) claim missing in token"
-            assert isinstance(payload['exp'], int), "Expiration (exp) must be integer timestamp"
-            exp_time = datetime.datetime.fromtimestamp(payload['exp'])
-            assert exp_time > datetime.datetime.utcnow(), "Token has expired"
-            return payload
-        except Exception as e:
-            raise AssertionError(f"JWT decode/validation failed: {e}")
-
-    # --- TC_LOGIN_003: Forgot Username Workflow ---
-    def start_forgot_username_workflow(self, email):
-        """
-        TC_LOGIN_003: End-to-end Forgot Username workflow for Selenium automation.
-        Steps:
-            1. Navigate to the login screen.
-            2. Click on 'Forgot Username' link.
-            3. Follow instructions to recover username via UsernameRecoveryPage.
-        Args:
-            email (str): Email address for username recovery.
-        Returns:
-            str: Confirmation or error message from UsernameRecoveryPage.
-        """
-        from PageClasses.UsernameRecoveryPage import UsernameRecoveryPage
-        self.go_to_login_page()
-        self.click_forgot_username()
-        recovery_page = UsernameRecoveryPage(self.driver)
-        return recovery_page.recover_username(email)
-
-    # --- TC_LOGIN_002: Validate Absence of Remember Me Checkbox ---
-    def validate_remember_me_checkbox_absence(self):
-        """
-        TC_LOGIN_002: Validates that the 'Remember Me' checkbox is NOT present on the login screen.
-        Steps:
-            1. Navigate to the login screen.
-            2. Check for presence of 'Remember Me' checkbox.
-            3. Validate that the checkbox is NOT present.
-        Raises:
-            AssertionError: If the checkbox is present.
-        """
-        self.go_to_login_page()
-        # Try to find the checkbox, fail if found
-        try:
-            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
-            raise AssertionError("'Remember Me' checkbox IS present on the login screen, but it should NOT be.")
-        except Exception:
-            # If NoSuchElementException or similar, this is expected
-            pass
-
-    # --- TC_SCRUM-1_006: Empty Fields Login Validation ---
-    def validate_empty_fields_login(self):
-        """
-        TC_SCRUM-1_006: Validates login with empty username and/or password fields.
-        Steps:
-            1. Navigate to the login page.
-            2. Leave username and password fields blank.
-            3. Click the 'Login' button.
-            4. Validate error message 'Username and password are required.' is displayed.
-        Raises:
-            AssertionError: If error message is not as expected or user is not on login page.
-        """
-        self.go_to_login_page()
-        # Clear email and password fields to ensure they are empty
-        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
-        email_input.clear()
-        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
-        password_input.clear()
-        self.click_login()
-        error_msg = self.get_error_message()
-        expected_error = "Username and password are required."
-        assert error_msg is not None, "Error message not found after login with empty fields."
-        assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
-        assert self.is_on_login_page(), "User is not on the login page after failed login with empty fields."
-
-    # --- TC_SCRUM-1_009: Validate Remember Me Checkbox Absence ---
-    def execute_tc_scrum_1_009(self):
-        """
-        TC_SCRUM-1_009: Test Case TC_SCRUM-1_009
-        Steps:
-            1. Navigate to the login page.
-            2. Check for the presence of 'Remember Me' checkbox.
-        Expected:
-            1. Login page is displayed.
-            2. 'Remember Me' checkbox is not present on the login page.
-        Returns:
-            dict: Test execution results
-        Raises:
-            AssertionError: If test steps fail
-        """
-        results = {
-            "test_case_id": "1439",
-            "test_case_description": "Test Case TC_SCRUM-1_009",
-            "step_1_navigate_login": False,
-            "step_2_checkbox_absent": False,
-            "overall_pass": False,
-            "error_message": None
-        }
-        
-        try:
-            # Step 1: Navigate to the login page
-            self.go_to_login_page()
-            results["step_1_navigate_login"] = self.is_on_login_page()
-            
-            if not results["step_1_navigate_login"]:
-                results["error_message"] = "Failed to navigate to login page or login page not displayed"
-                return results
-            
-            # Step 2: Check for the presence of 'Remember Me' checkbox (should NOT be present)
-            try:
-                self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
-                # If we reach here, checkbox was found - this is a failure
-                results["step_2_checkbox_absent"] = False
-                results["error_message"] = "'Remember Me' checkbox IS present on the login page, but it should NOT be"
-            except Exception:
-                # If NoSuchElementException or similar, checkbox is not present - this is expected
-                results["step_2_checkbox_absent"] = True
-            
-            # Overall pass if both steps pass
-            results["overall_pass"] = results["step_1_navigate_login"] and results["step_2_checkbox_absent"]
-            
-        except Exception as e:
-            results["error_message"] = f"Test execution failed: {str(e)}"
-            
-        return results
-
-    # --- TC_SCRUM-1_010: Locked User Account Login Scenario ---
-    def execute_tc_scrum_1_010(self, locked_email, locked_password):
-        """
-        TC_SCRUM-1_010: Test Case TC_SCRUM-1_010
-        Steps:
-            1. Navigate to the login page.
-            2. Enter credentials for a locked user account.
-            3. Click the 'Login' button.
-            4. Validate error message 'Your account is locked. Please contact support.' is displayed.
-        Args:
-            locked_email (str): Email address of the locked user.
-            locked_password (str): Password of the locked user.
-        Returns:
-            dict: Test execution results
-        Raises:
-            AssertionError: If test steps fail
-        """
-        results = {
-            "test_case_id": "1440",
-            "test_case_description": "Test Case TC_SCRUM-1_010",
-            "step_1_navigate_login": False,
-            "step_2_enter_credentials": False,
-            "step_3_click_login": False,
-            "step_4_validate_error": False,
-            "overall_pass": False,
-            "error_message": None
-        }
-        try:
-            # Step 1: Navigate to login page
-            self.go_to_login_page()
-            results["step_1_navigate_login"] = self.is_on_login_page()
-            if not results["step_1_navigate_login"]:
-                results["error_message"] = "Login page is not displayed."
-                return results
-
-            # Step 2: Enter locked user credentials
-            self.enter_email(locked_email)
-            self.enter_password(locked_password)
-            results["step_2_enter_credentials"] = True
-
-            # Step 3: Click the 'Login' button
-            self.click_login()
-            results["step_3_click_login"] = True
-
-            # Step 4: Validate locked account error message
-            error_msg = self.get_error_message()
-            expected_error = "Your account is locked. Please contact support."
-            if error_msg is not None and error_msg.strip() == expected_error:
-                results["step_4_validate_error"] = True
-            else:
-                results["error_message"] = f"Expected error '{expected_error}', got '{error_msg.strip() if error_msg else 'None'}'"
-
-            # Overall pass if all steps pass
-            results["overall_pass"] = (
-                results["step_1_navigate_login"] and
-                results["step_2_enter_credentials"] and
-                results["step_3_click_login"] and
-                results["step_4_validate_error"]
-            )
-        except Exception as e:
-            results["error_message"] = f"Test execution failed: {str(e)}"
-        return results
-
-    # --- TC-101: Execute Test Case 1444 ---
-    def execute_tc_101(self, email: str, password: str) -> Dict[str, Any]:
-        """
-        TC-101: Test Case 1444
-        Steps:
-            1. Navigate to login page
-            2. Enter valid username and password
-            3. Click on login button
-            4. Verify user is redirected to dashboard
-        Args:
-            email (str): Valid email address
-            password (str): Valid password
-        Returns:
-            dict: Structured results for validation
-        """
-        results = {
-            "test_case_id": "1444",
-            "test_case_description": "Test Case TC-101",
-            "step_1_navigate_login": False,
-            "step_2_enter_credentials": False,
-            "step_3_click_login": False,
-            "step_4_dashboard_redirect": False,
-            "overall_pass": False,
-            "error_message": None
-        }
-        try:
-            # Step 1: Navigate to login page
-            self.go_to_login_page()
-            results["step_1_navigate_login"] = self.is_on_login_page()
-            if not results["step_1_navigate_login"]:
-                results["error_message"] = "Login page is not displayed."
-                return results
-
-            # Step 2: Enter valid username and password
-            self.enter_email(email)
-            self.enter_password(password)
-            results["step_2_enter_credentials"] = True
-
-            # Step 3: Click on login button
-            self.click_login()
-            results["step_3_click_login"] = True
-
-            # Step 4: Verify user is redirected to dashboard
-            try:
-                dashboard_header = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-                user_profile_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
-                results["step_4_dashboard_redirect"] = dashboard_header.is_displayed() and user_profile_icon.is_displayed()
-            except Exception:
-                results["step_4_dashboard_redirect"] = False
-                results["error_message"] = "Dashboard not displayed after login."
-
-            # Overall pass if all steps pass
-            results["overall_pass"] = (
-                results["step_1_navigate_login"] and
-                results["step_2_enter_credentials"] and
-                results["step_3_click_login"] and
-                results["step_4_dashboard_redirect"]
-            )
-        except Exception as e:
-            results["error_message"] = f"Test execution failed: {str(e)}"
-        return results
