@@ -88,3 +88,30 @@ def test_tc_login_003_invalid_password_pageobject(driver):
     assert result["error_displayed"], "Error message not displayed for invalid password login."
     assert result["remain_on_login"], "User did not remain on login page after invalid password login."
     print("TC_LOGIN_003_PageObject: Passed for invalid password login.")
+
+# TC_LOGIN_004: Negative login scenario with empty username and valid password
+
+def test_tc_login_004_empty_username_valid_password(driver):
+    """
+    Test Case TC_LOGIN_004: Negative Login - Empty Username, Valid Password
+
+    Steps:
+        1. Navigate to the login page (https://ecommerce.example.com/login)
+        2. Leave username field empty
+        3. Enter valid password ('ValidPass123!')
+        4. Click Login
+        5. Validate error message 'Username is required' is displayed
+
+    Args:
+        driver: Selenium WebDriver instance
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    login_page = LoginPage(driver)
+    login_page.navigate_to_login("https://ecommerce.example.com/login")
+    login_page.leave_username_empty()
+    login_page.enter_password("ValidPass123!")
+    login_page.click_login()
+    assert login_page.validate_username_required_error(), "Error message 'Username is required' was not displayed."
+    print("TC_LOGIN_004: Passed for empty username and valid password.")
