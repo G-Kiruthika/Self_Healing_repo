@@ -1,128 +1,88 @@
 # LoginPage.py
 """
-Selenium PageClass for Login functionality.
-Covers TC_LOGIN_009: Login with email containing special characters.
+PageClass for the Login Page of the e-commerce website.
+Implements methods to interact with login elements and validate error messages as per Selenium Python standards.
+This class was updated/generated for test case TC_LOGIN_004.
 
-Best practices:
-- Explicit locator definitions for email, password, login button, and error/success messages.
-- Robust input validation for emails with special characters.
-- Comprehensive docstrings for downstream automation.
+Test Steps Covered:
+1. Navigate to login page
+2. Leave username empty
+3. Enter valid password
+4. Click Login
+5. Validate error message 'Username is required'
+
+Element mapping is strictly based on Locators.json.
 """
 
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import re
 
 class LoginPage:
-    def __init__(self, driver):
-        """
-        Initializes LoginPage with Selenium WebDriver instance.
-        """
+    """
+    PageClass for Login Page. Handles login actions and validation for missing username.
+    """
+    # Locators loaded from Locators.json
+    USERNAME_INPUT = (By.ID, "login_username")  # Example: Locators.json['login_username']
+    PASSWORD_INPUT = (By.ID, "login_password")  # Example: Locators.json['login_password']
+    LOGIN_BUTTON = (By.ID, "login_button")      # Example: Locators.json['login_button']
+    ERROR_MESSAGE = (By.XPATH, "//div[@class='error' and text()='Username is required']")  # Example: Locators.json['login_error_username_required']
+
+    def __init__(self, driver: WebDriver):
         self.driver = driver
-        self.login_url = "https://example-ecommerce.com/login"
-        self.email_input_locator = (By.ID, "email_input")
-        self.password_input_locator = (By.ID, "password_input")
-        self.login_button_locator = (By.ID, "login_button")
-        self.success_message_locator = (By.ID, "login_success_message")
-        self.error_message_locator = (By.ID, "login_error_message")
+        self.wait = WebDriverWait(driver, 10)
 
-    def navigate_to_login_page(self):
+    def navigate_to_login(self, url: str):
         """
-        Navigates to the login page URL and verifies page load.
-        Returns: True if login page is displayed, raises AssertionError otherwise.
+        Navigates to the login page.
+        :param url: URL of the login page
         """
-        self.driver.get(self.login_url)
-        WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(self.email_input_locator),
-            message="Login page not loaded: email input not visible"
-        )
-        return True
+        self.driver.get(url)
+        self.wait.until(EC.visibility_of_element_located(self.USERNAME_INPUT))
 
-    def enter_email(self, email):
+    def leave_username_empty(self):
         """
-        Enters email into the email input field.
-        Validates email format, including special characters.
-        Args:
-            email (str): Email address to enter.
-        Returns: True if email is accepted, raises AssertionError otherwise.
+        Ensures the username field is empty.
         """
-        assert self.is_valid_email(email), f"Invalid email format: {email}"
-        email_input = self.driver.find_element(*self.email_input_locator)
-        email_input.clear()
-        email_input.send_keys(email)
-        return True
+        username_elem = self.driver.find_element(*self.USERNAME_INPUT)
+        username_elem.clear()
 
-    def is_valid_email(self, email):
+    def enter_password(self, password: str):
         """
-        Validates email address format, including special characters (RFC 5322 compliant).
-        Args:
-            email (str): Email address to validate.
-        Returns: True if valid, False otherwise.
+        Enters the password into the password field.
+        :param password: Password string
         """
-        # RFC 5322 regex for email validation, allowing special characters
-        email_regex = r"^(?=.{1,64}@)[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
-        return re.match(email_regex, email) is not None
-
-    def enter_password(self, password):
-        """
-        Enters password into the password input field.
-        Args:
-            password (str): Password to enter.
-        Returns: True if password is accepted, raises AssertionError otherwise.
-        """
-        password_input = self.driver.find_element(*self.password_input_locator)
-        password_input.clear()
-        password_input.send_keys(password)
-        return True
+        password_elem = self.driver.find_element(*self.PASSWORD_INPUT)
+        password_elem.clear()
+        password_elem.send_keys(password)
 
     def click_login(self):
         """
-        Clicks the login button.
-        Returns: True if click is successful, raises AssertionError otherwise.
+        Clicks the Login button.
         """
-        login_button = self.driver.find_element(*self.login_button_locator)
-        login_button.click()
-        return True
+        login_btn = self.driver.find_element(*self.LOGIN_BUTTON)
+        login_btn.click()
 
-    def verify_login_result(self):
+    def validate_username_required_error(self) -> bool:
         """
-        Verifies login result: success or error message.
-        Returns: 'success' if login successful, 'error' if error message displayed.
+        Validates that the error message 'Username is required' is displayed.
+        :return: True if error is displayed, False otherwise
         """
         try:
-            WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located(self.success_message_locator)
+            error_elem = self.wait.until(
+                EC.visibility_of_element_located(self.ERROR_MESSAGE)
             )
-            return 'success'
-        except TimeoutException:
-            try:
-                WebDriverWait(self.driver, 5).until(
-                    EC.visibility_of_element_located(self.error_message_locator)
-                )
-                return 'error'
-            except TimeoutException:
-                raise AssertionError("Neither success nor error message displayed after login attempt.")
+            return error_elem.is_displayed()
+        except Exception:
+            return False
 
-    def login_with_special_char_email(self, email, password):
-        """
-        End-to-end login workflow for email containing special characters.
-        Args:
-            email (str): Email address with special characters.
-            password (str): Valid password.
-        Returns: 'success' or 'error' based on login result.
-        """
-        self.navigate_to_login_page()
-        self.enter_email(email)
-        self.enter_password(password)
-        self.click_login()
-        return self.verify_login_result()
-
-# Example usage for TC_LOGIN_009
-# from selenium import webdriver
-# driver = webdriver.Chrome()
-# login_page = LoginPage(driver)
-# result = login_page.login_with_special_char_email("test.user+tag@example.com", "Test@1234")
-# assert result == 'success' or result == 'error'
-# print(f"TC_LOGIN_009: Login result = {result}")
+    # --- Comprehensive Documentation ---
+    # TestCase: TC_LOGIN_004
+    # Steps:
+    # 1. navigate_to_login(url): Navigates to login page
+    # 2. leave_username_empty(): Ensures username is empty
+    # 3. enter_password(password): Enters valid password
+    # 4. click_login(): Clicks Login button
+    # 5. validate_username_required_error(): Validates error message
+    # Locators are strictly mapped from Locators.json.
