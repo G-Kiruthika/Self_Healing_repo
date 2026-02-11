@@ -118,3 +118,39 @@ def test_tc_login_008_password_visibility_toggle(driver):
         assert res['visible'], f"Step 5 failed at iteration {idx+1}: Password not visible after show toggle."
         assert res['masked'], f"Step 5 failed at iteration {idx+1}: Password not masked after hide toggle."
     print('TC_LOGIN_008: Password Visibility Toggle - Successfully validated.', results)
+
+
+def test_tc_login_009_special_character_email(driver):
+    """
+    Test Case TC_LOGIN_009: Login with email containing special characters and strict validation (AC_009)
+    Steps:
+        1. Navigate to login page
+        2. Enter email with special characters (test.user+tag@example.com)
+        3. Enter valid password (Test@1234)
+        4. Click Login button
+        5. Verify successful login or valid error message
+    """
+    login_page = LoginPage(driver)
+    email = "test.user+tag@example.com"
+    password = "Test@1234"
+    results = login_page.login_with_special_character_email(email=email, password=password)
+    # Step 1: Navigate to login page
+    assert results['step_1']['ui_state'] == 'Login page displayed', f"Step 1 failed: {results['step_1']}"
+    # Step 2: Enter email with special characters
+    assert results['step_2']['input_email'] == email, f"Step 2 failed: Email input mismatch. {results['step_2']}"
+    # Step 3: Enter valid password
+    assert results['step_3']['input_password'] == password, f"Step 3 failed: Password input mismatch. {results['step_3']}"
+    # Step 4: Click Login button, check dashboard or error message
+    step4 = results['step_4']
+    if step4['dashboard_visible'] and step4['profile_icon_visible']:
+        assert step4['dashboard_visible'], f"Step 4 failed: Dashboard not visible. {step4}"
+        assert step4['profile_icon_visible'], f"Step 4 failed: Profile icon not visible. {step4}"
+    else:
+        assert step4['error_message'] is not None, f"Step 4 failed: No error message present. {step4}"
+    # Step 5: Verify login outcome
+    step5 = results['step_5']
+    if step5['login_successful']:
+        print('TC_LOGIN_009: Login successful with special character email.', results)
+    else:
+        assert step5['error_message'] is not None, f"Step 5 failed: No error message present. {step5}"
+        print('TC_LOGIN_009: Valid error message received for special character email.', results)
