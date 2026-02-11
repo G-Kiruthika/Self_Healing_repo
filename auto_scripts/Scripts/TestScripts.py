@@ -268,3 +268,37 @@ def test_tc_login_008_password_visibility_toggle(driver):
     assert results["step_6_toggle_multiple"], f"Step 6 failed: Toggle did not work multiple times. Errors: {results['errors']}"
     assert results["overall_pass"], "TC_LOGIN_008 overall validation failed."
     print(f"TC_LOGIN_008: Passed for password visibility toggle. Stepwise results: {results}")
+
+
+def test_tc_login_009_special_char_email(driver):
+    """
+    Test Case TC_LOGIN_009: Login with email containing special characters
+
+    Steps:
+        1. Navigate to the login page (https://example-ecommerce.com/login)
+        2. Enter email with special characters (test.user+tag@example.com)
+        3. Enter valid password (Test@1234)
+        4. Click Login button
+        5. Verify successful login or appropriate error message
+
+    Args:
+        driver: Selenium WebDriver instance
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    login_page = LoginPage(driver)
+    email = "test.user+tag@example.com"
+    password = "Test@1234"
+    # Step 1: Navigate
+    assert login_page.navigate_to_login_page(), "Step 1 failed: Login page not displayed."
+    # Step 2: Enter email
+    assert login_page.enter_email(email), f"Step 2 failed: Email field did not accept special characters: {email}"
+    # Step 3: Enter password
+    assert login_page.enter_password(password), f"Step 3 failed: Password field did not accept input: {password}"
+    # Step 4: Click Login
+    assert login_page.click_login(), "Step 4 failed: Login button click failed"
+    # Step 5: Verify result
+    result = login_page.verify_login_result()
+    assert result in ['success', 'error'], f"Step 5 failed: Unexpected login result: {result}"
+    print(f"TC_LOGIN_009: Login result = {result}")
