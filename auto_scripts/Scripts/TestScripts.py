@@ -73,3 +73,30 @@ def test_tc_login_003_valid_username_invalid_password():
         login_page.validate_error_message("Invalid username or password")
     finally:
         driver.quit()
+
+
+def test_tc_login_004_empty_username_valid_password():
+    """
+    TC_LOGIN_004: Negative login scenario (empty username, valid password)
+    Steps:
+        1. Navigate to login page (https://ecommerce.example.com/login)
+        2. Leave username field empty
+        3. Enter valid password ('ValidPass123!')
+        4. Click Login
+        5. Validate error message 'Username is required' is displayed and user remains on login page
+    """
+    driver = webdriver.Chrome()
+    try:
+        login_page = LoginPage(driver)
+        result = login_page.perform_empty_username_login_and_validate("ValidPass123!")
+        # Accept both error and validation error, as UI may use either
+        error_msg = result.get('error_message')
+        validation_msg = result.get('validation_error')
+        assert (
+            error_msg and 'Username is required' in error_msg
+        ) or (
+            validation_msg and 'Username is required' in validation_msg
+        ), f"Expected error 'Username is required', got error='{error_msg}', validation='{validation_msg}'"
+        assert result.get('on_login_page'), 'User is not on login page after failed login.'
+    finally:
+        driver.quit()
