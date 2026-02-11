@@ -1,1 +1,1 @@
-{"PageClass": "LoginPage", "Methods": ["go_to_login_page", "enter_email", "enter_password", "click_login", "click_forgot_username", "get_error_message", "is_on_login_page", "login_with_credentials", "perform_invalid_login_and_validate", "validate_jwt_token", "login_api", "register_user_api", "decode_and_validate_jwt", "start_forgot_username_workflow", "validate_remember_me_checkbox_absence"]}
+{"PageClass": "LoginPage", "Methods": ["navigate", "enter_email", "enter_password", "click_login", "get_error_message", "run_tc_login_007"]}
