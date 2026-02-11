@@ -69,14 +69,18 @@ def test_tc_login_007_account_lockout(driver):
     correct_password = 'Test@1234'
     results = login_page.run_tc_login_007(email, incorrect_password, correct_password)
     # Step 1: Navigate to login page
-    assert results['step_1_navigate_login'], f"Step 1 failed: Did not navigate to login page"
+    assert results['step_1_navigate'], f"Step 1 failed: Did not navigate to login page"
     # Step 2: Enter valid email and incorrect password
-    assert results['step_2_credentials_entered'], f"Step 2 failed: Credentials not entered"
+    assert results['step_2_enter_credentials'], f"Step 2 failed: Credentials not entered"
     # Step 3: Click Login button 5 times, validate error messages
-    assert results['step_3_all_errors_valid'], f"Step 3 failed: Error messages not valid"
+    assert len(results['step_3_all_errors']) == 5, f"Step 3 failed: Error messages not captured for all 5 attempts"
+    for idx, msg in enumerate(results['step_3_all_errors']):
+        assert msg is not None and 'Invalid' in msg, f"Step 3 failed at attempt {idx+1}: Expected invalid credentials error, got: {msg}"
     # Step 4: Attempt login 6th time, validate lockout message
-    assert results['step_4_lockout_valid'], f"Step 4 failed: Lockout message not valid"
-    # Step 5: Verify login is blocked even with correct password
-    assert results['step_5_lockout_persists'], f"Step 5 failed: Lockout does not persist"
-    assert results['step_5_login_prevented'], f"Step 5 failed: Login not prevented"
+    assert results['step_4_lockout_detected'], f"Step 4 failed: Lockout message not detected"
+    assert 'Account temporarily locked' in results['step_4_lockout_message'], f"Step 4 failed: Unexpected lockout message: {results['step_4_lockout_message']}"
+    # Step 5: Attempt login with correct password, validate lockout persists
+    assert results['step_5_lockout_persists'], f"Step 5 failed: Lockout does not persist after correct password"
+    assert 'Account temporarily locked' in results['step_5_correct_password_lockout_message'], f"Step 5 failed: Lockout message missing after correct password: {results['step_5_correct_password_lockout_message']}"
+    assert results['overall_pass'], f"Overall test failed: Lockout not enforced as expected"
     print('TC_LOGIN_007: Account Lockout after multiple failed login attempts - Successfully validated.', results)
