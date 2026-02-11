@@ -2,6 +2,7 @@
 
 from auto_scripts.Pages.TC_LOGIN_009_SQLInjectionTestPage import TC_LOGIN_009_SQLInjectionTestPage
 from auto_scripts.Pages.LoginPage import LoginPage
+from auto_scripts.Pages.TC_LOGIN_010_TestPage import TC_LOGIN_010_TestPage
 
 # Test method for TC_LOGIN_009: SQL Injection in login fields
 def test_TC_LOGIN_009_SQLInjection(driver):
@@ -32,3 +33,17 @@ def test_TC_LOGIN_008(driver):
     page = LoginPage(driver)
     results = page.run_tc_login_008()
     print("TC_LOGIN_008 Results:", results)
+
+# Test method for TC_LOGIN_010: Session timeout after inactivity
+def test_TC_LOGIN_010_session_timeout(driver):
+    """
+    Automated test for TC_LOGIN_010: Session timeout after inactivity
+    Steps:
+      1. Login to the e-commerce website with valid credentials
+      2. Remain inactive for the configured session timeout period (e.g., 15 minutes)
+      3. Attempt to perform any action on the website
+      4. Validate session expiration and redirect to login page with message 'Your session has expired. Please login again'
+    """
+    page = TC_LOGIN_010_TestPage(driver)
+    results = page.run_tc_login_010_session_timeout()
+    print("TC_LOGIN_010 Results:", results)
