@@ -48,3 +48,43 @@ def test_tc_login_004_invalid_password(driver):
     # Step 6: Verify user remains on login page and is not authenticated
     assert login_page.is_on_login_page(), "User did not remain on login page after invalid login"
     print("TC_LOGIN_004: Successfully validated login with invalid password.")
+
+def test_tc_login_006_empty_fields(driver):
+    """
+    Test Case TC_LOGIN_006: Attempts login with both email and password fields empty, verifies error messages and field highlights, ensures login is prevented.
+    Test Steps:
+        1. Navigate to the login page [URL: https://example-ecommerce.com/login]
+        2. Leave both email and password fields empty
+        3. Click Login button
+        4. Validate error messages 'Email is required' and 'Password is required'
+        5. Check both fields are highlighted as required
+        6. Ensure login is prevented and user remains on login page
+    Expected Results:
+        - Login page is displayed
+        - Both fields remain blank
+        - Validation errors displayed for both fields: 'Email is required' and 'Password is required'
+        - Both email and password fields show validation error styling
+        - User cannot proceed and remains on login page
+    Args:
+        driver: Selenium WebDriver instance.
+    Raises:
+        AssertionError: If any validation fails.
+    """
+    login_page = LoginPage(driver)
+    results = login_page.run_tc_login_006()
+    # Step 1: Navigate to login page
+    assert results['step_1']['ui_state'] == 'Login page displayed', f"Step 1 failed: {results['step_1']}"
+    # Step 2: Leave both fields empty
+    assert results['step_2']['ui_state'] == 'Both fields blank', f"Step 2 failed: {results['step_2']}"
+    # Step 3: Click Login button and validate error messages
+    step3 = results['step_3']
+    assert step3['email_error_message'] is not None and 'email' in step3['email_error_message'].lower(), f"Step 3 failed: Email error message not found. {step3}"
+    assert step3['password_error_message'] is not None and 'password' in step3['password_error_message'].lower(), f"Step 3 failed: Password error message not found. {step3}"
+    # Step 4: Check both fields are highlighted as required
+    assert step3['email_field_highlighted'], f"Step 4 failed: Email field not highlighted. {step3}"
+    assert step3['password_field_highlighted'], f"Step 4 failed: Password field not highlighted. {step3}"
+    # Step 5: Verify login is prevented (user remains on login page)
+    step4 = results['step_4']
+    assert step4['login_prevented'], f"Step 5 failed: Login was not prevented. {step4}"
+    assert step4['current_url'] == login_page.URL, f"Step 5 failed: User not on login page. {step4}"
+    print('TC_LOGIN_006: Successfully validated login with empty fields.', results)
