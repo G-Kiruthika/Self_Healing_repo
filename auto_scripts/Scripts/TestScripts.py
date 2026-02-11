@@ -163,3 +163,33 @@ def test_tc_login_005_empty_email_valid_password(driver):
     ])
     assert results["overall_pass"], "TC_LOGIN_005 overall validation failed."
     print(f"TC_LOGIN_005: Passed for empty email and valid password. Error Message: {error_message}")
+
+
+def test_tc_login_006_empty_fields_validation(driver):
+    """
+    Test Case TC_LOGIN_006: Both Email and Password Fields Empty - Validation & Prevention of Login
+
+    Steps:
+        1. Navigate to login page.
+        2. Leave both fields empty.
+        3. Click Login.
+        4. Validate errors for both fields.
+        5. Verify highlights.
+        6. Ensure login is prevented.
+
+    Args:
+        driver: Selenium WebDriver instance
+
+    Raises:
+        AssertionError: If any step fails
+    """
+    login_page = LoginPage(driver)
+    results = login_page.run_tc_login_006()
+    assert results["step_1_navigate_login"], f"Step 1 failed: Login page is not displayed."
+    assert results["step_2_leave_fields_empty"], f"Step 2 failed: Fields not empty."
+    assert results["step_3_click_login"], f"Step 3 failed: Login button click failed."
+    assert results["step_4_validate_errors"], f"Step 4 failed: Validation errors missing. Errors: {results['errors']}"
+    assert results["step_5_highlight_required"], f"Step 5 failed: Fields not highlighted as required. Highlights: {results['highlights']}"
+    assert results["step_6_prevent_login"], f"Step 6 failed: User did not remain on login page. Error: {results['error_message_text']}"
+    assert results["overall_pass"], f"TC_LOGIN_006 overall validation failed."
+    print(f"TC_LOGIN_006: Passed for empty email and password. Errors: {results['errors']}, Highlights: {results['highlights']}, Error Message: {results['error_message_text']}")
