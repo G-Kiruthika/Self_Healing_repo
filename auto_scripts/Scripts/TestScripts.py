@@ -8,6 +8,9 @@ from auto_scripts.Pages.TC_LOGIN_007_TestPage import TC_LOGIN_007_TestPage
 # TC_LOGIN_008 PageClass import
 from auto_scripts.Pages.LoginPasswordVisibilityTestPage import LoginPasswordVisibilityTestPage
 
+# TC_LOGIN_010 PageClass import
+from auto_scripts.Pages.TC_LOGIN_010_TestPage import TC_LOGIN_010_TestPage
+
 def test_tc_login_001_invalid_credentials(driver):
     ...
 def test_tc_login_001_valid_login(driver):
@@ -154,3 +157,29 @@ def test_tc_login_009_special_character_email(driver):
     else:
         assert step5['error_message'] is not None, f"Step 5 failed: No error message present. {step5}"
         print('TC_LOGIN_009: Valid error message received for special character email.', results)
+
+
+def test_tc_login_010_network_recovery(driver):
+    """
+    Test Case TC_LOGIN_010: Network Disconnection and Recovery (AC_010)
+    Steps:
+        1. Navigate to login page
+        2. Enter valid credentials
+        3. Simulate network offline/throttling
+        4. Click Login button, verify loading indicator and error message
+        5. Restore network, retry login, validate dashboard and profile icon
+    """
+    login_page = TC_LOGIN_010_TestPage(driver)
+    try:
+        # Step 1-5: Run PageClass test method (offline scenario)
+        login_page.run_test_case(use_throttle=False)
+        print('TC_LOGIN_010: Successfully validated login with network disconnection and recovery (offline scenario).')
+        # Step 1-5: Run PageClass test method (2G throttling scenario)
+        login_page.run_test_case(use_throttle=True)
+        print('TC_LOGIN_010: Successfully validated login with network throttling and recovery (2G scenario).')
+    except AssertionError as e:
+        print(f'TC_LOGIN_010: Assertion error during test execution: {e}')
+        raise
+    except Exception as e:
+        print(f'TC_LOGIN_010: Unexpected error during test execution: {e}')
+        raise
