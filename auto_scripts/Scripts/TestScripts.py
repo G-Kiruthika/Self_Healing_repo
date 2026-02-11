@@ -114,15 +114,13 @@ def test_tc_login_004_empty_username_valid_password(driver):
     assert result, "Error message 'Username is required' not displayed as expected."
     print("TC_LOGIN_004_PageObject: Passed for empty username and valid password.")
 
-# New method for TC_LOGIN_005 using Page Object class
-from auto_scripts.Pages.TC_LOGIN_005_TestPage import TC_LOGIN_005_TestPage
-
-def test_tc_login_005_valid_username_empty_password(driver):
+# TC_LOGIN_005: Empty password scenario (Page Object Reference)
+def test_tc_login_005_empty_password_pageobject(driver):
     """
     Test Case TC_LOGIN_005: Login with valid username and empty password (Page Object Reference)
 
     Steps:
-        1. Navigate to login page
+        1. Navigate to login page (https://ecommerce.example.com/login)
         2. Enter valid username (validuser@example.com)
         3. Leave password field empty
         4. Click Login
@@ -134,11 +132,8 @@ def test_tc_login_005_valid_username_empty_password(driver):
     Raises:
         AssertionError: If any step fails
     """
-    test_page = TC_LOGIN_005_TestPage(driver)
-    result = test_page.run_tc_login_005("validuser@example.com")
-    assert result['step_1_navigate'], "Failed to navigate to login page."
-    assert result['step_2_enter_username'], "Failed to enter valid username."
-    assert result['step_3_leave_password_empty'], "Failed to leave password field empty."
-    assert result['step_4_click_login'], "Failed to click login button."
-    assert result['step_5_error_found'], "Validation error 'Password is required' not displayed."
-    print(f"TC_LOGIN_005_PageObject: Passed. Error Text: {result['step_5_error_text']}")
+    login_page = LoginPage(driver)
+    result = login_page.run_tc_login_005("https://ecommerce.example.com/login", "validuser@example.com")
+    assert result.get("step_5_password_required_error"), "Error message 'Password is required' not displayed as expected."
+    assert result.get("overall_pass"), "Test case did not pass overall validation."
+    print("TC_LOGIN_005_PageObject: Passed for valid username and empty password.")
