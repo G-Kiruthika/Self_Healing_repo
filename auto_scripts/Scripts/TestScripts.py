@@ -5,6 +5,9 @@ from auto_scripts.Pages.LoginPage import LoginPage
 # TC_LOGIN_007 PageClass import
 from auto_scripts.Pages.TC_LOGIN_007_TestPage import TC_LOGIN_007_TestPage
 
+# TC_LOGIN_008 PageClass import
+from auto_scripts.Pages.LoginPasswordVisibilityTestPage import LoginPasswordVisibilityTestPage
+
 def test_tc_login_001_invalid_credentials(driver):
     ...
 def test_tc_login_001_valid_login(driver):
@@ -84,3 +87,34 @@ def test_tc_login_007_account_lockout(driver):
     assert 'Account temporarily locked' in results['step_5_correct_password_lockout_message'], f"Step 5 failed: Lockout message missing after correct password: {results['step_5_correct_password_lockout_message']}"
     assert results['overall_pass'], f"Overall test failed: Lockout not enforced as expected"
     print('TC_LOGIN_007: Account Lockout after multiple failed login attempts - Successfully validated.', results)
+
+
+def test_tc_login_008_password_visibility_toggle(driver):
+    """
+    Test Case TC_LOGIN_008: Password Visibility Toggle
+    Steps:
+        1. Navigate to login page
+        2. Enter password in password field
+        3. Click on 'Show Password' icon/toggle
+        4. Click on 'Hide Password' icon/toggle
+        5. Verify toggle works multiple times
+    """
+    login_page = LoginPasswordVisibilityTestPage(driver)
+    password = 'Test@1234'
+    results = login_page.run_tc_login_008(password)
+    # Step 1: Navigate to login page
+    assert results['step_1']['ui_state'] == 'Login page displayed with password field', f"Step 1 failed: {results['step_1']}"
+    # Step 2: Enter password in password field, verify masked
+    assert results['step_2']['password_masked'], f"Step 2 failed: Password not masked. {results['step_2']}"
+    # Step 3: Click 'Show Password', verify visible
+    assert results['step_3']['toggle_clicked'], f"Step 3 failed: Show toggle not clicked. {results['step_3']}"
+    assert results['step_3']['password_visible'], f"Step 3 failed: Password not visible after toggle. {results['step_3']}"
+    # Step 4: Click 'Hide Password', verify masked again
+    assert results['step_4']['toggle_clicked'], f"Step 4 failed: Hide toggle not clicked. {results['step_4']}"
+    assert results['step_4']['password_masked'], f"Step 4 failed: Password not masked after hide toggle. {results['step_4']}"
+    # Step 5: Repeat toggle, validate results
+    toggle_results = results['step_5']['toggle_results']
+    for idx, res in enumerate(toggle_results):
+        assert res['visible'], f"Step 5 failed at iteration {idx+1}: Password not visible after show toggle."
+        assert res['masked'], f"Step 5 failed at iteration {idx+1}: Password not masked after hide toggle."
+    print('TC_LOGIN_008: Password Visibility Toggle - Successfully validated.', results)
