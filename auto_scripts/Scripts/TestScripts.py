@@ -30,21 +30,26 @@ def test_tc_login_003_invalid_email_formats(driver):
     Raises:
         AssertionError: If any validation fails.
     """
-    try:
-        login_page = LoginPage(driver)
-        invalid_emails = ["invalidemail@com", "testuser.example.com", "@example.com"]
-        valid_password = "Test@1234"
-        results = login_page.login_with_invalid_email_and_validate(invalid_emails, valid_password)
-        for email, result in results.items():
-            assert result["pass_criteria"], (
-                f"Failed for email '{email}': "
-                f"Error Message: {result['error_message']}, "
-                f"Validation Error: {result['validation_error_message']}, "
-                f"On Login Page: {result['on_login_page']}, "
-                f"User Logged In: {result['user_logged_in']}"
-            )
-        print("TC_LOGIN_003: Successfully validated login with invalid email formats.")
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        assert False, f"Test TC_LOGIN_003 failed: {str(e)}"
+    login_page = LoginPage(driver)
+    invalid_emails = ["invalidemail@com", "testuser.example.com", "@example.com"]
+    valid_password = "Test@1234"
+    for email in invalid_emails:
+        # Step 1: Open login page
+        login_page.open_login_page()
+        assert login_page.is_on_login_page(), f"Login page not displayed for email: {email}"
+        # Step 2: Enter invalid email format
+        login_page.enter_email(email)
+        assert not login_page.is_valid_email_format(email), f"Email format unexpectedly valid: {email}"
+        # Step 3: Enter valid password
+        login_page.enter_password(valid_password)
+        # Step 4: Click Login button
+        login_page.click_login()
+        # Step 5: Validate error message
+        error_msg = login_page.get_error_message()
+        validation_msg = login_page.get_validation_error_message()
+        expected_error = 'Please enter a valid email address'
+        assert (error_msg is not None and expected_error in error_msg) or (validation_msg is not None and expected_error in validation_msg), f"Expected error message not found for email: {email}. Got: '{error_msg}' and '{validation_msg}'"
+        # Step 6: Verify user is not logged in
+        assert not login_page.is_user_logged_in(), f"User unexpectedly logged in with invalid email: {email}"
+        assert login_page.is_on_login_page(), f"User did not remain on login page for email: {email}"
+    print("TC_LOGIN_003: Successfully validated login with invalid email formats.")
