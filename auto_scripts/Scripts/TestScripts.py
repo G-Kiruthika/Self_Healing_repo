@@ -3,7 +3,6 @@ import pytest
 from auto_scripts.Pages.TC_LOGIN_006_TestPage import TC_LOGIN_006_TestPage
 from auto_scripts.Pages.LoginPage import LoginPage
 from auto_scripts.Pages.LoginPage_PasswordVisibilityToggle import LoginPagePasswordVisibilityToggle
-from auto_scripts.Pages.TC_LOGIN_010_TestPage import TC_LOGIN_010_TestPage
 
 def test_tc_login_006_remember_me_persistence():
     """
@@ -78,17 +77,17 @@ def test_tc_login_009_sql_injection(driver):
     assert result['step_5_no_injection'], "SQL injection was executed or UI did not behave as expected."
 
 
-def test_tc_login_010_session_timeout_and_expiry(driver):
+def test_tc_login_004_username_required_error(driver):
     """
-    TC_LOGIN_010: Validate session timeout and expiry after inactivity.
+    TC_LOGIN_004: Validate error when username field is empty and valid password is entered.
     Steps:
-    1. Login to the e-commerce website with valid credentials
-    2. Remain inactive for the configured session timeout period (e.g., 15 minutes)
-    3. Attempt to perform any action on the website
-    4. Validate session expiration, redirection to login page, and message 'Your session has expired. Please login again'
+    1. Navigate to login page
+    2. Leave username field empty
+    3. Enter valid password ('ValidPass123!')
+    4. Click Login
+    5. Validate error message 'Username is required' is displayed
     """
-    test_page = TC_LOGIN_010_TestPage(driver)
-    try:
-        test_page.run_tc_login_010()
-    except AssertionError as e:
-        pytest.fail(f"TC_LOGIN_010 failed: {str(e)}")
+    valid_password = 'ValidPass123!'
+    login_page = LoginPage(driver)
+    result = login_page.run_tc_login_004(valid_password)
+    assert result['pass'], f"TC_LOGIN_004 failed: {result}"
