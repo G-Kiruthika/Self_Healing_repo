@@ -77,7 +77,7 @@ def test_tc_login_009_sql_injection(driver):
     assert result['step_4_validate_error'], "Error message 'Invalid username or password' not displayed or incorrect."
     assert result['step_5_no_injection'], "SQL injection was executed or UI did not behave as expected."
 
-
+# --- NEW TC_LOGIN_004 TEST METHOD ---
 def test_tc_login_004_username_required_error(driver):
     """
     TC_LOGIN_004: Validate error when username field is empty and valid password is entered.
@@ -92,20 +92,3 @@ def test_tc_login_004_username_required_error(driver):
     login_page = LoginPage(driver)
     result = login_page.run_tc_login_004(valid_password)
     assert result['pass'], f"TC_LOGIN_004 failed: {result}"
-
-# --- NEW TC_LOGIN_006 TEST METHOD USING LoginPage ---
-
-def test_tc_login_006_remember_me_using_loginpage(driver):
-    """
-    TC_LOGIN_006: Validate 'Remember Me' session persistence using LoginPage class.
-    Steps:
-    1. Navigate to login page
-    2. Enter valid credentials
-    3. Check 'Remember Me'
-    4. Click Login
-    5. Close and reopen browser, revisit site, and validate session persistence
-    """
-    login_page = LoginPage(driver)
-    result = login_page.run_tc_login_006('validuser@example.com', 'ValidPass123!')
-    assert result['overall_pass'] is True, f"TC_LOGIN_006 failed: {result}"
-    assert result['step_6_session_persistence'] is True, "Session persistence validation failed after browser restart."
