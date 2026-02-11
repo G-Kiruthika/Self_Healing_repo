@@ -9,7 +9,7 @@ from auto_scripts.Pages.TC_LOGIN_007_TestPage import TC_LOGIN_007_TestPage
 from auto_scripts.Pages.LoginPasswordVisibilityTestPage import LoginPasswordVisibilityTestPage
 
 # TC_LOGIN_010 PageClass import
-from auto_scripts.Pages.TC_LOGIN_010_TestPage import TC_LOGIN_010_TestPage
+from auto_scripts.Pages.LoginPage_TC_LOGIN_010 import LoginPage_TC_LOGIN_010
 
 def test_tc_login_001_invalid_credentials(driver):
     ...
@@ -169,17 +169,18 @@ def test_tc_login_010_network_recovery(driver):
         4. Click Login button, verify loading indicator and error message
         5. Restore network, retry login, validate dashboard and profile icon
     """
-    login_page = TC_LOGIN_010_TestPage(driver)
-    try:
-        # Step 1-5: Run PageClass test method (offline scenario)
-        login_page.run_test_case(use_throttle=False)
-        print('TC_LOGIN_010: Successfully validated login with network disconnection and recovery (offline scenario).')
-        # Step 1-5: Run PageClass test method (2G throttling scenario)
-        login_page.run_test_case(use_throttle=True)
-        print('TC_LOGIN_010: Successfully validated login with network throttling and recovery (2G scenario).')
-    except AssertionError as e:
-        print(f'TC_LOGIN_010: Assertion error during test execution: {e}')
-        raise
-    except Exception as e:
-        print(f'TC_LOGIN_010: Unexpected error during test execution: {e}')
-        raise
+    login_page = LoginPage_TC_LOGIN_010(driver)
+    email = "testuser@example.com"
+    password = "Test@1234"
+    # Run test with network offline
+    results_offline = login_page.perform_login_with_network_issue_and_retry(email, password)
+    # Stepwise assertions
+    assert results_offline['step_1_page_loaded'], "Step 1 failed: Login page not loaded"
+    assert results_offline['step_2_credentials_entered'], "Step 2 failed: Credentials not entered"
+    assert results_offline['step_3_network_disconnected'], "Step 3 failed: Network not disconnected"
+    assert results_offline['step_4_loading_indicator'], "Step 4 failed: Loading indicator not shown"
+    assert results_offline['step_4_expected_error'], "Step 4 failed: Expected network error message not shown"
+    assert results_offline['step_5_network_restored'], "Step 5 failed: Network not restored"
+    assert results_offline['step_6_login_successful'], "Step 6 failed: Login not successful after network restoration"
+    assert results_offline['overall_pass'], "Overall test failed: Not all steps passed"
+    print('TC_LOGIN_010: Successfully validated login with network disconnection and recovery (offline scenario).', results_offline)
