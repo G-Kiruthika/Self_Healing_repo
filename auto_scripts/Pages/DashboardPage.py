@@ -1,23 +1,43 @@
+# DashboardPage.py
+# Automated PageClass for post-login dashboard validation (TC_LOGIN_001)
+
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 
 class DashboardPage:
-    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
-    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
-
-    def __init__(self, driver, timeout=10):
+    def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, timeout)
+        self.dashboard_header = (By.CSS_SELECTOR, 'h1.dashboard-title')
+        self.user_profile_icon = (By.CSS_SELECTOR, '.user-profile-name')
 
-    def is_dashboard_displayed(self) -> bool:
+    def is_dashboard_displayed(self):
         """
-        Checks if the dashboard header is visible, indicating user is redirected to dashboard after login.
-        Returns:
-            bool: True if dashboard header is displayed, False otherwise.
+        Validate dashboard page is displayed
         """
         try:
-            self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-            return True
-        except Exception:
+            return self.driver.find_element(*self.dashboard_header).is_displayed()
+        except NoSuchElementException:
             return False
+
+    def is_user_profile_icon_displayed(self):
+        """
+        Validate user profile icon is visible
+        """
+        try:
+            return self.driver.find_element(*self.user_profile_icon).is_displayed()
+        except NoSuchElementException:
+            return False
+
+    def validate_dashboard(self):
+        """
+        Combined validation for dashboard
+        """
+        assert self.is_dashboard_displayed(), 'Dashboard header not visible after login'
+        assert self.is_user_profile_icon_displayed(), 'User profile icon not visible after login'
+
+# Example usage:
+# from selenium import webdriver
+# driver = webdriver.Chrome()
+# dashboard_page = DashboardPage(driver)
+# dashboard_page.validate_dashboard()
+# print('Dashboard validated: PASSED')

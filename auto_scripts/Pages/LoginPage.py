@@ -1,88 +1,104 @@
-import re
+# LoginPage.py
+# Automated PageClass for TC_LOGIN_001: End-to-end login workflow
+# Covers navigation, input, login action, and post-login validation
+
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException
 
 class LoginPage:
-    """
-    Page Object Model for the Login Page of example-ecommerce.com
-    Handles login functionality, including emails with special characters, and all acceptance criteria for TC_LOGIN_009.
-    """
-    URL = "https://example-ecommerce.com/login"
-    EMAIL_FIELD = (By.ID, "login-email")
-    PASSWORD_FIELD = (By.ID, "login-password")
-    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
-    LOGIN_SUBMIT = (By.ID, "login-submit")
-    ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
-    VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
-    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[contains(text(), 'Mandatory fields are required')]")
-    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
-    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
-    
-    def __init__(self, driver: WebDriver, timeout: int = 10):
+    def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, timeout)
+        self.url = 'https://example-ecommerce.com/login'
+        self.email_field = (By.ID, 'login-email')
+        self.password_field = (By.ID, 'login-password')
+        self.remember_me_checkbox = (By.ID, 'remember-me')
+        self.login_submit = (By.ID, 'login-submit')
+        self.forgot_password_link = (By.CSS_SELECTOR, 'a.forgot-password-link')
+        self.error_message = (By.CSS_SELECTOR, 'div.alert-danger')
+        self.validation_error = (By.CSS_SELECTOR, '.invalid-feedback')
+        self.empty_field_prompt = (By.XPATH, "//*[text()='Mandatory fields are required']")
+        self.dashboard_header = (By.CSS_SELECTOR, 'h1.dashboard-title')
+        self.user_profile_icon = (By.CSS_SELECTOR, '.user-profile-name')
 
-    def load(self) -> None:
-        """Navigate to the login page URL."""
-        self.driver.get(self.URL)
-        self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+    def navigate(self):
+        """
+        Step 1: Navigate to the login page
+        """
+        self.driver.get(self.url)
+        assert self.driver.find_element(*self.email_field).is_displayed(), 'Email field not displayed'
+        assert self.driver.find_element(*self.password_field).is_displayed(), 'Password field not displayed'
 
-    def enter_email(self, email: str) -> None:
-        """Enter the email address, supporting special characters as per TC_LOGIN_009."""
-        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+    def enter_email(self, email):
+        """
+        Step 2: Enter valid username
+        """
+        email_input = self.driver.find_element(*self.email_field)
         email_input.clear()
         email_input.send_keys(email)
+        assert email_input.get_attribute('value') == email, 'Email not entered correctly'
 
-    def enter_password(self, password: str) -> None:
-        """Enter the password into the password field."""
-        password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+    def enter_password(self, password):
+        """
+        Step 3: Enter valid password
+        """
+        password_input = self.driver.find_element(*self.password_field)
         password_input.clear()
         password_input.send_keys(password)
+        # Password field should be masked
+        assert password_input.get_attribute('type') == 'password', 'Password field is not masked'
+        assert password_input.get_attribute('value') == password, 'Password not entered correctly'
 
-    def click_login(self) -> None:
-        """Click the Login button to submit credentials."""
-        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOGIN_SUBMIT))
-        login_btn.click()
+    def click_login(self):
+        """
+        Step 4: Click on the Login button
+        """
+        self.driver.find_element(*self.login_submit).click()
 
-    def is_login_successful(self) -> bool:
-        """Check for successful login by verifying dashboard header or user profile icon."""
+    def validate_post_login(self):
+        """
+        Validate successful login: dashboard and session
+        """
+        # Wait for dashboard header
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(self.dashboard_header)
+        )
+        assert self.driver.find_element(*self.dashboard_header).is_displayed(), 'Dashboard header not visible'
+        assert self.driver.find_element(*self.user_profile_icon).is_displayed(), 'User profile icon not visible'
+
+    def login(self, email, password):
+        """
+        Complete login workflow for TC_LOGIN_001
+        """
+        self.navigate()
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login()
+        self.validate_post_login()
+
+    # Additional validation methods for negative scenarios
+    def get_error_message(self):
         try:
-            self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
-            self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
-            return True
-        except TimeoutException:
+            return self.driver.find_element(*self.error_message).text
+        except NoSuchElementException:
+            return None
+
+    def get_validation_error(self):
+        try:
+            return self.driver.find_element(*self.validation_error).text
+        except NoSuchElementException:
+            return None
+
+    def is_empty_field_prompt_displayed(self):
+        try:
+            return self.driver.find_element(*self.empty_field_prompt).is_displayed()
+        except NoSuchElementException:
             return False
 
-    def get_error_message(self) -> str:
-        """Retrieve any login error message displayed."""
-        try:
-            error = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
-            return error.text.strip()
-        except TimeoutException:
-            return ""
-
-    def get_validation_error(self) -> str:
-        """Retrieve inline validation error (e.g., for email format)."""
-        try:
-            validation = self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR))
-            return validation.text.strip()
-        except TimeoutException:
-            return ""
-
-    def is_empty_field_prompt_displayed(self) -> bool:
-        """Check if the mandatory fields prompt is displayed."""
-        try:
-            self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT))
-            return True
-        except TimeoutException:
-            return False
-
-    @staticmethod
-    def is_valid_email_format(email: str) -> bool:
-        """Validate email format, allowing special characters as per RFC 5322."""
-        # This regex supports most valid email formats including special characters.
-        pattern = r"(^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)"
-        return re.match(pattern, email) is not None
+# Example usage:
+# from selenium import webdriver
+# driver = webdriver.Chrome()
+# login_page = LoginPage(driver)
+# login_page.login('validuser@example.com', 'ValidPass123!')
+# print('TC_LOGIN_001: PASSED - User redirected to dashboard and session established')
