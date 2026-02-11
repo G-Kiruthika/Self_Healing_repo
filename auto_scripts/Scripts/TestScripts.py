@@ -184,3 +184,31 @@ def test_tc_login_010_network_recovery(driver):
     assert results_offline['step_6_login_successful'], "Step 6 failed: Login not successful after network restoration"
     assert results_offline['overall_pass'], "Overall test failed: Not all steps passed"
     print('TC_LOGIN_010: Successfully validated login with network disconnection and recovery (offline scenario).', results_offline)
+
+# TC_LOGIN_001: End-to-end login workflow
+
+def test_tc_login_001_end_to_end_login(driver):
+    """
+    Test Case TC_LOGIN_001: End-to-end login workflow
+    Steps:
+        1. Navigate to the e-commerce website login page
+        2. Enter valid username in the username field
+        3. Enter valid password in the password field
+        4. Click on the Login button
+        5. Validate successful login: dashboard and session
+    """
+    login_page = LoginPage(driver)
+    dashboard_page = DashboardPage(driver)
+    email = 'validuser@example.com'
+    password = 'ValidPass123!'
+    # Step 1: Navigate to login page
+    login_page.navigate()
+    # Step 2: Enter valid username
+    login_page.enter_email(email)
+    # Step 3: Enter valid password
+    login_page.enter_password(password)
+    # Step 4: Click Login button
+    login_page.click_login()
+    # Step 5: Validate dashboard and session
+    dashboard_page.validate_dashboard()
+    print('TC_LOGIN_001: PASSED - User redirected to dashboard and session established')
