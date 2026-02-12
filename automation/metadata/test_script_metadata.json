@@ -1,0 +1,25 @@
+{
+ "test_suite": "Functional UI Suite",
+ "test_cases": {
+ "UI_TC_02": {
+ "test_name": "test_login_invalid_password",
+ "feature": "Login",
+ "target_file": "test_login_invalid_password.py",
+ "pages_used": ["LoginPage"],
+ "flow": [
+ {"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": null},
+ {"page": "LoginPage", "action": "enter_username", "data_ref": "login_data"},
+ {"page": "LoginPage", "action": "enter_password", "data_ref": "login_data"},
+ {"page": "LoginPage", "action": "click_login_button", "data_ref": null},
+ {"page": "LoginPage", "assertion": "is_not_logged_in"},
+ {"page": "LoginPage", "assertion": "is_error_message_displayed"}
+ ],
+ "test_data": {
+ "login_data": {
+ "username": "standard_user",
+ "password": "wrong_password"
+ }
+ }
+ }
+ }
+}
