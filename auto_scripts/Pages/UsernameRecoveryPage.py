@@ -41,7 +41,7 @@ class UsernameRecoveryPage:
 
     def __init__(self, driver, timeout=10):
         self.driver = driver
-        self.wait = WebDriverWait(driver, timeout)
+        self.wait = WebDriverWait(self.driver, timeout)
 
     def go_to_username_recovery(self):
         self.driver.get(self.URL)
