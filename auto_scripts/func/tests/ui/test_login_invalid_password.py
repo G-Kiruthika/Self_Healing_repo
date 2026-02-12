@@ -1,22 +1,26 @@
+# tests/ui/test_login_invalid_password.py
+
 from core.driver_factory import get_driver
-from pages.login_page import LoginPage
+from pages.LoginPage import LoginPage
 
 
 def test_login_invalid_password():
- """Test login functionality with invalid password."""
+ """
+ Test Case: UI_TC_02 - Login with Invalid Password
+ Feature: Login
+ Validates that login fails with incorrect password and error message is displayed.
+ """
  driver = get_driver()
  login_page = LoginPage(driver)
  
  # Test data
- login_data = {
- 'username': 'standard_user',
- 'password': 'wrong_password'
- }
+ username = "standard_user"
+ password = "wrong_password"
  
- # Test flow
+ # Flow execution
  login_page.navigate_to_login_page()
- login_page.enter_username(login_data['username'])
- login_page.enter_password(login_data['password'])
+ login_page.enter_username(username)
+ login_page.enter_password(password)
  login_page.click_login_button()
  
  # Assertions
