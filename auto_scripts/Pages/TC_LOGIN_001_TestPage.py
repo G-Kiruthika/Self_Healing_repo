@@ -38,5 +38,5 @@ class TestTC_LOGIN_001:
         expected_error = "Invalid username or password. Please try again."
         error_msg = login_page.get_error_message()
         assert error_msg is not None, "Error message not found after invalid login."
-        assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}'"
+        assert error_msg.strip() == expected_error, f"Expected error '{expected_error}', got '{error_msg.strip()}""
         assert login_page.is_on_login_page(), "User is not on the login page after failed login."
