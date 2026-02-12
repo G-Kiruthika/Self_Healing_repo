@@ -3,11 +3,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class UsernameRecoveryPage:
-    """
-    Page Object for the 'Forgot Username' workflow.
-    Provides methods to interact with the username recovery process.
-    Updated for TC_LOGIN_003 to support structured end-to-end automation.
-    """
     URL = "https://example-ecommerce.com/forgot-username"
     EMAIL_FIELD = (By.ID, "recovery-email")
     SUBMIT_BUTTON = (By.ID, "recovery-submit")
@@ -16,39 +11,24 @@ class UsernameRecoveryPage:
     INSTRUCTIONS_TEXT = (By.CSS_SELECTOR, "div.recovery-instructions")
 
     def __init__(self, driver, timeout=10):
-        """
-        Initialize with Selenium WebDriver and optional timeout.
-        """
         self.driver = driver
-        self.wait = WebDriverWait(driver, timeout)
+        self.wait = WebDriverWait(self.driver, timeout)
 
     def go_to_username_recovery(self):
-        """
-        Navigates to the Username Recovery page.
-        """
         self.driver.get(self.URL)
         self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
         self.wait.until(EC.visibility_of_element_located(self.INSTRUCTIONS_TEXT))
 
     def enter_email(self, email):
-        """
-        Enters the email address for username recovery.
-        """
         email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
         email_input.clear()
         email_input.send_keys(email)
 
     def submit_recovery(self):
-        """
-        Submits the username recovery request.
-        """
         submit_btn = self.wait.until(EC.element_to_be_clickable(self.SUBMIT_BUTTON))
         submit_btn.click()
 
     def get_confirmation_message(self):
-        """
-        Retrieves the confirmation message after successful recovery.
-        """
         try:
             msg_elem = self.wait.until(EC.visibility_of_element_located(self.CONFIRMATION_MESSAGE))
             return msg_elem.text
@@ -56,9 +36,6 @@ class UsernameRecoveryPage:
             return None
 
     def get_error_message(self):
-        """
-        Retrieves any error message displayed during recovery.
-        """
         try:
             error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
             return error_elem.text
@@ -66,18 +43,6 @@ class UsernameRecoveryPage:
             return None
 
     def recover_username(self, email):
-        """
-        TC_LOGIN_003: Complete workflow for username recovery.
-        Steps:
-            1. Navigate to Username Recovery page
-            2. Enter email
-            3. Submit recovery
-            4. Return confirmation or error message
-        Args:
-            email (str): Email address for username recovery
-        Returns:
-            str: Confirmation or error message
-        """
         self.go_to_username_recovery()
         self.enter_email(email)
         self.submit_recovery()
