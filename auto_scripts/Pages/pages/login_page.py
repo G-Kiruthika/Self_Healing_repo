@@ -2,10 +2,10 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class LoginPage(BasePage):
- USERNAME_INPUT = (By.ID, "username_input")
- PASSWORD_INPUT = (By.ID, "password_input")
- LOGIN_BUTTON = (By.ID, "login_button")
- ERROR_MESSAGE = (By.ID, "error_message")
+ USERNAME_INPUT = ("placeholder", "username_input_locator")
+ PASSWORD_INPUT = ("placeholder", "password_input_locator")
+ LOGIN_BUTTON = ("placeholder", "login_button_locator")
+ ERROR_MESSAGE = ("placeholder", "error_message_locator")
 
  def navigate_to_login_page(self):
  # Replace with actual navigation logic, e.g., self.driver.get(url)
