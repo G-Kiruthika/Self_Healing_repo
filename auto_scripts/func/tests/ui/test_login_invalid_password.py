@@ -3,39 +3,29 @@ from pages.login_page import LoginPage
 
 
 def test_login_invalid_password():
+ """Test login functionality with invalid password.
+ 
+ This test verifies that:
+ 1. User can navigate to login page
+ 2. User can enter username and password
+ 3. User remains on login page after invalid credentials
+ 4. Error message is displayed for invalid login
  """
- Test login functionality with invalid password.
- Verifies that user cannot login with wrong password and error message is displayed.
- """
- # Initialize driver and page object
  driver = get_driver()
  login_page = LoginPage(driver)
  
  # Test data
- login_data = {
- "username": "standard_user",
- "password": "wrong_password"
- }
+ username = "standard_user"
+ password = "wrong_password"
  
- try:
- # Step 1: Navigate to login page
+ # Execute test flow
  login_page.navigate_to_login_page()
- 
- # Step 2: Enter username
- login_page.enter_username(login_data["username"])
- 
- # Step 3: Enter password
- login_page.enter_password(login_data["password"])
- 
- # Step 4: Click login button
+ login_page.enter_username(username)
+ login_page.enter_password(password)
  login_page.click_login_button()
  
- # Step 5: Assert user is not logged in
- assert login_page.is_not_logged_in(), "User should not be logged in with invalid password"
+ # Assertions
+ assert login_page.is_not_logged_in(), "User should not be logged in with invalid credentials"
+ assert login_page.is_error_message_displayed(), "Error message should be displayed for invalid login"
  
- # Step 6: Assert error message is displayed
- assert login_page.is_error_message_displayed(), "Error message should be displayed for invalid password"
- 
- finally:
- # Cleanup
  driver.quit()

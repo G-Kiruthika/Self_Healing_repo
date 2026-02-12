@@ -1,0 +1,27 @@
+# Environment Configuration
+
+ui:
+ base_url: "https://example.com"
+ login_url: "https://example.com/login"
+ implicit_wait: 10
+ explicit_wait: 20
+ browser: "chrome"
+ headless: false
+
+api:
+ base_url: "https://api.example.com"
+ timeout: 30
+
+test_data:
+ login:
+ valid_user:
+ username: "standard_user"
+ password: "secret_sauce"
+ invalid_password:
+ username: "standard_user"
+ password: "wrong_password"
+
+reporting:
+ screenshots_on_failure: true
+ video_recording: false
+ report_format: "html"
