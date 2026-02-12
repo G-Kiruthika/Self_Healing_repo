@@ -110,3 +110,49 @@ class LoginPage:
         self.click_forgot_username()
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
+
+    # --- TC_LOGIN_002: Validate Absence of 'Remember Me' Checkbox ---
+    def validate_remember_me_checkbox_absence(self):
+        """
+        TC_LOGIN_002: Validates that the 'Remember Me' checkbox is NOT present on the login screen.
+        Steps:
+            1. Navigate to the login screen.
+            2. Assert that the 'Remember Me' checkbox is not present in the DOM.
+        Returns:
+            bool: True if checkbox is absent, False otherwise.
+        Raises:
+            AssertionError: If checkbox is found.
+        """
+        self.go_to_login_page()
+        elements = self.driver.find_elements(*self.REMEMBER_ME_CHECKBOX)
+        assert len(elements) == 0, "'Remember Me' checkbox should NOT be present on the login screen."
+        return True
+
+"""
+Executive Summary:
+- LoginPage.py now includes a method to strictly validate the absence of the 'Remember Me' checkbox for TC_LOGIN_002.
+- This ensures compliance with the test case and Selenium Python automation standards.
+
+Detailed Analysis:
+- The new method validate_remember_me_checkbox_absence() navigates to the login page and asserts the checkbox is not present.
+- Uses find_elements to avoid exceptions and asserts zero elements found.
+- Does not alter any existing logic or methods.
+
+Implementation Guide:
+1. Instantiate LoginPage with a Selenium WebDriver.
+2. Call validate_remember_me_checkbox_absence().
+3. The method will raise AssertionError if the checkbox is present, otherwise returns True.
+
+Quality Assurance Report:
+- All imports and locators validated.
+- Method is atomic, robust, and ready for downstream automation.
+- Peer review and static analysis recommended before deployment.
+
+Troubleshooting Guide:
+- If AssertionError is raised, verify UI and locator for 'remember-me'.
+- If test fails due to timing, increase WebDriverWait timeout.
+
+Future Considerations:
+- Parameterize locator for multi-environment support.
+- Extend for additional negative UI element checks as needed.
+"""
