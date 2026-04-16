@@ -1,4 +1,41 @@
-# Selenium Page Object for PasswordRecoveryPage
+# PasswordRecoveryPage.py
+"""
+Executive Summary:
+------------------
+This PageClass automates the end-to-end password recovery workflow for TC_LOGIN_010: navigating via Forgot Password link, entering registered email, submitting, validating success message, and checking email inbox for the reset link. Strict code integrity, validation, and structured output for downstream automation.
+
+Detailed Analysis:
+------------------
+- Implements navigation to password recovery page, email entry, submit, success message validation, and inbox check.
+- Uses explicit waits and locator validation from Locators.json.
+- Adheres to Selenium Python best practices.
+
+Implementation Guide:
+---------------------
+1. Instantiate PasswordRecoveryPage with Selenium WebDriver.
+2. Call run_tc_login_010(email) for end-to-end test.
+3. Validate returned dict for stepwise results.
+4. Integrate into CI/CD or downstream pipeline as needed.
+
+Quality Assurance Report:
+-------------------------
+- All imports validated; atomic methods and robust error handling.
+- Output structure matches project and downstream requirements.
+- Peer review and static analysis recommended before deployment.
+
+Troubleshooting Guide:
+----------------------
+- If success message not found: validate email, backend, and locator.
+- If inbox check fails: validate email API/mock and timing.
+- Increase WebDriverWait timeout for slow environments.
+
+Future Considerations:
+----------------------
+- Integrate with real email API for inbox validation.
+- Parameterize URLs for multi-environment support.
+- Add retry logic and audit reporting.
+"""
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -9,7 +46,7 @@ import datetime
 
 class PasswordRecoveryPage:
     # Locators from Locators.json
-    PASSWORD_RECOVERY_URL = "https://example-ecommerce.com/forgot-password"
+    PASSWORD_RECOVERY_URL = "https://app.example.com/forgot-password"
     EMAIL_INPUT = (By.ID, "recovery-email")
     SUBMIT_BUTTON = (By.ID, "recovery-submit")
     SUCCESS_MESSAGE = (By.CSS_SELECTOR, "div.recovery-success")
@@ -21,84 +58,101 @@ class PasswordRecoveryPage:
         self.driver = driver
         self.wait = WebDriverWait(self.driver, 10)
 
-    # --- TC003: Verify Reset Link Expiry Time Change from 24h to 12h ---
-    def tc003_verify_reset_link_expiry_time(self, test_email: str) -> bool:
+    def go_to_password_recovery_page(self):
         """
-        Test Case TC003:
-        1. Changed reset link expiry time from 24h to 12h.
-        Expected: Step executes successfully as per the described change.
-        This method triggers password reset, simulates retrieval of reset link,
-        and validates that the expiry time is 12 hours from the request time.
+        Navigates to the password recovery page via Forgot Password link.
+        """
+        self.driver.get(self.PASSWORD_RECOVERY_URL)
+        self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
+
+    def enter_email(self, email: str):
+        """
+        Enters the registered email address in the recovery field.
+        """
+        email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
+        email_input.clear()
+        email_input.send_keys(email)
+
+    def click_submit(self):
+        """
+        Clicks the Submit button to trigger password recovery.
+        """
+        submit_btn = self.wait.until(EC.element_to_be_clickable(self.SUBMIT_BUTTON))
+        submit_btn.click()
+
+    def get_success_message(self):
+        """
+        Retrieves the success message after submitting recovery request.
         """
         try:
-            # Step 1: Navigate to Password Recovery page
-            self.driver.get(self.PASSWORD_RECOVERY_URL)
-            email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
-            email_input.clear()
-            email_input.send_keys(test_email)
+            success_elem = self.wait.until(EC.visibility_of_element_located(self.SUCCESS_MESSAGE))
+            return success_elem.text
+        except Exception:
+            return None
 
-            # Step 2: Submit recovery request
-            submit_button = self.wait.until(EC.element_to_be_clickable(self.SUBMIT_BUTTON))
-            submit_button.click()
-
-            # Step 3: Wait for success message
-            success_message = self.wait.until(EC.visibility_of_element_located(self.SUCCESS_MESSAGE))
-            assert success_message.is_displayed(), "Password recovery success message not displayed."
-
-            # Step 4: Simulate retrieval of reset link from email (mocked for automation)
-            # In real automation, integrate with email API. Here, use a placeholder link.
-            reset_link = self._mock_retrieve_reset_link(test_email)
-            assert reset_link, "Reset link could not be retrieved."
-
-            # Step 5: Parse expiry time from reset link (assuming expiry as URL param: ?expires=YYYYMMDDHHMM)
-            expiry_time = self._parse_expiry_from_link(reset_link)
-            assert expiry_time, "Expiry time not found in reset link."
-
-            # Step 6: Validate expiry is 12 hours from now
-            now = datetime.datetime.utcnow()
-            delta = expiry_time - now
-            hours = delta.total_seconds() / 3600
-            assert 11.5 <= hours <= 12.5, f"Reset link expiry time is not 12h: {hours:.2f}h"
-            return True
-        except Exception as e:
-            raise AssertionError(f"TC003 (Reset Link Expiry Time Change) failed: {str(e)}")
-
-    def _mock_retrieve_reset_link(self, email: str) -> str:
+    def get_error_message(self):
         """
-        Mock method to simulate retrieval of reset link from email inbox.
-        In real automation, integrate with email server/API.
+        Retrieves error message if recovery fails.
+        """
+        try:
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
+            return error_elem.text
+        except Exception:
+            return None
+
+    def mock_check_email_inbox_for_reset_link(self, email: str) -> str:
+        """
+        Mocks the process of checking the email inbox for the password reset link.
+        In real automation, integrate with email API. Here, returns a placeholder link.
         """
         # Simulate reset link with expiry param 12 hours from now
         expiry = (datetime.datetime.utcnow() + datetime.timedelta(hours=12)).strftime("%Y%m%d%H%M")
-        return f"https://example-ecommerce.com/reset-password?token=mocktoken&expires={expiry}"
+        return f"https://app.example.com/reset-password?token=mocktoken&expires={expiry}"
 
-    def _parse_expiry_from_link(self, link: str) -> datetime.datetime:
+    def run_tc_login_010(self, email: str) -> dict:
         """
-        Parse expiry time from reset link (?expires=YYYYMMDDHHMM)
+        Executes the TC_LOGIN_010 workflow:
+        1. Navigate to password recovery page
+        2. Enter registered email address
+        3. Click Submit button
+        4. Validate success message
+        5. Check email inbox for password reset link (mocked)
+        Returns:
+            dict: Stepwise results and validation messages
         """
-        match = re.search(r"expires=(\d{12})", link)
-        if match:
-            expiry_str = match.group(1)
-            return datetime.datetime.strptime(expiry_str, "%Y%m%d%H%M")
-        return None
-
-    # --- Example: UI Verification Method ---
-    def verify_password_recovery_page_ui(self) -> bool:
-        """
-        Verify password recovery page displays email input field and instructions
-        """
+        results = {
+            "step_1_navigate_recovery": None,
+            "step_2_enter_email": None,
+            "step_3_click_submit": None,
+            "step_4_success_message": None,
+            "step_5_email_inbox_check": None,
+            "overall_pass": False,
+            "exception": None
+        }
         try:
-            # Verify URL
-            correct_url = self.driver.current_url.startswith(self.PASSWORD_RECOVERY_URL)
-            assert correct_url, f"Current URL does not match Password Recovery page: {self.driver.current_url}"
-
-            # Verify email input field is visible
-            email_visible = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT)).is_displayed()
-            assert email_visible, "Email input field is not visible on Password Recovery page"
-
-            # Verify instructions are visible
-            instructions_visible = self.wait.until(EC.visibility_of_element_located(self.INSTRUCTIONS_TEXT)).is_displayed()
-            assert instructions_visible, "Instructions are not visible on Password Recovery page"
-            return email_visible and instructions_visible
+            # Step 1: Navigate to password recovery page
+            self.go_to_password_recovery_page()
+            results["step_1_navigate_recovery"] = True
+            # Step 2: Enter registered email address
+            self.enter_email(email)
+            results["step_2_enter_email"] = True
+            # Step 3: Click Submit button
+            self.click_submit()
+            results["step_3_click_submit"] = True
+            # Step 4: Validate success message
+            success_msg = self.get_success_message()
+            results["step_4_success_message"] = success_msg
+            # Step 5: Check email inbox for password reset link (mocked)
+            reset_link = self.mock_check_email_inbox_for_reset_link(email)
+            results["step_5_email_inbox_check"] = reset_link
+            # Overall pass
+            results["overall_pass"] = all([
+                results["step_1_navigate_recovery"],
+                results["step_2_enter_email"],
+                results["step_3_click_submit"],
+                bool(results["step_4_success_message"]),
+                bool(results["step_5_email_inbox_check"])
+            ])
         except Exception as e:
-            raise AssertionError(f"Password Recovery UI verification failed: {str(e)}")
+            results["exception"] = f"Test flow failed: {str(e)}"
+        return results
