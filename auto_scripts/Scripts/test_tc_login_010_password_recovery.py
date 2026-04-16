@@ -1,58 +1,71 @@
-# Test Script for TC_LOGIN_010: Password Recovery End-to-End
-import pytest
+# test_tc_login_010_password_recovery.py
+"""
+Automated Selenium Test for TC_LOGIN_010: Password Recovery Workflow
+Covers navigation, email entry, submission, success validation, and inbox check.
+Author: Automation
+"""
+import unittest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 import time
+import sys
+import os
 
-from auto_scripts.Pages.LoginPage import LoginPage
-from auto_scripts.Pages.PasswordRecoveryPage import PasswordRecoveryPage
+# Ensure Pages module is importable
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../Pages')))
+from PasswordRecoveryPage import PasswordRecoveryPage
 
-# Test Data
-REGISTERED_EMAIL = "testuser@example.com"
-LOGIN_URL = "https://app.example.com/login"
-PASSWORD_RECOVERY_URL = "https://app.example.com/password-recovery"
+class TestPasswordRecoveryTCLogin010(unittest.TestCase):
+    EMAIL = "testuser@example.com"
+    EXPECTED_SUCCESS_MSG = "Password reset link has been sent to your email"
+    RECOVERY_URL = "https://app.example.com/forgot-password"
 
-@pytest.fixture(scope="module")
-def driver():
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
+    @classmethod
+    def setUpClass(cls):
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        cls.driver = webdriver.Chrome(options=chrome_options)
+        cls.driver.implicitly_wait(5)
+        cls.page = PasswordRecoveryPage(cls.driver)
 
-def test_tc_login_010_password_recovery_flow(driver):
-    """
-    TC_LOGIN_010: End-to-end test for password recovery flow.
-    Steps:
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.quit()
+
+    def test_tc_login_010_password_recovery(self):
+        """
+        Test Steps:
         1. Navigate to the password recovery page via Forgot Password link
         2. Enter registered email address
         3. Click on the Submit button
-        4. Check email inbox for password reset link (stub)
-    Acceptance Criteria: SCRUM-91
-    """
-    # Step 1: Navigate to login page and click 'Forgot Password' link
-    login_page = LoginPage(driver)
-    login_page.go_to_login_page()
-    assert login_page.is_forgot_password_link_visible(), "Forgot Password link should be visible on login page"
-    assert login_page.click_forgot_password_link(), "Should be able to click Forgot Password link"
-    time.sleep(2)  # Wait for redirect
-    assert driver.current_url.startswith(PASSWORD_RECOVERY_URL), f"Should be redirected to password recovery page, got {driver.current_url}"
+        4. Validate success message
+        5. Check email inbox for password reset link (mocked)
+        """
+        results = self.page.run_tc_login_010(self.EMAIL)
 
-    # Step 2: Enter registered email address
-    recovery_page = PasswordRecoveryPage(driver)
-    assert recovery_page.is_email_input_visible(), "Email input should be visible on password recovery page"
-    assert recovery_page.enter_email(REGISTERED_EMAIL), f"Should be able to enter email: {REGISTERED_EMAIL}"
+        # Step 1: Navigate to password recovery page
+        self.assertTrue(results["step_1_navigate_recovery"], "Step 1 failed: Could not navigate to password recovery page.")
+        self.assertEqual(self.page.driver.current_url, self.RECOVERY_URL, "Step 1 failed: Not on expected recovery URL.")
 
-    # Step 3: Click Submit and check for success message
-    assert recovery_page.is_submit_button_visible(), "Submit button should be visible on password recovery page"
-    recovery_page.submit_recovery()
-    time.sleep(2)  # Wait for response
-    assert recovery_page.is_success_message_displayed(), "Success message should be displayed after submitting recovery"
+        # Step 2: Enter registered email address
+        self.assertTrue(results["step_2_enter_email"], "Step 2 failed: Could not enter email.")
 
-    # Step 4: (Stub) Check email inbox for reset link
-    # This is a stub and should be implemented with an email API/service
-    result = recovery_page.check_email_inbox_for_reset_link(REGISTERED_EMAIL)
-    assert result is NotImplemented, "Email inbox check is a stub and should return NotImplemented"
+        # Step 3: Click Submit button
+        self.assertTrue(results["step_3_click_submit"], "Step 3 failed: Could not click submit.")
+
+        # Step 4: Validate success message
+        self.assertIsNotNone(results["step_4_success_message"], "Step 4 failed: Success message not found.")
+        self.assertIn(self.EXPECTED_SUCCESS_MSG, results["step_4_success_message"], f"Step 4 failed: Success message incorrect. Actual: {results['step_4_success_message']}")
+
+        # Step 5: Check email inbox for password reset link (mocked)
+        self.assertIsNotNone(results["step_5_email_inbox_check"], "Step 5 failed: Reset link not found in email inbox.")
+        self.assertRegex(results["step_5_email_inbox_check"], r"https://app\.example\.com/reset-password\?token=.+&expires=\d+", "Step 5 failed: Reset link format invalid.")
+
+        # Overall pass
+        self.assertTrue(results["overall_pass"], f"Test failed overall. Exception: {results['exception']}")
+
+if __name__ == "__main__":
+    unittest.main()
