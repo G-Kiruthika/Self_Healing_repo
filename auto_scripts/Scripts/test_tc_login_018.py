@@ -1,65 +1,67 @@
-# Test Script for TC_LOGIN_018: Multiple Failed Login Attempts & Warning Message
-# Traceability: testCaseId=155, Acceptance Criteria=AC_009
-# Author: Automation Generator
-#
-# This test validates that after three failed login attempts, the appropriate warning message is displayed.
-
+# test_tc_login_018.py
+"""
+Test Case: TC_LOGIN_018 - Multiple Failed Login Attempts & Warning Message
+Author: Automation Generator
+Traceability:
+    - PageClass: LoginPage (auto_scripts/Pages/LoginPage.py)
+    - TestCaseId: 155
+    - Test Steps:
+        1. Navigate to the login page
+        2. Enter valid email address
+        3. Attempt login with incorrect password three times
+        4. Verify warning message after third attempt
+"""
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from auto_scripts.Pages.LoginPage import LoginPage
 
-@pytest.mark.usefixtures("driver_init")
-class TestTCLogin018:
-    """
-    Test Case: TC_LOGIN_018
-    Title: Multiple Failed Login Attempts & Warning Message
-    Traceability: testCaseId=155
-    Acceptance Criteria: AC_009
-    """
+# Test Data
+LOGIN_URL = "https://app.example.com/login"
+VALID_EMAIL = "testuser@example.com"
+INVALID_PASSWORDS = ["WrongPass1", "WrongPass2", "WrongPass3"]
+EXPECTED_WARNING = "Warning: Account will be locked after 2 more failed attempts"
 
-    def test_multiple_failed_login_attempts_warning(self, driver):
-        # Test Data
-        email = "testuser@example.com"
-        wrong_passwords = ["WrongPass1", "WrongPass2", "WrongPass3"]
-        expected_warning = "Warning: Account will be locked after 2 more failed attempts"
-
-        # Step 1: Instantiate LoginPage
-        login_page = LoginPage(driver)
-
-        # Step 2-4: Run the workflow
-        results = login_page.run_tc_login_018(email, wrong_passwords)
-
-        # Step 1 Assertion: Login page is displayed
-        assert results["step_1_navigate_login"] is True, "Login page should be displayed."
-        # Step 2 Assertion: Email is entered
-        assert results["step_2_enter_email"] is True, "Email field should accept input."
-        # Step 3 Assertion: Each attempt fails
-        assert len(results["step_3_attempts"]) == 3, "There should be 3 login attempts."
-        for idx, attempt in enumerate(results["step_3_attempts"]):
-            assert attempt["error_message"] is not None, f"Attempt {idx+1}: Error message should be displayed."
-        # Step 4 Assertion: Warning message after third attempt
-        assert results["step_4_warning_message"] is not None, "Warning message should be displayed after third failed attempt."
-        assert results["step_4_warning_message"].strip() == expected_warning, (
-            f"Expected warning message: '{expected_warning}', got: '{results['step_4_warning_message']}'"
-        )
-        # Overall pass
-        assert results["overall_pass"] is True, f"Test did not pass all validations: {results}"
-        # Exception check
-        assert results["exception"] is None, f"Exception occurred during test: {results['exception']}"
-
-# --- Pytest Fixture for WebDriver ---
-import sys
-import os
-import time
-@pytest.fixture(scope="class")
-def driver_init(request):
+@pytest.fixture(scope="module")
+def driver():
     options = Options()
     options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
     driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
-    request.cls.driver = driver
+    driver.implicitly_wait(5)
     yield driver
     driver.quit()
+
+@pytest.mark.tc_id_155
+@pytest.mark.login
+def test_tc_login_018_multiple_failed_attempts(driver):
+    """
+    TC_LOGIN_018: Attempt login with incorrect password three times and verify warning message.
+    """
+    login_page = LoginPage(driver)
+
+    # Step 1: Navigate to the login page
+    login_page.go_to_login_page()
+    assert login_page.is_on_login_page(), "Login page should be displayed (Step 1)"
+
+    # Step 2: Enter valid email address
+    login_page.enter_email(VALID_EMAIL)
+    # No explicit assert since field entry is covered in PageClass
+
+    # Step 3: Attempt login with incorrect passwords three times
+    for idx, pwd in enumerate(INVALID_PASSWORDS):
+        login_page.enter_password(pwd)
+        login_page.click_login()
+        error_msg = login_page.get_error_message()
+        assert error_msg is not None, f"Error message should be displayed after failed attempt {idx+1} (Step 3)"
+
+    # Step 4: Verify warning message after third attempt
+    warning_elem = driver.find_element(*LoginPage.WARNING_MESSAGE)
+    assert warning_elem.is_displayed(), "Warning message should be displayed after three failed attempts (Step 4)"
+    assert warning_elem.text.strip() == EXPECTED_WARNING, (
+        f"Expected warning message '{EXPECTED_WARNING}', got '{warning_elem.text.strip()}' (Step 4)"
+    )
+
+    # Traceability: Store PageClass method output for audit (optional, not required by test)
+    results = login_page.run_tc_login_018(VALID_EMAIL, INVALID_PASSWORDS)
+    assert results['overall_pass'], f"PageClass run_tc_login_018() validation failed: {results}"
