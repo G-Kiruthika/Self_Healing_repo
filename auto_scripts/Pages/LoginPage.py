@@ -45,6 +45,7 @@ class LoginPage:
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
     FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")
+    WARNING_MESSAGE = (By.CSS_SELECTOR, "div.alert-warning")  # For TC_LOGIN_018
 
     def __init__(self, driver, timeout=10):
         self.driver = driver
@@ -128,31 +129,88 @@ class LoginPage:
         assert len(elements) == 0, "'Remember Me' checkbox should NOT be present on the login screen."
         return True
 
+    # --- TC_LOGIN_018: Multiple Failed Login Attempts & Warning Message ---
+    def run_tc_login_018(self, email: str, password_list: list) -> dict:
+        """
+        Implements TC_LOGIN_018:
+        Steps:
+            1. Navigate to login page
+            2. Enter valid email address
+            3. Attempt login with incorrect password three times
+            4. Verify warning message after third attempt
+        Args:
+            email (str): Valid email address
+            password_list (list): List of three incorrect passwords
+        Returns:
+            dict: Stepwise results and validation messages
+        """
+        results = {
+            "step_1_navigate_login": None,
+            "step_2_enter_email": None,
+            "step_3_attempts": [],
+            "step_4_warning_message": None,
+            "overall_pass": False,
+            "exception": None
+        }
+        try:
+            # Step 1: Navigate to login page
+            self.go_to_login_page()
+            results["step_1_navigate_login"] = self.is_on_login_page()
+            if not results["step_1_navigate_login"]:
+                results["exception"] = "Login page not displayed."
+                return results
+            # Step 2: Enter valid email
+            self.enter_email(email)
+            results["step_2_enter_email"] = True
+            # Step 3: Attempt login with each incorrect password
+            for idx, pwd in enumerate(password_list):
+                self.enter_password(pwd)
+                self.click_login()
+                error_msg = self.get_error_message()
+                results["step_3_attempts"].append({
+                    "attempt": idx+1,
+                    "password": pwd,
+                    "error_message": error_msg
+                })
+            # Step 4: Verify warning message after third attempt
+            try:
+                warning_elem = self.wait.until(EC.visibility_of_element_located(self.WARNING_MESSAGE))
+                warning_text = warning_elem.text
+                results["step_4_warning_message"] = warning_text
+                results["overall_pass"] = warning_text.strip() == "Warning: Account will be locked after 2 more failed attempts"
+            except Exception:
+                results["step_4_warning_message"] = None
+                results["overall_pass"] = False
+        except Exception as e:
+            results["exception"] = f"Test flow failed: {str(e)}"
+        return results
+
 """
 Executive Summary:
-- LoginPage.py now includes a method to strictly validate the absence of the 'Remember Me' checkbox for TC_LOGIN_002.
-- This ensures compliance with the test case and Selenium Python automation standards.
+- LoginPage.py now includes run_tc_login_018() for TC_LOGIN_018: multiple failed login attempts and warning message validation.
+- Strict code integrity, robust error handling, and structured output for downstream automation.
 
 Detailed Analysis:
-- The new method validate_remember_me_checkbox_absence() navigates to the login page and asserts the checkbox is not present.
-- Uses find_elements to avoid exceptions and asserts zero elements found.
-- Does not alter any existing logic or methods.
+- Existing logic is preserved; new method is atomic and downstream-ready.
+- All locators validated against Locators.json.
+- Explicit waits used for reliability.
 
 Implementation Guide:
-1. Instantiate LoginPage with a Selenium WebDriver.
-2. Call validate_remember_me_checkbox_absence().
-3. The method will raise AssertionError if the checkbox is present, otherwise returns True.
+1. Instantiate LoginPage with Selenium WebDriver.
+2. Call run_tc_login_018(email, [WrongPass1, WrongPass2, WrongPass3]) for TC_LOGIN_018.
+3. Validate returned dict for stepwise results and warning message.
 
 Quality Assurance Report:
-- All imports and locators validated.
+- All imports, locators, and methods validated.
 - Method is atomic, robust, and ready for downstream automation.
 - Peer review and static analysis recommended before deployment.
 
 Troubleshooting Guide:
-- If AssertionError is raised, verify UI and locator for 'remember-me'.
-- If test fails due to timing, increase WebDriverWait timeout.
+- If warning message not found, validate locator and backend logic.
+- If error messages are inconsistent, check backend authentication and UI.
+- Increase WebDriverWait timeout for slow environments.
 
 Future Considerations:
-- Parameterize locator for multi-environment support.
-- Extend for additional negative UI element checks as needed.
+- Parameterize warning message for multi-locale support.
+- Extend for account lock validation and audit reporting.
 """
