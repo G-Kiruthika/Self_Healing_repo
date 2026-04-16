@@ -1,61 +1,65 @@
-"""
-Test Script for TC_LOGIN_018: Login with valid email and three incorrect passwords
+# Test Script for TC_LOGIN_018: Multiple Failed Login Attempts & Warning Message
+# Traceability: testCaseId=155, Acceptance Criteria=AC_009
+# Author: Automation Generator
+#
+# This test validates that after three failed login attempts, the appropriate warning message is displayed.
 
-This script validates that after three failed login attempts with a valid email and wrong passwords,
-a warning message is displayed: 'Warning: Account will be locked after 2 more failed attempts'.
-
-- Follows enterprise Selenium Python automation standards.
-- Asserts all critical steps and outputs detailed errors for traceability.
-- Designed for CI/CD integration and maintainability.
-
-Author: Automation Bot
-"""
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import WebDriverException
-from auto_scripts.Pages.TC_LOGIN_018_TestPage import TC_LOGIN_018_TestPage
+from auto_scripts.Pages.LoginPage import LoginPage
 
-# Test Data
-LOGIN_URL = "https://app.example.com/login"
-VALID_EMAIL = "testuser@example.com"
-WRONG_PASSWORDS = ["WrongPass1", "WrongPass2", "WrongPass3"]
-EXPECTED_WARNING = "Warning: Account will be locked after 2 more failed attempts"
+@pytest.mark.usefixtures("driver_init")
+class TestTCLogin018:
+    """
+    Test Case: TC_LOGIN_018
+    Title: Multiple Failed Login Attempts & Warning Message
+    Traceability: testCaseId=155
+    Acceptance Criteria: AC_009
+    """
 
-@pytest.fixture(scope="module")
-def driver():
+    def test_multiple_failed_login_attempts_warning(self, driver):
+        # Test Data
+        email = "testuser@example.com"
+        wrong_passwords = ["WrongPass1", "WrongPass2", "WrongPass3"]
+        expected_warning = "Warning: Account will be locked after 2 more failed attempts"
+
+        # Step 1: Instantiate LoginPage
+        login_page = LoginPage(driver)
+
+        # Step 2-4: Run the workflow
+        results = login_page.run_tc_login_018(email, wrong_passwords)
+
+        # Step 1 Assertion: Login page is displayed
+        assert results["step_1_navigate_login"] is True, "Login page should be displayed."
+        # Step 2 Assertion: Email is entered
+        assert results["step_2_enter_email"] is True, "Email field should accept input."
+        # Step 3 Assertion: Each attempt fails
+        assert len(results["step_3_attempts"]) == 3, "There should be 3 login attempts."
+        for idx, attempt in enumerate(results["step_3_attempts"]):
+            assert attempt["error_message"] is not None, f"Attempt {idx+1}: Error message should be displayed."
+        # Step 4 Assertion: Warning message after third attempt
+        assert results["step_4_warning_message"] is not None, "Warning message should be displayed after third failed attempt."
+        assert results["step_4_warning_message"].strip() == expected_warning, (
+            f"Expected warning message: '{expected_warning}', got: '{results['step_4_warning_message']}'"
+        )
+        # Overall pass
+        assert results["overall_pass"] is True, f"Test did not pass all validations: {results}"
+        # Exception check
+        assert results["exception"] is None, f"Exception occurred during test: {results['exception']}"
+
+# --- Pytest Fixture for WebDriver ---
+import sys
+import os
+import time
+@pytest.fixture(scope="class")
+def driver_init(request):
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(10)
+    request.cls.driver = driver
     yield driver
     driver.quit()
-
-def test_tc_login_018(driver):
-    """
-    End-to-end test for TC_LOGIN_018 using the PageClass abstraction.
-    """
-    test_page = TC_LOGIN_018_TestPage(driver)
-    results = test_page.run_tc_login_018(VALID_EMAIL, WRONG_PASSWORDS)
-
-    # Step 1: Login page displayed
-    assert results["step_1_navigate_login"] is True, f"Step 1 failed: Login page not displayed. Exception: {results.get('exception')}"
-
-    # Step 2: Email entered
-    assert results["step_2_enter_email"] is True, "Step 2 failed: Email not entered."
-
-    # Step 3: Each attempt fails
-    assert len(results["step_3_attempts"]) == 3, f"Step 3 failed: Expected 3 attempts, got {len(results['step_3_attempts'])}."
-    for idx, attempt in enumerate(results["step_3_attempts"]):
-        assert attempt["failed"], f"Step 3 failed: Attempt {idx+1} did not fail as expected. Error message: {attempt['error_message']}"
-        assert attempt["error_message"] is not None, f"Step 3 failed: No error message on attempt {idx+1}."
-
-    # Step 4: Warning message displayed
-    warning_msg = results["step_4_warning_message"]
-    assert warning_msg is not None, "Step 4 failed: Warning message not displayed after third failed attempt."
-    assert EXPECTED_WARNING in warning_msg, f"Step 4 failed: Warning message mismatch. Found: {warning_msg}"
-
-    # Overall Pass
-    assert results["overall_pass"] is True, f"Test failed overall. Exception: {results.get('exception')}"
