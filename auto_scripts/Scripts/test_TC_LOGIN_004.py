@@ -1,46 +1,62 @@
-# Selenium Test Script for TC_LOGIN_004: Login with Empty Password Field
-import pytest
+# test_TC_LOGIN_004.py
+"""
+Automated Selenium Test Script for TC_LOGIN_004: Valid email, empty password login attempt.
+This script uses the TC_LOGIN_004_TestPage PageClass and validates all steps as per enterprise standards.
+"""
+import sys
+import os
+import json
+import traceback
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from auto_scripts.Pages.LoginPage import LoginPage
+from selenium.common.exceptions import WebDriverException
 
-@pytest.fixture(scope='module')
-def driver():
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--window-size=1920,1080')
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
+# Ensure Pages directory is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Pages')))
 
-def test_login_empty_password(driver):
-    """
-    Test Case: TC_LOGIN_004
-    Description: Verify that attempting to login with an empty password field displays the correct validation error and prevents login.
-    Steps:
-      1. Navigate to the login page
-      2. Enter valid registered email
-      3. Leave password field empty
-      4. Click on the Login button
-      5. Verify login is prevented and user remains on login page
-    Acceptance Criteria: Validation error 'Password is required' is displayed and user is not authenticated.
-    """
-    login_page = LoginPage(driver)
+from TC_LOGIN_004_TestPage import TC_LOGIN_004_TestPage
 
-    # Step 1: Navigate to the login page
-    assert login_page.navigate_to_login(), "Login page should be displayed"
-
-    # Step 2: Enter valid registered email
+def main():
+    # Test data
     email = "testuser@example.com"
-    assert login_page.enter_email(email), f"Email '{email}' should be accepted in the field"
+    url = "https://app.example.com/login"
+    locators_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../Locators/Locators.json'))
 
-    # Step 3: Leave password field empty
-    assert login_page.leave_password_field_empty(), "Password field should remain empty"
+    # Setup Chrome driver
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    driver = None
+    try:
+        driver = webdriver.Chrome(options=chrome_options)
+        page = TC_LOGIN_004_TestPage(driver, timeout=15, locators_path=locators_path)
+        results = page.run_tc_login_004(email, url)
 
-    # Step 4: Click on the Login button
-    assert login_page.click_login_with_empty_password(), "Validation error 'Password is required' should be displayed"
+        # Stepwise assertions
+        assert results["step_1_navigate_login"], "Step 1 Failed: Login page not displayed."
+        assert results["step_2_enter_email"], "Step 2 Failed: Email not entered correctly."
+        assert results["step_3_leave_password_empty"], "Step 3 Failed: Password field not left empty."
+        assert results["step_4_click_login"], "Step 4 Failed: Login button not clicked."
+        assert results["step_5_validation_error"], "Step 5 Failed: Validation error not displayed."
+        assert results["step_6_login_prevented"], "Step 6 Failed: Login not prevented, user did not remain on login page."
+        assert results["overall_pass"], f"Test Failed: {results.get('exception', 'Unknown error')}"
+        print("TC_LOGIN_004 PASSED. All steps validated.")
+        print(json.dumps(results, indent=2))
+    except AssertionError as ae:
+        print("TC_LOGIN_004 FAILED.")
+        print(str(ae))
+        print(json.dumps(results, indent=2))
+        sys.exit(1)
+    except WebDriverException as wd:
+        print("WebDriver error:", str(wd))
+        sys.exit(2)
+    except Exception as e:
+        print("Unexpected error:", traceback.format_exc())
+        sys.exit(3)
+    finally:
+        if driver:
+            driver.quit()
 
-    # Step 5: Verify login is prevented and user remains on login page
-    assert login_page.verify_login_prevented_for_empty_password(), "User should not be able to proceed and must remain on login page"
+if __name__ == "__main__":
+    main()
