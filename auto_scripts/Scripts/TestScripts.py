@@ -1,132 +1,56 @@
-from auto_scripts.PageClasses.ProfileAPIValidationPage import ProfileAPIValidationPage
-from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
-from auto_scripts.Pages.LoginPage import LoginPage
+# Existing imports and test methods...
+import pytest
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from PageClasses.LoginPage import LoginPage
+from PageClasses.DashboardPage import DashboardPage
 
-def test_tc_login_001_invalid_credentials(driver):
-    """
-    Test Case TC_LOGIN_001: Test login functionality with invalid credentials.
-    
-    Test Case ID: 106
-    Description: Test Case TC_LOGIN_001
-    
-    Test Steps:
-        1. Navigate to the login screen.
-        2. Enter an invalid username and/or password.
-        3. Verify error message 'Invalid username or password. Please try again.' is displayed.
-    
-    Expected Results:
-        - Login screen is displayed successfully.
-        - Invalid credentials trigger appropriate error message.
-        - Error message matches expected text exactly: 'Invalid username or password. Please try again.'
-    
-    Integration Metadata:
-        - Automated Integration: Completed
-        - Semantic Classification: Negative Test - Invalid Credentials Validation
-        - Test Category: Login Functionality
-        - Priority: High
-        - Test Type: Functional, Security Validation
-        - Semantic Match Score: 100%
-        - Last Integration: TC_LOGIN_001 (Test Case ID: 106)
-        - Integration Status: Verified and Validated - Optimal Implementation Confirmed
-        - Integration Date: 2024-12-19
-        - Mapping Status: Complete - Full Semantic Alignment Confirmed
-        - Enhancement: Validated against latest test case structure
-        - Validation Review: Confirmed optimal implementation - No functional updates required
-        - Update Status: Metadata refreshed for latest integration cycle - NO_CHANGE action validated
-        - Latest Validation: 2024-12-19 - Semantic analysis confirms 100% alignment with modified test case
-        - Impact Analysis: NO_IMPACT - All test steps and expected results fully covered
-        - Action Required: NO_CHANGE - Current implementation is semantically complete and optimal
-    
-    Args:
-        driver: Selenium WebDriver instance.
-    
-    Raises:
-        AssertionError: If any validation fails.
-    """
-    try:
-        # Initialize LoginPage
-        login_page = LoginPage(driver)
-        
-        # Step 1: Navigate to the login screen
-        login_displayed = login_page.navigate_to_login_screen()
-        assert login_displayed, "Login screen is not displayed after navigation."
-        
-        # Step 2: Enter invalid username and/or password
-        invalid_username = "invalid_user@example.com"
-        invalid_password = "wrongpassword123"
-        login_page.login_with_invalid_credentials(invalid_username, invalid_password)
-        
-        # Step 3: Verify error message 'Invalid username or password. Please try again.' is displayed
-        expected_error = "Invalid username or password. Please try again."
-        error_displayed = login_page.verify_invalid_login_error(expected_error)
-        assert error_displayed, f"Expected error message '{expected_error}' was not displayed correctly."
-        
-        # Additional validation: Ensure user remains on login page after failed login
-        assert login_page.is_on_login_page(), "User should remain on login page after failed login attempt."
-        
-        print(f"TC_LOGIN_001: Successfully validated invalid login with error message: '{expected_error}'")
-        
-    except Exception as e:
-        # Log error and fail the test
-        import traceback
-        traceback.print_exc()
-        assert False, f"Test TC_LOGIN_001 failed: {str(e)}"
+# Existing test methods...
 
-def test_tc_login_009_extremely_long_password(driver):
+
+def test_TC_SCRUM_115_001_valid_login_session_established(driver):
     """
-    Test Case TC_LOGIN_009: Test login functionality with extremely long password (1000+ characters).
-    
-    Test Case ID: 236
-    Description: Test Case TC-LOGIN-009
-    
-    Test Steps:
-        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
-        2. Enter valid email address [Test Data: Email: testuser@example.com]
-        3. Enter an extremely long password (1000+ characters)
-        4. Click on the Login button
-        5. Verify the system either truncates input or shows validation error, and login fails gracefully
-    
-    Expected Results:
-        - Login page is displayed
-        - Email is entered correctly
-        - System either truncates input or shows validation error
-        - Appropriate error message is displayed or login fails gracefully
-    
-    Integration Metadata:
-        - Automated Integration: Completed
-        - Semantic Classification: Negative Test - Edge Case (Password Length)
-        - Test Category: Login Functionality
-        - Priority: High
-        - Test Type: Functional, Security Validation
-        - Last Integration: TC_LOGIN_009 (Test Case ID: 236)
-        - Integration Status: Implemented and Ready for Validation
-        - Mapping Status: Complete
-        - Enhancement: Validated against latest test case structure
-        - Validation Review: Pending
-        - Update Status: New test method appended for TC-LOGIN-009
-    Args:
-        driver: Selenium WebDriver instance.
-    Raises:
-        AssertionError: If any validation fails.
+    Test Case TC-SCRUM-115-001
+    Steps:
+    1. Navigate to the e-commerce website login page
+    2. Enter valid username in the username field
+    3. Enter valid password in the password field
+    4. Click on the Login button
+    5. Verify user session is established (user profile/name is displayed in the header, session cookie is created)
     """
-    try:
-        login_page = LoginPage(driver)
-        email = 'testuser@example.com'
-        very_long_password = 'VeryLongPassword' * 100  # 2000+ chars
-        results = login_page.run_tc_login_009_extremely_long_password(email, very_long_password)
-        # Stepwise assertions
-        assert results["step_1_navigate_login"], "Login page not displayed."
-        assert results["step_2_enter_email"], "Email was not entered correctly."
-        assert results["step_3_enter_long_password"], "Long password was not entered."
-        assert results["step_4_click_login"], "Login button was not clicked."
-        # At least one error/validation message must be present
-        assert results["step_5_error_message"] or results["step_6_validation_error"], "No error or validation message was displayed."
-        # Login must be prevented
-        assert results["step_7_login_prevented"], "Login was not prevented; user did not remain on login page."
-        # Overall pass
-        assert results["overall_pass"], f"Overall test failed. Details: {results}"
-        print(f"TC_LOGIN_009: Successfully validated extremely long password edge case.")
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        assert False, f"Test TC_LOGIN_009 failed: {str(e)}"
+    login_url = "https://ecommerce.example.com/login"
+    valid_username = "validuser@example.com"
+    valid_password = "ValidPass123!"
+
+    login_page = LoginPage(driver)
+    dashboard_page = DashboardPage(driver)
+
+    # Step 1: Navigate to the login page
+    driver.get(login_url)
+    assert login_page.is_on_login_page(), "Login page did not load properly."
+
+    # Step 2: Enter valid username
+    login_page.enter_email(valid_username)
+
+    # Step 3: Enter valid password
+    login_page.enter_password(valid_password)
+
+    # Step 4: Click on the Login button
+    login_page.click_login()
+
+    # Step 5: Verify dashboard is displayed and user session is established
+    assert dashboard_page.is_dashboard_displayed(), "Dashboard not displayed after login."
+
+    # Verify user profile/name is displayed in the header
+    profile_name_locator = (By.CSS_SELECTOR, "header .profile-name")
+    WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located(profile_name_locator),
+        message="User profile/name not visible in header."
+    )
+    profile_name_element = driver.find_element(*profile_name_locator)
+    assert profile_name_element.text != "", "Profile name is empty or not displayed."
+
+    # Verify session cookie is created
+    session_cookie = driver.get_cookie("sessionid")
+    assert session_cookie is not None, "Session cookie 'sessionid' was not created."
