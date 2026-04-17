@@ -3,7 +3,7 @@ TC_LOGIN_002_TestPage.py
 
 Executive Summary:
 ------------------
-This PageClass automates the end-to-end negative login scenario for test case TC-LOGIN-002: entering an unregistered or invalid email address and any password, clicking Login, and verifying that the error message is displayed and the user remains on the login page. The implementation strictly follows Selenium Python automation best practices, maintains code integrity, and produces structured output for downstream automation.
+This PageClass automates the end-to-end negative login scenario for test case TC-LOGIN-008: entering an unregistered email address and any password, clicking Login, and verifying that the error message is displayed and the user remains on the login page. The implementation strictly follows Selenium Python automation best practices, maintains code integrity, and produces structured output for downstream automation.
 
 Detailed Analysis:
 ------------------
@@ -48,7 +48,7 @@ from auto_scripts.Pages.LoginPage import LoginPage
 
 class TC_LOGIN_002_TestPage:
     """
-    PageClass for Test Case TC-LOGIN-002: Negative Login Workflow (Invalid/Unregistered Email)
+    PageClass for Test Case TC-LOGIN-008: Negative Login Workflow (Unregistered Email)
     Orchestrates LoginPage for end-to-end automation and validation.
     """
     def __init__(self, driver, timeout=10):
@@ -58,9 +58,9 @@ class TC_LOGIN_002_TestPage:
 
     def run_tc_login_002(self, invalid_email, password):
         """
-        Executes the TC-LOGIN-002 workflow:
+        Executes the TC-LOGIN-008 workflow:
         1. Navigate to login page
-        2. Enter invalid/unregistered email and any password
+        2. Enter unregistered email address and any password
         3. Click Login button
         4. Validate error message is displayed: 'Invalid email or password'
         5. Validate user remains on login page (not authenticated)
@@ -84,7 +84,7 @@ class TC_LOGIN_002_TestPage:
             if not results["step_1_navigate_login"]:
                 results["exception"] = "Login page not displayed."
                 return results
-            # Step 2: Enter invalid email
+            # Step 2: Enter unregistered email
             self.login_page.enter_email(invalid_email)
             results["step_2_enter_email"] = True
             # Step 3: Enter any password
