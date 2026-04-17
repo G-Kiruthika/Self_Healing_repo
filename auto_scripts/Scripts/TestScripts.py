@@ -8,7 +8,6 @@ from PageClasses.DashboardPage import DashboardPage
 
 # Existing test methods...
 
-
 def test_TC_SCRUM_115_001_valid_login_session_established(driver):
     """
     Test Case TC-SCRUM-115-001
@@ -54,3 +53,31 @@ def test_TC_SCRUM_115_001_valid_login_session_established(driver):
     # Verify session cookie is created
     session_cookie = driver.get_cookie("sessionid")
     assert session_cookie is not None, "Session cookie 'sessionid' was not created."
+
+
+# --- New test for TC_SCRUM74_001 appended below ---
+from auto_scripts.Pages.TC_SCRUM74_001_TestPage import TC_SCRUM74_001_TestPage
+
+def test_TC_SCRUM74_001_valid_login_workflow(driver):
+    """
+    Test Case TC_SCRUM74_001: Valid Login Workflow
+    Steps:
+    1. Navigate to the e-commerce website login page
+    2. Enter valid email and password
+    3. Click Login button
+    4. Validate authentication and dashboard/profile display
+    5. Validate session token creation
+    """
+    email = "validuser@example.com"
+    password = "ValidPass123!"
+    test_page = TC_SCRUM74_001_TestPage(driver)
+    results = test_page.run_tc_scrum74_001(email, password)
+
+    assert results["step_1_navigate_login"], f"Failed to navigate to login page: {results['exception']}"
+    assert results["step_2_enter_email"], f"Failed to enter email: {results['exception']}"
+    assert results["step_3_enter_password"], f"Failed to enter password: {results['exception']}"
+    assert results["step_4_click_login"], f"Failed to click login: {results['exception']}"
+    assert results["step_5_dashboard_displayed"], f"Dashboard not displayed: {results['exception']}"
+    assert results["step_6_profile_displayed"], f"Profile not displayed: {results['exception']}"
+    assert results["step_7_session_token_created"], f"Session token not created: {results['exception']}"
+    assert results["overall_pass"], f"Test did not fully pass: {results['exception']}"
