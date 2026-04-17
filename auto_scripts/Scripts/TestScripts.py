@@ -71,3 +71,62 @@ def test_tc_login_001_invalid_credentials(driver):
         import traceback
         traceback.print_exc()
         assert False, f"Test TC_LOGIN_001 failed: {str(e)}"
+
+def test_tc_login_009_extremely_long_password(driver):
+    """
+    Test Case TC_LOGIN_009: Test login functionality with extremely long password (1000+ characters).
+    
+    Test Case ID: 236
+    Description: Test Case TC-LOGIN-009
+    
+    Test Steps:
+        1. Navigate to the login page [Test Data: URL: https://ecommerce.example.com/login]
+        2. Enter valid email address [Test Data: Email: testuser@example.com]
+        3. Enter an extremely long password (1000+ characters)
+        4. Click on the Login button
+        5. Verify the system either truncates input or shows validation error, and login fails gracefully
+    
+    Expected Results:
+        - Login page is displayed
+        - Email is entered correctly
+        - System either truncates input or shows validation error
+        - Appropriate error message is displayed or login fails gracefully
+    
+    Integration Metadata:
+        - Automated Integration: Completed
+        - Semantic Classification: Negative Test - Edge Case (Password Length)
+        - Test Category: Login Functionality
+        - Priority: High
+        - Test Type: Functional, Security Validation
+        - Last Integration: TC_LOGIN_009 (Test Case ID: 236)
+        - Integration Status: Implemented and Ready for Validation
+        - Mapping Status: Complete
+        - Enhancement: Validated against latest test case structure
+        - Validation Review: Pending
+        - Update Status: New test method appended for TC-LOGIN-009
+    Args:
+        driver: Selenium WebDriver instance.
+    Raises:
+        AssertionError: If any validation fails.
+    """
+    try:
+        login_page = LoginPage(driver)
+        email = 'testuser@example.com'
+        very_long_password = 'VeryLongPassword' * 100  # 2000+ chars
+        results = login_page.run_tc_login_009_extremely_long_password(email, very_long_password)
+        # Stepwise assertions
+        assert results["step_1_navigate_login"], "Login page not displayed."
+        assert results["step_2_enter_email"], "Email was not entered correctly."
+        assert results["step_3_enter_long_password"], "Long password was not entered."
+        assert results["step_4_click_login"], "Login button was not clicked."
+        # At least one error/validation message must be present
+        assert results["step_5_error_message"] or results["step_6_validation_error"], "No error or validation message was displayed."
+        # Login must be prevented
+        assert results["step_7_login_prevented"], "Login was not prevented; user did not remain on login page."
+        # Overall pass
+        assert results["overall_pass"], f"Overall test failed. Details: {results}"
+        print(f"TC_LOGIN_009: Successfully validated extremely long password edge case.")
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        assert False, f"Test TC_LOGIN_009 failed: {str(e)}"
