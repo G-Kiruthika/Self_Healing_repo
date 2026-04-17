@@ -187,3 +187,72 @@ class LoginPage:
         except Exception as e:
             results["exception"] = f"Test flow failed: {str(e)}"
         return results
+
+    # --- TC-LOGIN-015 UNVERIFIED ACCOUNT HANDLER ---
+    def run_tc_login_015_unverified_account(self, email, password):
+        """
+        TC-LOGIN-015: Validates login attempt with unverified account.
+        Steps:
+            1. Navigate to login page.
+            2. Enter email of an unverified account.
+            3. Enter correct password.
+            4. Click Login button.
+            5. Validate error message: 'Please verify your email address before logging in.'
+            6. Ensure user is not authenticated and remains on login page with option to resend verification email.
+        Args:
+            email (str): Unverified account email address.
+            password (str): Correct password for account.
+        Returns:
+            dict: Stepwise results and validation messages.
+        """
+        results = {
+            "step_1_navigate_login": None,
+            "step_2_enter_unverified_email": None,
+            "step_3_enter_password": None,
+            "step_4_click_login": None,
+            "step_5_error_message": None,
+            "step_6_resend_verification_option": None,
+            "step_7_login_prevented": None,
+            "overall_pass": False,
+            "exception": None
+        }
+        try:
+            # Step 1: Navigate to login page
+            self.go_to_login_page()
+            results["step_1_navigate_login"] = self.is_on_login_page()
+            if not results["step_1_navigate_login"]:
+                results["exception"] = "Login page not displayed."
+                return results
+            # Step 2: Enter unverified email
+            self.enter_email(email)
+            results["step_2_enter_unverified_email"] = True
+            # Step 3: Enter correct password
+            self.enter_password(password)
+            results["step_3_enter_password"] = True
+            # Step 4: Click Login button
+            self.click_login()
+            results["step_4_click_login"] = True
+            # Step 5: Validate error message for email verification
+            error_message = self.get_error_message()
+            results["step_5_error_message"] = error_message
+            expected_error = "Please verify your email address before logging in."
+            results["step_5_error_message_match"] = (
+                error_message is not None and expected_error.lower() in error_message.lower()
+            )
+            # Step 6: Check for resend verification option (e.g., button/link)
+            try:
+                resend_elem = self.wait.until(
+                    EC.visibility_of_element_located((By.XPATH, "//button[contains(text(), 'Resend Verification Email')]"))
+                )
+                results["step_6_resend_verification_option"] = True
+            except Exception:
+                results["step_6_resend_verification_option"] = False
+            # Step 7: Ensure user remains on login page (not authenticated)
+            results["step_7_login_prevented"] = self.is_on_login_page()
+            # Overall pass: error message present/matches, resend option present, login prevented
+            results["overall_pass"] = (
+                results["step_5_error_message_match"] and results["step_6_resend_verification_option"] and results["step_7_login_prevented"]
+            )
+        except Exception as e:
+            results["exception"] = f"Test flow failed: {str(e)}"
+        return results
