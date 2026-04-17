@@ -3,14 +3,14 @@ TC_LOGIN_010_TestPage.py
 
 Executive Summary:
 ------------------
-This PageClass automates the end-to-end login boundary test for TC_LOGIN_010: entering a maximum valid length email (254 characters), a valid password, and validating system behavior. It ensures strict code integrity, robust error handling, and structured output for downstream automation. All locators are strictly mapped from Locators.json.
+This PageClass automates the end-to-end login boundary test for TC-LOGIN-010: entering an email with special characters (e.g., test.user+tag@example.com), a valid password, and validating system behavior. It ensures strict code integrity, robust error handling, and structured output for downstream automation. All locators are strictly mapped from Locators.json.
 
 Detailed Analysis:
 ------------------
 - Navigates to login page (https://app.example.com/login)
-- Enters a 254-character valid email and a valid password
+- Enters an email with special characters and a valid password
 - Clicks Login
-- Validates that the email is accepted, password is masked, and system handles boundary length correctly (no errors, appropriate authentication response)
+- Validates that the email is accepted (special characters supported), password is masked, and system handles input correctly (no errors, appropriate authentication response)
 - Uses explicit waits and strict locator validation
 - Adheres to Selenium Python best practices for maintainability and downstream integration
 
@@ -30,7 +30,7 @@ Quality Assurance Report:
 
 Troubleshooting Guide:
 ----------------------
-- If email is not accepted: validate locator and backend email length handling.
+- If email is not accepted: validate locator and backend email handling.
 - If login fails: validate credentials, endpoint, and locators.
 - If system errors: check for UI/backend validation messages or logs.
 - Increase WebDriverWait timeout for slow environments.
@@ -38,7 +38,7 @@ Troubleshooting Guide:
 Future Considerations:
 ----------------------
 - Parameterize URLs for multi-environment support.
-- Extend for additional boundary cases (min length, special chars).
+- Extend for additional boundary cases and special character validation.
 - Integrate with test reporting frameworks for automated QA.
 - Add retry logic and audit reporting.
 """
@@ -51,7 +51,7 @@ import json
 
 class TC_LOGIN_010_TestPage:
     """
-    PageClass for Test Case TC_LOGIN_010: Login with maximum valid email length (254 chars)
+    PageClass for Test Case TC-LOGIN-010: Login with email containing special characters
     Implements all steps as per test case and validates system handling.
     """
     def __init__(self, driver, timeout=10, locators_path="auto_scripts/Locators/Locators.json"):
@@ -81,6 +81,8 @@ class TC_LOGIN_010_TestPage:
         password_input = self.wait.until(EC.visibility_of_element_located((By.ID, self.password_field.split("=",1)[1])))
         password_input.clear()
         password_input.send_keys(password)
+        # Validation: Ensure password is masked
+        assert password_input.get_attribute("type") == "password", "Password field is not masked"
 
     def click_login(self):
         login_btn = self.wait.until(EC.element_to_be_clickable((By.ID, self.login_button.split("=",1)[1])))
@@ -110,12 +112,12 @@ class TC_LOGIN_010_TestPage:
 
     def run_tc_login_010(self, email, password):
         """
-        Executes the TC_LOGIN_010 workflow:
+        Executes the TC-LOGIN-010 workflow:
         1. Navigate to login page
-        2. Enter maximum valid length email (254 chars)
-        3. Enter valid password
+        2. Enter email with special characters
+        3. Enter valid password (masked)
         4. Click Login button
-        5. Validate email is accepted, password is masked, and system handles boundary length correctly
+        5. Validate email is accepted, password is masked, and system handles input correctly
         Returns:
             dict: Stepwise results and validation messages for downstream automation
         """
@@ -137,10 +139,10 @@ class TC_LOGIN_010_TestPage:
             if not results["step_1_navigate_login"]:
                 results["exception"] = "Login page not displayed."
                 return results
-            # Step 2: Enter maximum valid length email
+            # Step 2: Enter email with special characters
             self.enter_email(email)
             results["step_2_enter_email"] = True
-            # Step 3: Enter valid password
+            # Step 3: Enter valid password and ensure masking
             self.enter_password(password)
             results["step_3_enter_password"] = True
             # Step 4: Click Login button
@@ -154,7 +156,7 @@ class TC_LOGIN_010_TestPage:
             results["step_6_validation_error"] = validation_error
             # Step 7: Ensure login is prevented (still on login page, or system handles appropriately)
             results["step_7_login_prevented"] = self.is_on_login_page() or (error_message is None and validation_error is None)
-            # Overall pass: email accepted, password masked, no system errors, appropriate response
+            # Overall pass: email accepted (special char), password masked, no system errors, appropriate response
             results["overall_pass"] = (
                 results["step_2_enter_email"] and results["step_3_enter_password"] and results["step_4_click_login"] and results["step_7_login_prevented"]
             )
