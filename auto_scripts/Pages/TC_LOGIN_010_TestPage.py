@@ -112,7 +112,7 @@ class TC_LOGIN_010_TestPage:
 
     def run_tc_login_010(self, email, password):
         """
-        Executes the TC-LOGIN-010 workflow:
+        Executes the TC_LOGIN_010 workflow:
         1. Navigate to login page
         2. Enter email with special characters
         3. Enter valid password (masked)
