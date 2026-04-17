@@ -61,3 +61,29 @@ def test_TC_LOGIN_010_password_recovery_workflow(driver):
     # Step 5: Validate success message
     success_msg = recovery_page.get_success_message()
     assert success_msg is not None and success_msg.strip() != "", "Success message not displayed after password recovery."
+
+# --- Appended test for TC_LOGIN_001 below ---
+from auto_scripts.Pages.TC_LOGIN_001_TestPage import TC_LOGIN_001_TestPage
+
+@pytest.mark.tc_login_001
+def test_TC_LOGIN_001_valid_login_workflow(driver):
+    """
+    Test Case TC_LOGIN_001:
+    1. Navigate to the login page (https://ecommerce.example.com/login)
+    2. Enter valid registered email address (testuser@example.com)
+    3. Enter valid password (ValidPass123!)
+    4. Click Login button
+    5. Assert user is redirected to dashboard/home page (dashboard header/profile icon visible)
+    """
+    email = "testuser@example.com"
+    password = "ValidPass123!"
+    test_page = TC_LOGIN_001_TestPage(driver)
+    results = test_page.run_tc_login_001(email, password)
+    assert results["step_1_navigate_login"], f"Login page not displayed: {results.get('exception')}"
+    assert results["step_2_enter_email"], "Email entry failed"
+    assert results["step_3_enter_password"], "Password entry failed"
+    assert results["step_4_click_login"], "Login button click failed"
+    assert results["step_5_dashboard_displayed"], "Dashboard header not visible after login"
+    assert results["step_6_profile_displayed"], "User profile icon not visible after login"
+    assert results["step_7_session_token_created"], "Session token not created"
+    assert results["overall_pass"], f"TC_LOGIN_001 failed: {results.get('exception')}"
