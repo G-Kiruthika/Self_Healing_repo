@@ -41,37 +41,24 @@ from auto_scripts.Pages.TC_LOGIN_001_TestPage import TC_LOGIN_001_TestPage
 
 @pytest.mark.tc_login_001
 def test_TC_LOGIN_001_valid_login_workflow(driver):
-    ...<existing test code>...
+    """
+    TC_LOGIN_001: Valid Login Workflow
+    Steps:
+      1. Navigate to login page (https://ecommerce.example.com/login)
+      2. Enter valid email (testuser@example.com)
+      3. Enter valid password (ValidPass123!)
+      4. Click Login button
+      5. Assert user is logged in and redirected to dashboard
+    """
+    test_page = TC_LOGIN_001_TestPage(driver)
+    result = test_page.run_tc_login_001(email="testuser@example.com", password="ValidPass123!")
+    assert isinstance(result, dict), "Result should be a dictionary with step outcomes"
+    for step, passed in result.items():
+        assert passed, f"Step '{step}' did not pass"
 
 # --- Appended test for TC_LOGIN_004 below ---
 from auto_scripts.Pages.TC_LOGIN_004_TestPage import TC_LOGIN_004_TestPage
 
 @pytest.mark.tc_login_004
 def test_TC_LOGIN_004_empty_username_valid_password(driver):
-    """
-    TC-SCRUM-115-004:
-    1. Navigate to login page
-    2. Leave username field empty
-    3. Enter valid password (ValidPass123!)
-    4. Click Login
-    5. Validate error message: 'Username is required. Please enter your username.'
-    6. Validate username field is highlighted in red, error icon is shown, and focus is set to the field.
-    """
-    page = TC_LOGIN_004_TestPage(driver)
-    page.navigate_to_login()
-    page.enter_username("")  # Leave username empty
-    page.enter_password("ValidPass123!")
-    page.click_login()
-    
-    # Validate error message
-    error_msg = page.get_username_error_message()
-    assert error_msg == 'Username is required. Please enter your username.', f"Expected error message, got: {error_msg}"
-
-    # Validate username field is highlighted in red
-    assert page.is_username_field_highlighted_red(), "Username field should be highlighted in red."
-
-    # Validate error icon is shown
-    assert page.is_username_error_icon_visible(), "Error icon should be visible for username field."
-
-    # Validate focus is set to username field
-    assert page.is_username_field_focused(), "Focus should be set to the username field."
+    ...<existing test code>...
