@@ -77,20 +77,45 @@ import pytest
 import datetime
 
 def test_TC_SCRUM96_005_negative_login_api_audit_log():
+    ...
+
+import pytest
+from auto_scripts.PageClasses.LoginPage import LoginPage
+from auto_scripts.PageClasses.UserRegistrationAPIPage import UserRegistrationAPIPage
+
+@pytest.mark.tc_scrum96_006
+def test_TC_SCRUM96_006_negative_login_api_and_session_validation():
     """
-    Test Case TC_SCRUM96_005: Negative Login API and Audit Log Validation
-    Steps:
-    1. Send POST to /api/auth/login with invalid credentials
-    2. Validate HTTP 401 and error message
-    3. Ensure no JWT token in response
-    4. Validate audit log entry for failed login
+    TC_SCRUM96_006: Negative Login API & Session Validation
+    1. Register a user (validuser/CorrectPass123!)
+    2. Login with correct username and wrong password (WrongPassword456!)
+    3. Assert 401, correct error, and no token/session.
     """
-    login_negative_api = LoginNegativeAPIPage()
-    username = "nonexistentuser999"
-    password = "AnyPassword123!"
-    source_ip = None  # Optionally set if known
-    response = login_negative_api.send_negative_login_request(username, password)
-    login_negative_api.validate_error_response(response)
-    login_negative_api.validate_no_jwt_in_response(response)
-    login_negative_api.validate_audit_log_entry(username=username, source_ip=source_ip)
-    print("TC_SCRUM96_005 negative login API audit log test PASSED.")
+    registration_api = UserRegistrationAPIPage()
+    login_api = LoginPage()
+    
+    # Step 1: Register user
+    registration_response = registration_api.register_user_api(
+        username="validuser",
+        email="validuser@example.com",
+        password="CorrectPass123!",
+        first_name="Valid",
+        last_name="User"
+    )
+    assert registration_response.status_code == 201, "User registration failed"
+
+    # Step 2: Attempt login with wrong password
+    login_response = login_api.api_auth_login(
+        username="validuser",
+        password="WrongPassword456!"
+    )
+
+    # Step 3: Assert 401 Unauthorized and error message
+    login_api.verify_auth_failure(
+        response=login_response,
+        expected_status=401,
+        expected_error_message="Invalid username or password"
+    )
+
+    # Step 4: Assert no JWT token and no session
+    login_api.verify_no_token_and_no_session(login_response)
