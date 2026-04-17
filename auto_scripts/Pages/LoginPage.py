@@ -73,6 +73,20 @@ class LoginPage:
         link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK))
         link.click()
 
+    def click_forgot_password(self):
+        """
+        TC_SCRUM74_008: Clicks the 'Forgot Password' link on the login page.
+        Steps:
+            1. Wait for the link to be clickable.
+            2. Click the link to navigate to password recovery.
+        Returns:
+            None
+        Raises:
+            Exception if link not found/clickable.
+        """
+        link = self.wait.until(EC.element_to_be_clickable(self.FORGOT_PASSWORD_LINK))
+        link.click()
+
     def get_error_message(self):
         try:
             error_elem = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
@@ -112,7 +126,6 @@ class LoginPage:
         recovery_page = UsernameRecoveryPage(self.driver)
         return recovery_page.recover_username(email)
 
-    # --- TC_LOGIN_002: Validate Absence of 'Remember Me' Checkbox ---
     def validate_remember_me_checkbox_absence(self):
         """
         TC_LOGIN_002: Validates that the 'Remember Me' checkbox is NOT present on the login screen.
@@ -129,7 +142,6 @@ class LoginPage:
         assert len(elements) == 0, "'Remember Me' checkbox should NOT be present on the login screen."
         return True
 
-    # --- TC_LOGIN_018: Multiple Failed Login Attempts & Warning Message ---
     def run_tc_login_018(self, email: str, password_list: list) -> dict:
         """
         Implements TC_LOGIN_018:

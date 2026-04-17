@@ -2,18 +2,19 @@
 """
 Executive Summary:
 ------------------
-This PageClass automates the end-to-end password recovery workflow for TC_LOGIN_010: navigating via Forgot Password link, entering registered email, submitting, validating success message, and checking email inbox for the reset link. Strict code integrity, validation, and structured output for downstream automation.
+This PageClass automates the end-to-end password recovery workflow for TC_SCRUM74_008: navigating via Forgot Password link, verifying page elements, entering registered email, submitting, validating success message, and checking email inbox for the reset link. Strict code integrity, validation, and structured output for downstream automation.
 
 Detailed Analysis:
 ------------------
 - Implements navigation to password recovery page, email entry, submit, success message validation, and inbox check.
+- Adds verify_page_elements() for explicit validation of email input and submit button presence.
 - Uses explicit waits and locator validation from Locators.json.
 - Adheres to Selenium Python best practices.
 
 Implementation Guide:
 ---------------------
 1. Instantiate PasswordRecoveryPage with Selenium WebDriver.
-2. Call run_tc_login_010(email) for end-to-end test.
+2. Call run_tc_scrum74_008(email) for end-to-end test.
 3. Validate returned dict for stepwise results.
 4. Integrate into CI/CD or downstream pipeline as needed.
 
@@ -65,6 +66,20 @@ class PasswordRecoveryPage:
         self.driver.get(self.PASSWORD_RECOVERY_URL)
         self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
 
+    def verify_page_elements(self):
+        """
+        TC_SCRUM74_008: Verifies that email input field and submit button are present on the password recovery page.
+        Returns:
+            bool: True if both elements are present, False otherwise.
+        Raises:
+            AssertionError if elements are missing.
+        """
+        email_present = self.wait.until(EC.visibility_of_element_located(self.EMAIL_INPUT))
+        submit_present = self.wait.until(EC.visibility_of_element_located(self.SUBMIT_BUTTON))
+        assert email_present is not None, "Email input field not found on password recovery page."
+        assert submit_present is not None, "Submit button not found on password recovery page."
+        return True
+
     def enter_email(self, email: str):
         """
         Enters the registered email address in the recovery field.
@@ -105,27 +120,28 @@ class PasswordRecoveryPage:
         Mocks the process of checking the email inbox for the password reset link.
         In real automation, integrate with email API. Here, returns a placeholder link.
         """
-        # Simulate reset link with expiry param 12 hours from now
         expiry = (datetime.datetime.utcnow() + datetime.timedelta(hours=12)).strftime("%Y%m%d%H%M")
         return f"https://app.example.com/reset-password?token=mocktoken&expires={expiry}"
 
-    def run_tc_login_010(self, email: str) -> dict:
+    def run_tc_scrum74_008(self, email: str) -> dict:
         """
-        Executes the TC_LOGIN_010 workflow:
+        Executes the TC_SCRUM74_008 workflow:
         1. Navigate to password recovery page
-        2. Enter registered email address
-        3. Click Submit button
-        4. Validate success message
-        5. Check email inbox for password reset link (mocked)
+        2. Verify page elements
+        3. Enter registered email address
+        4. Click Submit button
+        5. Validate success message
+        6. Check email inbox for password reset link (mocked)
         Returns:
             dict: Stepwise results and validation messages
         """
         results = {
             "step_1_navigate_recovery": None,
-            "step_2_enter_email": None,
-            "step_3_click_submit": None,
-            "step_4_success_message": None,
-            "step_5_email_inbox_check": None,
+            "step_2_verify_elements": None,
+            "step_3_enter_email": None,
+            "step_4_click_submit": None,
+            "step_5_success_message": None,
+            "step_6_email_inbox_check": None,
             "overall_pass": False,
             "exception": None
         }
@@ -133,25 +149,27 @@ class PasswordRecoveryPage:
             # Step 1: Navigate to password recovery page
             self.go_to_password_recovery_page()
             results["step_1_navigate_recovery"] = True
-            # Step 2: Enter registered email address
+            # Step 2: Verify page elements
+            results["step_2_verify_elements"] = self.verify_page_elements()
+            # Step 3: Enter registered email address
             self.enter_email(email)
-            results["step_2_enter_email"] = True
-            # Step 3: Click Submit button
+            results["step_3_enter_email"] = True
+            # Step 4: Click Submit button
             self.click_submit()
-            results["step_3_click_submit"] = True
-            # Step 4: Validate success message
+            results["step_4_click_submit"] = True
+            # Step 5: Validate success message
             success_msg = self.get_success_message()
-            results["step_4_success_message"] = success_msg
-            # Step 5: Check email inbox for password reset link (mocked)
+            results["step_5_success_message"] = success_msg
+            # Step 6: Check email inbox for password reset link (mocked)
             reset_link = self.mock_check_email_inbox_for_reset_link(email)
-            results["step_5_email_inbox_check"] = reset_link
-            # Overall pass
+            results["step_6_email_inbox_check"] = reset_link
             results["overall_pass"] = all([
                 results["step_1_navigate_recovery"],
-                results["step_2_enter_email"],
-                results["step_3_click_submit"],
-                bool(results["step_4_success_message"]),
-                bool(results["step_5_email_inbox_check"])
+                results["step_2_verify_elements"],
+                results["step_3_enter_email"],
+                results["step_4_click_submit"],
+                bool(results["step_5_success_message"]),
+                bool(results["step_6_email_inbox_check"])
             ])
         except Exception as e:
             results["exception"] = f"Test flow failed: {str(e)}"
