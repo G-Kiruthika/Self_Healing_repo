@@ -65,6 +65,7 @@ def test_TC_LOGIN_004_empty_username_valid_password(driver):
 
 # --- Appended test for TC_SCRUM96_009 below ---
 from auto_scripts.Pages.ProductSearchAPIPage import ProductSearchAPIPage
+
 import pytest
 
 @pytest.mark.tc_scrum96_009
@@ -87,7 +88,7 @@ def test_TC_SCRUM96_009_product_search_api_empty_and_missing_query():
     result = page.run_tc_scrum96_009()
     assert isinstance(result, dict), "run_tc_scrum96_009 should return a result dictionary"
     assert result.get("overall_pass") is True, "Test case did not pass all steps"
-    assert result.get("exception") is None, f"Exception occurred: {result.get('exception')}"
-    print("Stepwise results:")
-    for step, outcome in result.items():
-        print(f"{step}: {outcome}")
+    assert result.get("exception") is None, f"Exception occurred: {result.get('exception')}""
+    steps = result.get("steps", {})
+    for step, outcome in steps.items():
+        print(f"Step: {step} - {'PASSED' if outcome else 'FAILED'}")
