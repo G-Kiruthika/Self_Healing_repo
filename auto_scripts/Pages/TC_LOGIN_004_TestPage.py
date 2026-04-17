@@ -3,42 +3,40 @@ TC_LOGIN_004_TestPage.py
 
 Executive Summary:
 ------------------
-This PageClass automates the end-to-end workflow for TC_LOGIN_004: Valid email, empty password login attempt, and validation error handling. It strictly follows Selenium Python automation standards, leveraging Locators.json, and is downstream-ready for enterprise test orchestration.
+This PageClass automates the end-to-end negative login scenario for test case TC-LOGIN-004: leaving the email field empty, entering a valid password, clicking Login, and verifying that the validation error is displayed and the user remains on the login page. The implementation strictly follows Selenium Python automation best practices, maintains code integrity, and produces structured output for downstream automation.
 
 Detailed Analysis:
 ------------------
-- Step 1: Navigates to the login page.
-- Step 2: Enters a valid registered email.
-- Step 3: Leaves the password field empty.
-- Step 4: Clicks the Login button.
-- Step 5: Verifies that a validation error is displayed and login is prevented.
-- All locators are validated against Locators.json.
-- Robust error handling and atomic method design ensure maintainability and reliability.
+- Utilizes locators from Locators.json for strict mapping.
+- Implements explicit waits and robust error handling for each step.
+- Ensures all steps are atomic, idempotent, and suitable for pipeline orchestration.
 
 Implementation Guide:
 ---------------------
-1. Instantiate TC_LOGIN_004_TestPage with a Selenium WebDriver instance.
-2. Call run_tc_login_004(email, url) for the end-to-end test.
-3. Validate the returned dict for stepwise results.
-4. Integrate into CI/CD or downstream automation as required.
+1. Instantiate TC_LOGIN_004_TestPage with Selenium WebDriver.
+2. Call run_tc_login_004(valid_password, url) for end-to-end test.
+3. Validate returned dict for stepwise results and error messages.
+4. Integrate into CI/CD or downstream pipeline as needed.
 
 Quality Assurance Report:
 ------------------------
-- All imports validated; only selenium, explicit waits, and Locators.json used.
-- Methods are atomic, robust, and downstream-ready.
+- All imports and locators validated.
+- Exception handling ensures atomic failure reporting.
+- Output structure matches downstream requirements.
 - Peer review and static analysis recommended before deployment.
 
 Troubleshooting Guide:
 ----------------------
-- If validation error is not found, validate locator and backend logic.
-- If login is not prevented, check for UI/backend changes.
+- If validation error not found, validate locator and backend logic.
+- If user is not on login page after failed login, check for UI or session handling changes.
 - Increase WebDriverWait timeout for slow environments.
 
 Future Considerations:
 ----------------------
-- Parameterize URLs and locators for multi-environment support.
-- Extend for additional negative login scenarios.
-- Integrate with test reporting and audit frameworks.
+- Parameterize URLs and error messages for multi-environment and multi-locale support.
+- Extend for additional negative login scenarios (e.g., locked account, expired password).
+- Integrate with test reporting frameworks for automated QA.
+- Add retry logic and audit reporting.
 """
 
 from selenium.webdriver.common.by import By
@@ -49,10 +47,9 @@ import json
 
 class TC_LOGIN_004_TestPage:
     """
-    PageClass for Test Case TC_LOGIN_004: Valid email, empty password login attempt.
+    PageClass for Test Case TC-LOGIN-004: Empty email field, valid password.
     Implements steps as per test case and validates error handling.
     """
-    # Locators loaded from Locators.json
     def __init__(self, driver, timeout=10, locators_path="auto_scripts/Locators/Locators.json"):
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
@@ -60,8 +57,7 @@ class TC_LOGIN_004_TestPage:
         with open(locators_path, "r") as f:
             locators_data = json.load(f)
             self.locators = locators_data.get("LoginPage", {})
-        # Fallbacks in case locator keys are missing
-        self.url = self.locators.get("url", "https://app.example.com/login")
+        self.url = self.locators.get("url", "https://ecommerce.example.com/login")
         self.email_field = self.locators["inputs"].get("emailField", "id=login-email")
         self.password_field = self.locators["inputs"].get("passwordField", "id=login-password")
         self.login_button = self.locators["buttons"].get("loginSubmit", "id=login-submit")
@@ -71,15 +67,15 @@ class TC_LOGIN_004_TestPage:
         self.driver.get(url or self.url)
         self.wait.until(EC.visibility_of_element_located((By.ID, self.email_field.split("=",1)[1])))
 
-    def enter_email(self, email):
+    def leave_email_empty(self):
         email_input = self.wait.until(EC.visibility_of_element_located((By.ID, self.email_field.split("=",1)[1])))
         email_input.clear()
-        email_input.send_keys(email)
+        # Do not send any keys (leave empty)
 
-    def leave_password_empty(self):
+    def enter_password(self, password):
         password_input = self.wait.until(EC.visibility_of_element_located((By.ID, self.password_field.split("=",1)[1])))
         password_input.clear()
-        # Do not send any keys (leave empty)
+        password_input.send_keys(password)
 
     def click_login(self):
         login_btn = self.wait.until(EC.element_to_be_clickable((By.ID, self.login_button.split("=",1)[1])))
@@ -100,12 +96,12 @@ class TC_LOGIN_004_TestPage:
         except Exception:
             return False
 
-    def run_tc_login_004(self, email, url=None):
+    def run_tc_login_004(self, password, url=None):
         """
-        Executes the TC_LOGIN_004 workflow:
+        Executes the TC-LOGIN-004 workflow:
         1. Navigate to login page
-        2. Enter valid registered email
-        3. Leave password field empty
+        2. Leave email field empty
+        3. Enter valid password
         4. Click Login button
         5. Validate error is displayed and login is prevented
         Returns:
@@ -113,8 +109,8 @@ class TC_LOGIN_004_TestPage:
         """
         results = {
             "step_1_navigate_login": None,
-            "step_2_enter_email": None,
-            "step_3_leave_password_empty": None,
+            "step_2_leave_email_empty": None,
+            "step_3_enter_password": None,
             "step_4_click_login": None,
             "step_5_validation_error": None,
             "step_6_login_prevented": None,
@@ -128,12 +124,12 @@ class TC_LOGIN_004_TestPage:
             if not results["step_1_navigate_login"]:
                 results["exception"] = "Login page not displayed."
                 return results
-            # Step 2: Enter valid registered email
-            self.enter_email(email)
-            results["step_2_enter_email"] = True
-            # Step 3: Leave password field empty
-            self.leave_password_empty()
-            results["step_3_leave_password_empty"] = True
+            # Step 2: Leave email field empty
+            self.leave_email_empty()
+            results["step_2_leave_email_empty"] = True
+            # Step 3: Enter valid password
+            self.enter_password(password)
+            results["step_3_enter_password"] = True
             # Step 4: Click Login button
             self.click_login()
             results["step_4_click_login"] = True
@@ -146,22 +142,3 @@ class TC_LOGIN_004_TestPage:
         except Exception as e:
             results["exception"] = f"Test flow failed: {str(e)}"
         return results
-
-"""
-Test Case Mapping:
-------------------
-Test Case ID: 194
-Description: Test Case TC_LOGIN_004
-Test Steps:
-1. Navigate to the login page [Test Data: URL: https://app.example.com/login] [Acceptance Criteria: AC_004]
-2. Enter valid registered email [Test Data: Email: testuser@example.com] [Acceptance Criteria: AC_004]
-3. Leave password field empty [Test Data: Password: ''] [Acceptance Criteria: AC_004]
-4. Click on the Login button [Test Data: N/A] [Acceptance Criteria: AC_004]
-5. Verify login is prevented [Test Data: N/A] [Acceptance Criteria: AC_004]
-Expected:
-1. Login page is displayed
-2. Email is accepted
-3. Password field remains empty
-4. Validation error displayed: 'Password is required'
-5. User cannot proceed with login, remains on login page
-"""
