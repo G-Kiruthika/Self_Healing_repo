@@ -1,52 +1,50 @@
-# Existing imports and code...
+# Existing imports and test methods...
 import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from PasswordRecoveryPage import PasswordRecoveryPage
+from PageClasses.LoginPage import LoginPage
+from PageClasses.DashboardPage import DashboardPage
 
-# ... (existing test methods remain unchanged)
+# Existing test methods...
 
-def test_TC_LOGIN_010_password_recovery_link_and_page_elements(driver, base_url):
+def test_TC_SCRUM_115_001_valid_login_session_established(driver):
+    ...<existing test code>...
+
+# --- New test for TC_SCRUM74_001 appended below ---
+from auto_scripts.Pages.TC_SCRUM74_001_TestPage import TC_SCRUM74_001_TestPage
+
+def test_TC_SCRUM74_001_valid_login_workflow(driver):
+    ...<existing test code>...
+
+# --- New test for TC_LOGIN_006 appended below ---
+from auto_scripts.Pages.TC_LOGIN_006_TestPage import TC_LOGIN_006_TestPage
+
+@pytest.mark.tc_login_006
+def test_TC_LOGIN_006_valid_username_empty_password(driver):
     """
-    TC_LOGIN_010: Verify 'Forgot Password' link and Password Recovery page elements.
-    Steps:
-    1. Navigate to login page
-    2. Verify Forgot Password link is present and visible
-    3. Click Forgot Password link
-    4. Verify redirection to Password Recovery page
-    5. Verify Password Recovery page elements (email field, submit button, etc.)
-    Acceptance:
-    - Forgot Password link is present and clickable
-    - Redirection to correct Password Recovery page
-    - All required elements are visible and enabled
+    Test Case TC_LOGIN_006:
+    1. Navigate to the login page
+    2. Enter valid username (testuser@example.com)
+    3. Leave password field empty
+    4. Click Login
+    5. Verify error message 'Password is required' is displayed
     """
-    # Step 1: Navigate to login page
-    login_url = f"{base_url}/login"
-    driver.get(login_url)
+    login_url = "https://app.example.com/login"
+    username = "testuser@example.com"
 
-    # Step 2: Verify Forgot Password link
-    forgot_link_locator = (By.LINK_TEXT, "Forgot Password?")
-    forgot_link = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located(forgot_link_locator)
+    # Instantiate the page class
+    test_page = TC_LOGIN_006_TestPage(driver)
+
+    # Run the test scenario
+    results = test_page.run_tc_login_006(username, login_url)
+
+    # Stepwise assertions
+    assert results['step_1']['success'], f"Step 1 failed: {results['step_1'].get('error', '')}"
+    assert results['step_2']['success'], f"Step 2 failed: {results['step_2'].get('error', '')}"
+    assert results['step_3']['success'], f"Step 3 failed: {results['step_3'].get('error', '')}"
+    assert results['step_4']['success'], f"Step 4 failed: {results['step_4'].get('error', '')}"
+    assert results['step_4']['error_message'] == 'Password is required', (
+        f"Expected error message 'Password is required', got '{results['step_4']['error_message']}'"
     )
-    assert forgot_link.is_displayed(), "Forgot Password link is not visible"
-    assert forgot_link.is_enabled(), "Forgot Password link is not enabled"
-
-    # Step 3: Click Forgot Password
-    forgot_link.click()
-
-    # Step 4: Verify redirection to Password Recovery page
-    recovery_url_part = "/password-recovery"
-    WebDriverWait(driver, 10).until(
-        EC.url_contains(recovery_url_part)
-    )
-    assert recovery_url_part in driver.current_url, "Did not redirect to Password Recovery page"
-
-    # Step 5: Verify password recovery page elements
-    recovery_page = PasswordRecoveryPage(driver)
-    assert recovery_page.is_email_field_present(), "Email field is not present on Password Recovery page"
-    assert recovery_page.is_submit_button_present(), "Submit button is not present on Password Recovery page"
-    assert recovery_page.is_email_field_enabled(), "Email field is not enabled"
-    assert recovery_page.is_submit_button_enabled(), "Submit button is not enabled"
-    # Optionally check for additional elements if defined in PasswordRecoveryPage
+    assert results['still_on_login_page'], "User should remain on login page after failed login attempt"
