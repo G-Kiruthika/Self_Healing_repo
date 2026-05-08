@@ -1,0 +1,28 @@
+# Environment Configuration
+environment: test
+
+# UI Configuration
+ui:
+  browser: chrome
+  headless: false
+  implicit_wait: 10
+  page_load_timeout: 30
+  window_size: maximized
+
+# Application Configuration
+app:
+  base_url: "http://localhost:8080"
+  app_package: "com.example.app"
+  app_activity: ".MainActivity"
+
+# Test Data
+test_data:
+  valid_user:
+    username: "test_user"
+    password: "test_password"
+
+# Reporting
+reporting:
+  screenshot_on_failure: true
+  report_path: "reports/"
+  log_level: "INFO"
