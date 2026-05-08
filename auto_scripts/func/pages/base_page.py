@@ -1,0 +1,1 @@
+<Full content of base_page.py>
