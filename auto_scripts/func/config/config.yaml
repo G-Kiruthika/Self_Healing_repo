@@ -1,27 +1,29 @@
 # Environment Configuration
 
 ui:
- base_url: "https://example.com"
- login_url: "https://example.com/login"
- implicit_wait: 10
- explicit_wait: 20
- browser: "chrome"
- headless: false
+  base_url: "https://app.example.com"
+  browser: "chrome"
+  headless: false
+  implicit_wait: 10
+  explicit_wait: 20
+  page_load_timeout: 30
 
 api:
- base_url: "https://api.example.com"
- timeout: 30
+  base_url: "https://api.example.com"
+  timeout: 30
+  verify_ssl: true
 
 test_data:
- login:
- valid_user:
- username: "standard_user"
- password: "secret_sauce"
- invalid_password:
- username: "standard_user"
- password: "wrong_password"
+  invalid_email:
+    email: "invalid@example"
+  multiple_emails:
+    email: "user1@example.com,user2@example.com"
 
 reporting:
- screenshots_on_failure: true
- video_recording: false
- report_format: "html"
+  report_path: "reports/"
+  screenshot_on_failure: true
+  video_recording: false
+
+logging:
+  level: "INFO"
+  log_file: "logs/test_execution.log"
