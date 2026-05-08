@@ -1,1 +1,69 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"53": {"test_name": "test_enable_email_destination_toggle", "feature": "AddShortcutScreen", "target_file": "test_enable_email_destination_toggle.py", "pages_used": ["RootViewScreen", "DeviceDetailsPage", "ShortcutsScreen", "CreateShortcutScreen", "AddShortcutScreen"], "flow": [{"page": "RootViewScreen", "action": "click_printer_icon", "data_ref": null}, {"page": "DeviceDetailsPage", "action": "click_shortcuts_tile", "data_ref": null}, {"page": "ShortcutsScreen", "action": "click_add_new_shortcut", "data_ref": null}, {"page": "CreateShortcutScreen", "action": "click_create_own_shortcut_arrow", "data_ref": null}, {"page": "AddShortcutScreen", "action": "enable_email_toggle", "data_ref": null}, {"page": "AddShortcutScreen", "assertion": "is_continue_button_enabled"}], "test_data": {}}, "54": {"test_name": "test_disable_email_destination_toggle", "feature": "AddShortcutScreen", "target_file": "test_disable_email_destination_toggle.py", "pages_used": ["RootViewScreen", "DeviceDetailsPage", "ShortcutsScreen", "CreateShortcutScreen", "AddShortcutScreen"], "flow": [{"page": "RootViewScreen", "action": "click_printer_icon", "data_ref": null}, {"page": "DeviceDetailsPage", "action": "click_shortcuts_tile", "data_ref": null}, {"page": "ShortcutsScreen", "action": "click_add_new_shortcut", "data_ref": null}, {"page": "CreateShortcutScreen", "action": "click_create_own_shortcut_arrow", "data_ref": null}, {"page": "AddShortcutScreen", "action": "disable_email_toggle", "data_ref": null}, {"page": "AddShortcutScreen", "assertion": "is_continue_button_disabled"}], "test_data": {}}}, "framework": {"architecture": "python-ui-api-automation-framework", "type": "ui", "base_classes_required": ["BasePage"], "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"], "config_dependencies": ["config/config.yaml"], "utils_dependencies": [], "api_dependencies": [], "external_libraries": ["selenium", "pytest", "pyyaml"], "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]}}
+{
+  "test_suite": "AddShortcut",
+  "test_cases": [
+    {
+      "test_name": "test_enable_only_print_destination",
+      "feature": "Add Shortcut",
+      "target_file": "test_add_shortcut.py",
+      "pages_used": [
+        "RootViewScreen",
+        "DeviceDetailsPage",
+        "ShortcutsScreen",
+        "CreateShortcutScreen",
+        "AddShortcutScreen",
+        "AddPrintScreen"
+      ],
+      "flow": [
+        "install_and_launch_app",
+        "click_printer_icon",
+        "click_shortcuts_tile",
+        "click_add_new_shortcut",
+        "click_create_shortcut_arrow",
+        "enable_print_toggle",
+        "click_continue",
+        "verify_screen"
+      ],
+      "test_data": {}
+    },
+    {
+      "test_name": "test_back_button_in_add_print_screen",
+      "feature": "Add Shortcut",
+      "target_file": "test_add_shortcut.py",
+      "pages_used": [
+        "RootViewScreen",
+        "DeviceDetailsPage",
+        "ShortcutsScreen",
+        "CreateShortcutScreen",
+        "AddShortcutScreen",
+        "AddPrintScreen"
+      ],
+      "flow": [
+        "install_and_launch_app",
+        "click_printer_icon",
+        "click_shortcuts_tile",
+        "click_add_new_shortcut",
+        "click_create_shortcut_arrow",
+        "navigate_add_print_screen",
+        "click_back",
+        "verify_screen"
+      ],
+      "test_data": {}
+    }
+  ],
+  "framework": {
+    "dependencies": [
+      "selenium",
+      "pytest",
+      "appium",
+      "allure-pytest",
+      "os",
+      "json"
+    ],
+    "ecosystem_sync": [
+      "config/",
+      "utils/",
+      "core/",
+      "requirements.txt"
+    ]
+  }
+}
