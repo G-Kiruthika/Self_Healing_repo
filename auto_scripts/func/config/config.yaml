@@ -1,29 +1,60 @@
-# Environment Configuration
+# Configuration file for UI and API automation framework
 
+# UI Configuration
 ui:
-  base_url: "https://app.example.com"
-  browser: "chrome"
-  headless: false
-  implicit_wait: 10
-  explicit_wait: 20
-  page_load_timeout: 30
+  browser: chrome  # Options: chrome, firefox, edge
+  headless: false  # Run browser in headless mode
+  implicit_wait: 10  # Implicit wait timeout in seconds
+  page_load_timeout: 30  # Page load timeout in seconds
+  base_url: ""  # Base URL for the application (update as needed)
+  window_size: "1920,1080"  # Browser window size
 
+# API Configuration
 api:
-  base_url: "https://api.example.com"
-  timeout: 30
-  verify_ssl: true
+  base_url: ""  # Base API URL (update as needed)
+  timeout: 30  # Request timeout in seconds
+  verify_ssl: true  # Verify SSL certificates
+  headers:
+    Content-Type: "application/json"
+    Accept: "application/json"
 
+# Test Data Configuration
 test_data:
-  invalid_email:
-    email: "invalid@example"
-  multiple_emails:
-    email: "user1@example.com,user2@example.com"
+  shortcuts:
+    default_shortcut_name: "Test Shortcut"
+  cloud_accounts:
+    - name: "Google Drive"
+      type: "google"
+    - name: "Dropbox"
+      type: "dropbox"
+    - name: "OneDrive"
+      type: "onedrive"
 
-reporting:
-  report_path: "reports/"
-  screenshot_on_failure: true
-  video_recording: false
-
+# Logging Configuration
 logging:
-  level: "INFO"
-  log_file: "logs/test_execution.log"
+  level: INFO  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/automation.log"
+
+# Screenshot Configuration
+screenshots:
+  enabled: true
+  on_failure: true
+  directory: "screenshots"
+
+# Reporting Configuration
+reporting:
+  html_report: true
+  json_report: false
+  report_directory: "reports"
+
+# Environment Configuration
+environment: "test"  # Options: dev, test, staging, prod
+
+# Mobile Configuration (if applicable)
+mobile:
+  platform: "Android"  # Options: Android, iOS
+  device_name: ""
+  app_package: ""
+  app_activity: ""
+  automation_name: "UiAutomator2"

@@ -1,18 +1,12 @@
-"""Pytest configuration and fixtures."""
+"""Pytest configuration file for test fixtures and hooks.
+
+This file contains shared fixtures and configuration for all tests.
+"""
 
 import pytest
+import yaml
+from pathlib import Path
 from core.driver_factory import get_driver
-import logging
-import os
-from datetime import datetime
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-
-logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="function")
@@ -20,52 +14,46 @@ def driver():
     """Fixture to provide WebDriver instance for each test.
     
     Yields:
-        WebDriver: Configured WebDriver instance
+        WebDriver: Selenium WebDriver instance
     """
     driver_instance = get_driver()
-    logger.info("WebDriver instance created")
-    
     yield driver_instance
-    
     driver_instance.quit()
-    logger.info("WebDriver instance closed")
 
 
 @pytest.fixture(scope="session")
-def test_config():
-    """Fixture to provide test configuration.
+def config():
+    """Fixture to load configuration from config.yaml.
     
     Returns:
-        dict: Test configuration
+        dict: Configuration dictionary
     """
-    import yaml
-    config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
+    config_path = Path(__file__).parent.parent / "config" / "config.yaml"
     with open(config_path, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
+        return yaml.safe_load(f)
 
 
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    """Hook to capture test execution results."""
-    outcome = yield
-    report = outcome.get_result()
+@pytest.fixture(scope="session")
+def base_url(config):
+    """Fixture to provide base URL from configuration.
     
-    if report.when == "call":
-        if report.failed:
-            logger.error(f"Test FAILED: {item.nodeid}")
-        elif report.passed:
-            logger.info(f"Test PASSED: {item.nodeid}")
+    Args:
+        config: Configuration fixture
+        
+    Returns:
+        str: Base URL for the application
+    """
+    return config.get('ui', {}).get('base_url', '')
 
 
 def pytest_configure(config):
-    """Configure pytest with custom settings."""
-    # Create reports directory if it doesn't exist
-    reports_dir = os.path.join(os.path.dirname(__file__), '..', 'reports')
-    os.makedirs(reports_dir, exist_ok=True)
-    
-    # Create logs directory if it doesn't exist
-    logs_dir = os.path.join(os.path.dirname(__file__), '..', 'logs')
-    os.makedirs(logs_dir, exist_ok=True)
-    
-    logger.info("Pytest configuration completed")
+    """Pytest hook for initial configuration."""
+    config.addinivalue_line(
+        "markers", "ui: mark test as UI automation test"
+    )
+    config.addinivalue_line(
+        "markers", "smoke: mark test as smoke test"
+    )
+    config.addinivalue_line(
+        "markers", "regression: mark test as regression test"
+    )
