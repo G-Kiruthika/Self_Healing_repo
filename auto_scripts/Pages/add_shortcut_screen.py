@@ -1,19 +1,27 @@
-# AddShortcutScreen: Add Shortcut configuration screen.
 from selenium.webdriver.common.by import By
 from auto_scripts.Pages.base_page import BasePage
 
 class AddShortcutScreen(BasePage):
-    SAVE_DESTINATION_TOGGLE = By.XPATH, 'placeholder_locator'
-    CREATE_YOUR_OWN_SHORTCUT_ARROW = By.XPATH, 'placeholder_locator'
+    # Locators
+    email_toggle = (By.ID, 'email_toggle_id_placeholder')
+    continue_button = (By.ID, 'continue_button_id_placeholder')
 
-    def enable_save_destination_toggle(self):
-        return self.click(self.SAVE_DESTINATION_TOGGLE)
+    # Actions
+    def enable_email_toggle(self):
+        toggle = self.driver.find_element(*self.email_toggle)
+        if not toggle.is_selected():
+            toggle.click()
 
-    def click_create_your_own_shortcut_arrow(self):
-        return self.click(self.CREATE_YOUR_OWN_SHORTCUT_ARROW)
+    def disable_email_toggle(self):
+        toggle = self.driver.find_element(*self.email_toggle)
+        if toggle.is_selected():
+            toggle.click()
 
-    def is_save_destination_toggle_visible(self):
-        return self.is_visible(self.SAVE_DESTINATION_TOGGLE)
+    # Validations
+    def is_continue_button_enabled(self):
+        button = self.driver.find_element(*self.continue_button)
+        return button.is_enabled()
 
-    def is_create_your_own_shortcut_arrow_visible(self):
-        return self.is_visible(self.CREATE_YOUR_OWN_SHORTCUT_ARROW)
+    def is_continue_button_disabled(self):
+        button = self.driver.find_element(*self.continue_button)
+        return not button.is_enabled()
