@@ -1,43 +1,48 @@
 {
-  "test_cases": [
+  "test_scripts": [
     {
-      "testCaseId": "70",
-      "description": "Verify the screen when the user enables only the 'Save' destination in the 'Add Shortcut' screen.",
-      "flow": [
+      "test_case_id": "72",
+      "description": "Verify the screen, when user click on 'Sign in' link of any cloud accounts under Add accounts in 'Add save' screen.",
+      "page_flow": [
+        {"page": "RootViewScreen", "action": "launch_app"},
         {"page": "RootViewScreen", "action": "click_printer_icon"},
         {"page": "DeviceDetailsPage", "action": "click_shortcuts_tile"},
-        {"page": "ShortcutsScreen", "action": "click_add_new_shortcut"},
-        {"page": "CreateShortcutScreen", "action": "click_create_shortcut_arrow"},
-        {"page": "AddShortcutScreen", "action": "enable_save_toggle", "data": {"toggle_state": "on"}},
-        {"page": "AddShortcutScreen", "action": "click_continue"},
-        {"page": "AddShortcutScreen", "validation": "verify_add_save_screen"}
+        {"page": "ShortcutsScreen", "action": "click_add_new_shortcuts_button"},
+        {"page": "CreateShortcutScreen", "action": "click_create_own_shortcut_arrow"},
+        {"page": "AddSaveScreen", "action": "navigate"},
+        {"page": "AddSaveScreen", "action": "click_sign_in_link"},
+        {"page": "AddSaveScreen", "action": "verify_sign_in_behavior"}
       ],
       "test_data": {},
-      "preconditions": ["HPX app installed and launched"],
-      "postconditions": []
+      "expected_results": [
+        "User should be able to signed in with the desired cloud accounts."
+      ]
     },
     {
-      "testCaseId": "71",
-      "description": "Verify the screen, when user clicks on 'back' button in 'Add print' screen.",
-      "flow": [
-        {"page": "RootViewScreen", "action": "click_printer_icon"},
-        {"page": "DeviceDetailsPage", "action": "click_shortcuts_tile"},
-        {"page": "ShortcutsScreen", "action": "click_add_new_shortcut"},
-        {"page": "CreateShortcutScreen", "action": "click_create_shortcut_arrow"},
-        {"page": "AddPrintScreen", "action": "click_back_button"},
-        {"page": "AddPrintScreen", "validation": "verify_add_shortcut_screen"}
+      "test_case_id": "73",
+      "description": "Verify the position of the buttons on the 'Delete this Shortcut?' pop up window.",
+      "page_flow": [
+        {"page": "RootViewScreen", "action": "launch_app"},
+        {"page": "ShortcutsScreen", "action": "navigate_and_click_edit_link"},
+        {"page": "ShortcutsScreen", "action": "click_delete_icon"},
+        {"page": "DeleteShortcutPopup", "action": "verify_buttons_position"}
       ],
       "test_data": {},
-      "preconditions": ["HPX app installed and launched"],
-      "postconditions": []
+      "expected_results": [
+        "The position of the buttons on the 'Delete this Shortcut?' screen should have 'Delete' as the primary button and 'Cancel' as the secondary button."
+      ]
     }
   ],
-  "framework": {
-    "base_classes_required": ["BasePage", "BaseTestCase"],
-    "core_dependencies": ["driver_manager", "element_wrapper"],
-    "config_dependencies": ["test_config", "env_config"],
-    "utils_dependencies": ["error_handler", "reporting_utils"],
-    "external_libraries": ["selenium", "pytest"],
-    "required_imports": ["from selenium.webdriver.common.by import By"]
+  "dependencies": {
+    "automation_type": "UI",
+    "framework": "selenium",
+    "kb_folder_structure": [
+      "auto_scripts/func/metadata",
+      "auto_scripts/func/pages",
+      "auto_scripts/func/tests"
+    ],
+    "required": [
+      "selenium", "pytest"
+    ]
   }
 }

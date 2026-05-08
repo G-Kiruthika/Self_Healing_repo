@@ -1,66 +1,76 @@
 {
-  "RootViewScreen": {
-    "class_name": "RootViewScreen",
-    "locators": {
-      "printer_icon": {"by": "id", "value": "printer_icon_id_placeholder"}
+  "pages": [
+    {
+      "class_name": "RootViewScreen",
+      "file_name": "root_view_screen.py",
+      "elements": [
+        {
+          "name": "printer_icon",
+          "locator": "//placeholder/printer_icon"
+        }
+      ]
     },
-    "actions": [
-      {"name": "click_printer_icon", "element": "printer_icon", "type": "click"}
-    ]
-  },
-  "DeviceDetailsPage": {
-    "class_name": "DeviceDetailsPage",
-    "locators": {
-      "shortcuts_tile": {"by": "id", "value": "shortcuts_tile_id_placeholder"}
+    {
+      "class_name": "DeviceDetailsPage",
+      "file_name": "device_details_page.py",
+      "elements": [
+        {
+          "name": "shortcuts_tile",
+          "locator": "//placeholder/shortcuts_tile"
+        }
+      ]
     },
-    "actions": [
-      {"name": "click_shortcuts_tile", "element": "shortcuts_tile", "type": "click"}
-    ]
-  },
-  "ShortcutsScreen": {
-    "class_name": "ShortcutsScreen",
-    "locators": {
-      "add_new_shortcut_btn": {"by": "id", "value": "add_new_shortcut_btn_id_placeholder"}
+    {
+      "class_name": "ShortcutsScreen",
+      "file_name": "shortcuts_screen.py",
+      "elements": [
+        {
+          "name": "add_new_shortcuts_button",
+          "locator": "//placeholder/add_new_shortcuts_button"
+        },
+        {
+          "name": "edit_link",
+          "locator": "//placeholder/edit_link"
+        },
+        {
+          "name": "delete_icon",
+          "locator": "//placeholder/delete_icon"
+        }
+      ]
     },
-    "actions": [
-      {"name": "click_add_new_shortcut", "element": "add_new_shortcut_btn", "type": "click"}
-    ]
-  },
-  "CreateShortcutScreen": {
-    "class_name": "CreateShortcutScreen",
-    "locators": {
-      "create_shortcut_arrow": {"by": "id", "value": "create_shortcut_arrow_id_placeholder"}
+    {
+      "class_name": "CreateShortcutScreen",
+      "file_name": "create_shortcut_screen.py",
+      "elements": [
+        {
+          "name": "create_own_shortcut_arrow",
+          "locator": "//placeholder/create_own_shortcut_arrow"
+        }
+      ]
     },
-    "actions": [
-      {"name": "click_create_shortcut_arrow", "element": "create_shortcut_arrow", "type": "click"}
-    ]
-  },
-  "AddShortcutScreen": {
-    "class_name": "AddShortcutScreen",
-    "locators": {
-      "save_toggle": {"by": "id", "value": "save_toggle_id_placeholder"},
-      "continue_button": {"by": "id", "value": "continue_button_id_placeholder"},
-      "screen_verification": {"by": "xpath", "value": "//android.widget.TextView[@text='Add Save']"}
+    {
+      "class_name": "AddSaveScreen",
+      "file_name": "add_save_screen.py",
+      "elements": [
+        {
+          "name": "sign_in_link",
+          "locator": "//placeholder/sign_in_link"
+        }
+      ]
     },
-    "actions": [
-      {"name": "enable_save_toggle", "element": "save_toggle", "type": "toggle", "toggle_state": "on"},
-      {"name": "click_continue", "element": "continue_button", "type": "click"}
-    ],
-    "validations": [
-      {"name": "verify_add_save_screen", "element": "screen_verification", "type": "visible"}
-    ]
-  },
-  "AddPrintScreen": {
-    "class_name": "AddPrintScreen",
-    "locators": {
-      "back_button": {"by": "id", "value": "back_button_id_placeholder"},
-      "screen_verification": {"by": "xpath", "value": "//android.widget.TextView[@text='Add Shortcut']"}
-    },
-    "actions": [
-      {"name": "click_back_button", "element": "back_button", "type": "click"}
-    ],
-    "validations": [
-      {"name": "verify_add_shortcut_screen", "element": "screen_verification", "type": "visible"}
-    ]
-  }
+    {
+      "class_name": "DeleteShortcutPopup",
+      "file_name": "delete_shortcut_popup.py",
+      "elements": [
+        {
+          "name": "delete_button",
+          "locator": "//placeholder/delete_button"
+        },
+        {
+          "name": "cancel_button",
+          "locator": "//placeholder/cancel_button"
+        }
+      ]
+    }
+  ]
 }
