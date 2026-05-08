@@ -1,70 +1,71 @@
 {
   "pages": [
     {
-      "page_name": "HPXAppLaunchPage",
+      "page_name": "ShortcutsScreen",
+      "file_name": "shortcuts_screen.py",
+      "class_name": "ShortcutsScreen",
       "actions": [
-        {
-          "action_name": "launch_app",
-          "description": "Install and launch the HPX app.",
-          "locators": [{"type": "app_icon", "value": "placeholder_app_icon_locator"}]
-        }
-      ],
-      "validations": [
-        {
-          "validation_name": "is_remove_popup_displayed",
-          "description": "Validate if 'Remove this destination?' pop up is displayed.",
-          "locators": [{"type": "popup", "value": "placeholder_remove_popup_locator"}]
-        }
-      ]
-    },
-    {
-      "page_name": "PrinterDetailsPage",
-      "actions": [
-        {
-          "action_name": "navigate_to_printer_details",
-          "description": "Navigate to printer details screen.",
-          "locators": [{"type": "button", "value": "placeholder_printer_details_button_locator"}]
-        }
-      ],
-      "validations": []
-    },
-    {
-      "page_name": "ShortcutsPage",
-      "actions": [
-        {
-          "action_name": "navigate_to_shortcuts",
-          "description": "Navigate to Shortcuts screen.",
-          "locators": [{"type": "tab", "value": "placeholder_shortcuts_tab_locator"}]
-        },
         {
           "action_name": "click_edit_link",
-          "description": "Click on the edit link.",
-          "locators": [{"type": "link", "value": "placeholder_edit_link_locator"}]
+          "locator": "//placeholder/edit_link"
         },
         {
           "action_name": "click_edit_icon_print_shortcut",
-          "description": "Click on the Edit icon of the Print shortcut.",
-          "locators": [{"type": "icon", "value": "placeholder_edit_icon_print_locator"}]
+          "locator": "//placeholder/edit_icon_print_shortcut"
+        },
+        {
+          "action_name": "click_edit_icon_email_shortcut",
+          "locator": "//placeholder/edit_icon_email_shortcut"
+        },
+        {
+          "action_name": "verify_screen",
+          "locator": "//placeholder/screen_verification"
         }
-      ],
-      "validations": []
+      ]
     },
     {
-      "page_name": "RemovePopupPage",
+      "page_name": "PrinterDetailsScreen",
+      "file_name": "printer_details_screen.py",
+      "class_name": "PrinterDetailsScreen",
       "actions": [
         {
-          "action_name": "click_remove_button",
-          "description": "Click on the remove button of pop up screen.",
-          "locators": [{"type": "button", "value": "placeholder_remove_button_locator"}]
+          "action_name": "navigate_to_printer_details",
+          "locator": "//placeholder/printer_details"
         }
-      ],
-      "validations": [
+      ]
+    },
+    {
+      "page_name": "PopupScreen",
+      "file_name": "popup_screen.py",
+      "class_name": "PopupScreen",
+      "actions": [
         {
-          "validation_name": "is_print_shortcut_removed",
-          "description": "Validate that selected 'Print' destination is removed from Shortcuts screen.",
-          "locators": [{"type": "shortcut", "value": "placeholder_print_shortcut_locator"}]
+          "action_name": "click_cancel_button",
+          "locator": "//placeholder/cancel_button"
+        },
+        {
+          "action_name": "verify_popup",
+          "locator": "//placeholder/popup_verification"
+        }
+      ]
+    },
+    {
+      "page_name": "AppLauncherScreen",
+      "file_name": "app_launcher_screen.py",
+      "class_name": "AppLauncherScreen",
+      "actions": [
+        {
+          "action_name": "install_and_launch_app",
+          "locator": "//placeholder/app_launcher"
         }
       ]
     }
-  ]
+  ],
+  "framework": {
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "config_dependencies": ["config/config.yaml"],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
 }
