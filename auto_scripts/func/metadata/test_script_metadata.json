@@ -1,36 +1,36 @@
-{
-  "test_cases": [
-    {
-      "test_case_id": "82",
-      "description": "Verify the screen, when user removes the 'Save' destination shortcut.",
-      "steps": [
-        {"step_id": 1, "page": "RootViewScreen", "action": "launch_app", "data": null, "expected": "Remove this destination?' pop up should be displayed."},
-        {"step_id": 2, "page": "PrinterDetailsScreen", "action": "navigate", "data": null, "expected": ""},
-        {"step_id": 3, "page": "ShortcutsScreen", "action": "navigate", "data": null, "expected": ""},
-        {"step_id": 4, "page": "PrinterDetailsScreen", "action": "click_edit_link", "data": null, "expected": ""},
-        {"step_id": 5, "page": "ShortcutsScreen", "action": "click_edit_icon_save_shortcut", "data": null, "expected": ""},
-        {"step_id": 6, "page": "RemoveDestinationPopup", "action": "verify_popup_displayed", "data": null, "expected": ""}
-      ]
-    },
-    {
-      "test_case_id": "55",
-      "description": "Verify the behavior, when user Enables the 'Save' destination toggle bar in 'Add Shortcut' screen.",
-      "steps": [
-        {"step_id": 1, "page": "RootViewScreen", "action": "launch_app", "data": null, "expected": "User should be able to Enable the 'Save' destination toggle bar in 'Add shortcut' screen."},
-        {"step_id": 2, "page": "RootViewScreen", "action": "click_printer_icon", "data": null, "expected": "After disabling the 'Save' destination toggle bar, 'continue' button should be enabled."},
-        {"step_id": 3, "page": "PrinterDetailsScreen", "action": "click_shortcuts_tile", "data": null, "expected": ""},
-        {"step_id": 4, "page": "ShortcutsScreen", "action": "click_add_new_shortcuts", "data": null, "expected": ""},
-        {"step_id": 5, "page": "AddShortcutScreen", "action": "click_create_your_own_shortcut_arrow", "data": null, "expected": ""},
-        {"step_id": 6, "page": "AddShortcutScreen", "action": "enable_save_destination_toggle", "data": null, "expected": ""},
-        {"step_id": 7, "page": "AddShortcutScreen", "action": "verify_screen", "data": null, "expected": ""}
-      ]
-    }
-  ],
-  "framework": {
-    "dependencies": [
-      "selenium",
-      "pytest"
-    ],
-    "kb_folder_structure": "auto_scripts/func/metadata"
-  }
+{ 
+  "test_cases": [ 
+    { 
+      "test_case_id": "82", 
+      "description": "Verify the screen, when user removes the 'Save' destination shortcut.", 
+      "steps": [ 
+        {"step_id": 1, "page": "RootViewScreen", "action": "launch_app", "data": null, "expected": "Remove this destination?' pop up should be displayed."}, 
+        {"step_id": 2, "page": "PrinterDetailsScreen", "action": "navigate", "data": null, "expected": ""}, 
+        {"step_id": 3, "page": "ShortcutsScreen", "action": "navigate", "data": null, "expected": ""}, 
+        {"step_id": 4, "page": "PrinterDetailsScreen", "action": "click_edit_link", "data": null, "expected": ""}, 
+        {"step_id": 5, "page": "ShortcutsScreen", "action": "click_edit_icon_save_shortcut", "data": null, "expected": ""}, 
+        {"step_id": 6, "page": "RemoveDestinationPopup", "action": "verify_popup_displayed", "data": null, "expected": ""} 
+      ] 
+    }, 
+    { 
+      "test_case_id": "55", 
+      "description": "Verify the behavior, when user Enables the 'Save' destination toggle bar in 'Add Shortcut' screen.", 
+      "steps": [ 
+        {"step_id": 1, "page": "RootViewScreen", "action": "launch_app", "data": null, "expected": "User should be able to Enable the 'Save' destination toggle bar in 'Add shortcut' screen."}, 
+        {"step_id": 2, "page": "RootViewScreen", "action": "click_printer_icon", "data": null, "expected": "After disabling the 'Save' destination toggle bar, 'continue' button should be enabled."}, 
+        {"step_id": 3, "page": "PrinterDetailsScreen", "action": "click_shortcuts_tile", "data": null, "expected": ""}, 
+        {"step_id": 4, "page": "ShortcutsScreen", "action": "click_add_new_shortcuts", "data": null, "expected": ""}, 
+        {"step_id": 5, "page": "AddShortcutScreen", "action": "click_create_your_own_shortcut_arrow", "data": null, "expected": ""}, 
+        {"step_id": 6, "page": "AddShortcutScreen", "action": "enable_save_destination_toggle", "data": null, "expected": ""}, 
+        {"step_id": 7, "page": "AddShortcutScreen", "action": "verify_screen", "data": null, "expected": ""} 
+      ] 
+    } 
+  ], 
+  "framework": { 
+    "dependencies": [ 
+      "selenium", 
+      "pytest" 
+    ], 
+    "kb_folder_structure": "auto_scripts/func/metadata" 
+  } 
 }
