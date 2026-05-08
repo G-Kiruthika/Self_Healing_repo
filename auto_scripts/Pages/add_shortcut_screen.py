@@ -1,27 +1,15 @@
-from selenium.webdriver.common.by import By
 from auto_scripts.Pages.base_page import BasePage
+from selenium.webdriver.common.by import By
 
 class AddShortcutScreen(BasePage):
-    # Locators
-    email_toggle = (By.ID, 'email_toggle_id_placeholder')
-    continue_button = (By.ID, 'continue_button_id_placeholder')
+    SHORTCUT_TYPE_DROPDOWN = (By.ID, "shortcut_type_dropdown")
+    CONFIRM_BUTTON = (By.ID, "confirm_btn")
 
-    # Actions
-    def enable_email_toggle(self):
-        toggle = self.driver.find_element(*self.email_toggle)
-        if not toggle.is_selected():
-            toggle.click()
+    def select_shortcut_type(self, shortcut_type):
+        self.select_dropdown_option(self.SHORTCUT_TYPE_DROPDOWN, shortcut_type)
 
-    def disable_email_toggle(self):
-        toggle = self.driver.find_element(*self.email_toggle)
-        if toggle.is_selected():
-            toggle.click()
+    def click_confirm_button(self):
+        self.click_element(self.CONFIRM_BUTTON)
 
-    # Validations
-    def is_continue_button_enabled(self):
-        button = self.driver.find_element(*self.continue_button)
-        return button.is_enabled()
-
-    def is_continue_button_disabled(self):
-        button = self.driver.find_element(*self.continue_button)
-        return not button.is_enabled()
+    def is_shortcut_type_dropdown_visible(self):
+        return self.is_element_visible(self.SHORTCUT_TYPE_DROPDOWN)

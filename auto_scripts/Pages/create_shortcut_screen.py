@@ -1,10 +1,15 @@
-from selenium.webdriver.common.by import By
 from auto_scripts.Pages.base_page import BasePage
+from selenium.webdriver.common.by import By
 
 class CreateShortcutScreen(BasePage):
-    # Locators
-    create_own_shortcut_arrow = (By.ID, 'create_own_shortcut_arrow_id_placeholder')
+    SHORTCUT_NAME_INPUT = (By.ID, "shortcut_name_input")
+    SAVE_BUTTON = (By.ID, "save_btn")
 
-    # Actions
-    def click_create_own_shortcut_arrow(self):
-        self.driver.find_element(*self.create_own_shortcut_arrow).click()
+    def enter_shortcut_name(self, name):
+        self.enter_text(self.SHORTCUT_NAME_INPUT, name)
+
+    def click_save_button(self):
+        self.click_element(self.SAVE_BUTTON)
+
+    def is_shortcut_name_input_visible(self):
+        return self.is_element_visible(self.SHORTCUT_NAME_INPUT)

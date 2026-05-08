@@ -1,10 +1,12 @@
-from selenium.webdriver.common.by import By
 from auto_scripts.Pages.base_page import BasePage
+from selenium.webdriver.common.by import By
 
 class ShortcutsScreen(BasePage):
-    # Locators
-    add_new_shortcut = (By.ID, 'add_new_shortcut_id_placeholder')
+    SHORTCUT_LIST = (By.ID, "shortcut_list")
+    ADD_SHORTCUT_BUTTON = (By.XPATH, "//button[@id='add_shortcut']")
 
-    # Actions
-    def click_add_new_shortcut(self):
-        self.driver.find_element(*self.add_new_shortcut).click()
+    def click_add_shortcut_button(self):
+        self.click_element(self.ADD_SHORTCUT_BUTTON)
+
+    def is_shortcut_list_visible(self):
+        return self.is_element_visible(self.SHORTCUT_LIST)

@@ -1,10 +1,13 @@
-from selenium.webdriver.common.by import By
 from auto_scripts.Pages.base_page import BasePage
+from selenium.webdriver.common.by import By
 
 class RootViewScreen(BasePage):
-    # Locators
-    printer_icon = (By.ID, 'printer_icon_id_placeholder')
+    ROOT_CONTAINER = (By.ID, "root_container")
+    TITLE_TEXT = (By.XPATH, "//h1[@class='title']")
+    SETTINGS_BUTTON = (By.ID, "settings_btn")
 
-    # Actions
-    def click_printer_icon(self):
-        self.driver.find_element(*self.printer_icon).click()
+    def click_settings_button(self):
+        self.click_element(self.SETTINGS_BUTTON)
+
+    def is_title_visible(self):
+        return self.is_element_visible(self.TITLE_TEXT)
