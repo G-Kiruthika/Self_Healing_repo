@@ -1,67 +1,162 @@
 {
   "pages": [
     {
-      "class_name": "RootViewScreen",
-      "file_name": "root_view_screen.py",
-      "elements": [
-        {"name": "printer_icon", "locator": "//android.widget.ImageView[@content-desc='Printer']", "type": "button"}
-      ],
+      "class_name": "HpxAppPage",
+      "file_name": "hpx_app_page.py",
+      "description": "Page object for app launch and installation.",
       "actions": [
-        {"name": "click_printer_icon", "element": "printer_icon", "action": "click"}
-      ]
+        {
+          "name": "install_and_launch_app",
+          "description": "Installs and launches the HPX app.",
+          "locators": [],
+          "parameters": [],
+          "return": "bool"
+        }
+      ],
+      "locators": []
     },
     {
-      "class_name": "DeviceDetailsPage",
-      "file_name": "device_details_page.py",
-      "elements": [
-        {"name": "shortcuts_tile", "locator": "//android.widget.FrameLayout[@content-desc='Shortcuts']", "type": "tile"}
-      ],
+      "class_name": "PrinterDetailsPage",
+      "file_name": "printer_details_page.py",
+      "description": "Page object for printer details screen.",
       "actions": [
-        {"name": "click_shortcuts_tile", "element": "shortcuts_tile", "action": "click"}
-      ]
+        {
+          "name": "navigate_to_printer_details",
+          "description": "Navigates to the printer details screen.",
+          "locators": [],
+          "parameters": [],
+          "return": "bool"
+        }
+      ],
+      "locators": []
     },
     {
-      "class_name": "ShortcutsScreen",
-      "file_name": "shortcuts_screen.py",
-      "elements": [
-        {"name": "add_new_shortcut_button", "locator": "//android.widget.Button[@text='Add new shortcut']", "type": "button"}
-      ],
+      "class_name": "AddShortcutsPage",
+      "file_name": "add_shortcuts_page.py",
+      "description": "Page object for Add Shortcuts screen.",
       "actions": [
-        {"name": "click_add_new_shortcut", "element": "add_new_shortcut_button", "action": "click"}
-      ]
-    },
-    {
-      "class_name": "CreateShortcutScreen",
-      "file_name": "create_shortcut_screen.py",
-      "elements": [
-        {"name": "arrow_button", "locator": "//android.widget.ImageButton[@content-desc='Create shortcut']", "type": "button"}
+        {
+          "name": "navigate_to_add_shortcuts",
+          "description": "Navigates to the Add Shortcuts screen.",
+          "locators": [],
+          "parameters": [],
+          "return": "bool"
+        },
+        {
+          "name": "enable_print_destination_toggle",
+          "description": "Enables the Print destination toggle bar only.",
+          "locators": [
+            {
+              "name": "print_toggle",
+              "type": "toggle",
+              "locator": "//toggle[@label='Print']"
+            }
+          ],
+          "parameters": [],
+          "return": "bool"
+        },
+        {
+          "name": "click_copies_dropdown",
+          "description": "Clicks on the Copies dropdown.",
+          "locators": [
+            {
+              "name": "copies_dropdown",
+              "type": "dropdown",
+              "locator": "//dropdown[@label='Copies']"
+            }
+          ],
+          "parameters": [],
+          "return": "bool"
+        },
+        {
+          "name": "select_copies_value",
+          "description": "Selects a value in the Copies dropdown.",
+          "locators": [
+            {
+              "name": "copies_dropdown_value",
+              "type": "dropdown_option",
+              "locator": "//dropdown[@label='Copies']//option"
+            }
+          ],
+          "parameters": ["value"],
+          "return": "bool"
+        },
+        {
+          "name": "verify_copies_dropdown_value",
+          "description": "Verifies the selected value in the Copies dropdown.",
+          "locators": [
+            {
+              "name": "copies_dropdown_selected",
+              "type": "dropdown_selected",
+              "locator": "//dropdown[@label='Copies']//selected"
+            }
+          ],
+          "parameters": ["expected_value"],
+          "return": "bool"
+        },
+        {
+          "name": "click_color_dropdown",
+          "description": "Clicks on the Color dropdown.",
+          "locators": [
+            {
+              "name": "color_dropdown",
+              "type": "dropdown",
+              "locator": "//dropdown[@label='Color']"
+            }
+          ],
+          "parameters": [],
+          "return": "bool"
+        },
+        {
+          "name": "select_color_option",
+          "description": "Selects an option in the Color dropdown.",
+          "locators": [
+            {
+              "name": "color_dropdown_option",
+              "type": "dropdown_option",
+              "locator": "//dropdown[@label='Color']//option"
+            }
+          ],
+          "parameters": ["option"],
+          "return": "bool"
+        },
+        {
+          "name": "verify_color_dropdown_option",
+          "description": "Verifies the selected option in the Color dropdown.",
+          "locators": [
+            {
+              "name": "color_dropdown_selected",
+              "type": "dropdown_selected",
+              "locator": "//dropdown[@label='Color']//selected"
+            }
+          ],
+          "parameters": ["expected_option"],
+          "return": "bool"
+        },
+        {
+          "name": "verify_screen",
+          "description": "Generic screen verification method.",
+          "locators": [],
+          "parameters": [],
+          "return": "bool"
+        }
       ],
-      "actions": [
-        {"name": "click_create_shortcut_arrow", "element": "arrow_button", "action": "click"}
-      ]
-    },
-    {
-      "class_name": "AddShortcutScreen",
-      "file_name": "add_shortcut_screen.py",
-      "elements": [
-        {"name": "print_toggle", "locator": "//android.widget.Switch[@text='Print']", "type": "toggle"},
-        {"name": "continue_button", "locator": "//android.widget.Button[@text='Continue']", "type": "button"},
-        {"name": "back_button", "locator": "//android.widget.ImageButton[@content-desc='Back']", "type": "button"}
-      ],
-      "actions": [
-        {"name": "enable_print_toggle", "element": "print_toggle", "action": "toggle_on"},
-        {"name": "click_continue", "element": "continue_button", "action": "click"},
-        {"name": "click_back", "element": "back_button", "action": "click"}
-      ]
-    },
-    {
-      "class_name": "AddPrintScreen",
-      "file_name": "add_print_screen.py",
-      "elements": [
-        {"name": "screen_verification", "locator": "//android.view.View[@content-desc='Add print']", "type": "view"}
-      ],
-      "actions": [
-        {"name": "verify_screen", "element": "screen_verification", "action": "verify_present"}
+      "locators": [
+        {
+          "name": "copies_dropdown",
+          "type": "dropdown",
+          "locator": "//dropdown[@label='Copies']"
+        },
+        {
+          "name": "color_dropdown",
+          "type": "dropdown",
+          "locator": "//dropdown[@label='Color']"
+        },
+        {
+          "name": "print_toggle",
+          "type": "toggle",
+          "locator": "//toggle[@label='Print']"
+        }
       ]
     }
   ]
