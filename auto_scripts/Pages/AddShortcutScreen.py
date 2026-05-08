@@ -1,18 +1,15 @@
 from selenium.webdriver.common.by import By
-from auto_scripts.Pages.BasePage import BasePage
+from auto_scripts.BasePage import BasePage
 
 class AddShortcutScreen(BasePage):
-    CREATE_OWN_SHORTCUT_ARROW = (By.XPATH, "//android.widget.ImageView[@content-desc='CreateOwnShortcutArrow']")
-    BACK_BUTTON = (By.XPATH, "//android.widget.Button[@content-desc='Back']")
+    def enable_email_destination_toggle(self):
+        email_destination_toggle = self.driver.find_element(By.ACCESSIBILITY_ID, 'email_destination_toggle')
+        email_destination_toggle.click()
 
-    def click_create_own_shortcut_arrow(self):
-        self.click(self.CREATE_OWN_SHORTCUT_ARROW)
+    def click_continue(self):
+        continue_button = self.driver.find_element(By.ACCESSIBILITY_ID, 'continue_button')
+        continue_button.click()
 
-    def click_back_button(self):
-        self.click(self.BACK_BUTTON)
-
-    def is_create_own_shortcut_arrow_visible(self):
-        return self.is_visible(self.CREATE_OWN_SHORTCUT_ARROW)
-
-    def is_back_button_visible(self):
-        return self.is_visible(self.BACK_BUTTON)
+    def verify_screen(self):
+        add_email_screen = self.driver.find_element(By.ACCESSIBILITY_ID, 'add_email_screen')
+        assert add_email_screen is not None, "User should be navigated to the 'Add Email' screen."
