@@ -1,65 +1,70 @@
-"""Pytest configuration and fixtures for UI automation tests."""
+"""Pytest configuration and fixtures."""
 
 import pytest
-import yaml
+import os
+from datetime import datetime
 from core.driver_factory import get_driver
 
 
 @pytest.fixture(scope="function")
 def driver():
-    """Fixture to initialize and teardown WebDriver for each test.
+    """Fixture to provide WebDriver instance for each test.
     
     Yields:
-        WebDriver: Selenium WebDriver instance
+        WebDriver: Configured WebDriver instance
     """
-    # Initialize driver
     driver_instance = get_driver()
-    
-    # Maximize window
-    driver_instance.maximize_window()
-    
-    # Yield driver to test
     yield driver_instance
-    
-    # Teardown: quit driver after test
     driver_instance.quit()
 
 
 @pytest.fixture(scope="session")
-def config():
-    """Fixture to load configuration from config.yaml.
+def test_config():
+    """Fixture to provide test configuration.
     
     Returns:
-        dict: Configuration dictionary
+        dict: Test configuration
     """
-    with open('auto_scripts/func/config/config.yaml', 'r') as f:
+    import yaml
+    with open('config/config.yaml', 'r') as f:
         return yaml.safe_load(f)
 
 
-@pytest.fixture(scope="function")
-def base_url(config):
-    """Fixture to provide base URL from configuration.
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """Hook to capture test results and take screenshots on failure."""
+    outcome = yield
+    report = outcome.get_result()
     
-    Args:
-        config: Configuration fixture
-        
-    Returns:
-        str: Base URL for the application
-    """
-    return config.get('ui', {}).get('base_url', '')
+    if report.when == 'call' and report.failed:
+        # Get the driver from the test fixture
+        driver = item.funcargs.get('driver')
+        if driver:
+            # Create screenshots directory if it doesn't exist
+            screenshots_dir = 'screenshots'
+            os.makedirs(screenshots_dir, exist_ok=True)
+            
+            # Generate screenshot filename
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            screenshot_name = f"{item.name}_{timestamp}.png"
+            screenshot_path = os.path.join(screenshots_dir, screenshot_name)
+            
+            # Take screenshot
+            driver.save_screenshot(screenshot_path)
+            print(f"Screenshot saved: {screenshot_path}")
 
 
 def pytest_configure(config):
-    """Pytest hook to add custom markers."""
-    config.addinivalue_line(
-        "markers", "ui: mark test as UI automation test"
-    )
-    config.addinivalue_line(
-        "markers", "shortcuts: mark test as shortcuts functionality test"
-    )
+    """Configure pytest with custom markers and settings."""
     config.addinivalue_line(
         "markers", "smoke: mark test as smoke test"
     )
     config.addinivalue_line(
         "markers", "regression: mark test as regression test"
+    )
+    config.addinivalue_line(
+        "markers", "ui: mark test as UI test"
+    )
+    config.addinivalue_line(
+        "markers", "api: mark test as API test"
     )

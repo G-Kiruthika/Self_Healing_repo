@@ -1,71 +1,52 @@
-# Configuration file for UI and API automation framework
+# Python UI & API Automation Framework Configuration
 
-# UI Configuration
-ui:
-  base_url: "https://your-application-url.com"
-  browser: "chrome"  # Options: chrome, firefox, edge, safari
-  headless: false
-  implicit_wait: 10
-  explicit_wait: 20
-  page_load_timeout: 30
-  screenshot_on_failure: true
-  
-# Browser Options
-browser_options:
-  chrome:
-    arguments:
-      - "--start-maximized"
-      - "--disable-extensions"
-      - "--disable-popup-blocking"
-      - "--disable-notifications"
-    experimental_options:
-      prefs:
-        download.default_directory: "./downloads"
-        download.prompt_for_download: false
-  
-  firefox:
-    arguments:
-      - "--start-maximized"
-    preferences:
-      browser.download.folderList: 2
-      browser.download.dir: "./downloads"
-      browser.helperApps.neverAsk.saveToDisk: "application/pdf"
+# Browser Configuration
+browser: chrome  # Options: chrome, firefox, edge
+headless: false  # Run browser in headless mode
+
+# Timeouts (in seconds)
+implicit_wait: 10
+page_load_timeout: 30
+explicit_wait: 10
+
+# Application URLs
+app:
+  base_url: https://example.com
+  login_url: https://example.com/login
 
 # API Configuration
 api:
-  base_url: "https://api.your-application.com"
+  base_url: https://api.example.com
   timeout: 30
   verify_ssl: true
-  headers:
-    Content-Type: "application/json"
-    Accept: "application/json"
 
 # Test Data
 test_data:
-  cloud_accounts:
-    - type: "google_drive"
-      name: "Google Drive"
-    - type: "dropbox"
-      name: "Dropbox"
-    - type: "onedrive"
-      name: "OneDrive"
+  users:
+    valid_user:
+      username: standard_user
+      password: secret_sauce
+    invalid_user:
+      username: invalid_user
+      password: wrong_password
 
-# Reporting Configuration
+# Reporting
 reporting:
-  report_dir: "./reports"
-  screenshot_dir: "./reports/screenshots"
-  log_level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  
+  screenshots_on_failure: true
+  video_recording: false
+  report_format: html  # Options: html, json, xml
+
 # Email Configuration (for test reports)
 email:
   enabled: false
-  smtp_server: "smtp.gmail.com"
+  smtp_server: smtp.gmail.com
   smtp_port: 587
-  sender_email: "your-email@example.com"
-  sender_password: "your-password"
+  sender: test-automation@example.com
   recipients:
-    - "recipient1@example.com"
-    - "recipient2@example.com"
+    - qa-team@example.com
+  subject: Test Automation Report
 
-# Environment
-environment: "test"  # Options: dev, test, staging, production
+# Logging
+logging:
+  level: INFO  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_file: logs/test_execution.log
