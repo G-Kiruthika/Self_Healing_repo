@@ -1,1 +1,36 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"80": {"test_name": "verify_remove_email_shortcut", "feature": "Shortcuts", "target_file": "test_remove_email_shortcut.py", "pages_used": ["HpxApp", "PrinterDetailsScreen", "ShortcutsScreen"], "flow": [{"page": "HpxApp", "action": "install_and_launch_app", "data_ref": null}, {"page": "PrinterDetailsScreen", "action": "navigate_to_printer_details_screen", "data_ref": null}, {"page": "ShortcutsScreen", "action": "click_edit_link", "data_ref": null}, {"page": "ShortcutsScreen", "action": "click_email_shortcut_edit_icon", "data_ref": null}, {"page": "ShortcutsScreen", "action": "click_remove_button", "data_ref": null}, {"page": "ShortcutsScreen", "assertion": "verify_email_destination_removed"}], "test_data": null}, "81": {"test_name": "verify_cancel_email_shortcut_removal", "feature": "Shortcuts", "target_file": "test_cancel_email_shortcut_removal.py", "pages_used": ["HpxApp", "PrinterDetailsScreen", "ShortcutsScreen"], "flow": [{"page": "HpxApp", "action": "install_and_launch_app", "data_ref": null}, {"page": "PrinterDetailsScreen", "action": "navigate_to_printer_details_screen", "data_ref": null}, {"page": "ShortcutsScreen", "action": "click_edit_link", "data_ref": null}, {"page": "ShortcutsScreen", "action": "click_email_shortcut_edit_icon", "data_ref": null}, {"page": "ShortcutsScreen", "action": "click_cancel_button", "data_ref": null}, {"page": "ShortcutsScreen", "assertion": "verify_screen"}], "test_data": null}}, "framework": {"architecture": "python-ui-api-automation-framework", "type": "ui", "base_classes_required": ["BasePage"], "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"], "config_dependencies": ["config/config.yaml"], "utils_dependencies": [], "api_dependencies": [], "external_libraries": ["selenium", "pytest", "pyyaml"], "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]}}
+{
+  "test_cases": [
+    {
+      "test_case_id": "82",
+      "description": "Verify the screen, when user removes the 'Save' destination shortcut.",
+      "steps": [
+        {"step_id": 1, "page": "RootViewScreen", "action": "launch_app", "data": null, "expected": "Remove this destination?' pop up should be displayed."},
+        {"step_id": 2, "page": "PrinterDetailsScreen", "action": "navigate", "data": null, "expected": ""},
+        {"step_id": 3, "page": "ShortcutsScreen", "action": "navigate", "data": null, "expected": ""},
+        {"step_id": 4, "page": "PrinterDetailsScreen", "action": "click_edit_link", "data": null, "expected": ""},
+        {"step_id": 5, "page": "ShortcutsScreen", "action": "click_edit_icon_save_shortcut", "data": null, "expected": ""},
+        {"step_id": 6, "page": "RemoveDestinationPopup", "action": "verify_popup_displayed", "data": null, "expected": ""}
+      ]
+    },
+    {
+      "test_case_id": "55",
+      "description": "Verify the behavior, when user Enables the 'Save' destination toggle bar in 'Add Shortcut' screen.",
+      "steps": [
+        {"step_id": 1, "page": "RootViewScreen", "action": "launch_app", "data": null, "expected": "User should be able to Enable the 'Save' destination toggle bar in 'Add shortcut' screen."},
+        {"step_id": 2, "page": "RootViewScreen", "action": "click_printer_icon", "data": null, "expected": "After disabling the 'Save' destination toggle bar, 'continue' button should be enabled."},
+        {"step_id": 3, "page": "PrinterDetailsScreen", "action": "click_shortcuts_tile", "data": null, "expected": ""},
+        {"step_id": 4, "page": "ShortcutsScreen", "action": "click_add_new_shortcuts", "data": null, "expected": ""},
+        {"step_id": 5, "page": "AddShortcutScreen", "action": "click_create_your_own_shortcut_arrow", "data": null, "expected": ""},
+        {"step_id": 6, "page": "AddShortcutScreen", "action": "enable_save_destination_toggle", "data": null, "expected": ""},
+        {"step_id": 7, "page": "AddShortcutScreen", "action": "verify_screen", "data": null, "expected": ""}
+      ]
+    }
+  ],
+  "framework": {
+    "dependencies": [
+      "selenium",
+      "pytest"
+    ],
+    "kb_folder_structure": "auto_scripts/func/metadata"
+  }
+}

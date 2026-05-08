@@ -1,1 +1,65 @@
-{"pages": {"ShortcutsScreen": {"file_name": "shortcuts_screen.py", "locators": {"edit_link": {"by": "xpath", "value": "//placeholder[@id='edit_link']"}, "email_shortcut_edit_icon": {"by": "xpath", "value": "//placeholder[@id='email_shortcut_edit_icon']"}, "remove_button": {"by": "xpath", "value": "//placeholder[@id='remove_button']"}, "cancel_button": {"by": "xpath", "value": "//placeholder[@id='cancel_button']"}}, "actions": ["click_edit_link()", "click_email_shortcut_edit_icon()", "click_remove_button()", "click_cancel_button()"], "validations": ["verify_screen()", "verify_email_destination_removed()"]}, "PrinterDetailsScreen": {"file_name": "printer_details_screen.py", "locators": {}, "actions": ["navigate_to_printer_details_screen()"], "validations": []}, "HpxApp": {"file_name": "hpx_app.py", "locators": {}, "actions": ["install_and_launch_app()"], "validations": []}}}
+{
+  "pages": [
+    {
+      "class_name": "RootViewScreen",
+      "file_name": "root_view_screen.py",
+      "description": "Root view screen of the HPX app.",
+      "locators": {
+        "printer_icon": "placeholder_locator",
+        "shortcuts_tile": "placeholder_locator"
+      },
+      "actions": [
+        "click_printer_icon",
+        "click_shortcuts_tile"
+      ]
+    },
+    {
+      "class_name": "PrinterDetailsScreen",
+      "file_name": "printer_details_screen.py",
+      "description": "Printer details screen.",
+      "locators": {
+        "edit_link": "placeholder_locator"
+      },
+      "actions": [
+        "click_edit_link"
+      ]
+    },
+    {
+      "class_name": "ShortcutsScreen",
+      "file_name": "shortcuts_screen.py",
+      "description": "Shortcuts management screen.",
+      "locators": {
+        "edit_icon_save_shortcut": "placeholder_locator",
+        "add_new_shortcuts": "placeholder_locator"
+      },
+      "actions": [
+        "click_edit_icon_save_shortcut",
+        "click_add_new_shortcuts"
+      ]
+    },
+    {
+      "class_name": "AddShortcutScreen",
+      "file_name": "add_shortcut_screen.py",
+      "description": "Add Shortcut configuration screen.",
+      "locators": {
+        "save_destination_toggle": "placeholder_locator",
+        "create_your_own_shortcut_arrow": "placeholder_locator"
+      },
+      "actions": [
+        "enable_save_destination_toggle",
+        "click_create_your_own_shortcut_arrow"
+      ]
+    },
+    {
+      "class_name": "RemoveDestinationPopup",
+      "file_name": "remove_destination_popup.py",
+      "description": "Popup dialog for removing a destination.",
+      "locators": {
+        "popup_container": "placeholder_locator"
+      },
+      "actions": [
+        "verify_popup_displayed"
+      ]
+    }
+  ]
+}
