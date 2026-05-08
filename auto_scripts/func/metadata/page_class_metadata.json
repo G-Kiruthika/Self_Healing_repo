@@ -1,74 +1,68 @@
 {
   "pages": [
     {
-      "class_name": "RootViewScreen",
-      "file_name": "root_view_screen.py",
-      "elements": [
+      "page_name": "HPXAppLaunchPage",
+      "actions": [
         {
-          "name": "printer_icon",
-          "locator": "//placeholder/printer_icon"
+          "action_name": "launch_app",
+          "description": "Install and launch the HPX app.",
+          "locators": [{"type": "app_icon", "value": "placeholder_app_icon_locator"}]
+        }
+      ],
+      "validations": [
+        {
+          "validation_name": "is_remove_popup_displayed",
+          "description": "Validate if 'Remove this destination?' pop up is displayed.",
+          "locators": [{"type": "popup", "value": "placeholder_remove_popup_locator"}]
         }
       ]
     },
     {
-      "class_name": "DeviceDetailsPage",
-      "file_name": "device_details_page.py",
-      "elements": [
+      "page_name": "PrinterDetailsPage",
+      "actions": [
         {
-          "name": "shortcuts_tile",
-          "locator": "//placeholder/shortcuts_tile"
+          "action_name": "navigate_to_printer_details",
+          "description": "Navigate to printer details screen.",
+          "locators": [{"type": "button", "value": "placeholder_printer_details_button_locator"}]
         }
-      ]
+      ],
+      "validations": []
     },
     {
-      "class_name": "ShortcutsScreen",
-      "file_name": "shortcuts_screen.py",
-      "elements": [
+      "page_name": "ShortcutsPage",
+      "actions": [
         {
-          "name": "add_new_shortcuts_button",
-          "locator": "//placeholder/add_new_shortcuts_button"
+          "action_name": "navigate_to_shortcuts",
+          "description": "Navigate to Shortcuts screen.",
+          "locators": [{"type": "tab", "value": "placeholder_shortcuts_tab_locator"}]
         },
         {
-          "name": "edit_link",
-          "locator": "//placeholder/edit_link"
+          "action_name": "click_edit_link",
+          "description": "Click on the edit link.",
+          "locators": [{"type": "link", "value": "placeholder_edit_link_locator"}]
         },
         {
-          "name": "delete_icon",
-          "locator": "//placeholder/delete_icon"
+          "action_name": "click_edit_icon_print_shortcut",
+          "description": "Click on the Edit icon of the Print shortcut.",
+          "locators": [{"type": "icon", "value": "placeholder_edit_icon_print_locator"}]
         }
-      ]
+      ],
+      "validations": []
     },
     {
-      "class_name": "CreateShortcutScreen",
-      "file_name": "create_shortcut_screen.py",
-      "elements": [
+      "page_name": "RemovePopupPage",
+      "actions": [
         {
-          "name": "create_own_shortcut_arrow",
-          "locator": "//placeholder/create_own_shortcut_arrow"
+          "action_name": "click_remove_button",
+          "description": "Click on the remove button of pop up screen.",
+          "locators": [{"type": "button", "value": "placeholder_remove_button_locator"}]
         }
-      ]
-    },
-    {
-      "class_name": "AddSaveScreen",
-      "file_name": "add_save_screen.py",
-      "elements": [
+      ],
+      "validations": [
         {
-          "name": "sign_in_link",
-          "locator": "//placeholder/sign_in_link"
-        }
-      ]
-    },
-    {
-      "class_name": "DeleteShortcutPopup",
-      "file_name": "delete_shortcut_popup.py",
-      "elements": [
-        {
-          "name": "delete_button",
-          "locator": "//placeholder/delete_button"
-        },
-        {
-          "name": "cancel_button",
-          "locator": "//placeholder/cancel_button"
+          "validation_name": "is_print_shortcut_removed",
+          "description": "Validate that selected 'Print' destination is removed from Shortcuts screen.",
+          "locators": [{"type": "shortcut", "value": "placeholder_print_shortcut_locator"}]
         }
       ]
     }
