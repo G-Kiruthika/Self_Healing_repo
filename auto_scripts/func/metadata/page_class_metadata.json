@@ -1,1 +1,40 @@
-{"pages": {"ShortcutsScreen": {"file_name": "shortcuts_screen.py", "locators": {"edit_link": {"by": "xpath", "value": "//placeholder/edit_link"}, "edit_icon_print_shortcut": {"by": "xpath", "value": "//placeholder/edit_icon_print_shortcut"}, "edit_icon_email_shortcut": {"by": "xpath", "value": "//placeholder/edit_icon_email_shortcut"}, "screen_verification": {"by": "xpath", "value": "//placeholder/screen_verification"}}, "actions": ["click_edit_link()", "click_edit_icon_print_shortcut()", "click_edit_icon_email_shortcut()", "verify_screen()"], "validations": ["verify_screen()"]}, "PrinterDetailsScreen": {"file_name": "printer_details_screen.py", "locators": {"printer_details": {"by": "xpath", "value": "//placeholder/printer_details"}}, "actions": ["navigate_to_printer_details()"], "validations": []}, "PopupScreen": {"file_name": "popup_screen.py", "locators": {"cancel_button": {"by": "xpath", "value": "//placeholder/cancel_button"}, "popup_verification": {"by": "xpath", "value": "//placeholder/popup_verification"}}, "actions": ["click_cancel_button()", "verify_popup()"], "validations": ["verify_popup()"]}, "AppLauncherScreen": {"file_name": "app_launcher_screen.py", "locators": {"app_launcher": {"by": "xpath", "value": "//placeholder/app_launcher"}}, "actions": ["install_and_launch_app()"], "validations": []}}, "framework": {"base_classes_required": ["BasePage"], "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"], "config_dependencies": ["config/config.yaml"], "external_libraries": ["selenium", "pytest", "pyyaml"], "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]}}
+{
+  "ShortcutsScreen": {
+    "class_name": "ShortcutsScreen",
+    "file_name": "shortcuts_screen.py",
+    "locators": {
+      "edit_link": "//placeholder[@id='edit_link']",
+      "email_shortcut_edit_icon": "//placeholder[@id='email_shortcut_edit_icon']",
+      "remove_button": "//placeholder[@id='remove_button']",
+      "cancel_button": "//placeholder[@id='cancel_button']"
+    },
+    "actions": [
+      "click_edit_link",
+      "click_email_shortcut_edit_icon",
+      "click_remove_button",
+      "click_cancel_button"
+    ],
+    "validations": [
+      "verify_screen",
+      "verify_email_destination_removed"
+    ]
+  },
+  "PrinterDetailsScreen": {
+    "class_name": "PrinterDetailsScreen",
+    "file_name": "printer_details_screen.py",
+    "locators": {},
+    "actions": [
+      "navigate_to_printer_details_screen"
+    ],
+    "validations": []
+  },
+  "HpxApp": {
+    "class_name": "HpxApp",
+    "file_name": "hpx_app.py",
+    "locators": {},
+    "actions": [
+      "install_and_launch_app"
+    ],
+    "validations": []
+  }
+}
