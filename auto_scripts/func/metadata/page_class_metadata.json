@@ -1,65 +1,102 @@
-{ 
-  "pages": [ 
-    { 
-      "class_name": "RootViewScreen", 
-      "file_name": "root_view_screen.py", 
-      "description": "Root view screen of the HPX app.", 
-      "locators": { 
-        "printer_icon": "placeholder_locator", 
-        "shortcuts_tile": "placeholder_locator" 
-      }, 
-      "actions": [ 
-        "click_printer_icon", 
-        "click_shortcuts_tile" 
-      ] 
-    }, 
-    { 
-      "class_name": "PrinterDetailsScreen", 
-      "file_name": "printer_details_screen.py", 
-      "description": "Printer details screen.", 
-      "locators": { 
-        "edit_link": "placeholder_locator" 
-      }, 
-      "actions": [ 
-        "click_edit_link" 
-      ] 
-    }, 
-    { 
-      "class_name": "ShortcutsScreen", 
-      "file_name": "shortcuts_screen.py", 
-      "description": "Shortcuts management screen.", 
-      "locators": { 
-        "edit_icon_save_shortcut": "placeholder_locator", 
-        "add_new_shortcuts": "placeholder_locator" 
-      }, 
-      "actions": [ 
-        "click_edit_icon_save_shortcut", 
-        "click_add_new_shortcuts" 
-      ] 
-    }, 
-    { 
-      "class_name": "AddShortcutScreen", 
-      "file_name": "add_shortcut_screen.py", 
-      "description": "Add Shortcut configuration screen.", 
-      "locators": { 
-        "save_destination_toggle": "placeholder_locator", 
-        "create_your_own_shortcut_arrow": "placeholder_locator" 
-      }, 
-      "actions": [ 
-        "enable_save_destination_toggle", 
-        "click_create_your_own_shortcut_arrow" 
-      ] 
-    }, 
-    { 
-      "class_name": "RemoveDestinationPopup", 
-      "file_name": "remove_destination_popup.py", 
-      "description": "Popup dialog for removing a destination.", 
-      "locators": { 
-        "popup_container": "placeholder_locator" 
-      }, 
-      "actions": [ 
-        "verify_popup_displayed" 
-      ] 
-    } 
-  ] 
+{
+  "pages": [
+    {
+      "page_name": "RootViewScreen",
+      "elements": [
+        {
+          "name": "printer_icon",
+          "locator": "//android.widget.ImageView[@content-desc='Printer']",
+          "type": "button"
+        }
+      ],
+      "actions": [
+        {
+          "action_name": "click_printer_icon",
+          "element": "printer_icon"
+        }
+      ]
+    },
+    {
+      "page_name": "DeviceDetailsPage",
+      "elements": [
+        {
+          "name": "shortcuts_tile",
+          "locator": "//android.widget.FrameLayout[@content-desc='ShortcutsTile']",
+          "type": "button"
+        }
+      ],
+      "actions": [
+        {
+          "action_name": "click_shortcuts_tile",
+          "element": "shortcuts_tile"
+        }
+      ]
+    },
+    {
+      "page_name": "ShortcutsScreen",
+      "elements": [
+        {
+          "name": "add_new_shortcuts_btn",
+          "locator": "//android.widget.Button[@content-desc='AddNewShortcuts']",
+          "type": "button"
+        }
+      ],
+      "actions": [
+        {
+          "action_name": "click_add_new_shortcuts",
+          "element": "add_new_shortcuts_btn"
+        }
+      ]
+    },
+    {
+      "page_name": "AddShortcutScreen",
+      "elements": [
+        {
+          "name": "create_own_shortcut_arrow",
+          "locator": "//android.widget.ImageView[@content-desc='CreateOwnShortcutArrow']",
+          "type": "button"
+        },
+        {
+          "name": "back_button",
+          "locator": "//android.widget.Button[@content-desc='Back']",
+          "type": "button"
+        }
+      ],
+      "actions": [
+        {
+          "action_name": "click_create_own_shortcut_arrow",
+          "element": "create_own_shortcut_arrow"
+        },
+        {
+          "action_name": "click_back_button",
+          "element": "back_button"
+        }
+      ]
+    },
+    {
+      "page_name": "PopUpScreen",
+      "elements": [
+        {
+          "name": "go_back_button",
+          "locator": "//android.widget.Button[@content-desc='GoBack']",
+          "type": "button"
+        },
+        {
+          "name": "yes_cancel_button",
+          "locator": "//android.widget.Button[@content-desc='YesCancel']",
+          "type": "button"
+        }
+      ],
+      "actions": [
+        {
+          "action_name": "click_go_back_button",
+          "element": "go_back_button"
+        },
+        {
+          "action_name": "click_yes_cancel_button",
+          "element": "yes_cancel_button"
+        }
+      ]
+    }
+  ]
 }

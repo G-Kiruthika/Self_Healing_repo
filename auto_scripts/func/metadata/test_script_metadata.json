@@ -1,36 +1,46 @@
-{ 
-  "test_cases": [ 
-    { 
-      "test_case_id": "82", 
-      "description": "Verify the screen, when user removes the 'Save' destination shortcut.", 
-      "steps": [ 
-        {"step_id": 1, "page": "RootViewScreen", "action": "launch_app", "data": null, "expected": "Remove this destination?' pop up should be displayed."}, 
-        {"step_id": 2, "page": "PrinterDetailsScreen", "action": "navigate", "data": null, "expected": ""}, 
-        {"step_id": 3, "page": "ShortcutsScreen", "action": "navigate", "data": null, "expected": ""}, 
-        {"step_id": 4, "page": "PrinterDetailsScreen", "action": "click_edit_link", "data": null, "expected": ""}, 
-        {"step_id": 5, "page": "ShortcutsScreen", "action": "click_edit_icon_save_shortcut", "data": null, "expected": ""}, 
-        {"step_id": 6, "page": "RemoveDestinationPopup", "action": "verify_popup_displayed", "data": null, "expected": ""} 
-      ] 
-    }, 
-    { 
-      "test_case_id": "55", 
-      "description": "Verify the behavior, when user Enables the 'Save' destination toggle bar in 'Add Shortcut' screen.", 
-      "steps": [ 
-        {"step_id": 1, "page": "RootViewScreen", "action": "launch_app", "data": null, "expected": "User should be able to Enable the 'Save' destination toggle bar in 'Add shortcut' screen."}, 
-        {"step_id": 2, "page": "RootViewScreen", "action": "click_printer_icon", "data": null, "expected": "After disabling the 'Save' destination toggle bar, 'continue' button should be enabled."}, 
-        {"step_id": 3, "page": "PrinterDetailsScreen", "action": "click_shortcuts_tile", "data": null, "expected": ""}, 
-        {"step_id": 4, "page": "ShortcutsScreen", "action": "click_add_new_shortcuts", "data": null, "expected": ""}, 
-        {"step_id": 5, "page": "AddShortcutScreen", "action": "click_create_your_own_shortcut_arrow", "data": null, "expected": ""}, 
-        {"step_id": 6, "page": "AddShortcutScreen", "action": "enable_save_destination_toggle", "data": null, "expected": ""}, 
-        {"step_id": 7, "page": "AddShortcutScreen", "action": "verify_screen", "data": null, "expected": ""} 
-      ] 
-    } 
-  ], 
-  "framework": { 
-    "dependencies": [ 
-      "selenium", 
-      "pytest" 
-    ], 
-    "kb_folder_structure": "auto_scripts/func/metadata" 
-  } 
+{
+  "test_suite": "ShortcutFlow",
+  "test_cases": [
+    {
+      "test_case_id": "49",
+      "description": "Verify the screen, when the user clicks on 'Go back' button.",
+      "steps": [
+        {"action": "launch_app", "page": "RootViewScreen", "data": null},
+        {"action": "click_printer_icon", "page": "RootViewScreen", "data": null},
+        {"action": "click_shortcuts_tile", "page": "DeviceDetailsPage", "data": null},
+        {"action": "click_add_new_shortcuts", "page": "ShortcutsScreen", "data": null},
+        {"action": "click_create_own_shortcut_arrow", "page": "AddShortcutScreen", "data": null},
+        {"action": "click_back_button", "page": "AddShortcutScreen", "data": null},
+        {"action": "click_go_back_button", "page": "PopUpScreen", "data": null},
+        {"action": "verify_screen", "page": "AddShortcutScreen", "data": null}
+      ],
+      "test_data": {},
+      "flow": [1,2,3,4,5,6,7,8]
+    },
+    {
+      "test_case_id": "50",
+      "description": "Verify the screen, when user clicks on the 'Yes, cancel' button.",
+      "steps": [
+        {"action": "launch_app", "page": "RootViewScreen", "data": null},
+        {"action": "click_printer_icon", "page": "RootViewScreen", "data": null},
+        {"action": "click_shortcuts_tile", "page": "DeviceDetailsPage", "data": null},
+        {"action": "click_add_new_shortcuts", "page": "ShortcutsScreen", "data": null},
+        {"action": "click_create_own_shortcut_arrow", "page": "AddShortcutScreen", "data": null},
+        {"action": "click_back_button", "page": "AddShortcutScreen", "data": null},
+        {"action": "click_yes_cancel_button", "page": "PopUpScreen", "data": null},
+        {"action": "verify_screen", "page": "ShortcutsScreen", "data": null}
+      ],
+      "test_data": {},
+      "flow": [1,2,3,4,5,6,7,8]
+    }
+  ],
+  "framework": {
+    "language": "python",
+    "dependencies": [
+      "selenium",
+      "pytest",
+      "appium"
+    ],
+    "metadata_folder": "auto_scripts/func/metadata"
+  }
 }
