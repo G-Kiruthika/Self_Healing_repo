@@ -1,1 +1,1 @@
-<Full content of tests/__init__.py>
+# auto_scripts/func/tests/__init__.py

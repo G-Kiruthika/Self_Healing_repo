@@ -1,1 +1,23 @@
-<Full content of config.yaml>
+# auto_scripts/func/config/config.yaml
+
+ui:
+  base_url: "https://uniondigitalbank.io/en"
+  browser: "chrome"
+  headless: false
+  implicit_wait: 10
+  explicit_wait: 20
+  page_load_timeout: 30
+
+api:
+  base_url: "https://api.uniondigitalbank.io"
+  timeout: 30
+  verify_ssl: true
+
+reporting:
+  screenshot_on_failure: true
+  screenshot_path: "auto_scripts/func/reports/screenshots"
+  report_path: "auto_scripts/func/reports"
+  
+logging:
+  level: "INFO"
+  log_file: "auto_scripts/func/logs/automation.log"
