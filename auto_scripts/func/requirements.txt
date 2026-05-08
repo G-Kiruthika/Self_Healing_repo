@@ -1,4 +1,4 @@
-# Core Selenium and WebDriver dependencies
+# Core Selenium dependencies
 selenium==4.15.2
 webdriver-manager==4.0.1
 
@@ -9,18 +9,13 @@ pytest-xdist==3.5.0
 
 # Configuration and data handling
 PyYAML==6.0.1
-python-dotenv==1.0.0
 
-# API testing
+# API testing (if needed)
 requests==2.31.0
 
-# Utilities
+# Reporting and utilities
 allure-pytest==2.13.2
-Pillow==10.1.0
+pytest-metadata==3.0.0
 
-# Logging and reporting
-coloredlogs==15.0.1
-
-# Code quality
-pylint==3.0.3
-black==23.12.1
+# Additional utilities
+python-dotenv==1.0.0

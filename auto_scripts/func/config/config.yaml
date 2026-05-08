@@ -2,59 +2,70 @@
 
 # UI Configuration
 ui:
-  browser: chrome  # Options: chrome, firefox, edge
-  headless: false  # Run browser in headless mode
-  implicit_wait: 10  # Implicit wait timeout in seconds
-  page_load_timeout: 30  # Page load timeout in seconds
-  base_url: ""  # Base URL for the application (update as needed)
-  window_size: "1920,1080"  # Browser window size
+  base_url: "https://your-application-url.com"
+  browser: "chrome"  # Options: chrome, firefox, edge, safari
+  headless: false
+  implicit_wait: 10
+  explicit_wait: 20
+  page_load_timeout: 30
+  screenshot_on_failure: true
+  
+# Browser Options
+browser_options:
+  chrome:
+    arguments:
+      - "--start-maximized"
+      - "--disable-extensions"
+      - "--disable-popup-blocking"
+      - "--disable-notifications"
+    experimental_options:
+      prefs:
+        download.default_directory: "./downloads"
+        download.prompt_for_download: false
+  
+  firefox:
+    arguments:
+      - "--start-maximized"
+    preferences:
+      browser.download.folderList: 2
+      browser.download.dir: "./downloads"
+      browser.helperApps.neverAsk.saveToDisk: "application/pdf"
 
 # API Configuration
 api:
-  base_url: ""  # Base API URL (update as needed)
-  timeout: 30  # Request timeout in seconds
-  verify_ssl: true  # Verify SSL certificates
+  base_url: "https://api.your-application.com"
+  timeout: 30
+  verify_ssl: true
   headers:
     Content-Type: "application/json"
     Accept: "application/json"
 
-# Test Data Configuration
+# Test Data
 test_data:
-  shortcuts:
-    default_shortcut_name: "Test Shortcut"
   cloud_accounts:
-    - name: "Google Drive"
-      type: "google"
-    - name: "Dropbox"
-      type: "dropbox"
-    - name: "OneDrive"
-      type: "onedrive"
-
-# Logging Configuration
-logging:
-  level: INFO  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  file: "logs/automation.log"
-
-# Screenshot Configuration
-screenshots:
-  enabled: true
-  on_failure: true
-  directory: "screenshots"
+    - type: "google_drive"
+      name: "Google Drive"
+    - type: "dropbox"
+      name: "Dropbox"
+    - type: "onedrive"
+      name: "OneDrive"
 
 # Reporting Configuration
 reporting:
-  html_report: true
-  json_report: false
-  report_directory: "reports"
+  report_dir: "./reports"
+  screenshot_dir: "./reports/screenshots"
+  log_level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  
+# Email Configuration (for test reports)
+email:
+  enabled: false
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender_email: "your-email@example.com"
+  sender_password: "your-password"
+  recipients:
+    - "recipient1@example.com"
+    - "recipient2@example.com"
 
-# Environment Configuration
-environment: "test"  # Options: dev, test, staging, prod
-
-# Mobile Configuration (if applicable)
-mobile:
-  platform: "Android"  # Options: Android, iOS
-  device_name: ""
-  app_package: ""
-  app_activity: ""
-  automation_name: "UiAutomator2"
+# Environment
+environment: "test"  # Options: dev, test, staging, production

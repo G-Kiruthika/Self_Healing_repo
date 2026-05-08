@@ -2,35 +2,83 @@
   "test_scripts": [
     {
       "test_case_id": "72",
+      "test_file": "auto_scripts/func/tests/ui/test_shortcuts_sign_in.py",
+      "test_class": "TestShortcutsSignIn",
+      "test_method": "test_sign_in_link_cloud_accounts",
       "description": "Verify the screen, when user click on 'Sign in' link of any cloud accounts under Add accounts in 'Add save' screen.",
       "page_flow": [
-        {"page": "RootViewScreen", "action": "launch_app"},
-        {"page": "RootViewScreen", "action": "click_printer_icon"},
-        {"page": "DeviceDetailsPage", "action": "click_shortcuts_tile"},
-        {"page": "ShortcutsScreen", "action": "click_add_new_shortcuts_button"},
-        {"page": "CreateShortcutScreen", "action": "click_create_own_shortcut_arrow"},
-        {"page": "AddSaveScreen", "action": "navigate"},
-        {"page": "AddSaveScreen", "action": "click_sign_in_link"},
-        {"page": "AddSaveScreen", "action": "verify_sign_in_behavior"}
+        {
+          "page": "RootViewScreen",
+          "action": "launch_app"
+        },
+        {
+          "page": "RootViewScreen",
+          "action": "click_printer_icon"
+        },
+        {
+          "page": "DeviceDetailsPage",
+          "action": "click_shortcuts_tile"
+        },
+        {
+          "page": "ShortcutsScreen",
+          "action": "click_add_new_shortcuts_button"
+        },
+        {
+          "page": "CreateShortcutScreen",
+          "action": "click_create_own_shortcut_arrow"
+        },
+        {
+          "page": "AddSaveScreen",
+          "action": "navigate"
+        },
+        {
+          "page": "AddSaveScreen",
+          "action": "click_sign_in_link"
+        },
+        {
+          "page": "AddSaveScreen",
+          "action": "verify_sign_in_behavior"
+        }
       ],
       "test_data": {},
       "expected_results": [
         "User should be able to signed in with the desired cloud accounts."
-      ]
+      ],
+      "markers": ["ui", "shortcuts", "regression"],
+      "priority": "high",
+      "status": "active"
     },
     {
       "test_case_id": "73",
+      "test_file": "auto_scripts/func/tests/ui/test_delete_shortcut_popup.py",
+      "test_class": "TestDeleteShortcutPopup",
+      "test_method": "test_delete_shortcut_buttons_position",
       "description": "Verify the position of the buttons on the 'Delete this Shortcut?' pop up window.",
       "page_flow": [
-        {"page": "RootViewScreen", "action": "launch_app"},
-        {"page": "ShortcutsScreen", "action": "navigate_and_click_edit_link"},
-        {"page": "ShortcutsScreen", "action": "click_delete_icon"},
-        {"page": "DeleteShortcutPopup", "action": "verify_buttons_position"}
+        {
+          "page": "RootViewScreen",
+          "action": "launch_app"
+        },
+        {
+          "page": "ShortcutsScreen",
+          "action": "navigate_and_click_edit_link"
+        },
+        {
+          "page": "ShortcutsScreen",
+          "action": "click_delete_icon"
+        },
+        {
+          "page": "DeleteShortcutPopup",
+          "action": "verify_buttons_position"
+        }
       ],
       "test_data": {},
       "expected_results": [
         "The position of the buttons on the 'Delete this Shortcut?' screen should have 'Delete' as the primary button and 'Cancel' as the secondary button."
-      ]
+      ],
+      "markers": ["ui", "shortcuts", "regression"],
+      "priority": "medium",
+      "status": "active"
     }
   ],
   "dependencies": {
@@ -42,7 +90,13 @@
       "auto_scripts/func/tests"
     ],
     "required": [
-      "selenium", "pytest"
+      "selenium",
+      "pytest"
     ]
+  },
+  "metadata": {
+    "generated_date": "2024",
+    "framework_version": "1.0",
+    "total_test_cases": 2
   }
 }

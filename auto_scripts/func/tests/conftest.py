@@ -1,23 +1,27 @@
-"""Pytest configuration file for test fixtures and hooks.
-
-This file contains shared fixtures and configuration for all tests.
-"""
+"""Pytest configuration and fixtures for UI automation tests."""
 
 import pytest
 import yaml
-from pathlib import Path
 from core.driver_factory import get_driver
 
 
 @pytest.fixture(scope="function")
 def driver():
-    """Fixture to provide WebDriver instance for each test.
+    """Fixture to initialize and teardown WebDriver for each test.
     
     Yields:
         WebDriver: Selenium WebDriver instance
     """
+    # Initialize driver
     driver_instance = get_driver()
+    
+    # Maximize window
+    driver_instance.maximize_window()
+    
+    # Yield driver to test
     yield driver_instance
+    
+    # Teardown: quit driver after test
     driver_instance.quit()
 
 
@@ -28,12 +32,11 @@ def config():
     Returns:
         dict: Configuration dictionary
     """
-    config_path = Path(__file__).parent.parent / "config" / "config.yaml"
-    with open(config_path, 'r') as f:
+    with open('auto_scripts/func/config/config.yaml', 'r') as f:
         return yaml.safe_load(f)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def base_url(config):
     """Fixture to provide base URL from configuration.
     
@@ -47,9 +50,12 @@ def base_url(config):
 
 
 def pytest_configure(config):
-    """Pytest hook for initial configuration."""
+    """Pytest hook to add custom markers."""
     config.addinivalue_line(
         "markers", "ui: mark test as UI automation test"
+    )
+    config.addinivalue_line(
+        "markers", "shortcuts: mark test as shortcuts functionality test"
     )
     config.addinivalue_line(
         "markers", "smoke: mark test as smoke test"

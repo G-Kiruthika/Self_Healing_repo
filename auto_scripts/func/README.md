@@ -1,73 +1,69 @@
-# Python UI & API Automation Framework
+# Functional UI Automation Framework
 
-A comprehensive automation framework for UI and API testing using Python, Selenium, and Pytest.
+## Overview
+This is a Python-based UI automation framework using Selenium WebDriver and Pytest for functional testing.
 
 ## Project Structure
-
 ```
 auto_scripts/func/
-│
-├── config/              # Configuration files
-│   └── config.yaml     # Environment and test configuration
-│
-├── core/               # Core framework utilities
-│   ├── __init__.py
-│   ├── driver_factory.py    # WebDriver factory
-│   └── selenium_wrapper.py  # Selenium wrapper utilities
-│
-├── pages/              # Page Object Models
-│   ├── __init__.py
-│   ├── base_page.py
-│   ├── root_view_screen.py
+├── config/
+│   └── config.yaml          # Configuration file for environments and settings
+├── core/
+│   ├── driver_factory.py    # WebDriver initialization and management
+│   └── selenium_wrapper.py  # Selenium utility wrapper (if needed)
+├── pages/
+│   ├── base_page.py         # Base page class with common methods
+│   ├── root_view_screen.py  # Root view page object
 │   ├── device_details_page.py
 │   ├── shortcuts_screen.py
 │   ├── create_shortcut_screen.py
 │   ├── add_save_screen.py
 │   └── delete_shortcut_popup.py
-│
-├── tests/              # Test cases
-│   ├── __init__.py
-│   ├── conftest.py     # Pytest fixtures and configuration
-│   └── ui/             # UI test cases
-│       ├── __init__.py
-│       ├── test_shortcuts_cloud_signin.py
-│       └── test_shortcuts_delete_popup.py
-│
-├── utils/              # Utility modules
-│   └── __init__.py
-│
-├── requirements.txt    # Python dependencies
-├── pytest.ini         # Pytest configuration
-└── README.md          # This file
+├── tests/
+│   ├── conftest.py          # Pytest fixtures and configuration
+│   └── ui/
+│       ├── test_shortcuts_sign_in.py
+│       └── test_delete_shortcut_popup.py
+├── reports/                 # Test reports and screenshots
+├── requirements.txt         # Python dependencies
+├── pytest.ini              # Pytest configuration
+└── README.md               # This file
 ```
 
-## Features
+## Setup Instructions
 
-- **Page Object Model (POM)**: Clean separation of test logic and page interactions
-- **Selenium Wrapper**: Robust element interaction methods with error handling
-- **Driver Factory**: Support for multiple browsers (Chrome, Firefox, Edge)
-- **Configuration Management**: YAML-based configuration for different environments
-- **Pytest Integration**: Powerful test execution with fixtures and markers
-- **Logging**: Comprehensive logging for debugging and reporting
-- **HTML Reports**: Built-in HTML test reports
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package manager)
+- Chrome/Firefox/Edge browser installed
 
-## Installation
+### Installation
 
-1. Install Python 3.8 or higher
-2. Install dependencies:
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd auto_scripts/func
+```
 
+2. Create virtual environment (recommended)
+```bash
+python -m venv venv
+
+# On Windows
+venv\Scripts\activate
+
+# On macOS/Linux
+source venv/bin/activate
+```
+
+3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-## Configuration
-
-Update `config/config.yaml` with your environment-specific settings:
-
-- Browser type and settings
-- Application URLs
-- Timeouts and wait times
-- Test data
+4. Configure settings
+- Update `config/config.yaml` with your application URL and preferences
+- Set browser type, timeouts, and other configurations
 
 ## Running Tests
 
@@ -76,87 +72,125 @@ Update `config/config.yaml` with your environment-specific settings:
 pytest
 ```
 
-### Run UI tests only
-```bash
-pytest tests/ui/
-```
-
 ### Run specific test file
 ```bash
-pytest tests/ui/test_shortcuts_cloud_signin.py`
+pytest tests/ui/test_shortcuts_sign_in.py
 ```
 
-### Run with markers
+### Run specific test case
 ```bash
-pytest -m ui
-pytest -m smoke
+pytest tests/ui/test_shortcuts_sign_in.py::TestShortcutsSignIn::test_sign_in_link_cloud_accounts
 ```
 
-### Run in headless mode
-Update `config.yaml` to set `headless: true` or use environment variable
+### Run tests with markers
+```bash
+# Run only UI tests
+pytest -m ui
+
+# Run smoke tests
+pytest -m smoke
+
+# Run shortcuts tests
+pytest -m shortcuts
+```
+
+### Run tests in parallel
+```bash
+pytest -n auto
+```
 
 ### Generate HTML report
 ```bash
 pytest --html=reports/report.html --self-contained-html
 ```
 
-## Test Cases
+## Configuration
 
-### Test Case 72: Cloud Account Sign-In
-- **File**: `tests/ui/test_shortcuts_cloud_signin.py`
-- **Description**: Verify cloud account sign-in from Add Save screen
-- **Flow**: Launch app → Navigate to shortcuts → Create shortcut → Sign in to cloud
+### Browser Configuration
+Edit `config/config.yaml` to change browser settings:
+```yaml
+ui:
+  browser: "chrome"  # Options: chrome, firefox, edge
+  headless: false    # Set to true for headless execution
+  implicit_wait: 10
+  explicit_wait: 20
+```
 
-### Test Case 73: Delete Shortcut Popup
-- **File**: `tests/ui/test_shortcuts_delete_popup.py`
-- **Description**: Verify button positions on delete shortcut popup
-- **Flow**: Launch app → Navigate to shortcuts → Click delete → Verify buttons
+### Test Data
+Test data can be configured in `config/config.yaml` under the `test_data` section.
 
-## Writing New Tests
+## Page Object Model (POM)
 
-1. Create page object class in `pages/` inheriting from `BasePage`
-2. Define locators and methods for page interactions
-3. Create test file in `tests/ui/` or `tests/api/`
-4. Use fixtures from `conftest.py` for driver and configuration
-5. Follow naming conventions: `test_<feature>_<action>`
+This framework follows the Page Object Model design pattern:
+
+- **Base Page**: `pages/base_page.py` - Contains common methods used across all pages
+- **Page Classes**: Each page/screen has its own class with locators and methods
+- **Test Files**: Tests use page objects to interact with the application
+
+### Example Page Object
+```python
+from selenium.webdriver.common.by import By
+from pages.base_page import BasePage
+
+class ExamplePage(BasePage):
+    # Locators
+    BUTTON = (By.ID, "button-id")
+    
+    # Methods
+    def click_button(self):
+        self.click_element(self.BUTTON)
+    
+    def is_button_visible(self):
+        return self.is_element_visible(self.BUTTON)
+```
+
+## Writing Tests
+
+### Test Structure
+```python
+import pytest
+from pages.example_page import ExamplePage
+
+class TestExample:
+    def test_example_functionality(self, driver):
+        """Test description."""
+        page = ExamplePage(driver)
+        page.click_button()
+        assert page.is_button_visible()
+```
+
+### Using Fixtures
+The `driver` fixture is automatically available in all tests via `conftest.py`.
 
 ## Best Practices
 
-- Use Page Object Model for all UI interactions
-- Keep test methods focused and independent
-- Use descriptive names for tests and methods
-- Add docstrings to classes and methods
-- Use pytest fixtures for setup and teardown
-- Leverage markers for test categorization
-- Handle exceptions appropriately
-- Use explicit waits instead of sleep
+1. **Use Page Objects**: Always interact with UI through page objects
+2. **Explicit Waits**: Use explicit waits for dynamic elements
+3. **Descriptive Names**: Use clear, descriptive names for tests and methods
+4. **Independent Tests**: Each test should be independent and able to run in any order
+5. **Assertions**: Include clear assertions with meaningful messages
+6. **Documentation**: Add docstrings to test methods explaining what they test
 
 ## Troubleshooting
 
 ### WebDriver Issues
-- Ensure webdriver-manager is installed
-- Check browser version compatibility
-- Update webdriver-manager: `pip install --upgrade webdriver-manager`
-
-### Element Not Found
-- Verify locators are correct
-- Increase timeout in config.yaml
-- Check if element is in iframe
-- Ensure page is fully loaded
+- Ensure browser is installed and up to date
+- `webdriver-manager` automatically downloads the correct driver version
+- Check browser compatibility with Selenium version
 
 ### Test Failures
-- Check logs in `logs/` directory
-- Review HTML report for details
-- Enable screenshots on failure
-- Run in non-headless mode for debugging
+- Check screenshots in `reports/screenshots/` (if enabled)
+- Review logs in `reports/pytest.log`
+- Verify element locators are correct
+- Check timeouts in configuration
 
 ## Contributing
 
-1. Follow the existing code structure and conventions
-2. Add tests for new features
+1. Follow the existing code structure and naming conventions
+2. Add appropriate tests for new functionality
 3. Update documentation as needed
 4. Ensure all tests pass before committing
 
-## License
+## Support
 
-Internal use only.
+For issues or questions, please contact the QA automation team.
