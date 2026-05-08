@@ -62,7 +62,22 @@
     {
       "class_name": "UdLoansByUnionDigitalBankPaymentPage",
       "file_name": "ud_loans_by_union_digital_bank_payment_page",
-      "actions": []
+      "actions": [
+        {
+          "action_name": "verify_loan_number_textbox_displayed",
+          "locator": {
+            "type": "placeholder",
+            "value": "locator_for_loan_number_textbox"
+          }
+        },
+        {
+          "action_name": "verify_payment_amount_textbox_displayed",
+          "locator": {
+            "type": "placeholder",
+            "value": "locator_for_payment_amount_textbox"
+          }
+        }
+      ]
     }
   ]
 }

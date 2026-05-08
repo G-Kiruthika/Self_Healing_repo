@@ -10,6 +10,8 @@
       "from selenium.webdriver.common.by import By",
       "from selenium.webdriver.support.ui import WebDriverWait",
       "from selenium.webdriver.support import expected_conditions as EC"
-    ]
+    ],
+    "kb_folder_structure": ["auto_scripts/func/metadata"],
+    "ecosystem_synchronized": true
   }
 }
