@@ -1,45 +1,51 @@
-# Configuration file for Functional UI Automation Framework
+# Configuration file for UI & API Automation Framework
 
-# Browser settings
-browser:
-  type: "chrome"  # Options: chrome, firefox, edge, safari
-  headless: false
-  implicit_wait: 10
-  page_load_timeout: 30
-  window_size: "1920x1080"
+# Browser configuration
+browser: chrome  # Options: chrome, firefox, edge, safari
+headless: false  # Run browser in headless mode
 
-# Application settings
-app:
-  base_url: "https://example.com"
-  app_name: "HPX App"
+# Timeouts (in seconds)
+implicit_wait: 10
+explicit_wait: 20
+page_load_timeout: 30
+
+# Application URLs
+base_url: ""  # Base URL for the application under test
+
+# Test data
+test_data_path: "auto_scripts/func/data"
+
+# Reporting
+report_path: "auto_scripts/func/reports"
+screenshot_on_failure: true
+
+# Logging
+log_level: INFO  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_path: "auto_scripts/func/logs"
+
+# API configuration
+api:
+  base_url: ""
   timeout: 30
+  verify_ssl: true
 
-# Test environment
-environment:
-  name: "qa"
-  platform: "mobile"  # Options: mobile, web, desktop
+# Mobile/Appium configuration (if needed)
+mobile:
+  platform_name: "Android"
+  device_name: ""
+  app_path: ""
+  automation_name: "UiAutomator2"
 
-# Selenium Grid (optional)
-selenium_grid:
+# Selenium Grid (if using remote execution)
+grid:
   enabled: false
   hub_url: "http://localhost:4444/wd/hub"
 
-# Logging
-logging:
-  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  log_file: "logs/test_execution.log"
-
-# Screenshots
-screenshots:
-  enabled: true
-  on_failure: true
-  path: "screenshots/"
-
-# Reporting
-reporting:
-  html_report: true
-  report_path: "reports/"
-
-# Test data
-test_data:
-  path: "data/"
+# Email reporting configuration
+email:
+  enabled: false
+  smtp_server: ""
+  smtp_port: 587
+  sender: ""
+  recipients: []
+  subject: "Test Automation Report"
