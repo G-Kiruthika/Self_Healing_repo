@@ -1,1 +1,3 @@
-"""UI test package initialization."""
+"""
+UI automation tests package.
+"""

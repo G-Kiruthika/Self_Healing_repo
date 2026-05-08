@@ -1,1 +1,3 @@
-"""Tests package initialization."""
+"""
+Functional automation tests package.
+"""

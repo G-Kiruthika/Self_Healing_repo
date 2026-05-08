@@ -1,54 +1,71 @@
-"""Pytest configuration and fixtures for UI test automation."""
+"""
+Pytest configuration file for functional automation tests.
+Contains fixtures for driver setup and teardown.
+"""
 
 import pytest
+from appium import webdriver
+from appium.options.android import UiAutomator2Options
 import yaml
-from pathlib import Path
-from auto_scripts.func.core.driver_factory import get_driver
+import os
+
+
+@pytest.fixture(scope="function")
+def driver():
+    """
+    Fixture to initialize and provide the Appium driver for mobile automation.
+    Scope is set to 'function' so each test gets a fresh driver instance.
+    
+    Yields:
+        webdriver: Appium WebDriver instance
+    """
+    # Load configuration
+    config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
+    
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            config = yaml.safe_load(f)
+            capabilities = config.get('appium', {})
+    else:
+        # Default capabilities if config doesn't exist
+        capabilities = {
+            'platformName': 'Android',
+            'automationName': 'UiAutomator2',
+            'deviceName': 'Android Emulator',
+            'app': '/path/to/hpx.apk',
+            'appPackage': 'com.hp.hpx',
+            'appActivity': '.MainActivity',
+            'noReset': False,
+            'fullReset': False
+        }
+    
+    # Initialize Appium driver
+    options = UiAutomator2Options()
+    for key, value in capabilities.items():
+        options.set_capability(key, value)
+    
+    appium_server_url = capabilities.get('appium_server_url', 'http://localhost:4723')
+    driver = webdriver.Remote(appium_server_url, options=options)
+    driver.implicitly_wait(10)
+    
+    yield driver
+    
+    # Teardown: Quit driver after test
+    driver.quit()
 
 
 @pytest.fixture(scope="session")
-def config():
-    """Load configuration from config.yaml."""
-    config_path = Path(__file__).parent.parent / "config" / "config.yaml"
-    with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
-
-
-@pytest.fixture(scope="function")
-def driver(config):
-    """Create and return WebDriver instance.
-    
-    Yields:
-        WebDriver: Selenium WebDriver instance
+def test_config():
     """
-    browser = config.get('browser', 'chrome')
-    headless = config.get('headless', False)
+    Fixture to load and provide test configuration data.
+    Scope is set to 'session' so config is loaded once per test session.
     
-    driver_instance = get_driver(browser=browser, headless=headless)
+    Returns:
+        dict: Configuration dictionary
+    """
+    config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
     
-    # Implicit wait
-    driver_instance.implicitly_wait(config.get('implicit_wait', 10))
-    
-    yield driver_instance
-    
-    # Teardown
-    driver_instance.quit()
-
-
-@pytest.fixture(scope="function")
-def base_url(config):
-    """Return base URL from configuration."""
-    return config.get('base_url', '')
-
-
-def pytest_configure(config):
-    """Pytest configuration hook."""
-    config.addinivalue_line(
-        "markers", "ui: mark test as UI test"
-    )
-    config.addinivalue_line(
-        "markers", "smoke: mark test as smoke test"
-    )
-    config.addinivalue_line(
-        "markers", "regression: mark test as regression test"
-    )
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            return yaml.safe_load(f)
+    return {}

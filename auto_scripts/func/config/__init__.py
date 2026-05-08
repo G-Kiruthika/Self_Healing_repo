@@ -1,1 +1,3 @@
-<content from file 11f above>
+"""
+Configuration package.
+"""

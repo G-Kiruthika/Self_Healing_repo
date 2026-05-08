@@ -1,27 +1,22 @@
-# Core dependencies
-selenium==4.15.2
+# Core testing framework
 pytest==7.4.3
 pytest-html==4.1.1
 pytest-xdist==3.5.0
 
-# WebDriver managers
-webdriver-manager==4.0.1
+# Appium and Selenium
+Appium-Python-Client==3.1.0
+selenium==4.15.2
 
 # Configuration and data handling
 PyYAML==6.0.1
-python-dotenv==1.0.0
-
-# API testing
-requests==2.31.0
-
-# Reporting and logging
-allure-pytest==2.13.2
-pytest-metadata==3.0.0
 
 # Utilities
-Pillow==10.1.0
-openpyxl==3.1.2
+python-dotenv==1.0.0
+requests==2.31.0
 
-# Code quality
+# Reporting
+allure-pytest==2.13.2
+
+# Code quality (optional)
 pylint==3.0.3
 black==23.12.1
