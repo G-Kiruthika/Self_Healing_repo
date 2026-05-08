@@ -1,1 +1,1 @@
-<content from file 11b above>
+"""Page objects package."""

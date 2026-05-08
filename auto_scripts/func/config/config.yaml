@@ -1,1 +1,45 @@
-<content from file 8 above>
+# Configuration file for Functional UI Automation Framework
+
+# Browser settings
+browser:
+  type: "chrome"  # Options: chrome, firefox, edge, safari
+  headless: false
+  implicit_wait: 10
+  page_load_timeout: 30
+  window_size: "1920x1080"
+
+# Application settings
+app:
+  base_url: "https://example.com"
+  app_name: "HPX App"
+  timeout: 30
+
+# Test environment
+environment:
+  name: "qa"
+  platform: "mobile"  # Options: mobile, web, desktop
+
+# Selenium Grid (optional)
+selenium_grid:
+  enabled: false
+  hub_url: "http://localhost:4444/wd/hub"
+
+# Logging
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_file: "logs/test_execution.log"
+
+# Screenshots
+screenshots:
+  enabled: true
+  on_failure: true
+  path: "screenshots/"
+
+# Reporting
+reporting:
+  html_report: true
+  report_path: "reports/"
+
+# Test data
+test_data:
+  path: "data/"

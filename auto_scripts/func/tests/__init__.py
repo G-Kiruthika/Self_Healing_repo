@@ -1,1 +1,1 @@
-<content from file 11d above>
+"""Tests package initialization."""

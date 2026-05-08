@@ -1,1 +1,1 @@
-<content from file 11e above>
+"""UI test package initialization."""

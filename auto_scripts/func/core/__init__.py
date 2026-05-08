@@ -1,1 +1,1 @@
-<content from file 11c above>
+"""Core framework utilities package."""
