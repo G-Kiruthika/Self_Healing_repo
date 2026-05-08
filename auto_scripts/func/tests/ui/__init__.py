@@ -1,4 +1,1 @@
-"""UI tests package.
-
-This package contains all UI automation test modules.
-"""
+<content from file 11e above>

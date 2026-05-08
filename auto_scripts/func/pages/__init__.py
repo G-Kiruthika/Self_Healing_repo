@@ -1,4 +1,1 @@
-"""Pages package for page object models.
-
-This package contains all page object classes for the application under test.
-"""
+<content from file 11b above>
