@@ -3,23 +3,36 @@
     "HomePage": {
       "file_name": "home_page.py",
       "locators": {
-        "loan_payment_guides_link": {"by": "XPATH", "value": "//a[contains(text(),'Loan Payment Guides')]"},
-        "ud_loans_link": {"by": "XPATH", "value": "//a[contains(text(),'UD Loans')]"},
-        "upay_payment_option": {"by": "XPATH", "value": "//div[contains(text(),'UPAY')]"},
-        "how_to_pay_ud_loans_text": {"by": "XPATH", "value": "//h2[contains(text(),'How To Pay Your UD Loans')]"},
-        "plus_icon": {"by": "XPATH", "value": "//span[contains(text(),'+')]"}
+        "loan_payment_guides_link": {"by": "XPATH", "value": "//a[text()='Loan Payment Guides']"},
+        "ud_loans_link": {"by": "XPATH", "value": "//a[text()='UD Loans']"},
+        "how_to_pay_ud_loans_text": {"by": "XPATH", "value": "//*[contains(text(),'How To Pay Your UD Loans')]"},
+        "plus_icon": {"by": "XPATH", "value": "//button[contains(@aria-label,'Expand')]"}
       },
       "actions": [
         "click_loan_payment_guides_link()",
-        "click_ud_loans_link()"
+        "click_ud_loans_link()",
+        "click_plus_icon()"
       ],
       "validations": [
         "is_homepage_displayed()",
         "is_loan_payment_guides_page_displayed()",
-        "is_ud_loans_payment_guide_displayed()",
-        "is_upay_payment_option_visible()",
-        "is_how_to_pay_ud_loans_text_visible()",
-        "is_plus_icon_visible_right_of_text()"
+        "is_ud_loans_payment_guide_page_displayed()",
+        "is_plus_icon_located()"
+      ]
+    },
+    "UDLoansPaymentGuidePage": {
+      "file_name": "ud_loans_payment_guide_page.py",
+      "locators": {
+        "pay_through_other_banks_section": {"by": "XPATH", "value": "//*[contains(text(),'Pay through your other bank accounts or e-wallets via UPAY.')]"},
+        "click_here_to_pay_via_upay_link": {"by": "XPATH", "value": "//a[contains(text(),'Click here to pay via UPAY')]"}
+      },
+      "actions": [
+        "expand_payment_options()"
+      ],
+      "validations": [
+        "is_payment_option_details_displayed()",
+        "is_pay_through_other_banks_section_located()",
+        "is_click_here_to_pay_via_upay_link_visible()"
       ]
     }
   }
