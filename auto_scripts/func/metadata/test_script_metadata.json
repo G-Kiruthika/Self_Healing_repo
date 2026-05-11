@@ -1,1 +1,55 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"UI_TC_02": {"test_name": "test_invalid_password_login", "feature": "Login", "target_file": "test_saucedemo_login.py", "pages_used": ["SauceDemoLoginPage"], "flow": [{"page": "SauceDemoLoginPage", "action": "open", "data_ref": null}, {"page": "SauceDemoLoginPage", "action": "enter_username", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "enter_password", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "click_login", "data_ref": null}, {"page": "SauceDemoLoginPage", "assertion": "is_error_displayed"}], "test_data": {"invalid_password_user": {"username": "standard_user", "password": "wrong_password"}}}}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "350": {
+      "test_name": "test_scrum_23804_ts_001_tc_001",
+      "feature": "Loan Payment Guide Navigation",
+      "target_file": "test_loan_payment_guide_navigation.py",
+      "pages_used": ["HomePage"],
+      "flow": [
+        {"page": "HomePage", "action": "is_browser_launched", "data_ref": null},
+        {"page": "HomePage", "action": "is_homepage_displayed", "data_ref": null},
+        {"page": "HomePage", "action": "click_loan_payment_guides_link", "data_ref": null},
+        {"page": "HomePage", "action": "click_ud_loans_link", "data_ref": null},
+        {"page": "HomePage", "assertion": "is_loan_payment_guides_page_displayed"},
+        {"page": "HomePage", "assertion": "is_ud_loans_payment_guide_page_displayed"},
+        {"page": "HomePage", "assertion": "is_upay_option_visible"}
+      ],
+      "test_data": {
+        "browser": {"supported": ["chrome", "firefox", "edge"]},
+        "url": {"value": "https://uniondigitalbank.io/en"}
+      }
+    },
+    "351": {
+      "test_name": "test_scrum_23804_ts_002_tc_001",
+      "feature": "Loan Payment Guide UI Verifications",
+      "target_file": "test_loan_payment_guide_ui_verifications.py",
+      "pages_used": ["HomePage"],
+      "flow": [
+        {"page": "HomePage", "action": "is_browser_launched", "data_ref": null},
+        {"page": "HomePage", "action": "is_homepage_displayed", "data_ref": null},
+        {"page": "HomePage", "action": "click_loan_payment_guides_link", "data_ref": null},
+        {"page": "HomePage", "action": "click_ud_loans_link", "data_ref": null},
+        {"page": "HomePage", "assertion": "is_loan_payment_guides_page_displayed"},
+        {"page": "HomePage", "assertion": "is_ud_loans_payment_guide_page_displayed"},
+        {"page": "HomePage", "action": "is_how_to_pay_ud_loans_text_present", "data_ref": null},
+        {"page": "HomePage", "assertion": "is_plus_icon_visible_right_of_text"}
+      ],
+      "test_data": {
+        "browser": {"supported": ["chrome", "firefox", "edge"]},
+        "url": {"value": "https://uniondigitalbank.io/en"}
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "api_dependencies": [],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}
