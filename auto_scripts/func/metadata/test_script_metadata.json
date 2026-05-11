@@ -1,43 +1,44 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "350": {
-      "test_name": "test_scrum_23804_ts_001_tc_001",
+    "352": {
+      "test_name": "test_scrum_23804_ts_003_tc_001",
       "feature": "Loan Payment Guide Navigation",
-      "target_file": "test_loan_payment_guide_navigation.py",
-      "pages_used": ["HomePage"],
+      "target_file": "test_scrum_23804_ts_003_tc_001.py",
+      "pages_used": ["HomePage", "LoanPaymentGuidesPage", "UDLoansPaymentGuidePage"],
       "flow": [
-        {"page": "HomePage", "action": "is_browser_launched", "data_ref": null},
         {"page": "HomePage", "action": "is_homepage_displayed", "data_ref": null},
         {"page": "HomePage", "action": "click_loan_payment_guides_link", "data_ref": null},
-        {"page": "HomePage", "action": "is_loan_payment_guides_page_displayed", "data_ref": null},
-        {"page": "HomePage", "action": "click_ud_loans_link", "data_ref": null},
-        {"page": "HomePage", "action": "is_ud_loans_payment_guide_displayed", "data_ref": null},
-        {"page": "HomePage", "action": "is_upay_payment_option_visible", "data_ref": null}
+        {"page": "LoanPaymentGuidesPage", "action": "is_loan_payment_guides_page_displayed", "data_ref": null},
+        {"page": "LoanPaymentGuidesPage", "action": "click_ud_loans_link", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "is_ud_loans_payment_guide_page_displayed", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "is_payment_option_details_displayed", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "click_plus_icon", "data_ref": null}
       ],
       "test_data": {
-        "browsers": {"supported": ["Chrome", "Firefox", "Edge"]},
-        "url": {"main": "https://uniondigitalbank.io/en"}
+        "browser": {"type": "supported_browser"},
+        "url": {"value": "https://uniondigitalbank.io/en"}
       }
     },
-    "351": {
-      "test_name": "test_scrum_23804_ts_002_tc_001",
-      "feature": "Loan Payment Guide UI Elements",
-      "target_file": "test_loan_payment_guide_ui_elements.py",
-      "pages_used": ["HomePage"],
+    "353": {
+      "test_name": "test_scrum_23804_ts_004_tc_001",
+      "feature": "Loan Payment Guide Payment Options",
+      "target_file": "test_scrum_23804_ts_004_tc_001.py",
+      "pages_used": ["HomePage", "LoanPaymentGuidesPage", "UDLoansPaymentGuidePage"],
       "flow": [
-        {"page": "HomePage", "action": "is_browser_launched", "data_ref": null},
         {"page": "HomePage", "action": "is_homepage_displayed", "data_ref": null},
         {"page": "HomePage", "action": "click_loan_payment_guides_link", "data_ref": null},
-        {"page": "HomePage", "action": "is_loan_payment_guides_page_displayed", "data_ref": null},
-        {"page": "HomePage", "action": "click_ud_loans_link", "data_ref": null},
-        {"page": "HomePage", "action": "is_ud_loans_payment_guide_displayed", "data_ref": null},
-        {"page": "HomePage", "action": "is_how_to_pay_text_present", "data_ref": null},
-        {"page": "HomePage", "action": "is_plus_icon_visible", "data_ref": null}
+        {"page": "LoanPaymentGuidesPage", "action": "is_loan_payment_guides_page_displayed", "data_ref": null},
+        {"page": "LoanPaymentGuidesPage", "action": "click_ud_loans_link", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "is_ud_loans_payment_guide_page_displayed", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "click_plus_icon", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "is_payment_option_details_displayed", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "is_pay_through_other_banks_section_displayed", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "is_click_here_to_pay_via_upay_link_visible", "data_ref": null}
       ],
       "test_data": {
-        "browsers": {"supported": ["Chrome", "Firefox", "Edge"]},
-        "url": {"main": "https://uniondigitalbank.io/en"}
+        "browser": {"type": "supported_browser"},
+        "url": {"value": "https://uniondigitalbank.io/en"}
       }
     }
   },

@@ -3,24 +3,43 @@
     "HomePage": {
       "file_name": "home_page.py",
       "locators": {
-        "loan_payment_guides_link": {"by": "XPATH", "value": "//a[contains(text(),'Loan Payment Guides')]"},
-        "ud_loans_link": {"by": "XPATH", "value": "//a[contains(text(),'UD Loans')]"},
-        "upay_payment_option": {"by": "XPATH", "value": "//div[contains(text(),'UPAY')]"},
-        "how_to_pay_text": {"by": "XPATH", "value": "//h2[contains(text(),'How To Pay Your UD Loans')]"},
-        "plus_icon": {"by": "XPATH", "value": "//h2[contains(text(),'How To Pay Your UD Loans')]/following-sibling::*[contains(@class,'plus-icon')]"}
+        "loan_payment_guides_link": {"by": "XPATH", "value": "//a[text()='Loan Payment Guides']"}
       },
       "actions": [
-        "click_loan_payment_guides_link()",
+        "click_loan_payment_guides_link()"
+      ],
+      "validations": [
+        "is_homepage_displayed()"
+      ]
+    },
+    "LoanPaymentGuidesPage": {
+      "file_name": "loan_payment_guides_page.py",
+      "locators": {
+        "ud_loans_link": {"by": "XPATH", "value": "//a[text()='UD Loans']"}
+      },
+      "actions": [
         "click_ud_loans_link()"
       ],
       "validations": [
-        "is_browser_launched()",
-        "is_homepage_displayed()",
-        "is_loan_payment_guides_page_displayed()",
-        "is_ud_loans_payment_guide_displayed()",
-        "is_upay_payment_option_visible()",
-        "is_how_to_pay_text_present()",
-        "is_plus_icon_visible()"
+        "is_loan_payment_guides_page_displayed()"
+      ]
+    },
+    "UDLoansPaymentGuidePage": {
+      "file_name": "ud_loans_payment_guide_page.py",
+      "locators": {
+        "how_to_pay_your_ud_loans_plus_icon": {"by": "XPATH", "value": "//span[@class='plus-icon' and following-sibling::text()='How To Pay Your UD Loans']"},
+        "pay_through_other_banks_section": {"by": "XPATH", "value": "//div[contains(text(),'Pay through your other bank accounts or e-wallets via UPAY.')]"},
+        "click_here_to_pay_via_upay_link": {"by": "XPATH", "value": "//a[text()='Click here to pay via UPAY']"}
+      },
+      "actions": [
+        "click_plus_icon()",
+        "click_click_here_to_pay_via_upay_link()"
+      ],
+      "validations": [
+        "is_ud_loans_payment_guide_page_displayed()",
+        "is_payment_option_details_displayed()",
+        "is_pay_through_other_banks_section_displayed()",
+        "is_click_here_to_pay_via_upay_link_visible()"
       ]
     }
   }
