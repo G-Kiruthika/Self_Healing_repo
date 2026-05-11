@@ -1,1 +1,26 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "HomePage": {
+      "file_name": "home_page.py",
+      "locators": {
+        "loan_payment_guides_link": {"by": "XPATH", "value": "//a[contains(text(),'Loan Payment Guides')]"},
+        "ud_loans_link": {"by": "XPATH", "value": "//a[contains(text(),'UD Loans')]"},
+        "upay_payment_option": {"by": "XPATH", "value": "//div[contains(text(),'UPAY')]"},
+        "how_to_pay_ud_loans_text": {"by": "XPATH", "value": "//h2[contains(text(),'How To Pay Your UD Loans')]"},
+        "plus_icon": {"by": "XPATH", "value": "//span[contains(text(),'+')]"}
+      },
+      "actions": [
+        "click_loan_payment_guides_link()",
+        "click_ud_loans_link()"
+      ],
+      "validations": [
+        "is_homepage_displayed()",
+        "is_loan_payment_guides_page_displayed()",
+        "is_ud_loans_payment_guide_displayed()",
+        "is_upay_payment_option_visible()",
+        "is_how_to_pay_ud_loans_text_visible()",
+        "is_plus_icon_visible_right_of_text()"
+      ]
+    }
+  }
+}
