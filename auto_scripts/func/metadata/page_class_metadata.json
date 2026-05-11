@@ -3,33 +3,36 @@
     "HomePage": {
       "file_name": "home_page.py",
       "locators": {
-        "loan_payment_guides_link": {"by": "xpath", "value": "//a[text()='Loan Payment Guides']"},
-        "ud_loans_link": {"by": "xpath", "value": "//a[text()='UD Loans']"},
-        "upay_payment_option": {"by": "xpath", "value": "//div[contains(text(),'UPAY') or contains(text(),'Upay')]"},
-        "how_to_pay_ud_loans_text": {"by": "xpath", "value": "//h2[contains(text(),'How To Pay Your UD Loans')]"},
-        "plus_icon_right_of_text": {"by": "xpath", "value": "//h2[contains(text(),'How To Pay Your UD Loans')]/following-sibling::*[contains(@class,'plus-icon') or text()='+']"}
+        "loan_payment_guides_link": {"by": "PLACEHOLDER", "value": "locator-for-loan-payment-guides-link"},
+        "ud_loans_link": {"by": "PLACEHOLDER", "value": "locator-for-ud-loans-link"}
       },
       "actions": [
-        "click_loan_payment_guides()",
-        "click_ud_loans()"
+        "click_loan_payment_guides_link()",
+        "click_ud_loans_link()"
       ],
       "validations": [
-        "is_upay_payment_option_visible()",
-        "is_loan_payment_guides_page_displayed()",
-        "is_ud_loans_payment_guide_page_displayed()",
-        "is_how_to_pay_ud_loans_text_visible()",
-        "is_plus_icon_right_of_text_visible()"
+        "is_homepage_displayed()"
       ]
     },
-    "Browser": {
-      "file_name": "browser.py",
-      "locators": {},
+    "LoanPaymentGuidesPage": {
+      "file_name": "loan_payment_guides_page.py",
+      "locators": {
+        "+_icon": {"by": "PLACEHOLDER", "value": "locator-for-plus-icon"},
+        "how_to_pay_ud_loans_text": {"by": "PLACEHOLDER", "value": "locator-for-how-to-pay-ud-loans-text"},
+        "pay_through_other_banks_section": {"by": "PLACEHOLDER", "value": "locator-for-pay-through-other-banks-section"},
+        "click_here_to_pay_via_upay_link": {"by": "PLACEHOLDER", "value": "locator-for-click-here-to-pay-via-upay-link"}
+      },
       "actions": [
-        "launch_browser(browser_name)",
-        "navigate_to(url)"
+        "click_plus_icon()",
+        "expand_payment_options()"
       ],
       "validations": [
-        "is_browser_launched()"
+        "is_loan_payment_guides_page_displayed()",
+        "is_ud_loans_payment_guide_page_displayed()",
+        "is_plus_icon_located()",
+        "is_payment_option_details_displayed()",
+        "is_pay_through_other_banks_section_located()",
+        "is_click_here_to_pay_via_upay_link_visible()"
       ]
     }
   }
