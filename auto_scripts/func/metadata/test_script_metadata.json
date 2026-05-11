@@ -1,58 +1,34 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "354": {
-      "test_name": "test_loan_payment_guides_flow_ac5",
-      "feature": "LoanPaymentGuides",
-      "target_file": "test_loan_payment_guides_flow_ac5.py",
+    "356": {
+      "test_name": "test_loan_payment_guides_upay_flow",
+      "feature": "Loan Payment Guides",
+      "target_file": "test_loan_payment_guides_upay_flow.py",
       "pages_used": [
         "HomePage",
         "LoanPaymentGuidesPage",
-        "UdLoansPaymentGuidePage",
-        "LoanPaymentPage"
+        "UDLoansPaymentGuidePage",
+        "LoanPaymentPage",
+        "UDLoansByUnionDigitalBankPaymentPage"
       ],
       "flow": [
-        {"page": "HomePage", "action": "click_loan_payment_guides", "data_ref": null},
+        {"page": "HomePage", "action": "open_url", "data_ref": "homepage_url"},
         {"page": "HomePage", "assertion": "is_homepage_displayed"},
-        {"page": "LoanPaymentGuidesPage", "action": "click_ud_loans", "data_ref": null},
-        {"page": "LoanPaymentGuidesPage", "assertion": "is_loan_payment_guides_page_displayed"},
-        {"page": "UdLoansPaymentGuidePage", "action": "expand_payment_options", "data_ref": null},
-        {"page": "UdLoansPaymentGuidePage", "assertion": "is_ud_loans_payment_guide_page_displayed"},
-        {"page": "UdLoansPaymentGuidePage", "action": "click_pay_via_upay", "data_ref": null},
-        {"page": "UdLoansPaymentGuidePage", "assertion": "is_payment_options_expanded"},
-        {"page": "LoanPaymentPage", "assertion": "is_loan_payment_page_displayed"}
-      ],
-      "test_data": {
-        "browser": {"browser_name": "Supported browser"},
-        "url": {"app_url": "https://uniondigitalbank.io/en"}
-      }
-    },
-    "355": {
-      "test_name": "test_loan_payment_guides_flow_ac6",
-      "feature": "LoanPaymentGuides",
-      "target_file": "test_loan_payment_guides_flow_ac6.py",
-      "pages_used": [
-        "HomePage",
-        "LoanPaymentGuidesPage",
-        "UdLoansPaymentGuidePage",
-        "LoanPaymentPage"
-      ],
-      "flow": [
         {"page": "HomePage", "action": "click_loan_payment_guides", "data_ref": null},
-        {"page": "HomePage", "assertion": "is_homepage_displayed"},
-        {"page": "LoanPaymentGuidesPage", "action": "click_ud_loans", "data_ref": null},
         {"page": "LoanPaymentGuidesPage", "assertion": "is_loan_payment_guides_page_displayed"},
-        {"page": "UdLoansPaymentGuidePage", "action": "expand_payment_options", "data_ref": null},
-        {"page": "UdLoansPaymentGuidePage", "assertion": "is_ud_loans_payment_guide_page_displayed"},
-        {"page": "UdLoansPaymentGuidePage", "action": "click_pay_via_upay", "data_ref": null},
-        {"page": "UdLoansPaymentGuidePage", "assertion": "is_payment_options_expanded"},
+        {"page": "LoanPaymentGuidesPage", "action": "click_ud_loans", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "assertion": "is_ud_loans_payment_guide_page_displayed"},
+        {"page": "UDLoansPaymentGuidePage", "action": "expand_payment_options", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "click_pay_via_upay", "data_ref": null},
         {"page": "LoanPaymentPage", "assertion": "is_loan_payment_page_displayed"},
         {"page": "LoanPaymentPage", "action": "click_pay_via_upay_now", "data_ref": null},
-        {"page": "LoanPaymentPage", "assertion": "is_ud_loans_by_uniondigital_bank_payment_page_displayed"}
+        {"page": "UDLoansByUnionDigitalBankPaymentPage", "assertion": "is_loan_number_and_payment_amount_displayed"}
       ],
       "test_data": {
-        "browser": {"browser_name": "Supported browser"},
-        "url": {"app_url": "https://uniondigitalbank.io/en"}
+        "homepage_url": {
+          "url": "https://uniondigitalbank.io/en"
+        }
       }
     }
   },
@@ -60,24 +36,11 @@
     "architecture": "python-ui-api-automation-framework",
     "type": "ui",
     "base_classes_required": ["BasePage"],
-    "core_dependencies": [
-      "core/driver_factory.py",
-      "core/selenium_wrapper.py"
-    ],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
     "api_dependencies": [],
-    "config_dependencies": [
-      "config/config.yaml"
-    ],
+    "config_dependencies": ["config/config.yaml"],
     "utils_dependencies": [],
-    "external_libraries": [
-      "selenium",
-      "pytest",
-      "pyyaml"
-    ],
-    "required_imports": [
-      "pages.",
-      "core.driver_factory",
-      "pages.base_page"
-    ]
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
   }
 }
