@@ -3,7 +3,7 @@
     "HomePage": {
       "file_name": "home_page.py",
       "locators": {
-        "loan_payment_guides_link": {"by": "xpath", "value": "//a[text()='Loan Payment Guides']"}
+        "loan_payment_guides_link": {"by": "XPATH", "value": "//a[text()='Loan Payment Guides']"}
       },
       "actions": [
         "click_loan_payment_guides()"
@@ -15,7 +15,7 @@
     "LoanPaymentGuidesPage": {
       "file_name": "loan_payment_guides_page.py",
       "locators": {
-        "ud_loans_link": {"by": "xpath", "value": "//a[text()='UD Loans']"}
+        "ud_loans_link": {"by": "XPATH", "value": "//a[text()='UD Loans']"}
       },
       "actions": [
         "click_ud_loans()"
@@ -27,20 +27,20 @@
     "UDLoansPaymentGuidePage": {
       "file_name": "ud_loans_payment_guide_page.py",
       "locators": {
-        "plus_icon": {"by": "xpath", "value": "//span[@class='icon-plus']"},
-        "how_to_pay_your_ud_loans_text": {"by": "xpath", "value": "//h2[contains(text(),'How To Pay Your UD Loans')]"},
-        "upay_section": {"by": "xpath", "value": "//section[contains(text(),'Pay through your other bank accounts or e-wallets via UPAY.')]"},
-        "click_here_to_pay_via_upay_link": {"by": "xpath", "value": "//a[contains(text(),'Click here to pay via UPAY')]"}
+        "expand_payment_options_button": {"by": "XPATH", "value": "//button[contains(@aria-label,'expand payment options')]"},
+        "pay_via_upay_link": {"by": "XPATH", "value": "//a[contains(text(),'Click here to pay via UPAY')]"},
+        "pay_via_upay_now_button": {"by": "XPATH", "value": "//button[text()='PAY VIA UPAY NOW']"}
       },
       "actions": [
-        "click_plus_icon()"
+        "expand_payment_options()",
+        "click_pay_via_upay()",
+        "click_pay_via_upay_now()"
       ],
       "validations": [
         "is_ud_loans_payment_guide_page_displayed()",
-        "is_plus_icon_located()",
         "is_payment_option_details_displayed()",
-        "is_upay_section_located()",
-        "is_click_here_to_pay_via_upay_link_visible()"
+        "is_loan_payment_page_displayed()",
+        "is_ud_loans_by_uniondigital_bank_payment_page_displayed()"
       ]
     }
   }
