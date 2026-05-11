@@ -3,12 +3,10 @@
     "HomePage": {
       "file_name": "home_page.py",
       "locators": {
-        "loan_payment_guides_link": {"by": "PLACEHOLDER", "value": "locator-for-loan-payment-guides-link"},
-        "ud_loans_link": {"by": "PLACEHOLDER", "value": "locator-for-ud-loans-link"}
+        "loan_payment_guides_link": {"by": "xpath", "value": "//a[text()='Loan Payment Guides']"}
       },
       "actions": [
-        "click_loan_payment_guides_link()",
-        "click_ud_loans_link()"
+        "click_loan_payment_guides()"
       ],
       "validations": [
         "is_homepage_displayed()"
@@ -17,22 +15,41 @@
     "LoanPaymentGuidesPage": {
       "file_name": "loan_payment_guides_page.py",
       "locators": {
-        "+_icon": {"by": "PLACEHOLDER", "value": "locator-for-plus-icon"},
-        "how_to_pay_ud_loans_text": {"by": "PLACEHOLDER", "value": "locator-for-how-to-pay-ud-loans-text"},
-        "pay_through_other_banks_section": {"by": "PLACEHOLDER", "value": "locator-for-pay-through-other-banks-section"},
-        "click_here_to_pay_via_upay_link": {"by": "PLACEHOLDER", "value": "locator-for-click-here-to-pay-via-upay-link"}
+        "ud_loans_link": {"by": "xpath", "value": "//a[text()='UD Loans']"}
       },
       "actions": [
-        "click_plus_icon()",
-        "expand_payment_options()"
+        "click_ud_loans()"
       ],
       "validations": [
-        "is_loan_payment_guides_page_displayed()",
+        "is_loan_payment_guides_page_displayed()"
+      ]
+    },
+    "UdLoansPaymentGuidePage": {
+      "file_name": "ud_loans_payment_guide_page.py",
+      "locators": {
+        "expand_payment_options_btn": {"by": "xpath", "value": "//button[contains(@aria-label, 'expand payment options')]"},
+        "pay_via_upay_link": {"by": "xpath", "value": "//a[contains(text(), 'Click here to pay via UPAY')]"}
+      },
+      "actions": [
+        "expand_payment_options()",
+        "click_pay_via_upay()"
+      ],
+      "validations": [
         "is_ud_loans_payment_guide_page_displayed()",
-        "is_plus_icon_located()",
-        "is_payment_option_details_displayed()",
-        "is_pay_through_other_banks_section_located()",
-        "is_click_here_to_pay_via_upay_link_visible()"
+        "is_payment_options_expanded()"
+      ]
+    },
+    "LoanPaymentPage": {
+      "file_name": "loan_payment_page.py",
+      "locators": {
+        "pay_via_upay_now_btn": {"by": "xpath", "value": "//button[text()='PAY VIA UPAY NOW']"}
+      },
+      "actions": [
+        "click_pay_via_upay_now()"
+      ],
+      "validations": [
+        "is_loan_payment_page_displayed()",
+        "is_ud_loans_by_uniondigital_bank_payment_page_displayed()"
       ]
     }
   }
