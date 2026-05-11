@@ -1,41 +1,54 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "352": {
-      "test_name": "test_scrum_23804_ts_003_tc_001",
-      "feature": "Loan Payment Guide",
-      "target_file": "test_loan_payment_guide.py",
-      "pages_used": ["HomePage", "UDLoansPaymentGuidePage"],
+    "354": {
+      "test_name": "test_navigate_and_pay_via_upay",
+      "feature": "Loan Payment Guide Navigation",
+      "target_file": "test_navigate_and_pay_via_upay.py",
+      "pages_used": [
+        "HomePage",
+        "LoanPaymentGuidesPage",
+        "UDLoansPaymentGuidePage",
+        "LoanPaymentPage"
+      ],
       "flow": [
         {"page": "HomePage", "action": "is_homepage_displayed", "data_ref": null},
         {"page": "HomePage", "action": "click_loan_payment_guides_link", "data_ref": null},
-        {"page": "HomePage", "action": "is_loan_payment_guides_page_displayed", "data_ref": null},
-        {"page": "HomePage", "action": "click_ud_loans_link", "data_ref": null},
-        {"page": "HomePage", "action": "is_ud_loans_payment_guide_page_displayed", "data_ref": null},
-        {"page": "HomePage", "action": "is_plus_icon_located", "data_ref": null},
-        {"page": "HomePage", "action": "click_plus_icon", "data_ref": null},
-        {"page": "UDLoansPaymentGuidePage", "assertion": "is_payment_option_details_displayed"}
+        {"page": "LoanPaymentGuidesPage", "action": "is_loan_payment_guides_page_displayed", "data_ref": null},
+        {"page": "LoanPaymentGuidesPage", "action": "click_ud_loans_link", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "is_ud_loans_payment_guide_page_displayed", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "expand_payment_options", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "is_payment_option_details_displayed", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "click_pay_via_upay_link", "data_ref": null},
+        {"page": "LoanPaymentPage", "action": "is_loan_payment_page_displayed", "data_ref": null}
       ],
       "test_data": {
         "browser": {"type": "Supported browser"},
         "url": {"value": "https://uniondigitalbank.io/en"}
       }
     },
-    "353": {
-      "test_name": "test_scrum_23804_ts_004_tc_001",
-      "feature": "Loan Payment Guide",
-      "target_file": "test_loan_payment_guide.py",
-      "pages_used": ["HomePage", "UDLoansPaymentGuidePage"],
+    "355": {
+      "test_name": "test_pay_via_upay_now",
+      "feature": "Loan Payment Guide Navigation",
+      "target_file": "test_pay_via_upay_now.py",
+      "pages_used": [
+        "HomePage",
+        "LoanPaymentGuidesPage",
+        "UDLoansPaymentGuidePage",
+        "LoanPaymentPage"
+      ],
       "flow": [
         {"page": "HomePage", "action": "is_homepage_displayed", "data_ref": null},
         {"page": "HomePage", "action": "click_loan_payment_guides_link", "data_ref": null},
-        {"page": "HomePage", "action": "is_loan_payment_guides_page_displayed", "data_ref": null},
-        {"page": "HomePage", "action": "click_ud_loans_link", "data_ref": null},
-        {"page": "HomePage", "action": "is_ud_loans_payment_guide_page_displayed", "data_ref": null},
+        {"page": "LoanPaymentGuidesPage", "action": "is_loan_payment_guides_page_displayed", "data_ref": null},
+        {"page": "LoanPaymentGuidesPage", "action": "click_ud_loans_link", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "is_ud_loans_payment_guide_page_displayed", "data_ref": null},
         {"page": "UDLoansPaymentGuidePage", "action": "expand_payment_options", "data_ref": null},
-        {"page": "UDLoansPaymentGuidePage", "assertion": "is_payment_option_details_displayed"},
-        {"page": "UDLoansPaymentGuidePage", "assertion": "is_pay_through_other_banks_section_located"},
-        {"page": "UDLoansPaymentGuidePage", "assertion": "is_click_here_to_pay_via_upay_link_visible"}
+        {"page": "UDLoansPaymentGuidePage", "action": "is_payment_option_details_displayed", "data_ref": null},
+        {"page": "UDLoansPaymentGuidePage", "action": "click_pay_via_upay_link", "data_ref": null},
+        {"page": "LoanPaymentPage", "action": "is_loan_payment_page_displayed", "data_ref": null},
+        {"page": "LoanPaymentPage", "action": "click_pay_via_upay_now_button", "data_ref": null},
+        {"page": "LoanPaymentPage", "action": "is_ud_loans_by_uniondigital_bank_payment_page_displayed", "data_ref": null}
       ],
       "test_data": {
         "browser": {"type": "Supported browser"},
@@ -47,11 +60,24 @@
     "architecture": "python-ui-api-automation-framework",
     "type": "ui",
     "base_classes_required": ["BasePage"],
-    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "core_dependencies": [
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py"
+    ],
     "api_dependencies": [],
-    "config_dependencies": ["config/config.yaml"],
+    "config_dependencies": [
+      "config/config.yaml"
+    ],
     "utils_dependencies": [],
-    "external_libraries": ["selenium", "pytest", "pyyaml"],
-    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+    "external_libraries": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ],
+    "required_imports": [
+      "pages.",
+      "core.driver_factory",
+      "pages.base_page"
+    ]
   }
 }
