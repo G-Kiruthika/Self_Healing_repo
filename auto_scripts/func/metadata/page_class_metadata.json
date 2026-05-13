@@ -3,23 +3,20 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_item": {"by": "PLACEHOLDER", "value": "//div[@class='cart-item']"},
-        "delete_button": {"by": "PLACEHOLDER", "value": "//button[@class='delete']"},
-        "empty_cart_message": {"by": "PLACEHOLDER", "value": "//div[@class='cart-empty']"},
-        "return_to_catalog_button": {"by": "PLACEHOLDER", "value": "//button[@id='return-catalog']"},
-        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
-        "line_item_subtotal": {"by": "PLACEHOLDER", "value": "//span[@class='line-subtotal']"}
+        "product_a_row": {"by": "XPATH", "value": "//tr[td[contains(text(), 'Wireless Mouse')]]"},
+        "quantity_input": {"by": "XPATH", "value": "//tr[td[contains(text(), 'Wireless Mouse')]]//input[@type='number']"},
+        "remove_button": {"by": "XPATH", "value": "//tr[td[contains(text(), 'Wireless Mouse')]]//button[contains(@class, 'remove')]"},
+        "cart_totals": {"by": "ID", "value": "cart_totals"},
+        "empty_cart_message": {"by": "ID", "value": "empty_cart_message"}
       },
       "actions": [
-        "delete_product(product_name)",
-        "return_to_catalog()"
+        "set_product_quantity(product_name, quantity)",
+        "remove_product(product_name)"
       ],
       "validations": [
         "is_product_in_cart(product_name)",
-        "is_cart_empty()",
-        "is_message_displayed(message)",
-        "is_cart_total(expected_total)",
-        "is_line_item_subtotal(product_name, expected_subtotal)"
+        "is_cart_totals_updated()",
+        "is_empty_cart_message_displayed()"
       ]
     }
   }

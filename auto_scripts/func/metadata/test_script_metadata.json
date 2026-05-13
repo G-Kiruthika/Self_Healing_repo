@@ -1,46 +1,22 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1495": {
-      "test_name": "test_remove_product_and_validate_cart_empty",
-      "feature": "ShoppingCart",
-      "target_file": "test_cart_page.py",
+    "1497": {
+      "test_name": "test_remove_product_and_check_cart_totals",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Wireless Mouse"}},
-        {"page": "CartPage", "action": "delete_product", "data_ref": {"product_name": "Wireless Mouse"}},
-        {"page": "CartPage", "assertion": "is_cart_empty", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_message_displayed", "data_ref": {"message": "Your cart is empty"}},
-        {"page": "CartPage", "assertion": "is_cart_total", "data_ref": {"expected_total": "$0.00"}}
+        {"page": "CartPage", "action": "is_product_in_cart", "data_ref": {"product_name": "Wireless Mouse"}},
+        {"page": "CartPage", "action": "set_product_quantity", "data_ref": {"product_name": "Wireless Mouse", "quantity": 0}},
+        {"page": "CartPage", "action": "is_cart_totals_updated", "data_ref": null},
+        {"page": "CartPage", "action": "is_empty_cart_message_displayed", "data_ref": null}
       ],
       "test_data": {
-        "cart_products": {
+        "product_a": {
           "product_name": "Wireless Mouse",
-          "quantity": 1
+          "initial_quantity": 3
         }
-      }
-    },
-    "1496": {
-      "test_name": "test_multiple_products_and_totals",
-      "feature": "ShoppingCart",
-      "target_file": "test_cart_page.py",
-      "pages_used": ["CartPage"],
-      "flow": [
-        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Product A"}},
-        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Product B"}},
-        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Product C"}},
-        {"page": "CartPage", "assertion": "is_line_item_subtotal", "data_ref": {"product_name": "Product A", "expected_subtotal": null}},
-        {"page": "CartPage", "assertion": "is_line_item_subtotal", "data_ref": {"product_name": "Product B", "expected_subtotal": null}},
-        {"page": "CartPage", "assertion": "is_line_item_subtotal", "data_ref": {"product_name": "Product C", "expected_subtotal": null}},
-        {"page": "CartPage", "assertion": "is_cart_total", "data_ref": {"expected_total": "$187.96"}}
-      ],
-      "test_data": {
-        "cart_products": {
-          "Product A": {"quantity": 2},
-          "Product B": {"quantity": 3},
-          "Product C": {"quantity": 1}
-        },
-        "overall_total": "$187.96"
       }
     }
   },
