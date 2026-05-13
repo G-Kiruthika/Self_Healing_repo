@@ -1,42 +1,46 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1493": {
-      "test_name": "test_update_cart_quantity_and_validate_subtotal",
-      "feature": "CartManagement",
-      "target_file": "test_cart_management.py",
+    "1495": {
+      "test_name": "test_remove_product_and_validate_cart_empty",
+      "feature": "ShoppingCart",
+      "target_file": "test_cart_page.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_c_initial"},
-        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "product_c_update"},
-        {"page": "CartPage", "action": "get_line_item_subtotal", "data_ref": "product_c_update"},
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "product_c_update"},
-        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": "product_c_expected_subtotal"},
-        {"page": "CartPage", "assertion": "validate_no_inventory_error"}
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Wireless Mouse"}},
+        {"page": "CartPage", "action": "delete_product", "data_ref": {"product_name": "Wireless Mouse"}},
+        {"page": "CartPage", "assertion": "is_cart_empty", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_message_displayed", "data_ref": {"message": "Your cart is empty"}},
+        {"page": "CartPage", "assertion": "is_cart_total", "data_ref": {"expected_total": "$0.00"}}
       ],
       "test_data": {
-        "product_c_initial": {"product_name": "Laptop Stand", "quantity": 1, "available_stock": 5},
-        "product_c_update": {"product_name": "Laptop Stand", "quantity": 5},
-        "product_c_expected_subtotal": {"product_name": "Laptop Stand", "expected_subtotal": "$449.95"}
+        "cart_products": {
+          "product_name": "Wireless Mouse",
+          "quantity": 1
+        }
       }
     },
-    "1494": {
-      "test_name": "test_prevent_reducing_below_minimum_quantity",
-      "feature": "CartManagement",
-      "target_file": "test_cart_management.py",
+    "1496": {
+      "test_name": "test_multiple_products_and_totals",
+      "feature": "ShoppingCart",
+      "target_file": "test_cart_page.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_b_initial"},
-        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "product_b_update"},
-        {"page": "CartPage", "action": "get_warning_message", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "product_b_min_threshold"},
-        {"page": "CartPage", "assertion": "validate_warning_message", "data_ref": "expected_warning"}
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Product A"}},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Product B"}},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Product C"}},
+        {"page": "CartPage", "assertion": "is_line_item_subtotal", "data_ref": {"product_name": "Product A", "expected_subtotal": null}},
+        {"page": "CartPage", "assertion": "is_line_item_subtotal", "data_ref": {"product_name": "Product B", "expected_subtotal": null}},
+        {"page": "CartPage", "assertion": "is_line_item_subtotal", "data_ref": {"product_name": "Product C", "expected_subtotal": null}},
+        {"page": "CartPage", "assertion": "is_cart_total", "data_ref": {"expected_total": "$187.96"}}
       ],
       "test_data": {
-        "product_b_initial": {"product_name": "Coffee Subscription", "quantity": 3, "min_threshold": 3},
-        "product_b_update": {"product_name": "Coffee Subscription", "quantity": 1},
-        "product_b_min_threshold": {"product_name": "Coffee Subscription", "quantity": 3},
-        "expected_warning": {"expected_message": "Minimum quantity for Coffee Subscription is 3."}
+        "cart_products": {
+          "Product A": {"quantity": 2},
+          "Product B": {"quantity": 3},
+          "Product C": {"quantity": 1}
+        },
+        "overall_total": "$187.96"
       }
     }
   },

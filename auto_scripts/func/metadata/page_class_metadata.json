@@ -3,25 +3,23 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Laptop Stand')]]"},
-        "product_b_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Coffee Subscription')]]"},
-        "quantity_input": {"by": "CSS_SELECTOR", "value": ".cart-qty-input"},
-        "line_item_subtotal": {"by": "CSS_SELECTOR", "value": ".cart-line-subtotal"},
-        "warning_message": {"by": "CSS_SELECTOR", "value": ".cart-warning"},
-        "error_message": {"by": "CSS_SELECTOR", "value": ".cart-error"}
+        "product_item": {"by": "PLACEHOLDER", "value": "//div[@class='cart-item']"},
+        "delete_button": {"by": "PLACEHOLDER", "value": "//button[@class='delete']"},
+        "empty_cart_message": {"by": "PLACEHOLDER", "value": "//div[@class='cart-empty']"},
+        "return_to_catalog_button": {"by": "PLACEHOLDER", "value": "//button[@id='return-catalog']"},
+        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
+        "line_item_subtotal": {"by": "PLACEHOLDER", "value": "//span[@class='line-subtotal']"}
       },
       "actions": [
-        "ensure_product_in_cart(product_name, quantity)",
-        "update_product_quantity(product_name, quantity)",
-        "get_line_item_subtotal(product_name)",
-        "get_warning_message()",
-        "get_error_message()"
+        "delete_product(product_name)",
+        "return_to_catalog()"
       ],
       "validations": [
-        "validate_product_in_cart(product_name, quantity)",
-        "validate_line_item_subtotal(product_name, expected_subtotal)",
-        "validate_no_inventory_error()",
-        "validate_warning_message(expected_message)"
+        "is_product_in_cart(product_name)",
+        "is_cart_empty()",
+        "is_message_displayed(message)",
+        "is_cart_total(expected_total)",
+        "is_line_item_subtotal(product_name, expected_subtotal)"
       ]
     }
   }
