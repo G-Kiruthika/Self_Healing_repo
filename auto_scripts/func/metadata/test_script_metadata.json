@@ -1,70 +1,48 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "TC-003": {
-      "test_name": "test_add_subscription_product_d_to_cart",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
-      "pages_used": [
-        "LoginPage",
-        "ProductCatalogPage",
-        "ShoppingCartPage"
-      ],
+    "1487": {
+      "test_name": "test_update_quantity_and_validate_subtotals",
+      "feature": "CartFunctionality",
+      "target_file": "test_cart_functionality.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "LoginPage", "action": "enter_username", "data_ref": "user_login"},
-        {"page": "LoginPage", "action": "enter_password", "data_ref": "user_login"},
-        {"page": "LoginPage", "action": "click_login", "data_ref": null},
-        {"page": "ProductCatalogPage", "action": "locate_product", "data_ref": "vitamin_pack"},
-        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "vitamin_pack"},
-        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
-        {"page": "ShoppingCartPage", "assertion": "is_product_in_cart"},
-        {"page": "ShoppingCartPage", "assertion": "is_subscription_indicator_displayed"},
-        {"page": "ShoppingCartPage", "assertion": "verify_subtotal"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_a_initial"},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": "product_a_initial"},
+        {"page": "CartPage", "action": "change_quantity", "data_ref": "product_a_update"},
+        {"page": "CartPage", "assertion": "validate_quantity", "data_ref": "product_a_update"},
+        {"page": "CartPage", "action": "observe_line_item_subtotal", "data_ref": "product_a_update"},
+        {"page": "CartPage", "action": "observe_cart_total", "data_ref": "product_a_update"},
+        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": "product_a_update"},
+        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": "product_a_update"},
+        {"page": "CartPage", "action": "check_for_page_refresh"},
+        {"page": "CartPage", "action": "check_for_loading_spinner"},
+        {"page": "CartPage", "assertion": "validate_no_page_refresh"},
+        {"page": "CartPage", "assertion": "validate_no_loading_spinner"}
       ],
       "test_data": {
-        "user_login": {
-          "username": "customer",
-          "password": "<password>"
-        },
-        "vitamin_pack": {
-          "product_name": "Vitamin Pack",
-          "quantity": 2,
-          "expected_subtotal": "$91.00"
-        }
+        "product_a_initial": {"product_name": "Product A", "quantity": 1, "subtotal": 25.00},
+        "product_a_update": {"product_name": "Product A", "quantity": 5, "subtotal": 125.00, "cart_total": 125.00}
       }
     },
-    "TC-004": {
-      "test_name": "test_cart_with_multiple_products",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
-      "pages_used": [
-        "ProductCatalogPage",
-        "ShoppingCartPage"
-      ],
+    "1488": {
+      "test_name": "test_increase_quantity_and_validate_totals",
+      "feature": "CartFunctionality",
+      "target_file": "test_cart_functionality.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_a"},
-        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_b"},
-        {"page": "ShoppingCartPage", "action": "view_cart", "data_ref": null},
-        {"page": "ShoppingCartPage", "assertion": "is_product_in_cart"},
-        {"page": "ShoppingCartPage", "assertion": "get_cart_item_details"},
-        {"page": "ShoppingCartPage", "assertion": "verify_overall_total"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_d_initial"},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": "product_d_initial"},
+        {"page": "CartPage", "action": "change_quantity", "data_ref": "product_d_update"},
+        {"page": "CartPage", "assertion": "validate_quantity", "data_ref": "product_d_update"},
+        {"page": "CartPage", "action": "observe_line_item_subtotal", "data_ref": "product_d_update"},
+        {"page": "CartPage", "action": "observe_cart_total", "data_ref": "product_d_update"},
+        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": "product_d_update"},
+        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": "product_d_update"}
       ],
       "test_data": {
-        "product_a": {
-          "product_name": "Wireless Mouse",
-          "quantity": 1,
-          "unit_price": "$25.00",
-          "expected_subtotal": "$25.00"
-        },
-        "product_b": {
-          "product_name": "Coffee Subscription",
-          "quantity": 3,
-          "unit_price": "$15.99",
-          "expected_subtotal": "$47.97"
-        },
-        "overall": {
-          "expected_total": "$72.97"
-        }
+        "product_d_initial": {"product_name": "Product D", "quantity": 2, "subtotal": 91.00},
+        "product_d_update": {"product_name": "Product D", "quantity": 6, "subtotal": 273.00, "cart_total": 273.00}
       }
     }
   },
@@ -72,10 +50,7 @@
     "architecture": "python-ui-api-automation-framework",
     "type": "ui",
     "base_classes_required": ["BasePage"],
-    "core_dependencies": [
-      "core/driver_factory.py",
-      "core/selenium_wrapper.py"
-    ],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
     "api_dependencies": [],
     "config_dependencies": ["config/config.yaml"],
     "utils_dependencies": [],

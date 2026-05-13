@@ -1,54 +1,30 @@
 {
   "pages": {
-    "LoginPage": {
-      "file_name": "login_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "username_input": {"by": "ID", "value": "username"},
-        "password_input": {"by": "ID", "value": "password"},
-        "login_button": {"by": "ID", "value": "login-btn"}
+        "product_a_row": {"by": "PLACEHOLDER", "value": "//tr[td[text()='Product A']]"},
+        "product_d_row": {"by": "PLACEHOLDER", "value": "//tr[td[text()='Product D']]"},
+        "quantity_input": {"by": "PLACEHOLDER", "value": "//input[@name='quantity']"},
+        "subtotal_label": {"by": "PLACEHOLDER", "value": "//span[@class='subtotal']"},
+        "cart_total_label": {"by": "PLACEHOLDER", "value": "//span[@class='cart-total']"},
+        "loading_spinner": {"by": "PLACEHOLDER", "value": "//div[@class='spinner']"}
       },
       "actions": [
-        "enter_username(username)",
-        "enter_password(password)",
-        "click_login()"
+        "ensure_product_in_cart(product_name, quantity, subtotal)",
+        "change_quantity(product_name, new_quantity)",
+        "observe_line_item_subtotal(product_name)",
+        "observe_cart_total()",
+        "check_for_page_refresh()",
+        "check_for_loading_spinner()"
       ],
       "validations": [
-        "is_logged_in()"
-      ]
-    },
-    "ProductCatalogPage": {
-      "file_name": "product_catalog_page.py",
-      "locators": {
-        "product_list": {"by": "ID", "value": "product-list"},
-        "vitamin_pack_product": {"by": "XPATH", "value": "//div[text()='Vitamin Pack']"},
-        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(@data-product,'Vitamin Pack') and text()='Add to Cart']"}
-      },
-      "actions": [
-        "locate_product(product_name)",
-        "add_product_to_cart(product_name, quantity)"
-      ],
-      "validations": [
-        "is_product_visible(product_name)"
-      ]
-    },
-    "ShoppingCartPage": {
-      "file_name": "shopping_cart_page.py",
-      "locators": {
-        "cart_items": {"by": "ID", "value": "cart-items"},
-        "subscription_indicator": {"by": "XPATH", "value": "//span[@class='subscription-indicator']"},
-        "subtotal": {"by": "XPATH", "value": "//span[@class='subtotal']"},
-        "overall_total": {"by": "ID", "value": "cart-total"}
-      },
-      "actions": [
-        "view_cart()",
-        "get_cart_item_details(product_name)",
-        "get_overall_total()"
-      ],
-      "validations": [
-        "is_product_in_cart(product_name)",
-        "is_subscription_indicator_displayed(product_name)",
-        "verify_subtotal(product_name, expected_subtotal)",
-        "verify_overall_total(expected_total)"
+        "validate_product_present(product_name)",
+        "validate_quantity(product_name, expected_quantity)",
+        "validate_line_item_subtotal(product_name, expected_subtotal)",
+        "validate_cart_total(expected_total)",
+        "validate_no_page_refresh()",
+        "validate_no_loading_spinner()"
       ]
     }
   }
