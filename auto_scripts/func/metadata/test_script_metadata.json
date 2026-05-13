@@ -1,1 +1,65 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"UI_TC_02": {"test_name": "test_invalid_password_login", "feature": "Login", "target_file": "test_saucedemo_login.py", "pages_used": ["SauceDemoLoginPage"], "flow": [{"page": "SauceDemoLoginPage", "action": "open", "data_ref": null}, {"page": "SauceDemoLoginPage", "action": "enter_username", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "enter_password", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "click_login", "data_ref": null}, {"page": "SauceDemoLoginPage", "assertion": "is_error_displayed"}], "test_data": {"invalid_password_user": {"username": "standard_user", "password": "wrong_password"}}}}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "1483": {
+      "test_name": "test_add_product_a_to_cart",
+      "feature": "ProductCatalog",
+      "target_file": "test_product_catalog.py",
+      "pages_used": [
+        "LoginPage",
+        "ProductCatalogPage",
+        "CartPage"
+      ],
+      "flow": [
+        {"page": "LoginPage", "action": "login", "data_ref": "user_credentials"},
+        {"page": "ProductCatalogPage", "action": "locate_product", "data_ref": "product_a"},
+        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
+        {"page": "ProductCatalogPage", "action": "add_to_cart", "data_ref": "product_a"},
+        {"page": "CartPage", "action": "open_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_cart_count"},
+        {"page": "CartPage", "assertion": "verify_subtotal"}
+      ],
+      "test_data": {
+        "user_credentials": {"username": "customer", "password": "password123"},
+        "product_a": {"product_name": "Wireless Mouse", "expected_quantity": 1, "expected_subtotal": "25.00"},
+        "cart": {"expected_count": 1}
+      }
+    },
+    "1484": {
+      "test_name": "test_add_product_b_with_min_threshold",
+      "feature": "ProductCatalog",
+      "target_file": "test_product_catalog.py",
+      "pages_used": [
+        "LoginPage",
+        "ProductCatalogPage",
+        "CartPage"
+      ],
+      "flow": [
+        {"page": "LoginPage", "action": "login", "data_ref": "user_credentials"},
+        {"page": "ProductCatalogPage", "action": "locate_product", "data_ref": "product_b"},
+        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
+        {"page": "ProductCatalogPage", "assertion": "is_min_threshold_displayed"},
+        {"page": "ProductCatalogPage", "action": "add_to_cart", "data_ref": "product_b"},
+        {"page": "CartPage", "action": "open_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_cart_count"},
+        {"page": "CartPage", "assertion": "verify_subtotal"}
+      ],
+      "test_data": {
+        "user_credentials": {"username": "customer", "password": "password123"},
+        "product_b": {"product_name": "Coffee Subscription", "expected_quantity": 3, "expected_subtotal": "47.97", "min_threshold": 3},
+        "cart": {"expected_count": 3}
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "api_dependencies": [],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}
