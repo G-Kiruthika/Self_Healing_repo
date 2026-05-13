@@ -3,24 +3,40 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_a_item": {"by": "PLACEHOLDER", "value": "//div[@data-product='A']"},
-        "product_c_item": {"by": "PLACEHOLDER", "value": "//div[@data-product='C']"},
-        "delete_button_product_c": {"by": "PLACEHOLDER", "value": "//button[@data-action='delete'][@data-product='C']"},
-        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
-        "empty_cart_message": {"by": "PLACEHOLDER", "value": "//div[contains(text(),'Your cart is empty')]"},
-        "return_to_catalog_button": {"by": "PLACEHOLDER", "value": "//button[contains(text(),'Return to Product Catalog')]"}
+        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(), 'Laptop Stand')]]"},
+        "product_c_quantity": {"by": "XPATH", "value": "//tr[td[contains(text(), 'Laptop Stand')]]//input[@type='number']"},
+        "cart_total": {"by": "ID", "value": "cart-total"},
+        "inventory_error_message": {"by": "CLASS_NAME", "value": "inventory-error"}
       },
       "actions": [
-        "ensure_product_in_cart(product_name, subtotal)",
-        "click_delete_for_product(product_name)",
-        "navigate_to_cart_page()"
+        "update_product_quantity(product_name, quantity)",
+        "navigate_to_cart()"
       ],
       "validations": [
-        "validate_product_present(product_name)",
-        "validate_product_not_present(product_name)",
-        "validate_cart_total(amount)",
-        "validate_empty_cart_message_displayed()",
-        "validate_return_to_catalog_button_displayed()"
+        "is_product_in_cart(product_name)",
+        "is_quantity_correct(product_name, expected_quantity)",
+        "is_cart_total_correct(expected_total)",
+        "is_inventory_error_displayed()"
+      ]
+    },
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "product_e_row": {"by": "XPATH", "value": "//tr[td[contains(text(), 'USB Cable')]]"},
+        "product_e_stock": {"by": "XPATH", "value": "//tr[td[contains(text(), 'USB Cable')]]//span[@class='stock']"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//tr[td[contains(text(), 'USB Cable')]]//button[contains(text(), 'Add to Cart')]"},
+        "cart_count": {"by": "ID", "value": "cart-count"},
+        "inventory_error_message": {"by": "CLASS_NAME", "value": "inventory-error"}
+      },
+      "actions": [
+        "navigate_to_catalog()",
+        "add_product_to_cart(product_name)"
+      ],
+      "validations": [
+        "is_product_visible(product_name)",
+        "is_stock_info_displayed(product_name)",
+        "is_inventory_error_displayed()",
+        "is_cart_count_unchanged(expected_count)"
       ]
     }
   }

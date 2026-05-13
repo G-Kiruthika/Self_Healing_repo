@@ -1,41 +1,50 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1489": {
-      "test_name": "test_remove_product_from_cart",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
+    "1491": {
+      "test_name": "test_update_cart_with_insufficient_stock",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": {"product_name": "Product A", "subtotal": "$25.00"}},
-        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": {"product_name": "Product C", "subtotal": "$89.99"}},
-        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": {"product_name": "Product A"}},
-        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": {"product_name": "Product C"}},
-        {"page": "CartPage", "action": "click_delete_for_product", "data_ref": {"product_name": "Product C"}},
-        {"page": "CartPage", "assertion": "validate_product_not_present", "data_ref": {"product_name": "Product C"}},
-        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": {"amount": "$25.00"}},
-        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": {"product_name": "Product A"}}
+        {"page": "CartPage", "action": "navigate_to_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_product_in_cart"},
+        {"page": "CartPage", "assertion": "is_quantity_correct"},
+        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "update_quantity"},
+        {"page": "CartPage", "assertion": "is_inventory_error_displayed"},
+        {"page": "CartPage", "assertion": "is_quantity_correct"},
+        {"page": "CartPage", "assertion": "is_cart_total_correct"}
       ],
       "test_data": {
-        "default": {
-          "product_a": {"product_name": "Product A", "subtotal": "$25.00"},
-          "product_c": {"product_name": "Product C", "subtotal": "$89.99"},
-          "remaining_total": "$25.00"
+        "initial_cart": {
+          "product_name": "Laptop Stand",
+          "quantity": 2,
+          "available_stock": 5
+        },
+        "update_quantity": {
+          "product_name": "Laptop Stand",
+          "quantity": 10
         }
       }
     },
-    "1490": {
-      "test_name": "test_empty_cart_message",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
-      "pages_used": ["CartPage"],
+    "1492": {
+      "test_name": "test_add_out_of_stock_product_to_cart",
+      "feature": "ProductCatalog",
+      "target_file": "test_product_catalog.py",
+      "pages_used": ["ProductCatalogPage", "CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "navigate_to_cart_page", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_empty_cart_message_displayed", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_return_to_catalog_button_displayed", "data_ref": null}
+        {"page": "ProductCatalogPage", "action": "navigate_to_catalog", "data_ref": null},
+        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
+        {"page": "ProductCatalogPage", "assertion": "is_stock_info_displayed"},
+        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "add_product"},
+        {"page": "ProductCatalogPage", "assertion": "is_inventory_error_displayed"},
+        {"page": "ProductCatalogPage", "assertion": "is_cart_count_unchanged"}
       ],
       "test_data": {
-        "default": {}
+        "add_product": {
+          "product_name": "USB Cable",
+          "available_stock": 0
+        }
       }
     }
   },
