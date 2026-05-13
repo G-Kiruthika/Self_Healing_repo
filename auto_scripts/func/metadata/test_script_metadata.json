@@ -1,50 +1,42 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1491": {
-      "test_name": "test_update_cart_with_insufficient_stock",
-      "feature": "Cart",
-      "target_file": "test_cart.py",
+    "1493": {
+      "test_name": "test_update_cart_quantity_and_validate_subtotal",
+      "feature": "CartManagement",
+      "target_file": "test_cart_management.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "navigate_to_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_product_in_cart"},
-        {"page": "CartPage", "assertion": "is_quantity_correct"},
-        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "update_quantity"},
-        {"page": "CartPage", "assertion": "is_inventory_error_displayed"},
-        {"page": "CartPage", "assertion": "is_quantity_correct"},
-        {"page": "CartPage", "assertion": "is_cart_total_correct"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_c_initial"},
+        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "product_c_update"},
+        {"page": "CartPage", "action": "get_line_item_subtotal", "data_ref": "product_c_update"},
+        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "product_c_update"},
+        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": "product_c_expected_subtotal"},
+        {"page": "CartPage", "assertion": "validate_no_inventory_error"}
       ],
       "test_data": {
-        "initial_cart": {
-          "product_name": "Laptop Stand",
-          "quantity": 2,
-          "available_stock": 5
-        },
-        "update_quantity": {
-          "product_name": "Laptop Stand",
-          "quantity": 10
-        }
+        "product_c_initial": {"product_name": "Laptop Stand", "quantity": 1, "available_stock": 5},
+        "product_c_update": {"product_name": "Laptop Stand", "quantity": 5},
+        "product_c_expected_subtotal": {"product_name": "Laptop Stand", "expected_subtotal": "$449.95"}
       }
     },
-    "1492": {
-      "test_name": "test_add_out_of_stock_product_to_cart",
-      "feature": "ProductCatalog",
-      "target_file": "test_product_catalog.py",
-      "pages_used": ["ProductCatalogPage", "CartPage"],
+    "1494": {
+      "test_name": "test_prevent_reducing_below_minimum_quantity",
+      "feature": "CartManagement",
+      "target_file": "test_cart_management.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "ProductCatalogPage", "action": "navigate_to_catalog", "data_ref": null},
-        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
-        {"page": "ProductCatalogPage", "assertion": "is_stock_info_displayed"},
-        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "add_product"},
-        {"page": "ProductCatalogPage", "assertion": "is_inventory_error_displayed"},
-        {"page": "ProductCatalogPage", "assertion": "is_cart_count_unchanged"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_b_initial"},
+        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "product_b_update"},
+        {"page": "CartPage", "action": "get_warning_message", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "product_b_min_threshold"},
+        {"page": "CartPage", "assertion": "validate_warning_message", "data_ref": "expected_warning"}
       ],
       "test_data": {
-        "add_product": {
-          "product_name": "USB Cable",
-          "available_stock": 0
-        }
+        "product_b_initial": {"product_name": "Coffee Subscription", "quantity": 3, "min_threshold": 3},
+        "product_b_update": {"product_name": "Coffee Subscription", "quantity": 1},
+        "product_b_min_threshold": {"product_name": "Coffee Subscription", "quantity": 3},
+        "expected_warning": {"expected_message": "Minimum quantity for Coffee Subscription is 3."}
       }
     }
   },

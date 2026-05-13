@@ -3,40 +3,25 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(), 'Laptop Stand')]]"},
-        "product_c_quantity": {"by": "XPATH", "value": "//tr[td[contains(text(), 'Laptop Stand')]]//input[@type='number']"},
-        "cart_total": {"by": "ID", "value": "cart-total"},
-        "inventory_error_message": {"by": "CLASS_NAME", "value": "inventory-error"}
+        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Laptop Stand')]]"},
+        "product_b_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Coffee Subscription')]]"},
+        "quantity_input": {"by": "CSS_SELECTOR", "value": ".cart-qty-input"},
+        "line_item_subtotal": {"by": "CSS_SELECTOR", "value": ".cart-line-subtotal"},
+        "warning_message": {"by": "CSS_SELECTOR", "value": ".cart-warning"},
+        "error_message": {"by": "CSS_SELECTOR", "value": ".cart-error"}
       },
       "actions": [
+        "ensure_product_in_cart(product_name, quantity)",
         "update_product_quantity(product_name, quantity)",
-        "navigate_to_cart()"
+        "get_line_item_subtotal(product_name)",
+        "get_warning_message()",
+        "get_error_message()"
       ],
       "validations": [
-        "is_product_in_cart(product_name)",
-        "is_quantity_correct(product_name, expected_quantity)",
-        "is_cart_total_correct(expected_total)",
-        "is_inventory_error_displayed()"
-      ]
-    },
-    "ProductCatalogPage": {
-      "file_name": "product_catalog_page.py",
-      "locators": {
-        "product_e_row": {"by": "XPATH", "value": "//tr[td[contains(text(), 'USB Cable')]]"},
-        "product_e_stock": {"by": "XPATH", "value": "//tr[td[contains(text(), 'USB Cable')]]//span[@class='stock']"},
-        "add_to_cart_button": {"by": "XPATH", "value": "//tr[td[contains(text(), 'USB Cable')]]//button[contains(text(), 'Add to Cart')]"},
-        "cart_count": {"by": "ID", "value": "cart-count"},
-        "inventory_error_message": {"by": "CLASS_NAME", "value": "inventory-error"}
-      },
-      "actions": [
-        "navigate_to_catalog()",
-        "add_product_to_cart(product_name)"
-      ],
-      "validations": [
-        "is_product_visible(product_name)",
-        "is_stock_info_displayed(product_name)",
-        "is_inventory_error_displayed()",
-        "is_cart_count_unchanged(expected_count)"
+        "validate_product_in_cart(product_name, quantity)",
+        "validate_line_item_subtotal(product_name, expected_subtotal)",
+        "validate_no_inventory_error()",
+        "validate_warning_message(expected_message)"
       ]
     }
   }
