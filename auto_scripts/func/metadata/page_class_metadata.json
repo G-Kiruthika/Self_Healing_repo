@@ -3,28 +3,24 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_a_row": {"by": "PLACEHOLDER", "value": "//tr[td[text()='Product A']]"},
-        "product_d_row": {"by": "PLACEHOLDER", "value": "//tr[td[text()='Product D']]"},
-        "quantity_input": {"by": "PLACEHOLDER", "value": "//input[@name='quantity']"},
-        "subtotal_label": {"by": "PLACEHOLDER", "value": "//span[@class='subtotal']"},
-        "cart_total_label": {"by": "PLACEHOLDER", "value": "//span[@class='cart-total']"},
-        "loading_spinner": {"by": "PLACEHOLDER", "value": "//div[@class='spinner']"}
+        "product_a_item": {"by": "PLACEHOLDER", "value": "//div[@data-product='A']"},
+        "product_c_item": {"by": "PLACEHOLDER", "value": "//div[@data-product='C']"},
+        "delete_button_product_c": {"by": "PLACEHOLDER", "value": "//button[@data-action='delete'][@data-product='C']"},
+        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
+        "empty_cart_message": {"by": "PLACEHOLDER", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "PLACEHOLDER", "value": "//button[contains(text(),'Return to Product Catalog')]"}
       },
       "actions": [
-        "ensure_product_in_cart(product_name, quantity, subtotal)",
-        "change_quantity(product_name, new_quantity)",
-        "observe_line_item_subtotal(product_name)",
-        "observe_cart_total()",
-        "check_for_page_refresh()",
-        "check_for_loading_spinner()"
+        "ensure_product_in_cart(product_name, subtotal)",
+        "click_delete_for_product(product_name)",
+        "navigate_to_cart_page()"
       ],
       "validations": [
         "validate_product_present(product_name)",
-        "validate_quantity(product_name, expected_quantity)",
-        "validate_line_item_subtotal(product_name, expected_subtotal)",
-        "validate_cart_total(expected_total)",
-        "validate_no_page_refresh()",
-        "validate_no_loading_spinner()"
+        "validate_product_not_present(product_name)",
+        "validate_cart_total(amount)",
+        "validate_empty_cart_message_displayed()",
+        "validate_return_to_catalog_button_displayed()"
       ]
     }
   }

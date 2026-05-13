@@ -1,48 +1,41 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1487": {
-      "test_name": "test_update_quantity_and_validate_subtotals",
-      "feature": "CartFunctionality",
-      "target_file": "test_cart_functionality.py",
+    "1489": {
+      "test_name": "test_remove_product_from_cart",
+      "feature": "ShoppingCart",
+      "target_file": "test_shopping_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_a_initial"},
-        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": "product_a_initial"},
-        {"page": "CartPage", "action": "change_quantity", "data_ref": "product_a_update"},
-        {"page": "CartPage", "assertion": "validate_quantity", "data_ref": "product_a_update"},
-        {"page": "CartPage", "action": "observe_line_item_subtotal", "data_ref": "product_a_update"},
-        {"page": "CartPage", "action": "observe_cart_total", "data_ref": "product_a_update"},
-        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": "product_a_update"},
-        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": "product_a_update"},
-        {"page": "CartPage", "action": "check_for_page_refresh"},
-        {"page": "CartPage", "action": "check_for_loading_spinner"},
-        {"page": "CartPage", "assertion": "validate_no_page_refresh"},
-        {"page": "CartPage", "assertion": "validate_no_loading_spinner"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": {"product_name": "Product A", "subtotal": "$25.00"}},
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": {"product_name": "Product C", "subtotal": "$89.99"}},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": {"product_name": "Product A"}},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": {"product_name": "Product C"}},
+        {"page": "CartPage", "action": "click_delete_for_product", "data_ref": {"product_name": "Product C"}},
+        {"page": "CartPage", "assertion": "validate_product_not_present", "data_ref": {"product_name": "Product C"}},
+        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": {"amount": "$25.00"}},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": {"product_name": "Product A"}}
       ],
       "test_data": {
-        "product_a_initial": {"product_name": "Product A", "quantity": 1, "subtotal": 25.00},
-        "product_a_update": {"product_name": "Product A", "quantity": 5, "subtotal": 125.00, "cart_total": 125.00}
+        "default": {
+          "product_a": {"product_name": "Product A", "subtotal": "$25.00"},
+          "product_c": {"product_name": "Product C", "subtotal": "$89.99"},
+          "remaining_total": "$25.00"
+        }
       }
     },
-    "1488": {
-      "test_name": "test_increase_quantity_and_validate_totals",
-      "feature": "CartFunctionality",
-      "target_file": "test_cart_functionality.py",
+    "1490": {
+      "test_name": "test_empty_cart_message",
+      "feature": "ShoppingCart",
+      "target_file": "test_shopping_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_d_initial"},
-        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": "product_d_initial"},
-        {"page": "CartPage", "action": "change_quantity", "data_ref": "product_d_update"},
-        {"page": "CartPage", "assertion": "validate_quantity", "data_ref": "product_d_update"},
-        {"page": "CartPage", "action": "observe_line_item_subtotal", "data_ref": "product_d_update"},
-        {"page": "CartPage", "action": "observe_cart_total", "data_ref": "product_d_update"},
-        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": "product_d_update"},
-        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": "product_d_update"}
+        {"page": "CartPage", "action": "navigate_to_cart_page", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_empty_cart_message_displayed", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_return_to_catalog_button_displayed", "data_ref": null}
       ],
       "test_data": {
-        "product_d_initial": {"product_name": "Product D", "quantity": 2, "subtotal": 91.00},
-        "product_d_update": {"product_name": "Product D", "quantity": 6, "subtotal": 273.00, "cart_total": 273.00}
+        "default": {}
       }
     }
   },
