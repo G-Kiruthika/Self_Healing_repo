@@ -1,24 +1,27 @@
 {
   "pages": {
-    "ShoppingCartPage": {
-      "file_name": "shopping_cart_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "product_a_row": {"by": "xpath", "value": "//tr[@data-product='A']"},
-        "product_b_row": {"by": "xpath", "value": "//tr[@data-product='B']"},
-        "add_product_button": {"by": "id", "value": "add-product-btn"},
-        "quantity_field": {"by": "name", "value": "quantity"},
-        "cart_total": {"by": "id", "value": "cart-total"},
-        "line_item_subtotal": {"by": "class_name", "value": "line-item-subtotal"}
+        "product_a": {"by": "PLACEHOLDER", "value": "product_a_locator"},
+        "product_c": {"by": "PLACEHOLDER", "value": "product_c_locator"},
+        "cart_total": {"by": "PLACEHOLDER", "value": "cart_total_locator"},
+        "delete_product_c_button": {"by": "PLACEHOLDER", "value": "delete_product_c_button_locator"},
+        "empty_cart_message": {"by": "PLACEHOLDER", "value": "empty_cart_message_locator"},
+        "return_to_catalog_button": {"by": "PLACEHOLDER", "value": "return_to_catalog_button_locator"}
       },
       "actions": [
-        "add_product(product_name, quantity)",
-        "navigate_to_cart()",
-        "change_quantity(product_name, quantity)"
+        "ensure_product_in_cart(product_name)",
+        "click_delete_product(product_name)",
+        "navigate_to_cart_page()",
+        "observe_cart_page()"
       ],
       "validations": [
-        "verify_product_in_cart(product_name, quantity, subtotal)",
+        "verify_product_present(product_name)",
+        "verify_product_absent(product_name)",
         "verify_cart_total(expected_total)",
-        "verify_no_page_refresh()"
+        "verify_cart_empty_message()",
+        "verify_return_to_catalog_button_present()"
       ]
     }
   }
