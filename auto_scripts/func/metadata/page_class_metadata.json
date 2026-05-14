@@ -1,38 +1,28 @@
 {
   "pages": {
-    "ProductPage": {
-      "file_name": "product_page.py",
-      "locators": {
-        "product_a_add_button": {"by": "PLACEHOLDER", "value": "//button[@data-product='A']"},
-        "product_b_add_button": {"by": "PLACEHOLDER", "value": "//button[@data-product='B']"},
-        "cart_icon": {"by": "PLACEHOLDER", "value": "//a[@href='/cart']"}
-      },
-      "actions": [
-        "add_product_to_cart(product_name, quantity)",
-        "navigate_to_cart()"
-      ],
-      "validations": [
-        "is_product_in_cart(product_name)",
-        "is_on_product_page()"
-      ]
-    },
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_product_row": {"by": "PLACEHOLDER", "value": "//tr[@data-product='{product_name}']"},
-        "quantity_input": {"by": "PLACEHOLDER", "value": "//input[@data-product='{product_name}']"},
-        "subtotal_cell": {"by": "PLACEHOLDER", "value": "//td[@data-subtotal-for='{product_name}']"},
-        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart_total']"}
+        "product_a_row": {"by": "xpath", "value": "//tr[contains(., 'Product A')]"},
+        "product_c_row": {"by": "xpath", "value": "//tr[contains(., 'Product C')]"},
+        "delete_product_c_button": {"by": "xpath", "value": "//tr[contains(., 'Product C')]//button[text()='Delete']"},
+        "cart_total": {"by": "id", "value": "cart-total"},
+        "empty_cart_message": {"by": "xpath", "value": "//div[contains(text(), 'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "xpath", "value": "//button[text()='Return to Product Catalog']"}
       },
       "actions": [
-        "change_product_quantity(product_name, quantity)",
-        "observe_cart_total()"
+        "navigate_to_cart()",
+        "delete_product(product_name)",
+        "observe_cart_page()"
       ],
       "validations": [
-        "verify_product_details(product_name, unit_price, quantity, subtotal)",
-        "verify_cart_total(total)",
-        "is_on_cart_page()",
-        "no_page_refresh_or_spinner()"
+        "is_product_in_cart(product_name)",
+        "is_product_not_in_cart(product_name)",
+        "is_cart_total(expected_total)",
+        "is_only_product_in_cart(product_name)",
+        "is_cart_empty()",
+        "is_empty_cart_message_displayed()",
+        "is_return_to_catalog_button_displayed()"
       ]
     }
   }
