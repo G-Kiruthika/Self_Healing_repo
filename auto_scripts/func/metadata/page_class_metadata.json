@@ -3,27 +3,25 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "add_product_a_button": {"by": "placeholder", "value": "//button[@data-product='A']"},
-        "add_product_b_button": {"by": "placeholder", "value": "//button[@data-product='B']"},
-        "product_a_quantity_field": {"by": "placeholder", "value": "//input[@name='quantity_A']"},
-        "product_b_quantity_field": {"by": "placeholder", "value": "//input[@name='quantity_B']"},
-        "cart_total_label": {"by": "placeholder", "value": "//span[@id='cart_total']"},
-        "cart_link": {"by": "placeholder", "value": "//a[@href='/cart']"},
-        "product_a_subtotal_label": {"by": "placeholder", "value": "//span[@id='subtotal_A']"},
-        "product_b_subtotal_label": {"by": "placeholder", "value": "//span[@id='subtotal_B']"},
-        "product_a_name_label": {"by": "placeholder", "value": "//span[@id='name_A']"},
-        "product_b_name_label": {"by": "placeholder", "value": "//span[@id='name_B']"}
+        "product_line_item": {"by": "XPATH", "value": "//div[@class='cart-item'][.//span[contains(text(),'Product A') or contains(text(),'Product C')]]"},
+        "delete_button": {"by": "XPATH", "value": "//button[contains(text(),'Delete')]"},
+        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
+        "empty_cart_message": {"by": "XPATH", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "XPATH", "value": "//button[contains(text(),'Return to Product Catalog')]"}
       },
       "actions": [
-        "add_product(product_name, quantity)",
-        "navigate_to_cart()",
-        "change_product_quantity(product_name, quantity)"
+        "ensure_product_in_cart(product_name, subtotal)",
+        "click_delete_for_product(product_name)",
+        "navigate_to_cart_page()",
+        "observe_cart_page()"
       ],
       "validations": [
-        "validate_product_in_cart(product_name)",
-        "validate_product_details(product_name, unit_price, quantity, subtotal)",
+        "validate_product_present(product_name)",
+        "validate_product_not_present(product_name)",
         "validate_cart_total(expected_total)",
-        "validate_no_page_refresh()"
+        "validate_only_product_present(product_name)",
+        "validate_empty_cart_message_displayed()",
+        "validate_return_to_catalog_button_present()"
       ]
     }
   }

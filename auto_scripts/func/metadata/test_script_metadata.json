@@ -1,44 +1,43 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1486": {
-      "test_name": "test_add_multiple_products_and_verify_cart",
+    "1489": {
+      "test_name": "test_remove_product_from_cart",
       "feature": "ShoppingCart",
-      "target_file": "test_cart_add_and_verify.py",
+      "target_file": "test_cart_remove_product.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "add_product", "data_ref": {"product_name": "A", "quantity": 1}},
-        {"page": "CartPage", "action": "add_product", "data_ref": {"product_name": "B", "quantity": 3}},
-        {"page": "CartPage", "action": "navigate_to_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": {"product_name": "A"}},
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": {"product_name": "B"}},
-        {"page": "CartPage", "assertion": "validate_product_details", "data_ref": {"product_name": "A", "unit_price": 25.00, "quantity": 1, "subtotal": 25.00}},
-        {"page": "CartPage", "assertion": "validate_product_details", "data_ref": {"product_name": "B", "unit_price": 15.99, "quantity": 3, "subtotal": 47.97}},
-        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": {"expected_total": 72.97}}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": {"product_name": "Product A", "subtotal": "$25.00"}},
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": {"product_name": "Product C", "subtotal": "$89.99"}},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": {"product_name": "Product A"}},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": {"product_name": "Product C"}},
+        {"page": "CartPage", "action": "click_delete_for_product", "data_ref": {"product_name": "Product C"}},
+        {"page": "CartPage", "assertion": "validate_product_not_present", "data_ref": {"product_name": "Product C"}},
+        {"page": "CartPage", "action": "observe_cart_page", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": {"expected_total": "$25.00"}},
+        {"page": "CartPage", "assertion": "validate_only_product_present", "data_ref": {"product_name": "Product A"}}
       ],
       "test_data": {
-        "product_a": {"name": "Wireless Mouse", "unit_price": 25.00, "quantity": 1, "subtotal": 25.00},
-        "product_b": {"name": "Coffee Subscription", "unit_price": 15.99, "quantity": 3, "subtotal": 47.97},
-        "overall_cart_total": 72.97
+        "default": {
+          "product_A": {"name": "Product A", "subtotal": "$25.00"},
+          "product_C": {"name": "Product C", "subtotal": "$89.99"}
+        }
       }
     },
-    "1487": {
-      "test_name": "test_update_product_quantity_and_validate_cart",
+    "1490": {
+      "test_name": "test_empty_cart_message",
       "feature": "ShoppingCart",
-      "target_file": "test_cart_update_quantity.py",
+      "target_file": "test_cart_empty_message.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": {"product_name": "A"}},
-        {"page": "CartPage", "assertion": "validate_product_details", "data_ref": {"product_name": "A", "unit_price": 25.00, "quantity": 1, "subtotal": 25.00}},
-        {"page": "CartPage", "action": "change_product_quantity", "data_ref": {"product_name": "A", "quantity": 5}},
-        {"page": "CartPage", "assertion": "validate_product_details", "data_ref": {"product_name": "A", "unit_price": 25.00, "quantity": 5, "subtotal": 125.00}},
-        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": {"expected_total": 125.00}},
-        {"page": "CartPage", "assertion": "validate_no_page_refresh", "data_ref": null}
+        {"page": "CartPage", "action": "observe_cart_page", "data_ref": null},
+        {"page": "CartPage", "action": "navigate_to_cart_page", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_empty_cart_message_displayed", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_return_to_catalog_button_present", "data_ref": null}
       ],
       "test_data": {
-        "product_a": {"name": "Wireless Mouse", "unit_price": 25.00, "quantity": 1, "subtotal": 25.00},
-        "product_a_updated": {"name": "Wireless Mouse", "unit_price": 25.00, "quantity": 5, "subtotal": 125.00},
-        "overall_cart_total": 125.00
+        "default": {
+        }
       }
     }
   },
