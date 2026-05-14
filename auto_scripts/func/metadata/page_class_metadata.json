@@ -1,32 +1,29 @@
 {
   "pages": {
-    "ShoppingCartPage": {
-      "file_name": "shopping_cart_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "add_product_a_button": {"by": "PLACEHOLDER", "value": "//button[@data-product='A']"},
-        "add_product_b_button": {"by": "PLACEHOLDER", "value": "//button[@data-product='B']"},
-        "cart_icon": {"by": "PLACEHOLDER", "value": "//a[@id='cart']"},
-        "product_a_row": {"by": "PLACEHOLDER", "value": "//tr[@data-product='A']"},
-        "product_b_row": {"by": "PLACEHOLDER", "value": "//tr[@data-product='B']"},
-        "product_a_quantity_input": {"by": "PLACEHOLDER", "value": "//input[@name='qty_A']"},
-        "product_a_subtotal": {"by": "PLACEHOLDER", "value": "//span[@id='subtotal_A']"},
-        "product_b_quantity_input": {"by": "PLACEHOLDER", "value": "//input[@name='qty_B']"},
-        "product_b_subtotal": {"by": "PLACEHOLDER", "value": "//span[@id='subtotal_B']"},
-        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart_total']"}
+        "product_a_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Product A')]]"},
+        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Product C')]]"},
+        "delete_button_product_c": {"by": "XPATH", "value": "//tr[td[contains(text(),'Product C')]]//button[contains(text(),'Delete')]"},
+        "cart_total": {"by": "ID", "value": "cart-total"},
+        "empty_cart_message": {"by": "XPATH", "value": "//*[contains(text(),'Your cart is empty')]"},
+        "return_to_product_catalog_button": {"by": "XPATH", "value": "//button[contains(text(),'Return to Product Catalog')]"}
       },
       "actions": [
-        "add_product_a(qty)",
-        "add_product_b(qty)",
-        "go_to_cart()",
-        "change_product_a_quantity(qty)",
-        "change_product_b_quantity(qty)"
+        "ensure_product_in_cart(product_name, subtotal)",
+        "click_delete_for_product(product_name)",
+        "navigate_to_cart()",
+        "observe_cart_page()"
       ],
       "validations": [
-        "is_cart_page_displayed()",
-        "verify_product_a_details(expected_details)",
-        "verify_product_b_details(expected_details)",
-        "verify_cart_total(expected_total)",
-        "verify_no_page_refresh_or_spinner()"
+        "validate_product_present(product_name)",
+        "validate_product_absent(product_name)",
+        "validate_cart_total(expected_total)",
+        "validate_only_product_in_cart(product_name)",
+        "validate_cart_empty()",
+        "validate_empty_cart_message()",
+        "validate_return_to_product_catalog_button_present()"
       ]
     }
   }
