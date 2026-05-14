@@ -1,45 +1,36 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1486": {
-      "test_name": "test_add_multiple_products_and_verify_cart",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
+    "1489": {
+      "test_name": "test_remove_product_c_from_cart",
+      "feature": "CartFunctionality",
+      "target_file": "test_cart_functionality.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "add_product", "data_ref": "add_product_a"},
-        {"page": "CartPage", "action": "add_product", "data_ref": "add_product_b"},
-        {"page": "CartPage", "action": "navigate_to_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": "verify_product_a"},
-        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": "verify_product_b"},
-        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": "verify_cart_total"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_a"},
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_c"},
+        {"page": "CartPage", "action": "click_delete_button", "data_ref": "product_c"},
+        {"page": "CartPage", "assertion": "validate_product_not_present", "data_ref": "product_c"},
+        {"page": "CartPage", "action": "validate_cart_total", "data_ref": "cart_total_after_removal"},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": "product_a"}
       ],
       "test_data": {
-        "add_product_a": {"product_name": "Wireless Mouse", "quantity": 1},
-        "add_product_b": {"product_name": "Coffee Subscription", "quantity": 3},
-        "verify_product_a": {"product_name": "Wireless Mouse", "quantity": 1, "subtotal": 25.00},
-        "verify_product_b": {"product_name": "Coffee Subscription", "quantity": 3, "subtotal": 47.97},
-        "verify_cart_total": {"expected_total": 72.97}
+        "product_a": {"product_name": "Product A", "subtotal": "$25.00"},
+        "product_c": {"product_name": "Product C", "subtotal": "$89.99"},
+        "cart_total_after_removal": {"expected_total": "$25.00"}
       }
     },
-    "1487": {
-      "test_name": "test_update_product_quantity_and_verify_totals",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
+    "1490": {
+      "test_name": "test_cart_empty_state",
+      "feature": "CartFunctionality",
+      "target_file": "test_cart_functionality.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": "verify_product_a"},
-        {"page": "CartPage", "action": "change_quantity", "data_ref": "change_quantity_a"},
-        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": "verify_product_a_updated"},
-        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": "verify_cart_total_updated"},
-        {"page": "CartPage", "assertion": "verify_no_refresh_or_spinner", "data_ref": null}
+        {"page": "CartPage", "action": "navigate_to_cart_page", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_cart_empty", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_return_to_catalog_button_present", "data_ref": null}
       ],
-      "test_data": {
-        "verify_product_a": {"product_name": "Wireless Mouse", "quantity": 1, "subtotal": 25.00},
-        "change_quantity_a": {"product_name": "Wireless Mouse", "quantity": 5},
-        "verify_product_a_updated": {"product_name": "Wireless Mouse", "quantity": 5, "subtotal": 125.00},
-        "verify_cart_total_updated": {"expected_total": 125.00}
-      }
+      "test_data": {}
     }
   },
   "framework": {

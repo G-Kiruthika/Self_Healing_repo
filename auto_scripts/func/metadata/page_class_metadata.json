@@ -3,22 +3,25 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_a_row": {"by": "PLACEHOLDER", "value": "//row[contains(.,'Wireless Mouse')]"},
-        "product_b_row": {"by": "PLACEHOLDER", "value": "//row[contains(.,'Coffee Subscription')]"},
-        "add_product_button": {"by": "PLACEHOLDER", "value": "//button[contains(.,'Add to Cart')]"},
-        "quantity_input": {"by": "PLACEHOLDER", "value": "//input[@name='quantity']"},
+        "product_a_row": {"by": "PLACEHOLDER", "value": "//tr[td[text()='Product A']]"},
+        "product_c_row": {"by": "PLACEHOLDER", "value": "//tr[td[text()='Product C']]"},
+        "delete_button_product_c": {"by": "PLACEHOLDER", "value": "//tr[td[text()='Product C']]//button[text()='Delete']"},
         "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
-        "line_item_subtotal": {"by": "PLACEHOLDER", "value": "//span[@class='item-subtotal']"}
+        "empty_cart_message": {"by": "PLACEHOLDER", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "PLACEHOLDER", "value": "//button[text()='Return to Product Catalog']"}
       },
       "actions": [
-        "add_product(product_name, quantity)",
-        "navigate_to_cart()",
-        "change_quantity(product_name, quantity)"
+        "ensure_product_in_cart(product_name, subtotal)",
+        "click_delete_button(product_name)",
+        "navigate_to_cart_page()",
+        "observe_cart_page()"
       ],
       "validations": [
-        "verify_product_in_cart(product_name, quantity, subtotal)",
-        "verify_cart_total(expected_total)",
-        "verify_no_refresh_or_spinner()"
+        "validate_product_present(product_name)",
+        "validate_product_not_present(product_name)",
+        "validate_cart_total(expected_total)",
+        "validate_cart_empty()",
+        "validate_return_to_catalog_button_present()"
       ]
     }
   }
