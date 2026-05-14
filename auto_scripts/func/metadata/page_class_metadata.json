@@ -1,26 +1,27 @@
 {
   "pages": {
-    "ShoppingCartPage": {
-      "file_name": "shopping_cart_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "add_product_a_button": {"by": "placeholder", "value": "add-product-a-btn"},
-        "add_product_b_button": {"by": "placeholder", "value": "add-product-b-btn"},
-        "cart_icon": {"by": "placeholder", "value": "cart-icon"},
-        "product_row": {"by": "placeholder", "value": "product-row"},
-        "product_a_quantity_field": {"by": "placeholder", "value": "product-a-qty"},
-        "product_b_quantity_field": {"by": "placeholder", "value": "product-b-qty"},
-        "cart_total": {"by": "placeholder", "value": "cart-total"},
-        "loading_spinner": {"by": "placeholder", "value": "loading-spinner"}
+        "product_a_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Product A')]]"},
+        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Product C')]]"},
+        "delete_button_product_c": {"by": "XPATH", "value": "//tr[td[contains(text(),'Product C')]]//button[contains(text(),'Delete')]"},
+        "cart_total": {"by": "ID", "value": "cart-total"},
+        "empty_cart_message": {"by": "XPATH", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "XPATH", "value": "//button[contains(text(),'Return to Product Catalog')]"}
       },
       "actions": [
-        "add_product_to_cart(product_name, quantity)",
-        "navigate_to_cart()",
-        "change_product_quantity(product_name, quantity)"
+        "ensure_product_in_cart(product_name, subtotal)",
+        "click_delete_button(product_name)",
+        "navigate_to_cart_page()",
+        "observe_cart_page()"
       ],
       "validations": [
-        "verify_product_in_cart(product_name, quantity, subtotal)",
-        "verify_cart_total(expected_total)",
-        "verify_no_loading_spinner()"
+        "validate_product_present(product_name)",
+        "validate_product_not_present(product_name)",
+        "validate_cart_total(expected_total)",
+        "validate_cart_empty_message()",
+        "validate_no_line_items()"
       ]
     }
   }
