@@ -1,1 +1,57 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"UI_TC_02": {"test_name": "test_invalid_password_login", "feature": "Login", "target_file": "test_saucedemo_login.py", "pages_used": ["SauceDemoLoginPage"], "flow": [{"page": "SauceDemoLoginPage", "action": "open", "data_ref": null}, {"page": "SauceDemoLoginPage", "action": "enter_username", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "enter_password", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "click_login", "data_ref": null}, {"page": "SauceDemoLoginPage", "assertion": "is_error_displayed"}], "test_data": {"invalid_password_user": {"username": "standard_user", "password": "wrong_password"}}}}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "1486": {
+      "test_name": "test_add_multiple_products_and_verify_cart",
+      "feature": "ShoppingCart",
+      "target_file": "test_shopping_cart.py",
+      "pages_used": ["ShoppingCartPage"],
+      "flow": [
+        {"page": "ShoppingCartPage", "action": "add_product_a", "data_ref": "product_a_1"},
+        {"page": "ShoppingCartPage", "action": "add_product_b", "data_ref": "product_b_3"},
+        {"page": "ShoppingCartPage", "action": "go_to_cart", "data_ref": null},
+        {"page": "ShoppingCartPage", "assertion": "is_cart_page_displayed"},
+        {"page": "ShoppingCartPage", "assertion": "verify_product_a_details", "data_ref": "product_a_details"},
+        {"page": "ShoppingCartPage", "assertion": "verify_product_b_details", "data_ref": "product_b_details"},
+        {"page": "ShoppingCartPage", "assertion": "verify_cart_total", "data_ref": "cart_total_7297"}
+      ],
+      "test_data": {
+        "product_a_1": {"qty": 1},
+        "product_b_3": {"qty": 3},
+        "product_a_details": {"name": "Wireless Mouse", "unit_price": 25.00, "quantity": 1, "subtotal": 25.00},
+        "product_b_details": {"name": "Coffee Subscription", "unit_price": 15.99, "quantity": 3, "subtotal": 47.97},
+        "cart_total_7297": {"total": 72.97}
+      }
+    },
+    "1487": {
+      "test_name": "test_update_product_quantity_in_cart",
+      "feature": "ShoppingCart",
+      "target_file": "test_shopping_cart.py",
+      "pages_used": ["ShoppingCartPage"],
+      "flow": [
+        {"page": "ShoppingCartPage", "assertion": "verify_product_a_details", "data_ref": "product_a_details_initial"},
+        {"page": "ShoppingCartPage", "action": "change_product_a_quantity", "data_ref": "product_a_5"},
+        {"page": "ShoppingCartPage", "assertion": "verify_product_a_details", "data_ref": "product_a_details_updated"},
+        {"page": "ShoppingCartPage", "assertion": "verify_cart_total", "data_ref": "cart_total_12500"},
+        {"page": "ShoppingCartPage", "assertion": "verify_no_page_refresh_or_spinner"}
+      ],
+      "test_data": {
+        "product_a_details_initial": {"name": "Wireless Mouse", "unit_price": 25.00, "quantity": 1, "subtotal": 25.00},
+        "product_a_5": {"qty": 5},
+        "product_a_details_updated": {"name": "Wireless Mouse", "unit_price": 25.00, "quantity": 5, "subtotal": 125.00},
+        "cart_total_12500": {"total": 125.00}
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "api_dependencies": [],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}
