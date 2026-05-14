@@ -1,1 +1,24 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "product_a_row": {"by": "PLACEHOLDER", "value": "//tr[@data-product-name='Wireless Mouse']"},
+        "product_b_row": {"by": "PLACEHOLDER", "value": "//tr[@data-product-name='Coffee Subscription']"},
+        "quantity_input_a": {"by": "PLACEHOLDER", "value": "//input[@name='quantity'][@data-product='Wireless Mouse']"},
+        "quantity_input_b": {"by": "PLACEHOLDER", "value": "//input[@name='quantity'][@data-product='Coffee Subscription']"},
+        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"}
+      },
+      "actions": [
+        "add_product_to_cart(product_name, quantity)",
+        "navigate_to_cart()",
+        "change_product_quantity(product_name, quantity)"
+      ],
+      "validations": [
+        "verify_product_in_cart(product_name, quantity, subtotal)",
+        "verify_cart_total(expected_total)",
+        "verify_no_page_refresh_or_spinner()"
+      ]
+    }
+  }
+}
