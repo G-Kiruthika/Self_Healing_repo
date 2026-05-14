@@ -1,52 +1,70 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1486": {
-      "test_name": "test_add_multiple_products_and_validate_cart",
+    "1489": {
+      "test_name": "test_remove_product_and_verify_cart_total",
       "feature": "Cart",
       "target_file": "test_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "add_product_to_cart", "data_ref": {"product_name": "Wireless Mouse", "quantity": 1}},
-        {"page": "CartPage", "action": "add_product_to_cart", "data_ref": {"product_name": "Coffee Subscription", "quantity": 3}},
-        {"page": "CartPage", "action": "navigate_to_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": {"product_name": "Wireless Mouse", "quantity": 1, "subtotal": 25.00}},
-        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": {"product_name": "Coffee Subscription", "quantity": 3, "subtotal": 47.97}},
-        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": {"expected_total": 72.97}}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": {"product_name": "A", "subtotal": 25.00}},
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": {"product_name": "C", "subtotal": 89.99}},
+        {"page": "CartPage", "action": "click_delete_for_product", "data_ref": {"product_name": "C"}},
+        {"page": "CartPage", "action": "navigate_to_cart_page", "data_ref": null},
+        {"page": "CartPage", "assertion": "verify_product_present", "data_ref": {"product_name": "A"}},
+        {"page": "CartPage", "assertion": "verify_product_not_present", "data_ref": {"product_name": "C"}},
+        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": {"expected_total": 25.00}}
       ],
       "test_data": {
-        "product_a": {"product_name": "Wireless Mouse", "unit_price": 25.00, "quantity": 1, "subtotal": 25.00},
-        "product_b": {"product_name": "Coffee Subscription", "unit_price": 15.99, "quantity": 3, "subtotal": 47.97},
-        "overall_total": 72.97
+        "cart_products": [
+          {"product_name": "A", "subtotal": 25.00},
+          {"product_name": "C", "subtotal": 89.99}
+        ],
+        "expected_total": 25.00
       }
     },
-    "1487": {
-      "test_name": "test_update_product_quantity_and_validate_totals",
+    "1490": {
+      "test_name": "test_empty_cart_shows_message_and_no_items",
       "feature": "Cart",
       "target_file": "test_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": {"product_name": "Wireless Mouse", "quantity": 1, "subtotal": 25.00}},
-        {"page": "CartPage", "action": "change_product_quantity", "data_ref": {"product_name": "Wireless Mouse", "quantity": 5}},
-        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": {"product_name": "Wireless Mouse", "quantity": 5, "subtotal": 125.00}},
-        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": {"expected_total": 125.00}},
-        {"page": "CartPage", "assertion": "verify_no_page_refresh_or_spinner", "data_ref": null}
+        {"page": "CartPage", "action": "ensure_cart_empty", "data_ref": null},
+        {"page": "CartPage", "action": "navigate_to_cart_page", "data_ref": null},
+        {"page": "CartPage", "action": "observe_cart_page", "data_ref": null},
+        {"page": "CartPage", "assertion": "verify_empty_cart_message_displayed", "data_ref": null},
+        {"page": "CartPage", "assertion": "verify_no_product_line_items", "data_ref": null}
       ],
       "test_data": {
-        "product_a": {"product_name": "Wireless Mouse", "unit_price": 25.00, "quantity": 5, "subtotal": 125.00},
-        "overall_total": 125.00
+        "cart_products": [],
+        "expected_message": "Your cart is empty"
       }
     }
   },
   "framework": {
     "architecture": "python-ui-api-automation-framework",
     "type": "ui",
-    "base_classes_required": ["BasePage"],
-    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "base_classes_required": [
+      "BasePage"
+    ],
+    "core_dependencies": [
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py"
+    ],
     "api_dependencies": [],
-    "config_dependencies": ["config/config.yaml"],
+    "config_dependencies": [
+      "config/config.yaml"
+    ],
     "utils_dependencies": [],
-    "external_libraries": ["selenium", "pytest", "pyyaml"],
-    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+    "external_libraries": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ],
+    "required_imports": [
+      "pages.",
+      "core.driver_factory",
+      "pages.base_page"
+    ]
   }
 }
