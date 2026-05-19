@@ -3,27 +3,24 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_c_row": {"by": "xpath", "value": "//tr[td[contains(text(),'Laptop Stand')]]"},
-        "product_b_row": {"by": "xpath", "value": "//tr[td[contains(text(),'Coffee Subscription')]]"},
-        "quantity_input": {"by": "css selector", "value": "input.qty-input"},
-        "subtotal_label": {"by": "css selector", "value": ".line-item-subtotal"},
-        "error_message": {"by": "css selector", "value": ".cart-error-message"},
-        "warning_message": {"by": "css selector", "value": ".cart-warning-message"}
+        "product_a_row": {"by": "XPATH", "value": "//tr[.//td[contains(text(),'Wireless Mouse')]]"},
+        "delete_button_product_a": {"by": "XPATH", "value": "//tr[.//td[contains(text(),'Wireless Mouse')]]//button[contains(text(),'Delete')]"},
+        "cart_empty_message": {"by": "XPATH", "value": "//*[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "XPATH", "value": "//button[contains(text(),'Return to product catalog')]"},
+        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
+        "product_b_row": {"by": "XPATH", "value": "//tr[.//td[contains(text(),'Product B')]]"},
+        "product_c_row": {"by": "XPATH", "value": "//tr[.//td[contains(text(),'Product C')]]"},
+        "line_item_subtotal": {"by": "XPATH", "value": "//td[@class='subtotal']"}
       },
       "actions": [
-        "ensure_product_in_cart(product_name, quantity)",
-        "update_quantity(product_name, quantity)",
-        "check_line_item_subtotal(product_name)",
-        "check_error_messages()",
-        "attempt_reduce_quantity(product_name, quantity)",
-        "check_cart_quantity(product_name)"
+        "click_delete_button(product_name)",
+        "navigate_to_cart_page()"
       ],
       "validations": [
-        "validate_product_in_cart(product_name, quantity)",
-        "validate_subtotal(product_name, expected_subtotal)",
-        "validate_no_inventory_error()",
-        "validate_warning_message()",
-        "validate_quantity_threshold(product_name, expected_quantity)"
+        "is_product_in_cart(product_name)",
+        "is_cart_empty()",
+        "is_cart_total(expected_total)",
+        "is_line_item_subtotal_correct(product_name, expected_subtotal)"
       ]
     }
   }
