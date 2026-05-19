@@ -2,23 +2,23 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class ProductCatalogPage(BasePage):
-    # Locators
-    CATALOG_ROOT = (By.XPATH, "//div[@id='product-catalog']")
+    ADD_TO_CART_BUTTON_TD_01 = (By.XPATH, "//button[@data-sku='TD-01' and contains(text(),'Add to Cart')]")
 
     def __init__(self, driver):
         super().__init__(driver)
 
-    def navigate_to(self):
+    def navigate_to_product_catalog(self):
         """
         Navigates to the product catalog page.
         """
         self.driver.get("https://example-ecommerce.com/catalog")
-        self.wait_for_element(self.CATALOG_ROOT)
+        self.wait_for_page_load()
 
-    def is_catalog_displayed(self):
+    def add_to_cart(self, sku):
         """
-        Validates if the product catalog is displayed.
-        Returns:
-            bool: True if catalog is displayed, False otherwise
+        Adds a product to cart by SKU.
+        Args:
+            sku (str): Product SKU
         """
-        return self.is_element_visible(self.CATALOG_ROOT)
+        add_to_cart_locator = (By.XPATH, f"//button[@data-sku='{sku}' and contains(text(),'Add to Cart')]")
+        self.click_element(add_to_cart_locator)
