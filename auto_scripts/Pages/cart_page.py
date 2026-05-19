@@ -2,21 +2,128 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class CartPage(BasePage):
-    # Locators
+    # Locators from metadata
+    PRODUCT_NAME = (By.XPATH, "//div[@class='cart-item']//span[@class='product-name']")
+    UNIT_PRICE = (By.XPATH, "//div[@class='cart-item']//span[@class='unit-price']")
+    QUANTITY_FIELD = (By.XPATH, "//input[@name='quantity']")
+    SUBTOTAL = (By.XPATH, "//div[@class='cart-item']//span[@class='subtotal']")
+    CART_TOTAL = (By.XPATH, "//span[@id='cart-total']")
+    SUCCESS_MESSAGE = (By.XPATH, "//div[@class='alert-success']")
+    
+    # Existing locators
     PRODUCT_ROW = (By.XPATH, "//tr[@data-product-id]")
-    QUANTITY_FIELD = (By.CSS_SELECTOR, ".quantity-input")
+    QUANTITY_INPUT = (By.CSS_SELECTOR, ".quantity-input")
     DECREMENT_BUTTON = (By.CSS_SELECTOR, ".decrement-btn")
     VALIDATION_ERROR_MESSAGE = (By.CSS_SELECTOR, ".validation-error")
     DELETE_BUTTON = (By.XPATH, "//button[@data-action='delete']")
     EMPTY_CART_MESSAGE = (By.XPATH, "//div[contains(text(),'Your cart is empty')]")
     CONTINUE_SHOPPING_BUTTON = (By.XPATH, "//button[text()='Continue Shopping']")
     CHECKOUT_BUTTON = (By.XPATH, "//button[text()='Checkout']")
-    QUANTITY_INPUT = (By.XPATH, "//input[@name='quantity']")
     INVENTORY_ERROR_MESSAGE = (By.XPATH, "//div[contains(@class,'error') and contains(text(),'units available')]")
     SUGGESTION_MESSAGE = (By.XPATH, "//div[contains(text(),'Maximum available')]")
+    UPDATE_BUTTON = (By.XPATH, "//button[@id='update-cart']")
 
     def __init__(self, driver):
         super().__init__(driver)
+
+    def navigate_to_cart(self):
+        """
+        Navigates to the cart page.
+        """
+        self.driver.get("https://example-ecommerce.com/cart")
+        self.wait_for_page_load()
+
+    def update_quantity(self, product_name, quantity):
+        """
+        Updates the quantity for a specific product by product name.
+        Args:
+            product_name (str): Product name
+            quantity (int): New quantity value
+        """
+        quantity_locator = (By.XPATH, f"//div[contains(@class,'cart-item')]//span[@class='product-name' and text()='{product_name}']/ancestor::div[@class='cart-item']//input[@name='quantity']")
+        self.enter_text(quantity_locator, str(quantity))
+
+    def enter_quantity(self, quantity):
+        """
+        Enters quantity in the quantity field.
+        Args:
+            quantity (int): Quantity value to enter
+        """
+        self.enter_text(self.QUANTITY_FIELD, str(quantity))
+
+    def click_update_button(self):
+        """
+        Clicks the update cart button.
+        """
+        self.click_element(self.UPDATE_BUTTON)
+
+    def verify_products_in_cart(self, product_list):
+        """
+        Verifies that all products in the list are present in the cart.
+        Args:
+            product_list (list): List of product names to verify
+        Returns:
+            bool: True if all products are in cart, False otherwise
+        """
+        for product in product_list:
+            product_locator = (By.XPATH, f"//div[@class='cart-item']//span[@class='product-name' and text()='{product}']")
+            if not self.is_element_visible(product_locator):
+                return False
+        return True
+
+    def verify_product_fields(self, product_name, unit_price, quantity, subtotal):
+        """
+        Verifies product fields for a specific product.
+        Args:
+            product_name (str): Product name
+            unit_price (str): Expected unit price
+            quantity (str): Expected quantity
+            subtotal (str): Expected subtotal
+        Returns:
+            bool: True if all fields match, False otherwise
+        """
+        try:
+            product_row = (By.XPATH, f"//div[@class='cart-item']//span[@class='product-name' and text()='{product_name}']/ancestor::div[@class='cart-item']")
+            if not self.is_element_visible(product_row):
+                return False
+            
+            unit_price_elem = self.driver.find_element(By.XPATH, f"//div[@class='cart-item']//span[@class='product-name' and text()='{product_name}']/ancestor::div[@class='cart-item']//span[@class='unit-price']")
+            quantity_elem = self.driver.find_element(By.XPATH, f"//div[@class='cart-item']//span[@class='product-name' and text()='{product_name}']/ancestor::div[@class='cart-item']//input[@name='quantity']")
+            subtotal_elem = self.driver.find_element(By.XPATH, f"//div[@class='cart-item']//span[@class='product-name' and text()='{product_name}']/ancestor::div[@class='cart-item']//span[@class='subtotal']")
+            
+            return (unit_price_elem.text == unit_price and 
+                    quantity_elem.get_attribute('value') == str(quantity) and 
+                    subtotal_elem.text == subtotal)
+        except Exception:
+            return False
+
+    def verify_cart_total(self, expected_total):
+        """
+        Verifies the cart total matches the expected value.
+        Args:
+            expected_total (str): Expected cart total
+        Returns:
+            bool: True if cart total matches, False otherwise
+        """
+        try:
+            cart_total_elem = self.driver.find_element(*self.CART_TOTAL)
+            return cart_total_elem.text == expected_total
+        except Exception:
+            return False
+
+    def verify_success_message(self, message):
+        """
+        Verifies the success message is displayed with expected text.
+        Args:
+            message (str): Expected success message
+        Returns:
+            bool: True if message matches, False otherwise
+        """
+        try:
+            success_elem = self.driver.find_element(*self.SUCCESS_MESSAGE)
+            return message in success_elem.text
+        except Exception:
+            return False
 
     def click_decrement(self, product_id):
         """
@@ -104,16 +211,6 @@ class CartPage(BasePage):
         Clicks the Continue Shopping button.
         """
         self.click_element(self.CONTINUE_SHOPPING_BUTTON)
-
-    def update_quantity(self, product_id, quantity):
-        """
-        Updates the quantity for a specific product.
-        Args:
-            product_id (str): Product ID
-            quantity (int): New quantity value
-        """
-        quantity_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']//input[@name='quantity']")
-        self.enter_text(quantity_locator, str(quantity))
 
     def is_product_in_cart(self, product_id):
         """
