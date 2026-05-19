@@ -1,39 +1,22 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from base_page import BasePage
+from pages.base_page import BasePage
 
 class LoginPage(BasePage):
- USERNAME_INPUT = (By.ID, "username_input_locator")
- PASSWORD_INPUT = (By.ID, "password_input_locator")
- LOGIN_BUTTON = (By.ID, "login_button_locator")
- ERROR_MESSAGE = (By.ID, "error_message_locator")
+    USERNAME_INPUT = (By.ID, "username")
+    PASSWORD_INPUT = (By.ID, "password")
+    LOGIN_BUTTON = (By.XPATH, "//button[@type='submit']")
 
- def navigate_to_login_page(self):
- # Example: self.driver.get("https://example.com/login")
- pass
+    def __init__(self, driver):
+        super().__init__(driver)
 
- def enter_username(self, username):
- username_element = self.find_element(self.USERNAME_INPUT)
- username_element.clear()
- username_element.send_keys(username)
+    def enter_username(self, username):
+        self.enter_text(self.USERNAME_INPUT, username)
 
- def enter_password(self, password):
- password_element = self.find_element(self.PASSWORD_INPUT)
- password_element.clear()
- password_element.send_keys(password)
+    def enter_password(self, password):
+        self.enter_text(self.PASSWORD_INPUT, password)
 
- def click_login_button(self):
- login_btn = self.find_element(self.LOGIN_BUTTON)
- login_btn.click()
+    def click_login(self):
+        self.click_element(self.LOGIN_BUTTON)
 
- def is_not_logged_in(self):
- # Returns True if login button is visible, i.e., user is not logged in
- return self.is_element_visible(self.LOGIN_BUTTON)
-
- def is_error_message_displayed(self):
- return self.is_element_visible(self.ERROR_MESSAGE)
-
- # Wrappers from BasePage assumed to be:
- # def find_element(self, locator): ...
- # def is_element_visible(self, locator): ...
+    def is_logged_in(self):
+        return self.is_element_visible((By.ID, "dashboard-header"))
