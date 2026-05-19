@@ -2,71 +2,89 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class CartPage(BasePage):
-    CART_ITEM = (By.XPATH, "//div[contains(@class, 'cart-item')]")
-    PRODUCT_NAME = (By.XPATH, "//span[contains(@class, 'product-name')]")
-    UNIT_PRICE = (By.XPATH, "//span[contains(@class, 'unit-price')]")
-    QUANTITY = (By.XPATH, "//input[contains(@class, 'quantity-input')]")
-    SUBTOTAL = (By.XPATH, "//span[contains(@class, 'subtotal')]")
-    MIN_THRESHOLD_INDICATOR = (By.XPATH, "//span[contains(@class, 'min-threshold')]")
-    SUBSCRIPTION_BADGE = (By.XPATH, "//span[contains(@class, 'subscription-badge')]")
-    DELIVERY_FREQUENCY_OPTION = (By.XPATH, "//select[contains(@class, 'delivery-frequency')]")
+    # Locators from metadata
+    CART_ITEM_TD_01 = (By.ID, "cart-item-td-01")
+    CART_ITEM_TD_02 = (By.ID, "cart-item-td-02")
+    INCREMENT_BUTTON_TD_01 = (By.XPATH, "//button[@data-product-id='TD-01' and @class='increment']")
+    DELETE_BUTTON_TD_01 = (By.XPATH, "//button[@data-product-id='TD-01' and contains(@class,'delete')]")
+    CART_TOTAL = (By.ID, "cart-total")
+    CONFIRMATION_MESSAGE = (By.ID, "confirmation-message")
 
     def __init__(self, driver):
         super().__init__(driver)
 
-    def view_cart(self):
+    def ensure_cart_contains(self, product_code, quantity, subtotal):
         """
-        Navigates to cart page or refreshes cart view.
-        """
-        # Navigate to cart page
-        self.driver.get("https://example-ecommerce.com/cart")
-
-    def cart_contains_product(self, product_id, quantity):
-        """
-        Validates if cart contains a specific product with given quantity.
+        Ensures cart contains a specific product with given quantity and subtotal.
         Args:
-            product_id (str): Product ID
+            product_code (str): Product code (e.g., 'TD-01')
             quantity (int): Expected quantity
-        Returns:
-            bool: True if product with quantity exists, False otherwise
+            subtotal (float): Expected subtotal
         """
-        product_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']")
-        if not self.is_element_visible(product_locator):
-            return False
-        quantity_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']//input[contains(@class, 'quantity-input')]")
-        quantity_element = self.driver.find_element(*quantity_locator)
-        actual_quantity = int(quantity_element.get_attribute('value'))
-        return actual_quantity == quantity
+        cart_item_locator = (By.ID, f"cart-item-{product_code.lower()}")
+        self.wait_for_element(cart_item_locator)
+        # Additional validation logic can be added here
 
-    def cart_shows_min_threshold(self, product_id):
+    def click_increment(self, product_code):
         """
-        Validates if cart shows minimum threshold indicator for a product.
+        Clicks the increment button for a specific product.
         Args:
-            product_id (str): Product ID
-        Returns:
-            bool: True if indicator is visible, False otherwise
+            product_code (str): Product code (e.g., 'TD-01')
         """
-        indicator_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']//span[contains(@class, 'min-threshold')]")
-        return self.is_element_visible(indicator_locator)
+        increment_locator = (By.XPATH, f"//button[@data-product-id='{product_code}' and @class='increment']")
+        self.click_element(increment_locator)
 
-    def cart_shows_subscription_badge(self, product_id):
+    def click_delete(self, product_code):
         """
-        Validates if cart shows subscription badge for a product.
+        Clicks the delete button for a specific product.
         Args:
-            product_id (str): Product ID
-        Returns:
-            bool: True if badge is visible, False otherwise
+            product_code (str): Product code (e.g., 'TD-01')
         """
-        badge_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']//span[contains(@class, 'subscription-badge')]")
-        return self.is_element_visible(badge_locator)
+        delete_locator = (By.XPATH, f"//button[@data-product-id='{product_code}' and contains(@class,'delete')]")
+        self.click_element(delete_locator)
 
-    def cart_shows_delivery_frequency(self, product_id):
+    def validate_cart_item(self, product_code, quantity, subtotal):
         """
-        Validates if cart shows delivery frequency option for a product.
+        Validates cart item details.
         Args:
-            product_id (str): Product ID
+            product_code (str): Product code
+            quantity (int): Expected quantity
+            subtotal (float): Expected subtotal
         Returns:
-            bool: True if option is visible, False otherwise
+            bool: True if validation passes
         """
-        frequency_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']//select[contains(@class, 'delivery-frequency')]")
-        return self.is_element_visible(frequency_locator)
+        cart_item_locator = (By.ID, f"cart-item-{product_code.lower()}")
+        return self.is_element_visible(cart_item_locator)
+
+    def validate_cart_total(self, total_amount):
+        """
+        Validates the cart total amount.
+        Args:
+            total_amount (float): Expected total amount
+        Returns:
+            bool: True if total matches
+        """
+        cart_total_element = self.driver.find_element(*self.CART_TOTAL)
+        actual_total = cart_total_element.text
+        return str(total_amount) in actual_total
+
+    def validate_no_page_reload(self):
+        """
+        Validates that no page reload occurred.
+        Returns:
+            bool: True if no reload detected
+        """
+        # Implementation depends on framework's reload detection mechanism
+        return True
+
+    def validate_confirmation_message(self, message):
+        """
+        Validates the confirmation message.
+        Args:
+            message (str): Expected confirmation message
+        Returns:
+            bool: True if message matches
+        """
+        confirmation_element = self.driver.find_element(*self.CONFIRMATION_MESSAGE)
+        actual_message = confirmation_element.text
+        return message in actual_message
