@@ -1,40 +1,40 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1495": {
-      "test_name": "test_remove_product_a_cart",
-      "feature": "ShoppingCart",
-      "target_file": "test_cart_page.py",
+    "1497": {
+      "test_name": "test_remove_product_from_cart",
+      "feature": "Cart Functionality",
+      "target_file": "test_cart_functionality.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "assertion": "is_product_in_cart('Wireless Mouse')"},
-        {"page": "CartPage", "action": "click_delete_button('Wireless Mouse')", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_cart_empty()"},
-        {"page": "CartPage", "assertion": "is_cart_total('$0.00')"}
-      ],
-      "test_data": {}
-    },
-    "1496": {
-      "test_name": "test_cart_multiple_products_and_totals",
-      "feature": "ShoppingCart",
-      "target_file": "test_cart_page.py",
-      "pages_used": ["CartPage"],
-      "flow": [
-        {"page": "CartPage", "action": "navigate_to_cart_page()", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_product_in_cart('Wireless Mouse')"},
-        {"page": "CartPage", "assertion": "is_product_in_cart('Product B')"},
-        {"page": "CartPage", "assertion": "is_product_in_cart('Product C')"},
-        {"page": "CartPage", "assertion": "is_line_item_subtotal_correct('Wireless Mouse', null)"},
-        {"page": "CartPage", "assertion": "is_line_item_subtotal_correct('Product B', null)"},
-        {"page": "CartPage", "assertion": "is_line_item_subtotal_correct('Product C', null)"},
-        {"page": "CartPage", "assertion": "is_cart_total('$187.96')"}
+        {"page": "CartPage", "action": "is_product_in_cart", "data_ref": "product_a"},
+        {"page": "CartPage", "action": "set_product_quantity", "data_ref": "product_a_zero"},
+        {"page": "CartPage", "assertion": "is_cart_empty"},
+        {"page": "CartPage", "assertion": "is_empty_cart_message_displayed"}
       ],
       "test_data": {
-        "cart_products": {
-          "Wireless Mouse": 2,
-          "Product B": 3,
-          "Product C": 1
-        }
+        "product_a": {"product_name": "Wireless Mouse", "quantity": 3},
+        "product_a_zero": {"product_name": "Wireless Mouse", "quantity": 0}
+      }
+    },
+    "1498": {
+      "test_name": "test_add_product_to_cart",
+      "feature": "Product Catalog and Cart",
+      "target_file": "test_product_catalog_and_cart.py",
+      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage", "ConfirmationPage"],
+      "flow": [
+        {"page": "LoginPage", "action": "login", "data_ref": "user_jane"},
+        {"page": "CartPage", "assertion": "is_cart_empty"},
+        {"page": "ProductCatalogPage", "action": "find_product", "data_ref": "td_01"},
+        {"page": "ProductCatalogPage", "assertion": "is_product_in_stock"},
+        {"page": "ProductCatalogPage", "action": "add_to_cart", "data_ref": "td_01"},
+        {"page": "CartPage", "assertion": "is_product_in_cart"},
+        {"page": "CartPage", "assertion": "check_cart_totals"},
+        {"page": "ConfirmationPage", "assertion": "is_confirmation_message_displayed"}
+      ],
+      "test_data": {
+        "user_jane": {"username": "Jane Smith", "password": "<REQUIRED>"},
+        "td_01": {"product_name": "Organic Green Tea - 100g", "sku": "TD-01", "unit_price": 12.99, "stock": 50}
       }
     }
   },
