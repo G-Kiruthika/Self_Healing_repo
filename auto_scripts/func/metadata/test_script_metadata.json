@@ -1,1 +1,82 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"UI_TC_02": {"test_name": "test_invalid_password_login", "feature": "Login", "target_file": "test_saucedemo_login.py", "pages_used": ["SauceDemoLoginPage"], "flow": [{"page": "SauceDemoLoginPage", "action": "open", "data_ref": null}, {"page": "SauceDemoLoginPage", "action": "enter_username", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "enter_password", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "click_login", "data_ref": null}, {"page": "SauceDemoLoginPage", "assertion": "is_error_displayed"}], "test_data": {"invalid_password_user": {"username": "standard_user", "password": "wrong_password"}}}}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "TC_001": {
+      "test_name": "test_add_product_a_to_cart",
+      "feature": "ProductCatalog",
+      "target_file": "test_product_catalog.py",
+      "pages_used": [
+        "LoginPage",
+        "ProductCatalogPage",
+        "CartPage"
+      ],
+      "flow": [
+        {"page": "LoginPage", "action": "enter_username", "data_ref": "user_credentials.username"},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": "user_credentials.password"},
+        {"page": "LoginPage", "action": "click_login", "data_ref": null},
+        {"page": "LoginPage", "assertion": "is_logged_in"},
+        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_a.name"},
+        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
+        {"page": "CartPage", "action": "open_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_cart_item_count"},
+        {"page": "CartPage", "assertion": "is_product_subtotal"}
+      ],
+      "test_data": {
+        "user_credentials": {
+          "username": "customer_user",
+          "password": "customer_pass"
+        },
+        "product_a": {
+          "name": "Wireless Mouse",
+          "expected_subtotal": "25.00",
+          "expected_cart_count": 1
+        }
+      }
+    },
+    "TC_002": {
+      "test_name": "test_add_product_b_to_cart_with_minimum_threshold",
+      "feature": "ProductCatalog",
+      "target_file": "test_product_catalog.py",
+      "pages_used": [
+        "LoginPage",
+        "ProductCatalogPage",
+        "CartPage"
+      ],
+      "flow": [
+        {"page": "LoginPage", "action": "enter_username", "data_ref": "user_credentials.username"},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": "user_credentials.password"},
+        {"page": "LoginPage", "action": "click_login", "data_ref": null},
+        {"page": "LoginPage", "assertion": "is_logged_in"},
+        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_b.name"},
+        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
+        {"page": "ProductCatalogPage", "assertion": "is_minimum_threshold_displayed"},
+        {"page": "CartPage", "action": "open_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_cart_item_count"},
+        {"page": "CartPage", "assertion": "is_product_subtotal"}
+      ],
+      "test_data": {
+        "user_credentials": {
+          "username": "customer_user",
+          "password": "customer_pass"
+        },
+        "product_b": {
+          "name": "Coffee Subscription",
+          "expected_subtotal": "47.97",
+          "expected_cart_count": 3,
+          "minimum_threshold": 3
+        }
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "api_dependencies": [],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+} 
