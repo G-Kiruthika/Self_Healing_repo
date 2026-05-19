@@ -1,59 +1,25 @@
 {
   "pages": {
-    "LoginPage": {
-      "file_name": "login_page.py",
-      "locators": {
-        "username_field": {"by": "ID", "value": "username_input"},
-        "password_field": {"by": "ID", "value": "password_input"},
-        "login_button": {"by": "ID", "value": "login_btn"}
-      },
-      "actions": [
-        "login(username, password)",
-        "logout()"
-      ],
-      "validations": [
-        "is_logged_in()"
-      ]
-    },
-    "ProductCatalogPage": {
-      "file_name": "product_catalog_page.py",
-      "locators": {
-        "search_box": {"by": "ID", "value": "product_search"},
-        "product_card": {"by": "XPATH", "value": "//div[contains(@class, 'product-card')]"},
-        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(@class, 'add-to-cart')]"},
-        "subscription_option": {"by": "XPATH", "value": "//input[@type='checkbox' and @name='subscription']"},
-        "min_threshold_indicator": {"by": "XPATH", "value": "//span[contains(@class, 'min-threshold')]"}
-      },
-      "actions": [
-        "search_product(product_name)",
-        "add_to_cart(product_id, quantity)",
-        "select_subscription(product_id)"
-      ],
-      "validations": [
-        "is_product_visible(product_id)",
-        "has_min_threshold_indicator(product_id)"
-      ]
-    },
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_item": {"by": "XPATH", "value": "//div[contains(@class, 'cart-item')]"},
-        "product_name": {"by": "XPATH", "value": "//span[contains(@class, 'product-name')]"},
-        "unit_price": {"by": "XPATH", "value": "//span[contains(@class, 'unit-price')]"},
-        "quantity": {"by": "XPATH", "value": "//input[contains(@class, 'quantity-input')]"},
-        "subtotal": {"by": "XPATH", "value": "//span[contains(@class, 'subtotal')]"},
-        "min_threshold_indicator": {"by": "XPATH", "value": "//span[contains(@class, 'min-threshold')]"},
-        "subscription_badge": {"by": "XPATH", "value": "//span[contains(@class, 'subscription-badge')]"},
-        "delivery_frequency_option": {"by": "XPATH", "value": "//select[contains(@class, 'delivery-frequency')]"}
+        "cart_item_td_01": {"by": "ID", "value": "cart-item-td-01"},
+        "cart_item_td_02": {"by": "ID", "value": "cart-item-td-02"},
+        "increment_button_td_01": {"by": "XPATH", "value": "//button[@data-product-id='TD-01' and @class='increment']"},
+        "delete_button_td_01": {"by": "XPATH", "value": "//button[@data-product-id='TD-01' and contains(@class,'delete')]"},
+        "cart_total": {"by": "ID", "value": "cart-total"},
+        "confirmation_message": {"by": "ID", "value": "confirmation-message"}
       },
       "actions": [
-        "view_cart()"
+        "ensure_cart_contains(product_code, quantity, subtotal)",
+        "click_increment(product_code)",
+        "click_delete(product_code)"
       ],
       "validations": [
-        "cart_contains_product(product_id, quantity)",
-        "cart_shows_min_threshold(product_id)",
-        "cart_shows_subscription_badge(product_id)",
-        "cart_shows_delivery_frequency(product_id)"
+        "validate_cart_item(product_code, quantity, subtotal)",
+        "validate_cart_total(total_amount)",
+        "validate_no_page_reload()",
+        "validate_confirmation_message(message)"
       ]
     }
   }
