@@ -2,89 +2,112 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class CartPage(BasePage):
-    # Locators from metadata
-    CART_ITEM_TD_01 = (By.ID, "cart-item-td-01")
-    CART_ITEM_TD_02 = (By.ID, "cart-item-td-02")
-    INCREMENT_BUTTON_TD_01 = (By.XPATH, "//button[@data-product-id='TD-01' and @class='increment']")
-    DELETE_BUTTON_TD_01 = (By.XPATH, "//button[@data-product-id='TD-01' and contains(@class,'delete')]")
-    CART_TOTAL = (By.ID, "cart-total")
-    CONFIRMATION_MESSAGE = (By.ID, "confirmation-message")
+    # Locators
+    PRODUCT_ROW = (By.XPATH, "//div[@data-product-id='{product_id}']")
+    DELETE_BUTTON = (By.XPATH, "//button[@data-action='delete']")
+    EMPTY_CART_MESSAGE = (By.XPATH, "//div[contains(text(),'Your cart is empty')]")
+    CONTINUE_SHOPPING_BUTTON = (By.XPATH, "//button[text()='Continue Shopping']")
+    CHECKOUT_BUTTON = (By.XPATH, "//button[text()='Checkout']")
+    QUANTITY_INPUT = (By.XPATH, "//input[@name='quantity']")
+    INVENTORY_ERROR_MESSAGE = (By.XPATH, "//div[contains(@class,'error') and contains(text(),'units available')]")
+    SUGGESTION_MESSAGE = (By.XPATH, "//div[contains(text(),'Maximum available')]")
 
     def __init__(self, driver):
         super().__init__(driver)
 
-    def ensure_cart_contains(self, product_code, quantity, subtotal):
+    def delete_product(self, product_id):
         """
-        Ensures cart contains a specific product with given quantity and subtotal.
+        Deletes a product from the cart.
         Args:
-            product_code (str): Product code (e.g., 'TD-01')
-            quantity (int): Expected quantity
-            subtotal (float): Expected subtotal
+            product_id (str): Product ID to delete
         """
-        cart_item_locator = (By.ID, f"cart-item-{product_code.lower()}")
-        self.wait_for_element(cart_item_locator)
-        # Additional validation logic can be added here
-
-    def click_increment(self, product_code):
-        """
-        Clicks the increment button for a specific product.
-        Args:
-            product_code (str): Product code (e.g., 'TD-01')
-        """
-        increment_locator = (By.XPATH, f"//button[@data-product-id='{product_code}' and @class='increment']")
-        self.click_element(increment_locator)
-
-    def click_delete(self, product_code):
-        """
-        Clicks the delete button for a specific product.
-        Args:
-            product_code (str): Product code (e.g., 'TD-01')
-        """
-        delete_locator = (By.XPATH, f"//button[@data-product-id='{product_code}' and contains(@class,'delete')]")
+        delete_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']//button[@data-action='delete']")
         self.click_element(delete_locator)
 
-    def validate_cart_item(self, product_code, quantity, subtotal):
+    def click_continue_shopping(self):
         """
-        Validates cart item details.
-        Args:
-            product_code (str): Product code
-            quantity (int): Expected quantity
-            subtotal (float): Expected subtotal
-        Returns:
-            bool: True if validation passes
+        Clicks the Continue Shopping button.
         """
-        cart_item_locator = (By.ID, f"cart-item-{product_code.lower()}")
-        return self.is_element_visible(cart_item_locator)
+        self.click_element(self.CONTINUE_SHOPPING_BUTTON)
 
-    def validate_cart_total(self, total_amount):
+    def update_quantity(self, product_id, quantity):
         """
-        Validates the cart total amount.
+        Updates the quantity for a specific product.
         Args:
-            total_amount (float): Expected total amount
-        Returns:
-            bool: True if total matches
+            product_id (str): Product ID
+            quantity (int): New quantity value
         """
-        cart_total_element = self.driver.find_element(*self.CART_TOTAL)
-        actual_total = cart_total_element.text
-        return str(total_amount) in actual_total
+        quantity_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']//input[@name='quantity']")
+        self.enter_text(quantity_locator, str(quantity))
 
-    def validate_no_page_reload(self):
+    def is_product_in_cart(self, product_id):
         """
-        Validates that no page reload occurred.
-        Returns:
-            bool: True if no reload detected
-        """
-        # Implementation depends on framework's reload detection mechanism
-        return True
-
-    def validate_confirmation_message(self, message):
-        """
-        Validates the confirmation message.
+        Validates if a product is present in the cart.
         Args:
-            message (str): Expected confirmation message
+            product_id (str): Product ID
         Returns:
-            bool: True if message matches
+            bool: True if product is in cart, False otherwise
         """
-        confirmation_element = self.driver.find_element(*self.CONFIRMATION_MESSAGE)
-        actual_message = confirmation_element.text
-        return message in actual_message
+        product_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']")
+        return self.is_element_visible(product_locator)
+
+    def is_cart_empty(self):
+        """
+        Validates if the cart is empty.
+        Returns:
+            bool: True if cart is empty, False otherwise
+        """
+        return self.is_element_visible(self.EMPTY_CART_MESSAGE)
+
+    def is_empty_cart_message_displayed(self):
+        """
+        Validates if the empty cart message is displayed.
+        Returns:
+            bool: True if message is displayed, False otherwise
+        """
+        return self.is_element_visible(self.EMPTY_CART_MESSAGE)
+
+    def is_continue_shopping_button_displayed(self):
+        """
+        Validates if the Continue Shopping button is displayed.
+        Returns:
+            bool: True if button is displayed, False otherwise
+        """
+        return self.is_element_visible(self.CONTINUE_SHOPPING_BUTTON)
+
+    def is_checkout_button_unavailable(self):
+        """
+        Validates if the Checkout button is unavailable.
+        Returns:
+            bool: True if button is unavailable, False otherwise
+        """
+        return not self.is_element_visible(self.CHECKOUT_BUTTON)
+
+    def is_inventory_error_displayed(self):
+        """
+        Validates if the inventory error message is displayed.
+        Returns:
+            bool: True if error is displayed, False otherwise
+        """
+        return self.is_element_visible(self.INVENTORY_ERROR_MESSAGE)
+
+    def is_quantity_equal(self, product_id, expected_quantity):
+        """
+        Validates if the quantity for a product matches the expected value.
+        Args:
+            product_id (str): Product ID
+            expected_quantity (int): Expected quantity value
+        Returns:
+            bool: True if quantity matches, False otherwise
+        """
+        quantity_locator = (By.XPATH, f"//div[@data-product-id='{product_id}']//input[@name='quantity']")
+        actual_quantity = self.driver.find_element(*quantity_locator).get_attribute('value')
+        return int(actual_quantity) == expected_quantity
+
+    def is_suggestion_message_displayed(self):
+        """
+        Validates if the suggestion message is displayed.
+        Returns:
+            bool: True if message is displayed, False otherwise
+        """
+        return self.is_element_visible(self.SUGGESTION_MESSAGE)
