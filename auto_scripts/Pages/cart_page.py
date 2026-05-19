@@ -2,28 +2,33 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class CartPage(BasePage):
-    CART_ICON = (By.ID, "cart-icon")
-    CART_ITEM_COUNT = (By.XPATH, "//span[@id='cart-count']")
-    PRODUCT_SUBTOTAL = (By.XPATH, "//tr[@data-product]//td[@class='subtotal']")
+    PRODUCT_D_ROW = (By.XPATH, "//tr[@data-product='Vitamin Pack']")
+    QUANTITY_INPUT = (By.XPATH, "//input[@data-product='Vitamin Pack'][@type='number']")
+    SUBSCRIPTION_INDICATOR = (By.XPATH, "//span[@data-product='Vitamin Pack'][@class='subscription']")
+    SUBTOTAL_LABEL = (By.XPATH, "//tr[@data-product='Vitamin Pack']//td[@class='subtotal']")
+    CART_TOTAL_LABEL = (By.ID, "cart-total")
 
     def __init__(self, driver):
         super().__init__(driver)
 
-    def open_cart(self):
-        self.click_element(self.CART_ICON)
+    def update_product_quantity(self, product_name, quantity):
+        self.enter_text(self.QUANTITY_INPUT, str(quantity))
 
-    def get_cart_item_count(self):
-        count_element = self.driver.find_element(*self.CART_ITEM_COUNT)
-        return int(count_element.text)
+    def is_product_in_cart(self, product_name, quantity):
+        if not self.is_element_visible(self.PRODUCT_D_ROW):
+            return False
+        quantity_element = self.driver.find_element(*self.QUANTITY_INPUT)
+        return int(quantity_element.get_attribute('value')) == quantity
 
-    def get_product_subtotal(self, product_name):
-        subtotal_locator = (By.XPATH, f"//tr[@data-product='{product_name}']//td[@class='subtotal']")
-        subtotal_element = self.driver.find_element(*subtotal_locator)
-        return float(subtotal_element.text.replace('$', ''))
+    def is_subscription_indicator_visible(self, product_name):
+        return self.is_element_visible(self.SUBSCRIPTION_INDICATOR)
 
-    def is_cart_item_count(self, count):
-        return self.get_cart_item_count() == count
-
-    def is_product_subtotal(self, product_name, expected_subtotal):
-        actual_subtotal = self.get_product_subtotal(product_name)
+    def verify_subtotal(self, product_name, expected_subtotal):
+        subtotal_element = self.driver.find_element(*self.SUBTOTAL_LABEL)
+        actual_subtotal = float(subtotal_element.text.replace('$', '').strip())
         return actual_subtotal == expected_subtotal
+
+    def verify_cart_total(self, expected_total):
+        total_element = self.driver.find_element(*self.CART_TOTAL_LABEL)
+        actual_total = float(total_element.text.replace('$', '').strip())
+        return actual_total == expected_total

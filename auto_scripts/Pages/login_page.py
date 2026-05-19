@@ -4,7 +4,7 @@ from pages.base_page import BasePage
 class LoginPage(BasePage):
     USERNAME_INPUT = (By.ID, "username")
     PASSWORD_INPUT = (By.ID, "password")
-    LOGIN_BUTTON = (By.XPATH, "//button[@type='submit']")
+    LOGIN_BUTTON = (By.ID, "login-btn")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -17,6 +17,11 @@ class LoginPage(BasePage):
 
     def click_login(self):
         self.click_element(self.LOGIN_BUTTON)
+
+    def login(self, username, password):
+        self.enter_username(username)
+        self.enter_password(password)
+        self.click_login()
 
     def is_logged_in(self):
         return self.is_element_visible((By.ID, "dashboard-header"))
