@@ -1,34 +1,15 @@
 {
   "pages": {
-    "CartPage": {
-      "file_name": "cart_page.py",
-      "locators": {
-        "product_a_row": {"by": "PLACEHOLDER", "value": "//tr[td[contains(text(),'Wireless Mouse')]]"},
-        "quantity_input": {"by": "PLACEHOLDER", "value": "//input[@name='quantity']"},
-        "remove_button": {"by": "PLACEHOLDER", "value": "//button[@aria-label='Remove']"},
-        "cart_totals": {"by": "PLACEHOLDER", "value": "//div[@id='cart-totals']"},
-        "empty_cart_message": {"by": "PLACEHOLDER", "value": "//div[contains(text(),'empty cart')]"}
-      },
-      "actions": [
-        "set_product_quantity(product_name, quantity)",
-        "remove_product(product_name)",
-        "check_cart_totals()"
-      ],
-      "validations": [
-        "is_product_in_cart(product_name)",
-        "is_cart_empty()",
-        "is_empty_cart_message_displayed()"
-      ]
-    },
     "LoginPage": {
       "file_name": "login_page.py",
       "locators": {
-        "username_input": {"by": "PLACEHOLDER", "value": "//input[@name='username']"},
-        "password_input": {"by": "PLACEHOLDER", "value": "//input[@name='password']"},
-        "login_button": {"by": "PLACEHOLDER", "value": "//button[@type='submit']"}
+        "username_field": {"by": "ID", "value": "username_input"},
+        "password_field": {"by": "ID", "value": "password_input"},
+        "login_button": {"by": "ID", "value": "login_btn"}
       },
       "actions": [
-        "login(username, password)"
+        "login(username, password)",
+        "logout()"
       ],
       "validations": [
         "is_logged_in()"
@@ -37,26 +18,42 @@
     "ProductCatalogPage": {
       "file_name": "product_catalog_page.py",
       "locators": {
-        "product_row": {"by": "PLACEHOLDER", "value": "//tr[td[contains(text(),'Organic Green Tea - 100g')]]"},
-        "add_to_cart_button": {"by": "PLACEHOLDER", "value": "//button[contains(text(),'Add to Cart')]"},
-        "stock_indicator": {"by": "PLACEHOLDER", "value": "//span[@class='stock']"}
+        "search_box": {"by": "ID", "value": "product_search"},
+        "product_card": {"by": "XPATH", "value": "//div[contains(@class, 'product-card')]"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(@class, 'add-to-cart')]"},
+        "subscription_option": {"by": "XPATH", "value": "//input[@type='checkbox' and @name='subscription']"},
+        "min_threshold_indicator": {"by": "XPATH", "value": "//span[contains(@class, 'min-threshold')]"}
       },
       "actions": [
-        "find_product(product_name)",
-        "add_to_cart(product_name)"
+        "search_product(product_name)",
+        "add_to_cart(product_id, quantity)",
+        "select_subscription(product_id)"
       ],
       "validations": [
-        "is_product_in_stock(product_name)"
+        "is_product_visible(product_id)",
+        "has_min_threshold_indicator(product_id)"
       ]
     },
-    "ConfirmationPage": {
-      "file_name": "confirmation_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "confirmation_message": {"by": "PLACEHOLDER", "value": "//div[contains(text(),'Product added to cart')]"}
+        "cart_item": {"by": "XPATH", "value": "//div[contains(@class, 'cart-item')]"},
+        "product_name": {"by": "XPATH", "value": "//span[contains(@class, 'product-name')]"},
+        "unit_price": {"by": "XPATH", "value": "//span[contains(@class, 'unit-price')]"},
+        "quantity": {"by": "XPATH", "value": "//input[contains(@class, 'quantity-input')]"},
+        "subtotal": {"by": "XPATH", "value": "//span[contains(@class, 'subtotal')]"},
+        "min_threshold_indicator": {"by": "XPATH", "value": "//span[contains(@class, 'min-threshold')]"},
+        "subscription_badge": {"by": "XPATH", "value": "//span[contains(@class, 'subscription-badge')]"},
+        "delivery_frequency_option": {"by": "XPATH", "value": "//select[contains(@class, 'delivery-frequency')]"}
       },
-      "actions": [],
+      "actions": [
+        "view_cart()"
+      ],
       "validations": [
-        "is_confirmation_message_displayed()"
+        "cart_contains_product(product_id, quantity)",
+        "cart_shows_min_threshold(product_id)",
+        "cart_shows_subscription_badge(product_id)",
+        "cart_shows_delivery_frequency(product_id)"
       ]
     }
   }
