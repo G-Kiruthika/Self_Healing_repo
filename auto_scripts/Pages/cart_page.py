@@ -3,7 +3,10 @@ from pages.base_page import BasePage
 
 class CartPage(BasePage):
     # Locators
-    PRODUCT_ROW = (By.XPATH, "//div[@data-product-id='{product_id}']")
+    PRODUCT_ROW = (By.XPATH, "//tr[@data-product-id]")
+    QUANTITY_FIELD = (By.CSS_SELECTOR, ".quantity-input")
+    DECREMENT_BUTTON = (By.CSS_SELECTOR, ".decrement-btn")
+    VALIDATION_ERROR_MESSAGE = (By.CSS_SELECTOR, ".validation-error")
     DELETE_BUTTON = (By.XPATH, "//button[@data-action='delete']")
     EMPTY_CART_MESSAGE = (By.XPATH, "//div[contains(text(),'Your cart is empty')]")
     CONTINUE_SHOPPING_BUTTON = (By.XPATH, "//button[text()='Continue Shopping']")
@@ -14,6 +17,78 @@ class CartPage(BasePage):
 
     def __init__(self, driver):
         super().__init__(driver)
+
+    def click_decrement(self, product_id):
+        """
+        Clicks the decrement button for a specific product.
+        Args:
+            product_id (str): Product ID
+        """
+        decrement_locator = (By.XPATH, f"//tr[@data-product-id='{product_id}']//button[contains(@class,'decrement-btn')]")
+        self.click_element(decrement_locator)
+
+    def is_product_quantity_displayed(self, product_id, quantity):
+        """
+        Validates if the product quantity matches the expected value.
+        Args:
+            product_id (str): Product ID
+            quantity (int): Expected quantity
+        Returns:
+            bool: True if quantity matches, False otherwise
+        """
+        quantity_locator = (By.XPATH, f"//tr[@data-product-id='{product_id}']//input[contains(@class,'quantity-input')]")
+        try:
+            quantity_element = self.driver.find_element(*quantity_locator)
+            actual_quantity = quantity_element.get_attribute('value')
+            return int(actual_quantity) == quantity
+        except Exception:
+            return False
+
+    def is_minimum_threshold_displayed(self, product_id, threshold):
+        """
+        Validates if the minimum threshold message is displayed for a product.
+        Args:
+            product_id (str): Product ID
+            threshold (int): Minimum threshold value
+        Returns:
+            bool: True if threshold message is displayed, False otherwise
+        """
+        threshold_locator = (By.XPATH, f"//tr[@data-product-id='{product_id}']//span[contains(text(),'Minimum quantity is {threshold}')]")
+        return self.is_element_visible(threshold_locator)
+
+    def is_validation_error_displayed(self):
+        """
+        Validates if a validation error message is displayed.
+        Returns:
+            bool: True if validation error is visible, False otherwise
+        """
+        return self.is_element_visible(self.VALIDATION_ERROR_MESSAGE)
+
+    def is_quantity_unchanged(self, product_id, quantity):
+        """
+        Validates if the product quantity remains unchanged.
+        Args:
+            product_id (str): Product ID
+            quantity (int): Expected unchanged quantity
+        Returns:
+            bool: True if quantity is unchanged, False otherwise
+        """
+        return self.is_product_quantity_displayed(product_id, quantity)
+
+    def is_decrement_button_disabled(self, product_id):
+        """
+        Validates if the decrement button is disabled for a product.
+        Args:
+            product_id (str): Product ID
+        Returns:
+            bool: True if button is disabled, False otherwise
+        """
+        decrement_locator = (By.XPATH, f"//tr[@data-product-id='{product_id}']//button[contains(@class,'decrement-btn')]")
+        try:
+            button = self.driver.find_element(*decrement_locator)
+            return not button.is_enabled() or button.get_attribute("disabled") is not None
+        except Exception:
+            return False
 
     def delete_product(self, product_id):
         """
