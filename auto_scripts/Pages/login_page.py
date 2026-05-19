@@ -2,26 +2,36 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class LoginPage(BasePage):
-    USERNAME_INPUT = (By.XPATH, "//input[@name='username']")
-    PASSWORD_INPUT = (By.XPATH, "//input[@name='password']")
-    LOGIN_BUTTON = (By.XPATH, "//button[@type='submit']")
+    USERNAME_FIELD = (By.ID, "username_input")
+    PASSWORD_FIELD = (By.ID, "password_input")
+    LOGIN_BUTTON = (By.ID, "login_btn")
 
     def __init__(self, driver):
         super().__init__(driver)
 
-    def enter_username(self, username):
-        self.enter_text(self.USERNAME_INPUT, username)
-
-    def enter_password(self, password):
-        self.enter_text(self.PASSWORD_INPUT, password)
-
-    def click_login(self):
+    def login(self, username, password):
+        """
+        Performs login with username and password.
+        Args:
+            username (str): Username to enter
+            password (str): Password to enter
+        """
+        self.enter_text(self.USERNAME_FIELD, username)
+        self.enter_text(self.PASSWORD_FIELD, password)
         self.click_element(self.LOGIN_BUTTON)
 
-    def login(self, username, password):
-        self.enter_username(username)
-        self.enter_password(password)
-        self.click_login()
+    def logout(self):
+        """
+        Performs logout action.
+        """
+        # Implementation for logout
+        pass
 
     def is_logged_in(self):
+        """
+        Validates if user is logged in.
+        Returns:
+            bool: True if logged in, False otherwise
+        """
+        # Check for dashboard or profile element
         return self.is_element_visible((By.ID, "dashboard-header"))
