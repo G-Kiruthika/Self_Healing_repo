@@ -13,8 +13,8 @@ class CartPage(BasePage):
     # Existing locators
     PRODUCT_ROW = (By.XPATH, "//tr[@data-product-id]")
     QUANTITY_INPUT = (By.CSS_SELECTOR, ".quantity-input")
-    DECREMENT_BUTTON = (By.CSS_SELECTOR, ".decrement-btn")
-    VALIDATION_ERROR_MESSAGE = (By.CSS_SELECTOR, ".validation-error")
+    DECREMENT_BUTTON = (By.XPATH, "//button[@class='decrement']")
+    VALIDATION_ERROR_MESSAGE = (By.XPATH, "//div[@class='error-message']")
     DELETE_BUTTON = (By.XPATH, "//button[@data-action='delete']")
     EMPTY_CART_MESSAGE = (By.XPATH, "//div[contains(text(),'Your cart is empty')]")
     CONTINUE_SHOPPING_BUTTON = (By.XPATH, "//button[text()='Continue Shopping']")
@@ -22,6 +22,14 @@ class CartPage(BasePage):
     INVENTORY_ERROR_MESSAGE = (By.XPATH, "//div[contains(@class,'error') and contains(text(),'units available')]")
     SUGGESTION_MESSAGE = (By.XPATH, "//div[contains(text(),'Maximum available')]")
     UPDATE_BUTTON = (By.XPATH, "//button[@id='update-cart']")
+    
+    # New locators from metadata
+    CART_ITEM_TD_01 = (By.XPATH, "//div[@data-sku='TD-01']")
+    CART_ITEM_TD_02 = (By.XPATH, "//div[@data-sku='TD-02']")
+    INCREMENT_BUTTON = (By.XPATH, "//button[@class='increment']")
+    CART_TOTALS = (By.XPATH, "//div[@id='cart-totals']")
+    LINE_ITEM_SUBTOTAL = (By.XPATH, "//span[@class='line-subtotal']")
+    THRESHOLD_INDICATOR = (By.XPATH, "//span[contains(text(),'Min:')]")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -43,19 +51,31 @@ class CartPage(BasePage):
         quantity_locator = (By.XPATH, f"//div[contains(@class,'cart-item')]//span[@class='product-name' and text()='{product_name}']/ancestor::div[@class='cart-item']//input[@name='quantity']")
         self.enter_text(quantity_locator, str(quantity))
 
-    def enter_quantity(self, quantity):
+    def enter_quantity(self, value):
         """
         Enters quantity in the quantity field.
         Args:
-            quantity (int): Quantity value to enter
+            value (int): Quantity value to enter
         """
-        self.enter_text(self.QUANTITY_FIELD, str(quantity))
+        self.enter_text(self.QUANTITY_FIELD, str(value))
 
-    def click_update_button(self):
+    def click_update_cart(self):
         """
         Clicks the update cart button.
         """
         self.click_element(self.UPDATE_BUTTON)
+
+    def click_increment_button(self):
+        """
+        Clicks the increment button.
+        """
+        self.click_element(self.INCREMENT_BUTTON)
+
+    def click_decrement_button(self):
+        """
+        Clicks the decrement button.
+        """
+        self.click_element(self.DECREMENT_BUTTON)
 
     def verify_products_in_cart(self, product_list):
         """
@@ -283,3 +303,103 @@ class CartPage(BasePage):
             bool: True if message is displayed, False otherwise
         """
         return self.is_element_visible(self.SUGGESTION_MESSAGE)
+
+    # New validation methods from metadata
+    def validate_cart_item_quantity(self, sku, expected_quantity):
+        """
+        Validates the quantity of a cart item by SKU.
+        Args:
+            sku (str): Product SKU
+            expected_quantity (int): Expected quantity
+        Returns:
+            bool: True if quantity matches, False otherwise
+        """
+        quantity_locator = (By.XPATH, f"//div[@data-sku='{sku}']//input[@name='quantity']")
+        try:
+            quantity_elem = self.driver.find_element(*quantity_locator)
+            actual_quantity = int(quantity_elem.get_attribute('value'))
+            return actual_quantity == expected_quantity
+        except Exception:
+            return False
+
+    def validate_error_message(self, expected_message):
+        """
+        Validates the error message displayed.
+        Args:
+            expected_message (str): Expected error message
+        Returns:
+            bool: True if message matches, False otherwise
+        """
+        try:
+            error_elem = self.driver.find_element(*self.VALIDATION_ERROR_MESSAGE)
+            return expected_message in error_elem.text
+        except Exception:
+            return False
+
+    def validate_cart_totals(self, expected_totals):
+        """
+        Validates the cart totals.
+        Args:
+            expected_totals (str): Expected cart totals
+        Returns:
+            bool: True if totals match, False otherwise
+        """
+        try:
+            totals_elem = self.driver.find_element(*self.CART_TOTALS)
+            return expected_totals in totals_elem.text
+        except Exception:
+            return False
+
+    def validate_button_enabled(self, button_name):
+        """
+        Validates if a button is enabled.
+        Args:
+            button_name (str): Button name (increment, decrement, update)
+        Returns:
+            bool: True if button is enabled, False otherwise
+        """
+        button_map = {
+            'increment': self.INCREMENT_BUTTON,
+            'decrement': self.DECREMENT_BUTTON,
+            'update': self.UPDATE_BUTTON
+        }
+        try:
+            button_locator = button_map.get(button_name.lower())
+            if not button_locator:
+                return False
+            button = self.driver.find_element(*button_locator)
+            return button.is_enabled() and button.get_attribute("disabled") is None
+        except Exception:
+            return False
+
+    def validate_line_item_subtotal(self, sku, expected_subtotal):
+        """
+        Validates the line item subtotal for a product by SKU.
+        Args:
+            sku (str): Product SKU
+            expected_subtotal (str): Expected subtotal
+        Returns:
+            bool: True if subtotal matches, False otherwise
+        """
+        subtotal_locator = (By.XPATH, f"//div[@data-sku='{sku}']//span[@class='line-subtotal']")
+        try:
+            subtotal_elem = self.driver.find_element(*subtotal_locator)
+            return expected_subtotal in subtotal_elem.text
+        except Exception:
+            return False
+
+    def validate_threshold_indicator(self, sku, expected_indicator):
+        """
+        Validates the threshold indicator for a product by SKU.
+        Args:
+            sku (str): Product SKU
+            expected_indicator (str): Expected threshold indicator text
+        Returns:
+            bool: True if indicator matches, False otherwise
+        """
+        indicator_locator = (By.XPATH, f"//div[@data-sku='{sku}']//span[contains(text(),'Min:')]")
+        try:
+            indicator_elem = self.driver.find_element(*indicator_locator)
+            return expected_indicator in indicator_elem.text
+        except Exception:
+            return False
