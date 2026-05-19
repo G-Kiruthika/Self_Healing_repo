@@ -2,7 +2,11 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class CartPage(BasePage):
-    PRODUCT_A_ROW = (By.XPATH, "//tr[.//td[contains(text(),'Wireless Mouse')]]")
+    PRODUCT_A_ROW = (By.XPATH, "//tr[td[contains(text(),'Wireless Mouse')]]")
+    QUANTITY_INPUT = (By.XPATH, "//input[@name='quantity']")
+    REMOVE_BUTTON = (By.XPATH, "//button[@aria-label='Remove']")
+    CART_TOTALS = (By.XPATH, "//div[@id='cart-totals']")
+    EMPTY_CART_MESSAGE = (By.XPATH, "//div[contains(text(),'empty cart')]")
     DELETE_BUTTON_PRODUCT_A = (By.XPATH, "//tr[.//td[contains(text(),'Wireless Mouse')]]//button[contains(text(),'Delete')]")
     CART_EMPTY_MESSAGE = (By.XPATH, "//*[contains(text(),'Your cart is empty')]")
     RETURN_TO_CATALOG_BUTTON = (By.XPATH, "//button[contains(text(),'Return to product catalog')]")
@@ -11,7 +15,6 @@ class CartPage(BasePage):
     PRODUCT_C_ROW = (By.XPATH, "//tr[.//td[contains(text(),'Product C')]]")
     LINE_ITEM_SUBTOTAL = (By.XPATH, "//td[@class='subtotal']")
     PRODUCT_D_ROW = (By.XPATH, "//tr[@data-product='Vitamin Pack']")
-    QUANTITY_INPUT = (By.XPATH, "//input[@data-product='Vitamin Pack'][@type='number']")
     SUBSCRIPTION_INDICATOR = (By.XPATH, "//span[@data-product='Vitamin Pack'][@class='subscription']")
     SUBTOTAL_LABEL = (By.XPATH, "//tr[@data-product='Vitamin Pack']//td[@class='subtotal']")
     CART_TOTAL_LABEL = (By.ID, "cart-total")
@@ -144,3 +147,12 @@ class CartPage(BasePage):
         quantity_element = self.driver.find_element(*self.QUANTITY_INPUT)
         actual_quantity = int(quantity_element.get_attribute('value'))
         return actual_quantity == expected_quantity
+
+    def remove_product(self, product_name):
+        self.click_element(self.REMOVE_BUTTON)
+
+    def check_cart_totals(self):
+        return self.is_element_visible(self.CART_TOTALS)
+
+    def is_empty_cart_message_displayed(self):
+        return self.is_element_visible(self.EMPTY_CART_MESSAGE)
