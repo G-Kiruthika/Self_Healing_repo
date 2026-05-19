@@ -1,51 +1,42 @@
 {
   "pages": {
-    "LoginPage": {
-      "file_name": "login_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "username_input": {"by": "ID", "value": "username"},
-        "password_input": {"by": "ID", "value": "password"},
-        "login_button": {"by": "ID", "value": "login-btn"}
+        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Laptop Stand')]]"},
+        "product_c_quantity_input": {"by": "XPATH", "value": "//tr[td[contains(text(),'Laptop Stand')]]//input[@type='number']"},
+        "product_c_stock_label": {"by": "XPATH", "value": "//tr[td[contains(text(),'Laptop Stand')]]//span[@class='stock']"},
+        "cart_total": {"by": "ID", "value": "cart-total"},
+        "inventory_error_message": {"by": "CLASS_NAME", "value": "inventory-error"}
       },
       "actions": [
-        "login(username, password)"
+        "set_product_quantity(product_name, quantity)",
+        "get_product_stock(product_name)",
+        "get_cart_total()"
       ],
       "validations": [
-        "is_logged_in()"
+        "validate_product_in_cart(product_name)",
+        "validate_quantity(product_name, expected_quantity)",
+        "validate_cart_total(expected_total)",
+        "validate_inventory_error_displayed()"
       ]
     },
     "ProductCatalogPage": {
       "file_name": "product_catalog_page.py",
       "locators": {
-        "product_d_card": {"by": "XPATH", "value": "//div[@data-product='Vitamin Pack']"},
-        "add_to_cart_button": {"by": "XPATH", "value": "//button[@data-product='Vitamin Pack'][text()='Add to Cart']"}
+        "product_e_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'USB Cable')]]"},
+        "product_e_stock_label": {"by": "XPATH", "value": "//tr[td[contains(text(),'USB Cable')]]//span[@class='stock']"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//tr[td[contains(text(),'USB Cable')]]//button[contains(text(),'Add to Cart')]"},
+        "inventory_error_message": {"by": "CLASS_NAME", "value": "inventory-error"}
       },
       "actions": [
         "navigate_to()",
-        "add_product_to_cart(product_name, quantity)"
+        "add_product_to_cart(product_name)"
       ],
       "validations": [
-        "is_product_visible(product_name)",
-        "is_subscription_indicator_visible(product_name)"
-      ]
-    },
-    "CartPage": {
-      "file_name": "cart_page.py",
-      "locators": {
-        "product_d_row": {"by": "XPATH", "value": "//tr[@data-product='Vitamin Pack']"},
-        "quantity_input": {"by": "XPATH", "value": "//input[@data-product='Vitamin Pack'][@type='number']"},
-        "subscription_indicator": {"by": "XPATH", "value": "//span[@data-product='Vitamin Pack'][@class='subscription']"},
-        "subtotal_label": {"by": "XPATH", "value": "//tr[@data-product='Vitamin Pack']//td[@class='subtotal']"},
-        "cart_total_label": {"by": "ID", "value": "cart-total"}
-      },
-      "actions": [
-        "update_product_quantity(product_name, quantity)"
-      ],
-      "validations": [
-        "is_product_in_cart(product_name, quantity)",
-        "is_subscription_indicator_visible(product_name)",
-        "verify_subtotal(product_name, expected_subtotal)",
-        "verify_cart_total(expected_total)"
+        "validate_product_visible(product_name)",
+        "validate_stock_info(product_name, expected_stock)",
+        "validate_inventory_error_displayed()"
       ]
     }
   }
