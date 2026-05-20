@@ -1,48 +1,62 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1497": {
-      "test_name": "test_remove_product_from_cart",
+    "1499": {
+      "test_name": "test_add_premium_coffee_beans_to_cart_min_threshold",
       "feature": "ShoppingCart",
-      "target_file": "test_cart.py",
-      "pages_used": ["CartPage"],
+      "target_file": "test_shopping_cart.py",
+      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_a"},
-        {"page": "CartPage", "validation": "validate_product_in_cart", "data_ref": "product_a"},
-        {"page": "CartPage", "action": "change_product_quantity", "data_ref": "remove_product_a"},
-        {"page": "CartPage", "validation": "validate_product_not_in_cart", "data_ref": "product_a"},
-        {"page": "CartPage", "action": "check_cart_totals", "data_ref": null},
-        {"page": "CartPage", "validation": "validate_cart_totals", "data_ref": "cart_total"},
-        {"page": "CartPage", "validation": "validate_empty_cart_message", "data_ref": null}
+        {"page": "LoginPage", "action": "login", "data_ref": "user_john_doe"},
+        {"page": "CartPage", "assertion": "is_cart_item_displayed"},
+        {"page": "ProductCatalogPage", "action": "search_product", "data_ref": "premium_coffee_beans"},
+        {"page": "ProductCatalogPage", "action": "select_product", "data_ref": "TD-02"},
+        {"page": "ProductCatalogPage", "assertion": "is_min_threshold_visible"},
+        {"page": "ProductCatalogPage", "action": "add_to_cart", "data_ref": "TD-02"},
+        {"page": "CartPage", "assertion": "is_cart_item_displayed"},
+        {"page": "CartPage", "assertion": "is_min_threshold_indicator_displayed"}
       ],
       "test_data": {
-        "product_a": {"product_name": "Wireless Mouse", "quantity": 3},
-        "remove_product_a": {"product_name": "Wireless Mouse", "quantity": 0},
-        "cart_total": {"expected_total": "$0.00"}
+        "user_john_doe": {
+          "username": "john.doe",
+          "password": "password123"
+        },
+        "premium_coffee_beans": {
+          "product_name": "Premium Coffee Beans - 1kg",
+          "product_code": "TD-02",
+          "stock": 30,
+          "min_threshold": 5
+        }
       }
     },
-    "1498": {
-      "test_name": "test_add_product_to_cart",
-      "feature": "ProductPurchase",
-      "target_file": "test_product_purchase.py",
-      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage", "ConfirmationPage"],
+    "1500": {
+      "test_name": "test_add_organic_green_tea_subscription_to_cart",
+      "feature": "Subscription",
+      "target_file": "test_subscription.py",
+      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
       "flow": [
-        {"page": "LoginPage", "action": "login", "data_ref": "user"},
-        {"page": "LoginPage", "validation": "validate_login_success", "data_ref": null},
-        {"page": "ProductCatalogPage", "action": "locate_product", "data_ref": "product_td01"},
-        {"page": "ProductCatalogPage", "validation": "validate_product_visible", "data_ref": "product_td01"},
-        {"page": "ProductCatalogPage", "validation": "validate_product_in_stock", "data_ref": "product_td01_stock"},
-        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_td01"},
-        {"page": "CartPage", "validation": "validate_product_in_cart", "data_ref": "product_td01"},
-        {"page": "CartPage", "validation": "validate_cart_totals", "data_ref": "cart_total"},
-        {"page": "ConfirmationPage", "validation": "validate_confirmation_message", "data_ref": "confirmation_message"}
+        {"page": "LoginPage", "action": "login", "data_ref": "user_john_doe_premium"},
+        {"page": "LoginPage", "assertion": "is_premium_user"},
+        {"page": "ProductCatalogPage", "action": "search_product", "data_ref": "organic_green_tea"},
+        {"page": "ProductCatalogPage", "action": "select_product", "data_ref": "TD-01"},
+        {"page": "ProductCatalogPage", "assertion": "is_subscription_supported"},
+        {"page": "ProductCatalogPage", "action": "select_subscription_option", "data_ref": "TD-01"},
+        {"page": "ProductCatalogPage", "action": "add_to_cart", "data_ref": "TD-01"},
+        {"page": "CartPage", "assertion": "is_cart_item_displayed"},
+        {"page": "CartPage", "assertion": "is_subscription_badge_displayed"},
+        {"page": "CartPage", "assertion": "is_delivery_frequency_option_displayed"}
       ],
       "test_data": {
-        "user": {"username": "Jane Smith", "password": "<REDACTED>"},
-        "product_td01": {"product_name": "Organic Green Tea - 100g", "product_code": "TD-01", "quantity": 1},
-        "product_td01_stock": {"product_name": "Organic Green Tea - 100g", "expected_stock": 50},
-        "cart_total": {"expected_total": "$12.99"},
-        "confirmation_message": {"expected_message": "Product added to cart"}
+        "user_john_doe_premium": {
+          "username": "john.doe",
+          "password": "password123",
+          "subscription": "Premium"
+        },
+        "organic_green_tea": {
+          "product_name": "Organic Green Tea - 100g",
+          "product_code": "TD-01",
+          "supports_subscription": true
+        }
       }
     }
   },

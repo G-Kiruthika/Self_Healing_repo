@@ -1,66 +1,63 @@
 {
   "pages": {
-    "CartPage": {
-      "file_name": "cart_page.py",
-      "locators": {
-        "product_row": {"by": "PLACEHOLDER", "value": "//div[@class='cart-item' and .//span[text()='PRODUCT_NAME']]"},
-        "quantity_input": {"by": "PLACEHOLDER", "value": "//input[@name='quantity']"},
-        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
-        "empty_cart_message": {"by": "PLACEHOLDER", "value": "//div[@class='empty-cart-message']"}
-      },
-      "actions": [
-        "ensure_product_in_cart(product_name, quantity)",
-        "change_product_quantity(product_name, quantity)",
-        "check_cart_totals()"
-      ],
-      "validations": [
-        "validate_product_in_cart(product_name)",
-        "validate_product_not_in_cart(product_name)",
-        "validate_cart_totals(expected_total)",
-        "validate_empty_cart_message()"
-      ]
-    },
     "LoginPage": {
       "file_name": "login_page.py",
       "locators": {
-        "username_field": {"by": "PLACEHOLDER", "value": "//input[@name='username']"},
-        "password_field": {"by": "PLACEHOLDER", "value": "//input[@name='password']"},
-        "login_button": {"by": "PLACEHOLDER", "value": "//button[@type='submit']"}
+        "username_input": {"by": "ID", "value": "username"},
+        "password_input": {"by": "ID", "value": "password"},
+        "login_button": {"by": "ID", "value": "login-btn"},
+        "premium_badge": {"by": "XPATH", "value": "//span[contains(@class, 'premium-badge')]"}
       },
       "actions": [
-        "login(username, password)"
+        "login(username, password)",
+        "verify_premium_subscription()"
       ],
       "validations": [
-        "validate_login_success()"
+        "is_logged_in()",
+        "is_premium_user()"
       ]
     },
     "ProductCatalogPage": {
       "file_name": "product_catalog_page.py",
       "locators": {
-        "product_list": {"by": "PLACEHOLDER", "value": "//div[@class='product-list']"},
-        "add_to_cart_button": {"by": "PLACEHOLDER", "value": "//button[contains(text(),'Add to Cart')]"},
-        "product_stock": {"by": "PLACEHOLDER", "value": "//span[@class='stock-count']"},
-        "product_name": {"by": "PLACEHOLDER", "value": "//span[@class='product-name']"}
+        "product_search_box": {"by": "ID", "value": "product-search"},
+        "premium_coffee_beans": {"by": "XPATH", "value": "//div[text()='Premium Coffee Beans - 1kg']"},
+        "organic_green_tea": {"by": "XPATH", "value": "//div[text()='Organic Green Tea - 100g']"},
+        "min_threshold_indicator": {"by": "CLASS_NAME", "value": "min-threshold"},
+        "subscription_option": {"by": "XPATH", "value": "//button[text()='Subscription']"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//button[text()='Add to Cart']"}
       },
       "actions": [
-        "locate_product(product_name)",
-        "add_product_to_cart(product_name)"
+        "search_product(product_name)",
+        "select_product(product_code)",
+        "add_to_cart(product_code)",
+        "select_subscription_option(product_code)"
       ],
       "validations": [
-        "validate_product_visible(product_name)",
-        "validate_product_in_stock(product_name, expected_stock)"
+        "is_product_visible(product_code)",
+        "is_min_threshold_visible(product_code)",
+        "is_subscription_supported(product_code)"
       ]
     },
-    "ConfirmationPage": {
-      "file_name": "confirmation_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "confirmation_message": {"by": "PLACEHOLDER", "value": "//div[@class='confirmation-message']"}
+        "cart_item_name": {"by": "CLASS_NAME", "value": "cart-item-name"},
+        "cart_unit_price": {"by": "CLASS_NAME", "value": "cart-unit-price"},
+        "cart_quantity": {"by": "CLASS_NAME", "value": "cart-quantity"},
+        "cart_subtotal": {"by": "CLASS_NAME", "value": "cart-subtotal"},
+        "min_threshold_indicator": {"by": "CLASS_NAME", "value": "min-threshold"},
+        "subscription_badge": {"by": "CLASS_NAME", "value": "subscription-badge"},
+        "delivery_frequency_option": {"by": "CLASS_NAME", "value": "delivery-frequency"}
       },
       "actions": [
-        "check_confirmation_message()"
+        "view_cart()"
       ],
       "validations": [
-        "validate_confirmation_message(expected_message)"
+        "is_cart_item_displayed(product_code)",
+        "is_min_threshold_indicator_displayed(product_code)",
+        "is_subscription_badge_displayed(product_code)",
+        "is_delivery_frequency_option_displayed(product_code)"
       ]
     }
   }
