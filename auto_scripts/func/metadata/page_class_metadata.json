@@ -1,1 +1,52 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "LoginPage": {
+      "file_name": "login_page.py",
+      "locators": {
+        "username_field": {"by": "ID", "value": "username"},
+        "password_field": {"by": "ID", "value": "password"},
+        "login_button": {"by": "ID", "value": "loginBtn"}
+      },
+      "actions": [
+        "enter_username(username)",
+        "enter_password(password)",
+        "click_login()"
+      ],
+      "validations": [
+        "is_logged_in()"
+      ]
+    },
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "product_tile": {"by": "XPATH", "value": "//div[contains(@class,'product-tile')]"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(text(),'Add to Cart')]"},
+        "product_name": {"by": "XPATH", "value": "//div[@class='product-name']"},
+        "minimum_threshold": {"by": "XPATH", "value": "//span[@class='min-threshold']"}
+      },
+      "actions": [
+        "locate_product(product_name)",
+        "click_add_to_cart(product_name)"
+      ],
+      "validations": [
+        "is_product_visible(product_name)",
+        "is_threshold_visible(product_name)"
+      ]
+    },
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "cart_icon": {"by": "ID", "value": "cartIcon"},
+        "cart_item_count": {"by": "ID", "value": "cartItemCount"},
+        "subtotal": {"by": "XPATH", "value": "//span[@class='subtotal']"}
+      },
+      "actions": [
+        "open_cart()"
+      ],
+      "validations": [
+        "is_cart_count(count)",
+        "is_subtotal_correct(product_name, expected_subtotal)"
+      ]
+    }
+  }
+}
