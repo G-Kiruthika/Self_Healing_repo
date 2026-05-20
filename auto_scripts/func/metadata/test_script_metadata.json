@@ -1,46 +1,61 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1491": {
-      "test_name": "test_cart_product_quantity_inventory_validation",
-      "feature": "Cart",
-      "target_file": "test_cart.py",
+    "1493": {
+      "test_name": "test_update_cart_quantity_to_available_stock",
+      "feature": "CartQuantityUpdate",
+      "target_file": "test_cart_quantity_update.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "is_product_in_cart", "data_ref": "product_c_initial"},
-        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "product_c_update"},
-        {"page": "CartPage", "assertion": "is_inventory_error_displayed"},
-        {"page": "CartPage", "assertion": "is_product_in_cart"},
-        {"page": "CartPage", "assertion": "is_cart_total_correct"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_c_initial"},
+        {"page": "CartPage", "action": "update_quantity", "data_ref": "product_c_update"},
+        {"page": "CartPage", "action": "check_line_item_subtotal", "data_ref": "product_c_update"},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": "product_c_update"},
+        {"page": "CartPage", "assertion": "validate_quantity_updated", "data_ref": "product_c_update"},
+        {"page": "CartPage", "assertion": "validate_subtotal", "data_ref": "product_c_subtotal"},
+        {"page": "CartPage", "assertion": "validate_no_inventory_error", "data_ref": null}
       ],
       "test_data": {
         "product_c_initial": {
           "product_name": "Laptop Stand",
-          "expected_qty": 2,
-          "expected_stock": 5
+          "quantity": 1,
+          "available_stock": 5
         },
         "product_c_update": {
           "product_name": "Laptop Stand",
-          "quantity": 10
+          "quantity": 5
+        },
+        "product_c_subtotal": {
+          "product_name": "Laptop Stand",
+          "expected_subtotal": "$449.95"
         }
       }
     },
-    "1492": {
-      "test_name": "test_product_catalog_add_out_of_stock_inventory_validation",
-      "feature": "ProductCatalog",
-      "target_file": "test_product_catalog.py",
-      "pages_used": ["ProductCatalogPage", "CartPage"],
+    "1494": {
+      "test_name": "test_reduce_cart_quantity_below_minimum_threshold",
+      "feature": "CartQuantityThreshold",
+      "target_file": "test_cart_quantity_threshold.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "ProductCatalogPage", "action": "navigate_to", "data_ref": null},
-        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
-        {"page": "ProductCatalogPage", "assertion": "is_stock_information_displayed"},
-        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_e_add"},
-        {"page": "ProductCatalogPage", "assertion": "is_inventory_error_displayed"},
-        {"page": "CartPage", "assertion": "is_product_in_cart"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_b_initial"},
+        {"page": "CartPage", "action": "attempt_reduce_quantity", "data_ref": "product_b_reduce"},
+        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": "product_b_initial"},
+        {"page": "CartPage", "assertion": "validate_warning_message_displayed", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_quantity_at_minimum", "data_ref": "product_b_min"}
       ],
       "test_data": {
-        "product_e_add": {
-          "product_name": "USB Cable"
+        "product_b_initial": {
+          "product_name": "Coffee Subscription",
+          "quantity": 3,
+          "min_threshold": 3
+        },
+        "product_b_reduce": {
+          "product_name": "Coffee Subscription",
+          "target_quantity": 1
+        },
+        "product_b_min": {
+          "product_name": "Coffee Subscription",
+          "min_quantity": 3
         }
       }
     }
