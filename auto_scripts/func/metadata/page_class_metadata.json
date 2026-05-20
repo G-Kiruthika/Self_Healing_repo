@@ -1,1 +1,54 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "LoginPage": {
+      "file_name": "login_page.py",
+      "locators": {
+        "username_field": {"by": "ID", "value": "username"},
+        "password_field": {"by": "ID", "value": "password"},
+        "login_button": {"by": "XPATH", "value": "//button[@type='submit']"}
+      },
+      "actions": [
+        "enter_username(username)",
+        "enter_password(password)",
+        "click_login()"
+      ],
+      "validations": [
+        "is_logged_in()"
+      ]
+    },
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "product_a": {"by": "XPATH", "value": "//div[text()='Wireless Mouse']"},
+        "product_b": {"by": "XPATH", "value": "//div[text()='Coffee Subscription']"},
+        "add_to_cart_a": {"by": "XPATH", "value": "//button[@data-product='Wireless Mouse']"},
+        "add_to_cart_b": {"by": "XPATH", "value": "//button[@data-product='Coffee Subscription']"},
+        "minimum_threshold_b": {"by": "XPATH", "value": "//div[@data-product='Coffee Subscription']//span[@class='min-threshold']"}
+      },
+      "actions": [
+        "locate_product(product_name)",
+        "click_add_to_cart(product_name)"
+      ],
+      "validations": [
+        "is_product_visible(product_name)",
+        "is_minimum_threshold_displayed(product_name)"
+      ]
+    },
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "cart_icon": {"by": "ID", "value": "cartIcon"},
+        "cart_item_count": {"by": "XPATH", "value": "//span[@id='cart-count']"},
+        "subtotal_a": {"by": "XPATH", "value": "//tr[@data-product='Wireless Mouse']//td[@class='subtotal']"},
+        "subtotal_b": {"by": "XPATH", "value": "//tr[@data-product='Coffee Subscription']//td[@class='subtotal']"}
+      },
+      "actions": [
+        "open_cart()"
+      ],
+      "validations": [
+        "is_cart_icon_updated(expected_count)",
+        "verify_subtotal(product_name, expected_value)"
+      ]
+    }
+  }
+}
