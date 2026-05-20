@@ -3,25 +3,62 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_item": {"by": "XPATH", "value": "//div[@class='cart-item']"},
-        "delete_button": {"by": "XPATH", "value": "//button[text()='Delete']"},
-        "empty_cart_message": {"by": "XPATH", "value": "//div[contains(text(),'Your cart is empty')]"},
-        "return_to_catalog_button": {"by": "XPATH", "value": "//button[contains(text(),'Return to product catalog')]"},
-        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
-        "line_item_subtotal": {"by": "XPATH", "value": "//span[contains(@class,'line-item-subtotal')]"}
+        "product_row": {"by": "xpath", "value": "//tr[contains(@class, 'cart-product-row') and .//span[text()='PRODUCT_NAME']]"},
+        "quantity_input": {"by": "xpath", "value": "//input[@type='number' and @name='quantity']"},
+        "remove_button": {"by": "xpath", "value": "//button[contains(@class,'remove-product')]"},
+        "cart_totals": {"by": "id", "value": "cart-totals"},
+        "empty_cart_message": {"by": "id", "value": "empty-cart-msg"}
       },
       "actions": [
-        "delete_product(product_name)",
-        "navigate_to_cart()",
-        "add_product(product_name, quantity)"
+        "set_product_quantity(product_name, quantity)",
+        "remove_product(product_name)",
+        "get_cart_totals()"
       ],
       "validations": [
         "is_product_in_cart(product_name)",
         "is_cart_empty()",
-        "is_empty_cart_message_displayed()",
-        "is_return_to_catalog_button_displayed()",
-        "is_cart_total(expected_total)",
-        "is_line_item_subtotal(product_name, expected_subtotal)"
+        "is_totals_correct()",
+        "is_empty_cart_message_displayed()"
+      ]
+    },
+    "LoginPage": {
+      "file_name": "login_page.py",
+      "locators": {
+        "username_input": {"by": "id", "value": "username"},
+        "password_input": {"by": "id", "value": "password"},
+        "login_button": {"by": "id", "value": "login-btn"}
+      },
+      "actions": [
+        "login(username, password)"
+      ],
+      "validations": [
+        "is_logged_in()"
+      ]
+    },
+    "CatalogPage": {
+      "file_name": "catalog_page.py",
+      "locators": {
+        "product_card": {"by": "xpath", "value": "//div[contains(@class,'product-card') and .//span[text()='PRODUCT_NAME']]"},
+        "add_to_cart_button": {"by": "xpath", "value": "//button[contains(@class,'add-to-cart') and ancestor::div[contains(@class,'product-card') and .//span[text()='PRODUCT_NAME']]]"},
+        "stock_label": {"by": "xpath", "value": "//span[contains(@class,'stock') and ancestor::div[contains(@class,'product-card') and .//span[text()='PRODUCT_NAME']]]"}
+      },
+      "actions": [
+        "add_product_to_cart(product_name)",
+        "find_product(product_name)"
+      ],
+      "validations": [
+        "is_product_visible(product_name)",
+        "is_product_in_stock(product_name)"
+      ]
+    },
+    "ConfirmationPage": {
+      "file_name": "confirmation_page.py",
+      "locators": {
+        "confirmation_message": {"by": "id", "value": "confirmation-msg"}
+      },
+      "actions": [],
+      "validations": [
+        "is_confirmation_message_displayed()"
       ]
     }
   }
