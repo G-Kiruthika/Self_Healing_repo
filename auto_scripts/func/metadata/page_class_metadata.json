@@ -3,9 +3,9 @@
     "LoginPage": {
       "file_name": "login_page.py",
       "locators": {
-        "username_input": {"by": "ID", "value": "username"},
-        "password_input": {"by": "ID", "value": "password"},
-        "login_button": {"by": "ID", "value": "login-btn"}
+        "username_field": {"by": "ID", "value": "username_input"},
+        "password_field": {"by": "ID", "value": "password_input"},
+        "login_button": {"by": "ID", "value": "login_btn"}
       },
       "actions": [
         "login(username, password)"
@@ -17,34 +17,34 @@
     "ProductCatalogPage": {
       "file_name": "product_catalog_page.py",
       "locators": {
-        "product_a_card": {"by": "XPATH", "value": "//div[contains(text(), 'Wireless Mouse')]"},
-        "product_b_card": {"by": "XPATH", "value": "//div[contains(text(), 'Coffee Subscription')]"},
-        "add_to_cart_product_a": {"by": "XPATH", "value": "//div[contains(text(), 'Wireless Mouse')]/following-sibling::button[contains(text(), 'Add to Cart')]"},
-        "add_to_cart_product_b": {"by": "XPATH", "value": "//div[contains(text(), 'Coffee Subscription')]/following-sibling::button[contains(text(), 'Add to Cart')]"}
+        "product_d_card": {"by": "XPATH", "value": "//div[@data-product-name='Vitamin Pack']"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//div[@data-product-name='Vitamin Pack']//button[contains(@class,'add-to-cart')]"}
       },
       "actions": [
-        "navigate_to_catalog()",
-        "add_product_to_cart(product_name, quantity)"
+        "navigate_to()",
+        "add_product_to_cart(product_name)"
       ],
       "validations": [
-        "is_catalog_displayed()",
         "is_product_visible(product_name)"
       ]
     },
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_icon": {"by": "ID", "value": "cart-icon"},
-        "cart_item_count": {"by": "ID", "value": "cart-count"},
-        "subtotal_label": {"by": "XPATH", "value": "//span[@class='subtotal']"}
+        "subscription_indicator": {"by": "CSS_SELECTOR", "value": ".cart-item .subscription-indicator"},
+        "product_quantity_field": {"by": "XPATH", "value": "//div[@data-product-name='Vitamin Pack']//input[@type='number']"},
+        "product_subtotal": {"by": "XPATH", "value": "//div[@data-product-name='Vitamin Pack']//span[contains(@class,'subtotal')]"},
+        "cart_total": {"by": "ID", "value": "cart_total_value"}
       },
       "actions": [
-        "open_cart()",
-        "get_cart_items()"
+        "set_product_quantity(product_name, quantity)",
+        "navigate_to()"
       ],
       "validations": [
-        "is_cart_icon_updated(expected_count)",
-        "is_subtotal_correct(product_name, expected_subtotal)"
+        "is_subscription_indicator_displayed(product_name)",
+        "verify_product_subtotal(product_name, expected_subtotal)",
+        "verify_cart_total(expected_total)",
+        "is_product_in_cart(product_name)"
       ]
     }
   }
