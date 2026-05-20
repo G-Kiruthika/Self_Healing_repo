@@ -1,1 +1,53 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "LoginPage": {
+      "file_name": "login_page.py",
+      "locators": {
+        "username_field": {"by": "ID", "value": "username_input"},
+        "password_field": {"by": "ID", "value": "password_input"},
+        "login_button": {"by": "ID", "value": "login_btn"}
+      },
+      "actions": [
+        "login(username, password)"
+      ],
+      "validations": [
+        "is_logged_in()"
+      ]
+    },
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "product_a": {"by": "XPATH", "value": "//div[text()='Wireless Mouse']"},
+        "product_b": {"by": "XPATH", "value": "//div[text()='Coffee Subscription']"},
+        "add_to_cart_a": {"by": "XPATH", "value": "//div[text()='Wireless Mouse']//button[text()='Add to Cart']"},
+        "add_to_cart_b": {"by": "XPATH", "value": "//div[text()='Coffee Subscription']//button[text()='Add to Cart']"},
+        "min_threshold_b": {"by": "XPATH", "value": "//div[text()='Coffee Subscription']//span[contains(@class,'min-threshold')]"}
+      },
+      "actions": [
+        "add_product_a_to_cart()",
+        "add_product_b_to_cart()"
+      ],
+      "validations": [
+        "is_product_a_visible()",
+        "is_product_b_visible()",
+        "is_product_b_threshold_displayed()"
+      ]
+    },
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "cart_icon": {"by": "ID", "value": "cart_icon"},
+        "product_a_subtotal": {"by": "XPATH", "value": "//div[@data-product='Wireless Mouse']//span[@class='subtotal']"},
+        "product_b_subtotal": {"by": "XPATH", "value": "//div[@data-product='Coffee Subscription']//span[@class='subtotal']"}
+      },
+      "actions": [
+        "open_cart()"
+      ],
+      "validations": [
+        "is_cart_icon_updated(expected_count)",
+        "verify_product_a_subtotal(expected_subtotal)",
+        "verify_product_b_subtotal(expected_subtotal)"
+      ]
+    }
+  }
+}
