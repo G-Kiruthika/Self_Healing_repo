@@ -1,1 +1,96 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"UI_TC_02": {"test_name": "test_invalid_password_login", "feature": "Login", "target_file": "test_saucedemo_login.py", "pages_used": ["SauceDemoLoginPage"], "flow": [{"page": "SauceDemoLoginPage", "action": "open", "data_ref": null}, {"page": "SauceDemoLoginPage", "action": "enter_username", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "enter_password", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "click_login", "data_ref": null}, {"page": "SauceDemoLoginPage", "assertion": "is_error_displayed"}], "test_data": {"invalid_password_user": {"username": "standard_user", "password": "wrong_password"}}}}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "1486": {
+      "test_name": "test_cart_multiple_products",
+      "feature": "Shopping Cart",
+      "target_file": "test_cart_multiple_products.py",
+      "pages_used": ["ProductListPage", "ShoppingCartPage"],
+      "flow": [
+        {"page": "ProductListPage", "action": "add_product", "data_ref": "product_a"},
+        {"page": "ProductListPage", "action": "add_product", "data_ref": "product_b"},
+        {"page": "ProductListPage", "action": "go_to_cart", "data_ref": null},
+        {"page": "ShoppingCartPage", "assertion": "is_product_in_cart", "data_ref": "product_a"},
+        {"page": "ShoppingCartPage", "assertion": "is_product_in_cart", "data_ref": "product_b"},
+        {"page": "ShoppingCartPage", "assertion": "verify_product_details", "data_ref": "product_a"},
+        {"page": "ShoppingCartPage", "assertion": "verify_product_details", "data_ref": "product_b"},
+        {"page": "ShoppingCartPage", "assertion": "verify_cart_total", "data_ref": "cart_total"}
+      ],
+      "test_data": {
+        "product_a": {
+          "product_name": "Wireless Mouse",
+          "unit_price": 25.00,
+          "quantity": 1,
+          "subtotal": 25.00
+        },
+        "product_b": {
+          "product_name": "Coffee Subscription",
+          "unit_price": 15.99,
+          "quantity": 3,
+          "subtotal": 47.97
+        },
+        "cart_total": {
+          "expected_total": 72.97
+        }
+      }
+    },
+    "1487": {
+      "test_name": "test_cart_update_quantity",
+      "feature": "Shopping Cart",
+      "target_file": "test_cart_update_quantity.py",
+      "pages_used": ["ShoppingCartPage"],
+      "flow": [
+        {"page": "ShoppingCartPage", "assertion": "is_product_in_cart", "data_ref": "product_a"},
+        {"page": "ShoppingCartPage", "action": "update_quantity", "data_ref": "update_quantity"},
+        {"page": "ShoppingCartPage", "assertion": "verify_product_details", "data_ref": "product_a_updated"},
+        {"page": "ShoppingCartPage", "assertion": "verify_cart_total", "data_ref": "cart_total"},
+        {"page": "ShoppingCartPage", "assertion": "is_loading_spinner_visible", "data_ref": null}
+      ],
+      "test_data": {
+        "product_a": {
+          "product_name": "Wireless Mouse",
+          "unit_price": 25.00,
+          "quantity": 1,
+          "subtotal": 25.00
+        },
+        "update_quantity": {
+          "product_name": "Wireless Mouse",
+          "quantity": 5
+        },
+        "product_a_updated": {
+          "product_name": "Wireless Mouse",
+          "unit_price": 25.00,
+          "quantity": 5,
+          "subtotal": 125.00
+        },
+        "cart_total": {
+          "expected_total": 125.00
+        }
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": [
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py"
+    ],
+    "api_dependencies": [],
+    "config_dependencies": [
+      "config/config.yaml"
+    ],
+    "utils_dependencies": [],
+    "external_libraries": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ],
+    "required_imports": [
+      "pages.",
+      "core.driver_factory",
+      "pages.base_page"
+    ]
+  }
+}
