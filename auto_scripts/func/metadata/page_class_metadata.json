@@ -1,37 +1,25 @@
 {
   "pages": {
-    "ProductListPage": {
-      "file_name": "product_list_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "product_a_add_button": {"by": "PLACEHOLDER", "value": "//button[@data-product='A']"},
-        "product_b_add_button": {"by": "PLACEHOLDER", "value": "//button[@data-product='B']"},
-        "cart_icon": {"by": "PLACEHOLDER", "value": "//a[@id='cart']"}
+        "product_a_row": {"by": "xpath", "value": "//tr[td[contains(text(),'Product A')]]"},
+        "product_c_row": {"by": "xpath", "value": "//tr[td[contains(text(),'Product C')]]"},
+        "delete_button_product_c": {"by": "xpath", "value": "//tr[td[contains(text(),'Product C')]]//button[contains(text(),'Delete')]"},
+        "cart_total": {"by": "id", "value": "cart-total"},
+        "empty_cart_message": {"by": "xpath", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "xpath", "value": "//button[contains(text(),'Return to Product Catalog')]"}
       },
       "actions": [
-        "add_product(product_name, quantity)",
-        "go_to_cart()"
-      ],
-      "validations": []
-    },
-    "ShoppingCartPage": {
-      "file_name": "shopping_cart_page.py",
-      "locators": {
-        "product_row": {"by": "PLACEHOLDER", "value": "//tr[@data-product]"},
-        "product_name": {"by": "PLACEHOLDER", "value": ".//td[@class='name']"},
-        "unit_price": {"by": "PLACEHOLDER", "value": ".//td[@class='unit-price']"},
-        "quantity_input": {"by": "PLACEHOLDER", "value": ".//input[@class='qty']"},
-        "subtotal": {"by": "PLACEHOLDER", "value": ".//td[@class='subtotal']"},
-        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
-        "loading_spinner": {"by": "PLACEHOLDER", "value": "//div[@id='spinner']"}
-      },
-      "actions": [
-        "update_quantity(product_name, quantity)"
+        "delete_product(product_name)",
+        "navigate_to_cart()"
       ],
       "validations": [
-        "is_product_in_cart(product_name)",
-        "verify_product_details(product_name, unit_price, quantity, subtotal)",
-        "verify_cart_total(expected_total)",
-        "is_loading_spinner_visible()"
+        "validate_product_present(product_name)",
+        "validate_product_not_present(product_name)",
+        "validate_cart_total(expected_total)",
+        "validate_empty_cart_message()",
+        "validate_return_to_catalog_button_present()"
       ]
     }
   }
