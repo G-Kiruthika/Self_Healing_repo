@@ -1,64 +1,63 @@
 {
   "pages": {
-    "CartPage": {
-      "file_name": "cart_page.py",
-      "locators": {
-        "product_row": {"by": "xpath", "value": "//tr[contains(@class, 'cart-product-row') and .//span[text()='PRODUCT_NAME']]"},
-        "quantity_input": {"by": "xpath", "value": "//input[@type='number' and @name='quantity']"},
-        "remove_button": {"by": "xpath", "value": "//button[contains(@class,'remove-product')]"},
-        "cart_totals": {"by": "id", "value": "cart-totals"},
-        "empty_cart_message": {"by": "id", "value": "empty-cart-msg"}
-      },
-      "actions": [
-        "set_product_quantity(product_name, quantity)",
-        "remove_product(product_name)",
-        "get_cart_totals()"
-      ],
-      "validations": [
-        "is_product_in_cart(product_name)",
-        "is_cart_empty()",
-        "is_totals_correct()",
-        "is_empty_cart_message_displayed()"
-      ]
-    },
     "LoginPage": {
       "file_name": "login_page.py",
       "locators": {
-        "username_input": {"by": "id", "value": "username"},
-        "password_input": {"by": "id", "value": "password"},
-        "login_button": {"by": "id", "value": "login-btn"}
+        "username_input": {"by": "ID", "value": "username"},
+        "password_input": {"by": "ID", "value": "password"},
+        "login_button": {"by": "ID", "value": "login-btn"},
+        "subscription_badge": {"by": "XPATH", "value": "//span[@class='subscription-badge']"}
       },
       "actions": [
-        "login(username, password)"
+        "login_as_user(username, password)",
+        "login_with_subscription(username, password, subscription_type)"
       ],
       "validations": [
-        "is_logged_in()"
+        "validate_user_logged_in()",
+        "validate_subscription_badge(subscription_type)"
       ]
     },
-    "CatalogPage": {
-      "file_name": "catalog_page.py",
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
       "locators": {
-        "product_card": {"by": "xpath", "value": "//div[contains(@class,'product-card') and .//span[text()='PRODUCT_NAME']]"},
-        "add_to_cart_button": {"by": "xpath", "value": "//button[contains(@class,'add-to-cart') and ancestor::div[contains(@class,'product-card') and .//span[text()='PRODUCT_NAME']]]"},
-        "stock_label": {"by": "xpath", "value": "//span[contains(@class,'stock') and ancestor::div[contains(@class,'product-card') and .//span[text()='PRODUCT_NAME']]]"}
+        "product_search_box": {"by": "ID", "value": "product-search"},
+        "product_td_02": {"by": "XPATH", "value": "//div[@data-product-id='TD-02']"},
+        "product_td_01": {"by": "XPATH", "value": "//div[@data-product-id='TD-01']"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(@class,'add-to-cart')]"},
+        "subscription_option": {"by": "XPATH", "value": "//input[@type='checkbox' and @name='subscription']"},
+        "min_threshold_indicator": {"by": "CLASS_NAME", "value": "min-threshold"}
       },
       "actions": [
-        "add_product_to_cart(product_name)",
-        "find_product(product_name)"
+        "search_product(product_name)",
+        "select_subscription_option(product_id)",
+        "add_to_cart(product_id)"
       ],
       "validations": [
-        "is_product_visible(product_name)",
-        "is_product_in_stock(product_name)"
+        "validate_product_visible(product_id)",
+        "validate_min_threshold_indicator(product_id)"
       ]
     },
-    "ConfirmationPage": {
-      "file_name": "confirmation_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "confirmation_message": {"by": "id", "value": "confirmation-msg"}
+        "cart_items": {"by": "ID", "value": "cart-items"},
+        "product_name": {"by": "XPATH", "value": "//td[@class='product-name']"},
+        "unit_price": {"by": "XPATH", "value": "//td[@class='unit-price']"},
+        "quantity": {"by": "XPATH", "value": "//input[@class='cart-qty']"},
+        "subtotal": {"by": "XPATH", "value": "//td[@class='subtotal']"},
+        "min_threshold_indicator": {"by": "CLASS_NAME", "value": "min-threshold"},
+        "subscription_badge": {"by": "CLASS_NAME", "value": "subscription-badge"},
+        "delivery_frequency": {"by": "ID", "value": "delivery-frequency"},
+        "subscription_pricing": {"by": "ID", "value": "subscription-pricing"}
       },
-      "actions": [],
+      "actions": [
+        "view_cart()"
+      ],
       "validations": [
-        "is_confirmation_message_displayed()"
+        "validate_cart_item_details(product_id, expected_details)",
+        "validate_min_threshold_in_cart(product_id)",
+        "validate_subscription_badge_in_cart(product_id)",
+        "validate_subscription_pricing_and_frequency(product_id)"
       ]
     }
   }
