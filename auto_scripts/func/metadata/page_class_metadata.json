@@ -3,27 +3,24 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Laptop Stand')]]"},
-        "product_b_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Coffee Subscription')]]"},
-        "quantity_input": {"by": "XPATH", "value": "//input[@name='quantity']"},
-        "subtotal_label": {"by": "XPATH", "value": "//span[@class='subtotal']"},
-        "inventory_error": {"by": "XPATH", "value": "//div[contains(@class,'error') and contains(text(),'inventory')]"},
-        "warning_message": {"by": "XPATH", "value": "//div[contains(@class,'warning') or contains(text(),'minimum threshold')]"}
+        "product_item": {"by": "XPATH", "value": "//div[@class='cart-item']"},
+        "delete_button": {"by": "XPATH", "value": "//button[@aria-label='Delete']"},
+        "empty_cart_message": {"by": "XPATH", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
+        "return_to_catalog_button": {"by": "XPATH", "value": "//button[contains(text(),'Return to product catalog')]"},
+        "line_item_subtotal": {"by": "XPATH", "value": "//span[@class='line-item-subtotal']"}
       },
       "actions": [
-        "ensure_product_in_cart(product_name, quantity, stock_or_threshold)",
-        "update_quantity(product_name, quantity)",
-        "check_line_item_subtotal(product_name)",
-        "check_error_messages()"
+        "delete_product(product_name)",
+        "add_product(product_name, quantity)",
+        "navigate_to_cart()"
       ],
       "validations": [
-        "validate_product_present(product_name)",
-        "validate_quantity_updated(product_name, expected_quantity)",
-        "validate_subtotal(product_name, expected_subtotal)",
-        "validate_no_inventory_error()",
-        "validate_warning_message_displayed()",
-        "validate_quantity_at_minimum(product_name, min_quantity)"
+        "is_product_in_cart(product_name)",
+        "is_cart_empty()",
+        "is_cart_total(expected_total)",
+        "is_line_item_subtotal(product_name, expected_subtotal)"
       ]
     }
   }
-} 
+}

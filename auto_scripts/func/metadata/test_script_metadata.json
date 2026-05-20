@@ -1,43 +1,48 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1493": {
-      "test_name": "test_update_product_c_quantity_to_max_stock",
-      "feature": "CartQuantityAndSubtotal",
-      "target_file": "test_cart_quantity_and_subtotal.py",
+    "1495": {
+      "test_name": "test_delete_product_and_cart_empty_message",
+      "feature": "ShoppingCart",
+      "target_file": "test_cart_page.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_c_initial"},
-        {"page": "CartPage", "action": "update_quantity", "data_ref": "product_c_update"},
-        {"page": "CartPage", "action": "check_line_item_subtotal", "data_ref": "product_c_update"},
-        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": "product_c_initial"},
-        {"page": "CartPage", "assertion": "validate_quantity_updated", "data_ref": "product_c_update"},
-        {"page": "CartPage", "assertion": "validate_subtotal", "data_ref": "product_c_expected"},
-        {"page": "CartPage", "assertion": "validate_no_inventory_error", "data_ref": null}
+        {"page": "CartPage", "action": "is_product_in_cart", "data_ref": {"product_name": "Wireless Mouse"}},
+        {"page": "CartPage", "action": "delete_product", "data_ref": {"product_name": "Wireless Mouse"}},
+        {"page": "CartPage", "assertion": "is_cart_empty"},
+        {"page": "CartPage", "assertion": "is_cart_total", "data_ref": {"expected_total": "$0.00"}},
+        {"page": "CartPage", "assertion": "is_element_displayed", "data_ref": {"element": "return_to_catalog_button"}}
       ],
       "test_data": {
-        "product_c_initial": {"product_name": "Laptop Stand", "quantity": 1, "stock": 5},
-        "product_c_update": {"product_name": "Laptop Stand", "quantity": 5},
-        "product_c_expected": {"product_name": "Laptop Stand", "expected_subtotal": "$449.95"}
+        "product_name": "Wireless Mouse",
+        "expected_total": "$0.00"
       }
     },
-    "1494": {
-      "test_name": "test_prevent_reducing_product_b_below_minimum_threshold",
-      "feature": "CartQuantityThreshold",
-      "target_file": "test_cart_quantity_threshold.py",
+    "1496": {
+      "test_name": "test_add_multiple_products_and_verify_cart_totals",
+      "feature": "ShoppingCart",
+      "target_file": "test_cart_page.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_b_initial"},
-        {"page": "CartPage", "action": "update_quantity", "data_ref": "product_b_reduce"},
-        {"page": "CartPage", "assertion": "validate_product_present", "data_ref": "product_b_initial"},
-        {"page": "CartPage", "assertion": "validate_warning_message_displayed", "data_ref": null},
-        {"page": "CartPage", "action": "check_line_item_subtotal", "data_ref": "product_b_initial"},
-        {"page": "CartPage", "assertion": "validate_quantity_at_minimum", "data_ref": "product_b_minimum"}
+        {"page": "CartPage", "action": "add_product", "data_ref": {"product_name": "Product A", "quantity": 2}},
+        {"page": "CartPage", "action": "add_product", "data_ref": {"product_name": "Product B", "quantity": 3}},
+        {"page": "CartPage", "action": "add_product", "data_ref": {"product_name": "Product C", "quantity": 1}},
+        {"page": "CartPage", "action": "navigate_to_cart"},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Product A"}},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Product B"}},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Product C"}},
+        {"page": "CartPage", "assertion": "is_line_item_subtotal", "data_ref": {"product_name": "Product A", "expected_subtotal": null}},
+        {"page": "CartPage", "assertion": "is_line_item_subtotal", "data_ref": {"product_name": "Product B", "expected_subtotal": null}},
+        {"page": "CartPage", "assertion": "is_line_item_subtotal", "data_ref": {"product_name": "Product C", "expected_subtotal": null}},
+        {"page": "CartPage", "assertion": "is_cart_total", "data_ref": {"expected_total": "$187.96"}}
       ],
       "test_data": {
-        "product_b_initial": {"product_name": "Coffee Subscription", "quantity": 3, "minimum_threshold": 3},
-        "product_b_reduce": {"product_name": "Coffee Subscription", "quantity": 1},
-        "product_b_minimum": {"product_name": "Coffee Subscription", "min_quantity": 3}
+        "products": [
+          {"product_name": "Product A", "quantity": 2},
+          {"product_name": "Product B", "quantity": 3},
+          {"product_name": "Product C", "quantity": 1}
+        ],
+        "expected_total": "$187.96"
       }
     }
   },
