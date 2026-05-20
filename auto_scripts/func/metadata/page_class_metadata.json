@@ -3,27 +3,23 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_c_row": {"by": "xpath", "value": "//tr[td[contains(text(),'Laptop Stand')]]"},
-        "product_b_row": {"by": "xpath", "value": "//tr[td[contains(text(),'Coffee Subscription')]]"},
-        "quantity_input": {"by": "xpath", "value": "//input[@name='quantity']"},
-        "line_item_subtotal": {"by": "xpath", "value": "//td[@class='subtotal']"},
-        "inventory_error": {"by": "xpath", "value": "//div[contains(@class,'error') and contains(text(),'inventory')]"},
-        "warning_message": {"by": "xpath", "value": "//div[contains(@class,'warning')]"}
+        "product_item": {"by": "PLACEHOLDER", "value": "//div[@class='cart-item']"},
+        "delete_button": {"by": "PLACEHOLDER", "value": "//button[contains(@aria-label,'Delete')]"},
+        "cart_empty_message": {"by": "PLACEHOLDER", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "PLACEHOLDER", "value": "//button[contains(text(),'Return to catalog')]"},
+        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
+        "line_item_subtotal": {"by": "PLACEHOLDER", "value": "//span[contains(@class,'line-item-subtotal')]"}
       },
       "actions": [
-        "ensure_product_in_cart(product_name, quantity, available_stock)",
-        "update_quantity(product_name, quantity)",
-        "attempt_reduce_quantity(product_name, target_quantity)",
-        "check_line_item_subtotal(product_name)",
-        "check_error_messages(product_name)"
+        "delete_product(product_name)",
+        "add_product(product_name, quantity)",
+        "navigate_to_cart()"
       ],
       "validations": [
-        "validate_product_present(product_name)",
-        "validate_quantity_updated(product_name, expected_quantity)",
-        "validate_subtotal(product_name, expected_subtotal)",
-        "validate_no_inventory_error()",
-        "validate_warning_message_displayed()",
-        "validate_quantity_at_minimum(product_name, min_quantity)"
+        "is_product_in_cart(product_name)",
+        "is_cart_empty()",
+        "is_cart_total(amount)",
+        "is_line_item_subtotal(product_name, expected_subtotal)"
       ]
     }
   }
