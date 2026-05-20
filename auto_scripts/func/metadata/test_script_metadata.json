@@ -1,46 +1,66 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1505": {
-      "test_name": "test_out_of_stock_product_behavior",
-      "feature": "Product Stock Validation",
-      "target_file": "test_product_out_of_stock.py",
-      "pages_used": ["ProductPage", "CartPage"],
-      "flow": [
-        {"page": "ProductPage", "action": "view_product", "data_ref": "TD-04"},
-        {"page": "ProductPage", "assertion": "is_out_of_stock_displayed"},
-        {"page": "ProductPage", "action": "click_add_to_cart", "data_ref": null},
-        {"page": "ProductPage", "assertion": "is_add_to_cart_disabled"},
-        {"page": "ProductPage", "assertion": "is_error_message_displayed"},
-        {"page": "CartPage", "assertion": "is_cart_item_present", "data_ref": null}
-      ],
-      "test_data": {
-        "TD-04": {
-          "product_id": "TD-04",
-          "stock": 0
-        }
-      }
-    },
-    "1506": {
-      "test_name": "test_cart_minimum_quantity_validation",
-      "feature": "Cart Quantity Validation",
-      "target_file": "test_cart_minimum_quantity.py",
+    "1507": {
+      "test_name": "test_cart_displays_multiple_products_correctly",
+      "feature": "ShoppingCart",
+      "target_file": "test_cart_page.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "view_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_cart_item_present", "data_ref": "TD-02"},
-        {"page": "CartPage", "assertion": "is_quantity_displayed", "data_ref": {"product_id": "TD-02", "quantity": 5}},
-        {"page": "CartPage", "action": "click_decrement", "data_ref": "TD-02"},
-        {"page": "CartPage", "assertion": "is_validation_error_displayed"},
-        {"page": "CartPage", "assertion": "is_quantity_displayed", "data_ref": {"product_id": "TD-02", "quantity": 5}},
-        {"page": "CartPage", "assertion": "is_decrement_disabled", "data_ref": "TD-02"}
+        {"page": "CartPage", "action": "navigate_to_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_cart_loaded"},
+        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": "TD-01"},
+        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": "TD-02"},
+        {"page": "CartPage", "assertion": "verify_unit_price", "data_ref": "TD-01"},
+        {"page": "CartPage", "assertion": "verify_unit_price", "data_ref": "TD-02"},
+        {"page": "CartPage", "assertion": "verify_quantity", "data_ref": "TD-01"},
+        {"page": "CartPage", "assertion": "verify_quantity", "data_ref": "TD-02"},
+        {"page": "CartPage", "assertion": "verify_subtotal", "data_ref": "TD-01"},
+        {"page": "CartPage", "assertion": "verify_subtotal", "data_ref": "TD-02"},
+        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": null}
       ],
       "test_data": {
+        "TD-01": {
+          "product_name": "TD-01",
+          "unit_price": 49.99,
+          "quantity": 1,
+          "subtotal": 49.99
+        },
         "TD-02": {
-          "product_id": "TD-02",
-          "quantity": 5,
-          "min_threshold": 5
-        }
+          "product_name": "TD-02",
+          "unit_price": 100.94,
+          "quantity": 1,
+          "subtotal": 100.94
+        },
+        "cart_total": 150.93
+      }
+    },
+    "1508": {
+      "test_name": "test_update_cart_quantity_and_success_message",
+      "feature": "ShoppingCart",
+      "target_file": "test_cart_page.py",
+      "pages_used": ["CartPage"],
+      "flow": [
+        {"page": "CartPage", "action": "navigate_to_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_cart_loaded"},
+        {"page": "CartPage", "assertion": "verify_product_in_cart", "data_ref": "TD-01"},
+        {"page": "CartPage", "action": "enter_quantity", "data_ref": "TD-01"},
+        {"page": "CartPage", "action": "update_quantity", "data_ref": null},
+        {"page": "CartPage", "assertion": "verify_quantity", "data_ref": "TD-01"},
+        {"page": "CartPage", "assertion": "verify_subtotal", "data_ref": "TD-01"},
+        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": null},
+        {"page": "CartPage", "assertion": "verify_success_message", "data_ref": null}
+      ],
+      "test_data": {
+        "TD-01": {
+          "product_name": "TD-01",
+          "unit_price": 12.99,
+          "quantity": 10,
+          "subtotal": 129.90,
+          "stock": 50
+        },
+        "cart_total": 129.90,
+        "success_message": "Quantity updated"
       }
     }
   },
