@@ -1,49 +1,41 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1501": {
-      "test_name": "test_cart_increment_quantity",
-      "feature": "Cart Functionality",
-      "target_file": "test_cart_increment_quantity.py",
-      "pages_used": ["CartPage"],
+    "1503": {
+      "test_name": "test_cart_deletion_and_empty_cart_flow",
+      "feature": "Cart",
+      "target_file": "test_cart_deletion_and_empty_cart_flow.py",
+      "pages_used": ["CartPage", "ProductCatalogPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_cart_contains", "data_ref": "TD-01_1_12.99"},
-        {"page": "CartPage", "assertion": "validate_cart_item"},
-        {"page": "CartPage", "action": "click_increment", "data_ref": "TD-01"},
-        {"page": "CartPage", "assertion": "validate_cart_item"},
-        {"page": "CartPage", "assertion": "validate_cart_total"},
-        {"page": "CartPage", "assertion": "validate_no_page_reload"}
+        {"page": "CartPage", "action": "is_product_in_cart", "data_ref": {"product_code": "TD-01"}},
+        {"page": "CartPage", "action": "delete_product", "data_ref": {"product_code": "TD-01"}},
+        {"page": "CartPage", "assertion": "is_cart_empty"},
+        {"page": "CartPage", "assertion": "is_empty_cart_message_displayed"},
+        {"page": "CartPage", "assertion": "is_continue_shopping_button_visible"},
+        {"page": "CartPage", "action": "click_continue_shopping", "data_ref": null},
+        {"page": "ProductCatalogPage", "assertion": "is_on_catalog_page"},
+        {"page": "CartPage", "assertion": "is_checkout_button_disabled_or_hidden"}
       ],
       "test_data": {
-        "TD-01_1_12.99": {"product_id": "TD-01", "quantity": 1, "subtotal": 12.99},
-        "TD-01_2_25.98": {"product_id": "TD-01", "quantity": 2, "subtotal": 25.98},
-        "cart_total": {"total": 25.98}
+        "initial_cart": {"product_code": "TD-01"}
       }
     },
-    "1502": {
-      "test_name": "test_cart_delete_product",
-      "feature": "Cart Functionality",
-      "target_file": "test_cart_delete_product.py",
+    "1504": {
+      "test_name": "test_cart_quantity_update_inventory_validation",
+      "feature": "Cart",
+      "target_file": "test_cart_quantity_update_inventory_validation.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "ensure_cart_contains", "data_ref": "TD-01_2_25.98_and_TD-02_5_124.95"},
-        {"page": "CartPage", "assertion": "validate_cart_item"},
-        {"page": "CartPage", "action": "click_delete", "data_ref": "TD-01"},
-        {"page": "CartPage", "assertion": "validate_cart_item"},
-        {"page": "CartPage", "assertion": "validate_cart_total"},
-        {"page": "CartPage", "assertion": "validate_confirmation_message"}
+        {"page": "CartPage", "action": "is_product_in_cart", "data_ref": {"product_code": "TD-03", "quantity": 2, "stock": 3}},
+        {"page": "CartPage", "action": "update_quantity", "data_ref": {"product_code": "TD-03", "quantity": 5}},
+        {"page": "CartPage", "assertion": "is_inventory_error_displayed"},
+        {"page": "CartPage", "assertion": "is_error_message_displayed", "data_ref": {"expected_message": "Only 3 units available in stock"}},
+        {"page": "CartPage", "assertion": "is_quantity_set", "data_ref": {"product_code": "TD-03", "expected_quantity": 2}},
+        {"page": "CartPage", "assertion": "is_suggestion_message_displayed", "data_ref": {"expected_message": "Maximum available: 3"}}
       ],
       "test_data": {
-        "TD-01_2_25.98_and_TD-02_5_124.95": {
-          "products": [
-            {"product_id": "TD-01", "quantity": 2, "subtotal": 25.98},
-            {"product_id": "TD-02", "quantity": 5, "subtotal": 124.95}
-          ],
-          "cart_total": 150.93
-        },
-        "TD-02_5_124.95": {"product_id": "TD-02", "quantity": 5, "subtotal": 124.95},
-        "cart_total": {"total": 124.95},
-        "confirmation_message": {"message": "Item removed from cart"}
+        "initial_cart": {"product_code": "TD-03", "quantity": 2, "stock": 3},
+        "invalid_quantity_attempt": {"product_code": "TD-03", "quantity": 5}
       }
     }
   },
