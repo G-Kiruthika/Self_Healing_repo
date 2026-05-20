@@ -3,31 +3,35 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_item_td_01": {"by": "id", "value": "cart-item-td-01"},
-        "cart_item_td_02": {"by": "id", "value": "cart-item-td-02"},
-        "quantity_field": {"by": "id", "value": "quantity-field"},
-        "update_button": {"by": "id", "value": "update-btn"},
-        "validation_error_message": {"by": "id", "value": "error-msg"},
-        "cart_totals": {"by": "id", "value": "cart-totals"},
-        "decrement_button": {"by": "id", "value": "decrement-btn"},
-        "increment_button": {"by": "id", "value": "increment-btn"},
-        "line_item_subtotal": {"by": "id", "value": "line-item-subtotal"},
-        "threshold_indicator": {"by": "id", "value": "threshold-indicator"}
+        "cart_item": {"by": "PLACEHOLDER", "value": "cart_item_locator"},
+        "quantity_field": {"by": "PLACEHOLDER", "value": "quantity_field_locator"},
+        "increment_button": {"by": "PLACEHOLDER", "value": "increment_button_locator"},
+        "max_quantity_message": {"by": "PLACEHOLDER", "value": "max_quantity_message_locator"},
+        "line_item_subtotal": {"by": "PLACEHOLDER", "value": "line_item_subtotal_locator"},
+        "confirmation_message": {"by": "PLACEHOLDER", "value": "confirmation_message_locator"}
       },
       "actions": [
-        "set_quantity(quantity)",
-        "click_update_button()",
-        "click_decrement_button()",
-        "click_increment_button()"
+        "set_cart_item_quantity(product_code, quantity)",
+        "increment_quantity(product_code)",
+        "navigate_to_cart()"
       ],
       "validations": [
-        "validate_cart_item_quantity(item, quantity)",
-        "validate_error_message(expected_message)",
-        "validate_cart_totals(expected_totals)",
-        "validate_button_state(button, expected_state)",
-        "validate_line_item_subtotal(item, expected_subtotal)",
-        "validate_threshold_indicator(item, expected_indicator)"
+        "verify_cart_item_quantity(product_code, expected_quantity)",
+        "verify_increment_button_disabled(product_code)",
+        "verify_max_quantity_message_displayed(product_code)",
+        "verify_line_item_subtotal(product_code, expected_subtotal)",
+        "verify_confirmation_message(expected_message)"
       ]
+    },
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "add_to_cart_button": {"by": "PLACEHOLDER", "value": "add_to_cart_button_locator"}
+      },
+      "actions": [
+        "click_add_to_cart(product_code)"
+      ],
+      "validations": []
     }
   }
 }

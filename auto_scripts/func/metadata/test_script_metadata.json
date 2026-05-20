@@ -1,43 +1,48 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1509": {
-      "test_name": "test_cart_negative_quantity_validation",
-      "feature": "Cart Quantity Validation",
-      "target_file": "test_cart_negative_quantity_validation.py",
+    "1511": {
+      "test_name": "test_cart_maximum_quantity_behavior",
+      "feature": "Cart Quantity Control",
+      "target_file": "test_cart_quantity_control.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "validate_cart_item_quantity", "data_ref": {"item": "TD-01", "quantity": 2}},
-        {"page": "CartPage", "action": "set_quantity", "data_ref": {"quantity": -5}},
-        {"page": "CartPage", "action": "click_update_button", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_error_message", "data_ref": {"expected_message": "Quantity must be a positive number"}},
-        {"page": "CartPage", "assertion": "validate_cart_item_quantity", "data_ref": {"item": "TD-01", "quantity": 2}},
-        {"page": "CartPage", "assertion": "validate_cart_totals", "data_ref": {"expected_totals": "unchanged"}}
+        {"page": "CartPage", "action": "set_cart_item_quantity", "data_ref": "cart_setup"},
+        {"page": "CartPage", "assertion": "verify_cart_item_quantity"},
+        {"page": "CartPage", "action": "increment_quantity", "data_ref": "increment_action"},
+        {"page": "CartPage", "assertion": "verify_cart_item_quantity"},
+        {"page": "CartPage", "assertion": "verify_increment_button_disabled"},
+        {"page": "CartPage", "assertion": "verify_max_quantity_message_displayed"},
+        {"page": "CartPage", "assertion": "verify_line_item_subtotal"}
       ],
       "test_data": {
-        "valid_cart_item": {"item": "TD-01", "quantity": 2},
-        "invalid_quantity": {"quantity": -5},
-        "expected_error": {"message": "Quantity must be a positive number"},
-        "expected_totals": {"status": "unchanged"}
+        "cart_setup": {"product_code": "TD-03", "quantity": 2, "stock": 3},
+        "increment_action": {"product_code": "TD-03"},
+        "verify_cart_item_quantity_1": {"product_code": "TD-03", "expected_quantity": 2},
+        "verify_cart_item_quantity_2": {"product_code": "TD-03", "expected_quantity": 3},
+        "verify_line_item_subtotal": {"product_code": "TD-03", "expected_subtotal": "$25.50"},
+        "verify_max_quantity_message_displayed": {"product_code": "TD-03"}
       }
     },
-    "1510": {
-      "test_name": "test_cart_minimum_threshold_controls",
-      "feature": "Cart Minimum Threshold Controls",
-      "target_file": "test_cart_minimum_threshold_controls.py",
-      "pages_used": ["CartPage"],
+    "1512": {
+      "test_name": "test_add_to_cart_existing_item",
+      "feature": "Cart Quantity Control",
+      "target_file": "test_cart_quantity_control.py",
+      "pages_used": ["CartPage", "ProductCatalogPage"],
       "flow": [
-        {"page": "CartPage", "action": "validate_cart_item_quantity", "data_ref": {"item": "TD-02", "quantity": 5}},
-        {"page": "CartPage", "assertion": "validate_button_state", "data_ref": {"button": "decrement", "expected_state": "disabled"}},
-        {"page": "CartPage", "assertion": "validate_button_state", "data_ref": {"button": "increment", "expected_state": "enabled"}},
-        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": {"item": "TD-02", "expected_subtotal": 124.95}},
-        {"page": "CartPage", "assertion": "validate_threshold_indicator", "data_ref": {"item": "TD-02", "expected_indicator": "Min: 5 units"}}
+        {"page": "CartPage", "action": "set_cart_item_quantity", "data_ref": "cart_setup"},
+        {"page": "CartPage", "assertion": "verify_cart_item_quantity"},
+        {"page": "ProductCatalogPage", "action": "click_add_to_cart", "data_ref": "add_to_cart_action"},
+        {"page": "CartPage", "assertion": "verify_cart_item_quantity"},
+        {"page": "CartPage", "assertion": "verify_line_item_subtotal"},
+        {"page": "CartPage", "assertion": "verify_confirmation_message"}
       ],
       "test_data": {
-        "valid_cart_item": {"item": "TD-02", "quantity": 5, "threshold": 5},
-        "expected_button_states": {"decrement": "disabled", "increment": "enabled"},
-        "expected_subtotal": {"item": "TD-02", "subtotal": 124.95},
-        "expected_indicator": {"item": "TD-02", "indicator": "Min: 5 units"}
+        "cart_setup": {"product_code": "TD-01", "quantity": 2, "subtotal": "$25.98"},
+        "add_to_cart_action": {"product_code": "TD-01"},
+        "verify_cart_item_quantity": {"product_code": "TD-01", "expected_quantity": 3},
+        "verify_line_item_subtotal": {"product_code": "TD-01", "expected_subtotal": "$38.97"},
+        "verify_confirmation_message": {"expected_message": "Quantity updated in cart"}
       }
     }
   },
