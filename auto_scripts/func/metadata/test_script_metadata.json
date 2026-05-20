@@ -1,61 +1,67 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1499": {
-      "test_name": "test_add_premium_coffee_beans_to_cart_min_threshold",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
-      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
+    "1501": {
+      "test_name": "test_increment_cart_item_quantity",
+      "feature": "Cart Functionality",
+      "target_file": "test_cart_page.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "LoginPage", "action": "login", "data_ref": "user_john_doe"},
-        {"page": "CartPage", "assertion": "is_cart_item_displayed"},
-        {"page": "ProductCatalogPage", "action": "search_product", "data_ref": "premium_coffee_beans"},
-        {"page": "ProductCatalogPage", "action": "select_product", "data_ref": "TD-02"},
-        {"page": "ProductCatalogPage", "assertion": "is_min_threshold_visible"},
-        {"page": "ProductCatalogPage", "action": "add_to_cart", "data_ref": "TD-02"},
-        {"page": "CartPage", "assertion": "is_cart_item_displayed"},
-        {"page": "CartPage", "assertion": "is_min_threshold_indicator_displayed"}
+        {"page": "CartPage", "action": "verify_cart_contains", "data_ref": "cart_item_1"},
+        {"page": "CartPage", "action": "increment_product_quantity", "data_ref": "cart_item_1"},
+        {"page": "CartPage", "assertion": "verify_cart_contains", "data_ref": "cart_item_2"},
+        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": "cart_total_2"},
+        {"page": "CartPage", "assertion": "verify_no_page_reload", "data_ref": null}
       ],
       "test_data": {
-        "user_john_doe": {
-          "username": "john.doe",
-          "password": "password123"
+        "cart_item_1": {
+          "product_id": "TD-01",
+          "quantity": 1,
+          "subtotal": 12.99
         },
-        "premium_coffee_beans": {
-          "product_name": "Premium Coffee Beans - 1kg",
-          "product_code": "TD-02",
-          "stock": 30,
-          "min_threshold": 5
+        "cart_item_2": {
+          "product_id": "TD-01",
+          "quantity": 2,
+          "subtotal": 25.98
+        },
+        "cart_total_2": {
+          "expected_total": 25.98
         }
       }
     },
-    "1500": {
-      "test_name": "test_add_organic_green_tea_subscription_to_cart",
-      "feature": "Subscription",
-      "target_file": "test_subscription.py",
-      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
+    "1502": {
+      "test_name": "test_delete_cart_item_and_verify_total",
+      "feature": "Cart Functionality",
+      "target_file": "test_cart_page.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "LoginPage", "action": "login", "data_ref": "user_john_doe_premium"},
-        {"page": "LoginPage", "assertion": "is_premium_user"},
-        {"page": "ProductCatalogPage", "action": "search_product", "data_ref": "organic_green_tea"},
-        {"page": "ProductCatalogPage", "action": "select_product", "data_ref": "TD-01"},
-        {"page": "ProductCatalogPage", "assertion": "is_subscription_supported"},
-        {"page": "ProductCatalogPage", "action": "select_subscription_option", "data_ref": "TD-01"},
-        {"page": "ProductCatalogPage", "action": "add_to_cart", "data_ref": "TD-01"},
-        {"page": "CartPage", "assertion": "is_cart_item_displayed"},
-        {"page": "CartPage", "assertion": "is_subscription_badge_displayed"},
-        {"page": "CartPage", "assertion": "is_delivery_frequency_option_displayed"}
+        {"page": "CartPage", "action": "verify_cart_contains", "data_ref": "cart_item_td01_and_td02"},
+        {"page": "CartPage", "action": "delete_product", "data_ref": "delete_td01"},
+        {"page": "CartPage", "assertion": "verify_cart_contains", "data_ref": "cart_item_td02_only"},
+        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": "cart_total_td02"},
+        {"page": "CartPage", "assertion": "verify_confirmation_message", "data_ref": "confirmation_message"}
       ],
       "test_data": {
-        "user_john_doe_premium": {
-          "username": "john.doe",
-          "password": "password123",
-          "subscription": "Premium"
+        "cart_item_td01_and_td02": {
+          "products": [
+            {"product_id": "TD-01", "quantity": 2, "subtotal": 25.98},
+            {"product_id": "TD-02", "quantity": 5, "subtotal": 124.95}
+          ],
+          "expected_total": 150.93
         },
-        "organic_green_tea": {
-          "product_name": "Organic Green Tea - 100g",
-          "product_code": "TD-01",
-          "supports_subscription": true
+        "delete_td01": {
+          "product_id": "TD-01"
+        },
+        "cart_item_td02_only": {
+          "products": [
+            {"product_id": "TD-02", "quantity": 5, "subtotal": 124.95}
+          ]
+        },
+        "cart_total_td02": {
+          "expected_total": 124.95
+        },
+        "confirmation_message": {
+          "expected_message": "Item removed from cart"
         }
       }
     }
