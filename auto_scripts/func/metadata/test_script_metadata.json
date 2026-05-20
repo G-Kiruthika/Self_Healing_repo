@@ -1,41 +1,47 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1485": {
-      "test_name": "test_add_subscription_product_to_cart",
-      "feature": "Product Subscription Cart",
-      "target_file": "test_product_subscription_cart.py",
-      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
-      "flow": [
-        {"page": "LoginPage", "action": "login", "data_ref": "user_credentials"},
-        {"page": "ProductCatalogPage", "action": "navigate_to", "data_ref": null},
-        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "vitamin_pack"},
-        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": "vitamin_pack"},
-        {"page": "CartPage", "assertion": "is_subscription_indicator_displayed", "data_ref": "vitamin_pack"},
-        {"page": "CartPage", "assertion": "verify_product_subtotal", "data_ref": "vitamin_pack_subtotal"}
-      ],
-      "test_data": {
-        "user_credentials": {"username": "customer", "password": "customer_password"},
-        "vitamin_pack": {"product_name": "Vitamin Pack", "min_quantity": 2},
-        "vitamin_pack_subtotal": {"product_name": "Vitamin Pack", "expected_subtotal": "$91.00"}
-      }
-    },
-    "1488": {
-      "test_name": "test_update_subscription_quantity_and_verify_totals",
-      "feature": "Product Subscription Cart",
-      "target_file": "test_product_subscription_cart.py",
+    "1491": {
+      "test_name": "test_cart_product_quantity_inventory_validation",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": "vitamin_pack"},
-        {"page": "CartPage", "action": "set_product_quantity", "data_ref": "update_quantity"},
-        {"page": "CartPage", "assertion": "verify_product_subtotal", "data_ref": "updated_vitamin_pack_subtotal"},
-        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": "updated_cart_total"}
+        {"page": "CartPage", "action": "is_product_in_cart", "data_ref": "product_c_initial"},
+        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "product_c_update"},
+        {"page": "CartPage", "assertion": "is_inventory_error_displayed"},
+        {"page": "CartPage", "assertion": "is_product_in_cart"},
+        {"page": "CartPage", "assertion": "is_cart_total_correct"}
       ],
       "test_data": {
-        "vitamin_pack": {"product_name": "Vitamin Pack", "quantity": 2, "subtotal": "$91.00"},
-        "update_quantity": {"product_name": "Vitamin Pack", "quantity": 6},
-        "updated_vitamin_pack_subtotal": {"product_name": "Vitamin Pack", "expected_subtotal": "$273.00"},
-        "updated_cart_total": {"expected_total": "$273.00"}
+        "product_c_initial": {
+          "product_name": "Laptop Stand",
+          "expected_qty": 2,
+          "expected_stock": 5
+        },
+        "product_c_update": {
+          "product_name": "Laptop Stand",
+          "quantity": 10
+        }
+      }
+    },
+    "1492": {
+      "test_name": "test_product_catalog_add_out_of_stock_inventory_validation",
+      "feature": "ProductCatalog",
+      "target_file": "test_product_catalog.py",
+      "pages_used": ["ProductCatalogPage", "CartPage"],
+      "flow": [
+        {"page": "ProductCatalogPage", "action": "navigate_to", "data_ref": null},
+        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
+        {"page": "ProductCatalogPage", "assertion": "is_stock_information_displayed"},
+        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_e_add"},
+        {"page": "ProductCatalogPage", "assertion": "is_inventory_error_displayed"},
+        {"page": "CartPage", "assertion": "is_product_in_cart"}
+      ],
+      "test_data": {
+        "product_e_add": {
+          "product_name": "USB Cable"
+        }
       }
     }
   },
