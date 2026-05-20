@@ -3,27 +3,26 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_c_row": {"by": "XPATH", "value": "//tr[.//td[contains(text(),'Laptop Stand')]]"},
-        "product_b_row": {"by": "XPATH", "value": "//tr[.//td[contains(text(),'Coffee Subscription')]]"},
-        "quantity_input": {"by": "XPATH", "value": "//input[@name='quantity']"},
-        "line_item_subtotal": {"by": "XPATH", "value": "//td[@class='subtotal']"},
-        "inventory_error": {"by": "XPATH", "value": "//div[contains(@class,'error-message')]"},
-        "warning_message": {"by": "XPATH", "value": "//div[contains(@class,'warning-message')]"}
+        "product_item": {"by": "PLACEHOLDER", "value": "//div[@class='cart-item' and .//span[text()='Product Name']]"},
+        "delete_button": {"by": "PLACEHOLDER", "value": "//button[@class='delete-product']"},
+        "empty_cart_message": {"by": "PLACEHOLDER", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "PLACEHOLDER", "value": "//button[contains(text(),'Return to product catalog')]"},
+        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
+        "line_item_subtotal": {"by": "PLACEHOLDER", "value": "//span[@class='line-item-subtotal']"}
       },
       "actions": [
-        "ensure_product_in_cart(product_name, quantity)",
-        "update_product_quantity(product_name, quantity)",
-        "get_line_item_subtotal(product_name)",
-        "check_for_inventory_error()",
-        "check_for_warning_message()"
+        "add_product(product_name, quantity)",
+        "delete_product(product_name)",
+        "navigate_to_cart()",
+        "return_to_catalog()"
       ],
       "validations": [
-        "validate_product_present(product_name)",
-        "validate_quantity(product_name, expected_quantity)",
-        "validate_line_item_subtotal(product_name, expected_subtotal)",
-        "validate_no_inventory_error()",
-        "validate_warning_message(expected_message)"
+        "validate_product_in_cart(product_name)",
+        "validate_product_not_in_cart(product_name)",
+        "validate_empty_cart_message()",
+        "validate_cart_total(expected_total)",
+        "validate_line_item_subtotal(product_name, expected_subtotal)"
       ]
     }
   }
-}
+} 
