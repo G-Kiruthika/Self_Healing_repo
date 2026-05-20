@@ -1,42 +1,44 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1491": {
-      "test_name": "test_cart_quantity_update_validation",
-      "feature": "CartQuantityValidation",
-      "target_file": "test_cart_quantity_update_validation.py",
-      "pages_used": ["CartPage", "HeaderPage"],
+    "1493": {
+      "test_name": "test_update_product_c_quantity_to_max",
+      "feature": "CartQuantityUpdate",
+      "target_file": "test_cart_quantity_update.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "verify_product_in_cart", "data_ref": "product_c"},
-        {"page": "CartPage", "action": "set_quantity", "data_ref": "update_quantity_attempt"},
-        {"page": "CartPage", "action": "click_update", "data_ref": "product_c"},
-        {"page": "CartPage", "assertion": "verify_inventory_error_displayed"},
-        {"page": "CartPage", "assertion": "verify_product_in_cart"},
-        {"page": "HeaderPage", "assertion": "verify_cart_count"},
-        {"page": "CartPage", "assertion": "verify_cart_total"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_c_initial"},
+        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "product_c_max"},
+        {"page": "CartPage", "action": "check_line_item_subtotal", "data_ref": "product_c_max"},
+        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "product_c_max"},
+        {"page": "CartPage", "assertion": "validate_quantity", "data_ref": "product_c_max"},
+        {"page": "CartPage", "assertion": "validate_subtotal", "data_ref": "product_c_subtotal"},
+        {"page": "CartPage", "assertion": "validate_no_inventory_error", "data_ref": null}
       ],
       "test_data": {
-        "product_c": {"product_name": "Laptop Stand", "quantity": 2, "available_stock": 5},
-        "update_quantity_attempt": {"product_name": "Laptop Stand", "quantity": 10},
-        "expected_cart_count": 1,
-        "expected_cart_total": "unchanged"
+        "product_c_initial": {"product_name": "Laptop Stand", "quantity": 1, "available_stock": 5},
+        "product_c_max": {"product_name": "Laptop Stand", "quantity": 5},
+        "product_c_subtotal": {"product_name": "Laptop Stand", "expected_subtotal": "$449.95"}
       }
     },
-    "1492": {
-      "test_name": "test_add_out_of_stock_product",
-      "feature": "AddToCartInventoryValidation",
-      "target_file": "test_add_out_of_stock_product.py",
-      "pages_used": ["ProductCatalogPage", "CartPage", "HeaderPage"],
+    "1494": {
+      "test_name": "test_prevent_reducing_below_minimum_threshold",
+      "feature": "CartQuantityValidation",
+      "target_file": "test_cart_quantity_validation.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "ProductCatalogPage", "action": "verify_product_visible", "data_ref": "product_e"},
-        {"page": "ProductCatalogPage", "action": "verify_stock_info", "data_ref": "product_e"},
-        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_e"},
-        {"page": "ProductCatalogPage", "assertion": "verify_inventory_error_displayed"},
-        {"page": "HeaderPage", "assertion": "verify_cart_count"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_b_initial"},
+        {"page": "CartPage", "action": "attempt_reduce_quantity", "data_ref": "product_b_reduce"},
+        {"page": "CartPage", "action": "get_quantity", "data_ref": "product_b_after_attempt"},
+        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "product_b_initial"},
+        {"page": "CartPage", "assertion": "validate_quantity", "data_ref": "product_b_min_threshold"},
+        {"page": "CartPage", "assertion": "validate_warning_message_displayed", "data_ref": null}
       ],
       "test_data": {
-        "product_e": {"product_name": "USB Cable", "available_stock": 0},
-        "expected_cart_count": 0
+        "product_b_initial": {"product_name": "Coffee Subscription", "quantity": 3, "min_threshold": 3},
+        "product_b_reduce": {"product_name": "Coffee Subscription", "quantity": 1},
+        "product_b_after_attempt": {"product_name": "Coffee Subscription"},
+        "product_b_min_threshold": {"product_name": "Coffee Subscription", "expected_quantity": 3}
       }
     }
   },
@@ -44,11 +46,22 @@
     "architecture": "python-ui-api-automation-framework",
     "type": "ui",
     "base_classes_required": ["BasePage"],
-    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "core_dependencies": [
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py"
+    ],
     "api_dependencies": [],
     "config_dependencies": ["config/config.yaml"],
     "utils_dependencies": [],
-    "external_libraries": ["selenium", "pytest", "pyyaml"],
-    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+    "external_libraries": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ],
+    "required_imports": [
+      "pages.",
+      "core.driver_factory",
+      "pages.base_page"
+    ]
   }
 }

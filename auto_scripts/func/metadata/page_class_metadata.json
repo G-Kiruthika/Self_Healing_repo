@@ -3,47 +3,25 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Laptop Stand')]]"},
-        "quantity_input": {"by": "XPATH", "value": "//input[@name='quantity']"},
-        "update_button": {"by": "XPATH", "value": "//button[contains(text(),'Update')]"},
-        "cart_total": {"by": "XPATH", "value": "//div[@id='cart-total']"},
-        "inventory_error": {"by": "XPATH", "value": "//div[contains(@class,'error') and contains(text(),'inventory')]"}
+        "product_c_row": {"by": "XPATH", "value": "//tr[.//text()='Laptop Stand']"},
+        "product_b_row": {"by": "XPATH", "value": "//tr[.//text()='Coffee Subscription']"},
+        "quantity_input": {"by": "CSS_SELECTOR", "value": ".cart-item-quantity-input"},
+        "subtotal_field": {"by": "CSS_SELECTOR", "value": ".cart-item-subtotal"},
+        "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}
       },
       "actions": [
-        "set_quantity(product_name, quantity)",
-        "click_update(product_name)"
+        "ensure_product_in_cart(product_name, quantity)",
+        "update_product_quantity(product_name, quantity)",
+        "check_line_item_subtotal(product_name)",
+        "attempt_reduce_quantity(product_name, quantity)",
+        "get_quantity(product_name)"
       ],
       "validations": [
-        "verify_product_in_cart(product_name, quantity)",
-        "verify_inventory_error_displayed()",
-        "verify_cart_total(expected_total)"
-      ]
-    },
-    "ProductCatalogPage": {
-      "file_name": "product_catalog_page.py",
-      "locators": {
-        "product_e_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'USB Cable')]]"},
-        "stock_info": {"by": "XPATH", "value": "//td[contains(@class,'stock-info')]"},
-        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(text(),'Add to Cart')]"},
-        "inventory_error": {"by": "XPATH", "value": "//div[contains(@class,'error') and contains(text(),'inventory')]"}
-      },
-      "actions": [
-        "add_product_to_cart(product_name)"
-      ],
-      "validations": [
-        "verify_product_visible(product_name)",
-        "verify_stock_info(product_name, expected_stock)",
-        "verify_inventory_error_displayed()"
-      ]
-    },
-    "HeaderPage": {
-      "file_name": "header_page.py",
-      "locators": {
-        "cart_count": {"by": "XPATH", "value": "//span[@id='cart-count']"}
-      },
-      "actions": [],
-      "validations": [
-        "verify_cart_count(expected_count)"
+        "validate_product_in_cart(product_name)",
+        "validate_quantity(product_name, expected_quantity)",
+        "validate_subtotal(product_name, expected_subtotal)",
+        "validate_no_inventory_error()",
+        "validate_warning_message_displayed()"
       ]
     }
   }
