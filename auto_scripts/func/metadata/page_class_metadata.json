@@ -3,25 +3,25 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_c_row": {"by": "XPATH", "value": "//tr[.//text()='Laptop Stand']"},
-        "product_b_row": {"by": "XPATH", "value": "//tr[.//text()='Coffee Subscription']"},
-        "quantity_input": {"by": "CSS_SELECTOR", "value": ".cart-item-quantity-input"},
-        "subtotal_field": {"by": "CSS_SELECTOR", "value": ".cart-item-subtotal"},
-        "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}
+        "product_item": {"by": "XPATH", "value": "//div[@class='cart-item']"},
+        "delete_button": {"by": "XPATH", "value": "//button[text()='Delete']"},
+        "empty_cart_message": {"by": "XPATH", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "XPATH", "value": "//button[contains(text(),'Return to product catalog')]"},
+        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
+        "line_item_subtotal": {"by": "XPATH", "value": "//span[contains(@class,'line-item-subtotal')]"}
       },
       "actions": [
-        "ensure_product_in_cart(product_name, quantity)",
-        "update_product_quantity(product_name, quantity)",
-        "check_line_item_subtotal(product_name)",
-        "attempt_reduce_quantity(product_name, quantity)",
-        "get_quantity(product_name)"
+        "delete_product(product_name)",
+        "navigate_to_cart()",
+        "add_product(product_name, quantity)"
       ],
       "validations": [
-        "validate_product_in_cart(product_name)",
-        "validate_quantity(product_name, expected_quantity)",
-        "validate_subtotal(product_name, expected_subtotal)",
-        "validate_no_inventory_error()",
-        "validate_warning_message_displayed()"
+        "is_product_in_cart(product_name)",
+        "is_cart_empty()",
+        "is_empty_cart_message_displayed()",
+        "is_return_to_catalog_button_displayed()",
+        "is_cart_total(expected_total)",
+        "is_line_item_subtotal(product_name, expected_subtotal)"
       ]
     }
   }
