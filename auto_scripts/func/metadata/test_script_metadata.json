@@ -1,52 +1,59 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "TC_001": {
-      "test_name": "test_add_product_a_to_cart",
-      "feature": "ShoppingCart",
-      "target_file": "test_add_product_a_to_cart.py",
-      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
+    "1485": {
+      "test_name": "test_add_subscription_product_to_cart",
+      "feature": "Product Subscription Cart",
+      "target_file": "test_product_subscription_cart.py",
+      "pages_used": [
+        "LoginPage",
+        "ProductCatalogPage",
+        "CartPage"
+      ],
       "flow": [
-        {"page": "LoginPage", "action": "login", "data_ref": "user1"},
-        {"page": "ProductCatalogPage", "action": "add_product_a_to_cart", "data_ref": null},
-        {"page": "CartPage", "action": "open_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_cart_icon_updated", "data_ref": 1},
-        {"page": "CartPage", "assertion": "verify_product_a_subtotal", "data_ref": "$25.00"}
+        {"page": "LoginPage", "action": "enter_username", "data_ref": "user_credentials"},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": "user_credentials"},
+        {"page": "LoginPage", "action": "click_login", "data_ref": null},
+        {"page": "ProductCatalogPage", "action": "navigate_to_product_catalog", "data_ref": null},
+        {"page": "ProductCatalogPage", "action": "locate_product_d", "data_ref": null},
+        {"page": "ProductCatalogPage", "action": "click_add_to_cart_for_product_d", "data_ref": null},
+        {"page": "ProductCatalogPage", "assertion": "is_product_d_visible"},
+        {"page": "CartPage", "assertion": "is_product_d_in_cart"},
+        {"page": "CartPage", "assertion": "is_subscription_indicator_displayed_for_product_d"},
+        {"page": "CartPage", "assertion": "is_subtotal_correct_for_product_d", "data_ref": "expected_subtotals"}
       ],
       "test_data": {
-        "user1": {
-          "username": "customer_user",
-          "password": "customer_pass"
+        "user_credentials": {
+          "username": "customer1",
+          "password": "password123"
         },
-        "product_a": {
-          "name": "Wireless Mouse",
-          "price": 25.00,
-          "quantity": 1
+        "expected_subtotals": {
+          "product_d_subtotal": "$91.00"
         }
       }
     },
-    "TC_002": {
-      "test_name": "test_add_product_b_to_cart_with_threshold",
-      "feature": "ShoppingCart",
-      "target_file": "test_add_product_b_to_cart_with_threshold.py",
-      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
+    "1488": {
+      "test_name": "test_update_subscription_quantity_and_verify_totals",
+      "feature": "Product Subscription Cart",
+      "target_file": "test_product_subscription_cart.py",
+      "pages_used": [
+        "CartPage"
+      ],
       "flow": [
-        {"page": "LoginPage", "action": "login", "data_ref": "user1"},
-        {"page": "ProductCatalogPage", "action": "add_product_b_to_cart", "data_ref": null},
-        {"page": "CartPage", "action": "open_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_cart_icon_updated", "data_ref": 3},
-        {"page": "CartPage", "assertion": "verify_product_b_subtotal", "data_ref": "$47.97"}
+        {"page": "CartPage", "assertion": "is_product_d_in_cart"},
+        {"page": "CartPage", "action": "increase_quantity_for_product_d", "data_ref": "quantity_update"},
+        {"page": "CartPage", "assertion": "is_subtotal_correct_for_product_d", "data_ref": "expected_subtotals"},
+        {"page": "CartPage", "assertion": "is_cart_total_correct", "data_ref": "expected_totals"}
       ],
       "test_data": {
-        "user1": {
-          "username": "customer_user",
-          "password": "customer_pass"
+        "quantity_update": {
+          "quantity": 6
         },
-        "product_b": {
-          "name": "Coffee Subscription",
-          "price": 15.99,
-          "quantity": 3,
-          "min_threshold": 3
+        "expected_subtotals": {
+          "product_d_subtotal": "$273.00"
+        },
+        "expected_totals": {
+          "cart_total": "$273.00"
         }
       }
     }
@@ -54,12 +61,27 @@
   "framework": {
     "architecture": "python-ui-api-automation-framework",
     "type": "ui",
-    "base_classes_required": ["BasePage"],
-    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "base_classes_required": [
+      "BasePage"
+    ],
+    "core_dependencies": [
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py"
+    ],
     "api_dependencies": [],
-    "config_dependencies": ["config/config.yaml"],
+    "config_dependencies": [
+      "config/config.yaml"
+    ],
     "utils_dependencies": [],
-    "external_libraries": ["selenium", "pytest", "pyyaml"],
-    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+    "external_libraries": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ],
+    "required_imports": [
+      "pages.",
+      "core.driver_factory",
+      "pages.base_page"
+    ]
   }
 }
