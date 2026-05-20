@@ -3,24 +3,31 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_name": {"by": "XPATH", "value": "//td[@class='product-name']"},
-        "unit_price": {"by": "XPATH", "value": "//td[@class='unit-price']"},
-        "quantity_field": {"by": "XPATH", "value": "//input[@class='quantity-input']"},
-        "subtotal": {"by": "XPATH", "value": "//td[@class='subtotal']"},
-        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
-        "success_message": {"by": "XPATH", "value": "//div[contains(@class, 'success-message')]"},
-        "update_button": {"by": "XPATH", "value": "//button[@id='update-cart']"}
+        "cart_item_td_01": {"by": "PLACEHOLDER", "value": "//div[@data-sku='TD-01']"},
+        "cart_item_td_02": {"by": "PLACEHOLDER", "value": "//div[@data-sku='TD-02']"},
+        "quantity_field": {"by": "PLACEHOLDER", "value": "//input[@name='quantity']"},
+        "update_button": {"by": "PLACEHOLDER", "value": "//button[@id='update-cart']"},
+        "validation_error_message": {"by": "PLACEHOLDER", "value": "//div[@class='error-message']"},
+        "decrement_button": {"by": "PLACEHOLDER", "value": "//button[@aria-label='decrement']"},
+        "increment_button": {"by": "PLACEHOLDER", "value": "//button[@aria-label='increment']"},
+        "cart_totals": {"by": "PLACEHOLDER", "value": "//div[@id='cart-totals']"},
+        "line_item_subtotal": {"by": "PLACEHOLDER", "value": "//div[@class='line-item-subtotal']"},
+        "threshold_indicator": {"by": "PLACEHOLDER", "value": "//span[contains(@class,'min-threshold-indicator')]"}
       },
       "actions": [
-        "navigate_to_cart()",
-        "enter_quantity(product, quantity)",
-        "click_update_cart()"
+        "set_quantity(product_sku, quantity)",
+        "click_update_cart()",
+        "click_increment_button(product_sku)",
+        "click_decrement_button(product_sku)"
       ],
       "validations": [
-        "verify_products_in_cart(product_list)",
-        "verify_product_details(product)",
-        "verify_cart_total(expected_total)",
-        "verify_success_message(expected_message)"
+        "is_item_in_cart(product_sku, quantity)",
+        "is_error_message_displayed()",
+        "is_cart_totals_unchanged()",
+        "is_decrement_button_disabled(product_sku)",
+        "is_increment_button_enabled(product_sku)",
+        "is_line_item_subtotal_displayed(product_sku, subtotal)",
+        "is_threshold_indicator_displayed(product_sku, min_threshold)"
       ]
     }
   }
