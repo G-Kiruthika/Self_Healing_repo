@@ -3,23 +3,41 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_item_td_01": {"by": "css_selector", "value": "[data-product-id='TD-01']"},
-        "cart_item_td_02": {"by": "css_selector", "value": "[data-product-id='TD-02']"},
-        "increment_button": {"by": "css_selector", "value": ".cart-item-increment"},
-        "delete_button": {"by": "css_selector", "value": ".cart-item-delete"},
-        "confirmation_message": {"by": "css_selector", "value": ".cart-message"},
-        "subtotal": {"by": "css_selector", "value": ".cart-subtotal"},
-        "cart_total": {"by": "css_selector", "value": ".cart-total"}
+        "product_row": {"by": "xpath", "value": "//tr[contains(@class, 'cart-product-row')]"},
+        "delete_button": {"by": "xpath", "value": "//button[contains(@class, 'delete-cart-item')]"},
+        "empty_cart_message": {"by": "xpath", "value": "//div[contains(text(), 'Your cart is empty')]"},
+        "continue_shopping_button": {"by": "xpath", "value": "//button[contains(text(), 'Continue Shopping')]"},
+        "checkout_button": {"by": "xpath", "value": "//button[contains(@class, 'checkout-btn')]"},
+        "quantity_input": {"by": "xpath", "value": "//input[contains(@class, 'quantity-input')]"},
+        "inventory_error_message": {"by": "xpath", "value": "//span[contains(@class, 'inventory-error')]"},
+        "suggestion_message": {"by": "xpath", "value": "//span[contains(text(), 'Maximum available')]"}
       },
       "actions": [
-        "increment_product_quantity(product_id)",
-        "delete_product(product_id)"
+        "click_delete_button(product_id)",
+        "click_continue_shopping()",
+        "update_quantity(product_id, quantity)"
       ],
       "validations": [
-        "verify_cart_contains(product_id, quantity, subtotal)",
-        "verify_cart_total(expected_total)",
-        "verify_no_page_reload()",
-        "verify_confirmation_message(expected_message)"
+        "is_cart_empty()",
+        "is_product_in_cart(product_id)",
+        "is_empty_cart_message_displayed()",
+        "is_continue_shopping_button_displayed()",
+        "is_checkout_button_disabled_or_hidden()",
+        "is_inventory_error_displayed()",
+        "is_quantity_set_to(product_id, expected_quantity)",
+        "is_suggestion_message_displayed()"
+      ]
+    },
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "product_list": {"by": "xpath", "value": "//div[contains(@class, 'product-list')]"}
+      },
+      "actions": [
+        "navigate_to_catalog()"
+      ],
+      "validations": [
+        "is_product_catalog_displayed()"
       ]
     }
   }

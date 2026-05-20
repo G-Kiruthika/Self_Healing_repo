@@ -1,68 +1,40 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1501": {
-      "test_name": "test_increment_cart_item_quantity",
-      "feature": "Cart Functionality",
-      "target_file": "test_cart_page.py",
-      "pages_used": ["CartPage"],
+    "1503": {
+      "test_name": "test_cart_delete_and_empty_flow",
+      "feature": "Cart",
+      "target_file": "test_cart_delete_and_empty_flow.py",
+      "pages_used": ["CartPage", "ProductCatalogPage"],
       "flow": [
-        {"page": "CartPage", "action": "verify_cart_contains", "data_ref": "cart_item_1"},
-        {"page": "CartPage", "action": "increment_product_quantity", "data_ref": "cart_item_1"},
-        {"page": "CartPage", "assertion": "verify_cart_contains", "data_ref": "cart_item_2"},
-        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": "cart_total_2"},
-        {"page": "CartPage", "assertion": "verify_no_page_reload", "data_ref": null}
+        {"page": "CartPage", "action": "is_product_in_cart", "data_ref": {"product_id": "TD-01"}},
+        {"page": "CartPage", "action": "click_delete_button", "data_ref": {"product_id": "TD-01"}},
+        {"page": "CartPage", "assertion": "is_cart_empty"},
+        {"page": "CartPage", "assertion": "is_empty_cart_message_displayed"},
+        {"page": "CartPage", "assertion": "is_continue_shopping_button_displayed"},
+        {"page": "CartPage", "action": "click_continue_shopping"},
+        {"page": "ProductCatalogPage", "assertion": "is_product_catalog_displayed"},
+        {"page": "CartPage", "assertion": "is_checkout_button_disabled_or_hidden"}
       ],
       "test_data": {
-        "cart_item_1": {
-          "product_id": "TD-01",
-          "quantity": 1,
-          "subtotal": 12.99
-        },
-        "cart_item_2": {
-          "product_id": "TD-01",
-          "quantity": 2,
-          "subtotal": 25.98
-        },
-        "cart_total_2": {
-          "expected_total": 25.98
-        }
+        "cart_setup": {"product_id": "TD-01"}
       }
     },
-    "1502": {
-      "test_name": "test_delete_cart_item_and_verify_total",
-      "feature": "Cart Functionality",
-      "target_file": "test_cart_page.py",
+    "1504": {
+      "test_name": "test_cart_quantity_inventory_validation",
+      "feature": "Cart",
+      "target_file": "test_cart_quantity_inventory_validation.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "verify_cart_contains", "data_ref": "cart_item_td01_and_td02"},
-        {"page": "CartPage", "action": "delete_product", "data_ref": "delete_td01"},
-        {"page": "CartPage", "assertion": "verify_cart_contains", "data_ref": "cart_item_td02_only"},
-        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": "cart_total_td02"},
-        {"page": "CartPage", "assertion": "verify_confirmation_message", "data_ref": "confirmation_message"}
+        {"page": "CartPage", "action": "is_product_in_cart", "data_ref": {"product_id": "TD-03", "quantity": 2, "stock": 3}},
+        {"page": "CartPage", "action": "update_quantity", "data_ref": {"product_id": "TD-03", "quantity": 5}},
+        {"page": "CartPage", "assertion": "is_inventory_error_displayed"},
+        {"page": "CartPage", "assertion": "is_quantity_set_to", "data_ref": {"product_id": "TD-03", "expected_quantity": 2}},
+        {"page": "CartPage", "assertion": "is_suggestion_message_displayed"}
       ],
       "test_data": {
-        "cart_item_td01_and_td02": {
-          "products": [
-            {"product_id": "TD-01", "quantity": 2, "subtotal": 25.98},
-            {"product_id": "TD-02", "quantity": 5, "subtotal": 124.95}
-          ],
-          "expected_total": 150.93
-        },
-        "delete_td01": {
-          "product_id": "TD-01"
-        },
-        "cart_item_td02_only": {
-          "products": [
-            {"product_id": "TD-02", "quantity": 5, "subtotal": 124.95}
-          ]
-        },
-        "cart_total_td02": {
-          "expected_total": 124.95
-        },
-        "confirmation_message": {
-          "expected_message": "Item removed from cart"
-        }
+        "cart_setup": {"product_id": "TD-03", "quantity": 2, "stock": 3},
+        "invalid_update": {"quantity": 5}
       }
     }
   },
