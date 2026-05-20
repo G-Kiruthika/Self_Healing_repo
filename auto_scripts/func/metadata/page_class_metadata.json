@@ -1,40 +1,28 @@
 {
   "pages": {
-    "ProductPage": {
-      "file_name": "product_page.py",
+    "ShoppingCartPage": {
+      "file_name": "shopping_cart_page.py",
       "locators": {
-        "out_of_stock_indicator": {"by": "XPATH", "value": "//span[contains(text(),'Out of Stock')]"},
-        "add_to_cart_button": {"by": "ID", "value": "add-to-cart-btn"},
-        "error_message": {"by": "XPATH", "value": "//div[contains(@class,'error-message')]"}
+        "product_row": {"by": "XPATH", "value": "//div[@class='cart-item-row']"},
+        "product_name": {"by": "XPATH", "value": ".//span[@class='item-name']"},
+        "unit_price": {"by": "XPATH", "value": ".//span[@class='unit-price']"},
+        "quantity_field": {"by": "XPATH", "value": ".//input[@class='quantity-input']"},
+        "subtotal": {"by": "XPATH", "value": ".//span[@class='subtotal']"},
+        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
+        "success_message": {"by": "XPATH", "value": "//div[@class='message-success']"},
+        "update_quantity_button": {"by": "XPATH", "value": ".//button[@class='update-qty']"}
       },
       "actions": [
-        "view_product(product_code)",
-        "click_add_to_cart()"
+        "navigate_to_cart_page()",
+        "update_quantity(product_id, quantity)",
+        "get_product_details(product_id)",
+        "get_cart_total()"
       ],
       "validations": [
-        "is_out_of_stock_displayed()",
-        "is_add_to_cart_disabled()",
-        "is_error_message_displayed(expected_message)",
-        "is_cart_unchanged()"
-      ]
-    },
-    "CartPage": {
-      "file_name": "cart_page.py",
-      "locators": {
-        "cart_product_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'{product_code}')]]"},
-        "decrement_button": {"by": "XPATH", "value": "//button[contains(@class,'decrement')]"},
-        "validation_error_message": {"by": "XPATH", "value": "//div[contains(@class,'validation-error')]"},
-        "quantity_input": {"by": "XPATH", "value": "//input[contains(@class,'quantity-input')]"}
-      },
-      "actions": [
-        "view_cart()",
-        "click_decrement(product_code)"
-      ],
-      "validations": [
-        "is_cart_product_displayed(product_code, quantity, threshold)",
-        "is_validation_error_displayed(expected_message)",
-        "is_quantity_unchanged(product_code, expected_quantity)",
-        "is_decrement_disabled(product_code)"
+        "verify_product_in_cart(product_id, expected_qty)",
+        "verify_product_fields(product_id)",
+        "verify_cart_total(expected_total)",
+        "verify_success_message(expected_message)"
       ]
     }
   }
