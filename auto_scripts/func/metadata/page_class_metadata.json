@@ -3,27 +3,30 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_name": {"by": "XPATH", "value": "//div[@class='cart-item']//span[@class='product-name']"},
-        "unit_price": {"by": "XPATH", "value": "//div[@class='cart-item']//span[@class='unit-price']"},
-        "quantity_field": {"by": "XPATH", "value": "//input[@class='quantity-input']"},
-        "subtotal": {"by": "XPATH", "value": "//div[@class='cart-item']//span[@class='subtotal']"},
-        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
-        "update_quantity_button": {"by": "XPATH", "value": "//button[@id='update-quantity']"},
-        "success_message": {"by": "XPATH", "value": "//div[@class='alert-success']"}
+        "product_row": {"by": "xpath", "value": "//tr[@data-product-id]"},
+        "quantity_field": {"by": "id", "value": "quantity_input"},
+        "update_button": {"by": "id", "value": "update_button"},
+        "validation_message": {"by": "css selector", "value": ".validation-error"},
+        "cart_totals": {"by": "id", "value": "cart_totals"},
+        "decrement_button": {"by": "css selector", "value": ".decrement-btn"},
+        "increment_button": {"by": "css selector", "value": ".increment-btn"},
+        "threshold_indicator": {"by": "css selector", "value": ".threshold-indicator"},
+        "subtotal": {"by": "css selector", "value": ".line-subtotal"}
       },
       "actions": [
-        "navigate_to_cart()",
-        "enter_quantity(quantity)",
-        "update_quantity()"
+        "enter_quantity(product_id, quantity)",
+        "click_update(product_id)",
+        "get_cart_totals()",
+        "get_quantity(product_id)",
+        "is_decrement_disabled(product_id)",
+        "is_increment_enabled(product_id)"
       ],
       "validations": [
-        "is_cart_loaded()",
-        "verify_product_in_cart(product_name)",
-        "verify_unit_price(product_name, price)",
-        "verify_quantity(product_name, quantity)",
-        "verify_subtotal(product_name, subtotal)",
-        "verify_cart_total(total)",
-        "verify_success_message(message)"
+        "validate_quantity(product_id, expected_quantity)",
+        "validate_validation_message(expected_message)",
+        "validate_cart_totals(expected_totals)",
+        "validate_threshold_indicator(product_id, expected_threshold)",
+        "validate_subtotal(product_id, expected_subtotal)"
       ]
     }
   }
