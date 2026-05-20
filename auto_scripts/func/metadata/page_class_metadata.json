@@ -8,9 +8,7 @@
         "login_button": {"by": "ID", "value": "loginBtn"}
       },
       "actions": [
-        "enter_username(username)",
-        "enter_password(password)",
-        "click_login()"
+        "login(username, password)"
       ],
       "validations": [
         "is_logged_in()"
@@ -19,33 +17,37 @@
     "ProductCatalogPage": {
       "file_name": "product_catalog_page.py",
       "locators": {
-        "product_tile": {"by": "XPATH", "value": "//div[contains(@class,'product-tile')]"},
-        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(text(),'Add to Cart')]"},
-        "product_name": {"by": "XPATH", "value": "//div[@class='product-name']"},
-        "minimum_threshold": {"by": "XPATH", "value": "//span[@class='min-threshold']"}
+        "product_d_card": {"by": "XPATH", "value": "//div[@data-product-name='Vitamin Pack']"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//div[@data-product-name='Vitamin Pack']//button[contains(text(),'Add to Cart')]"}
       },
       "actions": [
-        "locate_product(product_name)",
-        "click_add_to_cart(product_name)"
+        "navigate_to()",
+        "add_product_to_cart(product_name, quantity)"
       ],
       "validations": [
         "is_product_visible(product_name)",
-        "is_threshold_visible(product_name)"
+        "is_subscription_indicator_visible(product_name)"
       ]
     },
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_icon": {"by": "ID", "value": "cartIcon"},
-        "cart_item_count": {"by": "ID", "value": "cartItemCount"},
-        "subtotal": {"by": "XPATH", "value": "//span[@class='subtotal']"}
+        "cart_item_row": {"by": "XPATH", "value": "//tr[@data-product-name='Vitamin Pack']"},
+        "subscription_indicator": {"by": "XPATH", "value": "//tr[@data-product-name='Vitamin Pack']//span[contains(@class,'subscription')]"},
+        "quantity_input": {"by": "XPATH", "value": "//tr[@data-product-name='Vitamin Pack']//input[@type='number']"},
+        "line_item_subtotal": {"by": "XPATH", "value": "//tr[@data-product-name='Vitamin Pack']//td[@class='subtotal']"},
+        "cart_total": {"by": "ID", "value": "cartTotal"}
       },
       "actions": [
-        "open_cart()"
+        "increase_quantity(product_name, amount)",
+        "get_line_item_subtotal(product_name)",
+        "get_cart_total()"
       ],
       "validations": [
-        "is_cart_count(count)",
-        "is_subtotal_correct(product_name, expected_subtotal)"
+        "is_product_in_cart(product_name)",
+        "is_subscription_indicator_displayed(product_name)",
+        "verify_subtotal(product_name, expected_subtotal)",
+        "verify_cart_total(expected_total)"
       ]
     }
   }

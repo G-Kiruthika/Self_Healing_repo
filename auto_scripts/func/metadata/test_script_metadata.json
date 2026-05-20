@@ -1,49 +1,64 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "TC_001": {
-      "test_name": "test_add_product_a_to_cart",
-      "feature": "ProductCatalog",
-      "target_file": "test_product_catalog.py",
-      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
+    "1485": {
+      "test_name": "test_add_subscription_product_to_cart",
+      "feature": "Product Catalog and Cart",
+      "target_file": "test_product_cart_subscription.py",
+      "pages_used": [
+        "LoginPage",
+        "ProductCatalogPage",
+        "CartPage"
+      ],
       "flow": [
-        {"page": "LoginPage", "action": "enter_username", "data_ref": "user1"},
-        {"page": "LoginPage", "action": "enter_password", "data_ref": "user1"},
-        {"page": "LoginPage", "action": "click_login", "data_ref": null},
-        {"page": "LoginPage", "assertion": "is_logged_in"},
-        {"page": "ProductCatalogPage", "action": "locate_product", "data_ref": "product_a"},
+        {"page": "LoginPage", "action": "login", "data_ref": "customer_credentials"},
+        {"page": "ProductCatalogPage", "action": "navigate_to", "data_ref": null},
+        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_d_min_subscription"},
         {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
-        {"page": "ProductCatalogPage", "action": "click_add_to_cart", "data_ref": "product_a"},
-        {"page": "CartPage", "action": "open_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_cart_count"},
-        {"page": "CartPage", "assertion": "is_subtotal_correct"}
+        {"page": "CartPage", "assertion": "is_product_in_cart"},
+        {"page": "CartPage", "assertion": "is_subscription_indicator_displayed"},
+        {"page": "CartPage", "assertion": "verify_subtotal"}
       ],
       "test_data": {
-        "user1": {"username": "customer", "password": "customerPass"},
-        "product_a": {"name": "Wireless Mouse", "expected_subtotal": "$25.00", "expected_count": 1}
+        "customer_credentials": {
+          "username": "customer_user",
+          "password": "customer_pass"
+        },
+        "product_d_min_subscription": {
+          "product_name": "Vitamin Pack",
+          "quantity": 2
+        },
+        "expected_subtotal": {
+          "product_name": "Vitamin Pack",
+          "expected_subtotal": "$91.00"
+        }
       }
     },
-    "TC_002": {
-      "test_name": "test_add_product_b_with_minimum_threshold",
-      "feature": "ProductCatalog",
-      "target_file": "test_product_catalog.py",
-      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
+    "1488": {
+      "test_name": "test_update_subscription_product_quantity",
+      "feature": "Cart Quantity Update",
+      "target_file": "test_product_cart_subscription.py",
+      "pages_used": [
+        "CartPage"
+      ],
       "flow": [
-        {"page": "LoginPage", "action": "enter_username", "data_ref": "user1"},
-        {"page": "LoginPage", "action": "enter_password", "data_ref": "user1"},
-        {"page": "LoginPage", "action": "click_login", "data_ref": null},
-        {"page": "LoginPage", "assertion": "is_logged_in"},
-        {"page": "ProductCatalogPage", "action": "locate_product", "data_ref": "product_b"},
-        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
-        {"page": "ProductCatalogPage", "assertion": "is_threshold_visible"},
-        {"page": "ProductCatalogPage", "action": "click_add_to_cart", "data_ref": "product_b"},
-        {"page": "CartPage", "action": "open_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_cart_count"},
-        {"page": "CartPage", "assertion": "is_subtotal_correct"}
+        {"page": "CartPage", "assertion": "is_product_in_cart"},
+        {"page": "CartPage", "action": "increase_quantity", "data_ref": "update_quantity_to_6"},
+        {"page": "CartPage", "assertion": "verify_subtotal"},
+        {"page": "CartPage", "assertion": "verify_cart_total"}
       ],
       "test_data": {
-        "user1": {"username": "customer", "password": "customerPass"},
-        "product_b": {"name": "Coffee Subscription", "minimum_threshold": 3, "expected_subtotal": "$47.97", "expected_count": 3}
+        "update_quantity_to_6": {
+          "product_name": "Vitamin Pack",
+          "quantity": 6
+        },
+        "expected_subtotal": {
+          "product_name": "Vitamin Pack",
+          "expected_subtotal": "$273.00"
+        },
+        "expected_cart_total": {
+          "expected_total": "$273.00"
+        }
       }
     }
   },
