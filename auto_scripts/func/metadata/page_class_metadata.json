@@ -1,63 +1,59 @@
 {
   "pages": {
-    "CartPage": {
-      "file_name": "cart_page.py",
-      "locators": {
-        "product_item": {"by": "PLACEHOLDER", "value": "product_item_locator"},
-        "cart_quantity_input": {"by": "PLACEHOLDER", "value": "cart_quantity_input_locator"},
-        "cart_totals": {"by": "PLACEHOLDER", "value": "cart_totals_locator"},
-        "empty_cart_message": {"by": "PLACEHOLDER", "value": "empty_cart_message_locator"}
-      },
-      "actions": [
-        "ensure_product_in_cart(product_name, quantity)",
-        "change_product_quantity(product_name, quantity)",
-        "check_cart_totals()"
-      ],
-      "validations": [
-        "validate_product_present(product_name)",
-        "validate_product_removed(product_name)",
-        "validate_cart_totals()",
-        "validate_empty_cart_message()"
-      ]
-    },
     "LoginPage": {
       "file_name": "login_page.py",
       "locators": {
-        "username_input": {"by": "PLACEHOLDER", "value": "username_input_locator"},
-        "password_input": {"by": "PLACEHOLDER", "value": "password_input_locator"},
-        "login_button": {"by": "PLACEHOLDER", "value": "login_button_locator"}
+        "username_input": {"by": "ID", "value": "username"},
+        "password_input": {"by": "ID", "value": "password"},
+        "login_button": {"by": "ID", "value": "loginBtn"},
+        "subscription_badge": {"by": "XPATH", "value": "//span[contains(@class, 'subscription-badge')]"}
       },
       "actions": [
-        "login(username, password)"
+        "login(username, password)",
+        "login_as_premium(username, password)"
       ],
       "validations": [
-        "validate_login_success()"
+        "verify_logged_in()",
+        "verify_premium_subscription()"
       ]
     },
     "ProductCatalogPage": {
       "file_name": "product_catalog_page.py",
       "locators": {
-        "product_list": {"by": "PLACEHOLDER", "value": "product_list_locator"},
-        "add_to_cart_button": {"by": "PLACEHOLDER", "value": "add_to_cart_button_locator"}
+        "product_card": {"by": "XPATH", "value": "//div[contains(@class, 'product-card') and .//span[contains(text(), '{product_name}')]]"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(@class, 'add-to-cart')]"},
+        "subscription_option": {"by": "ID", "value": "subscriptionOption"},
+        "min_threshold_indicator": {"by": "XPATH", "value": "//span[contains(@class, 'min-threshold')]"}
       },
       "actions": [
-        "browse_products()",
-        "locate_product(product_name)",
-        "add_product_to_cart(product_name)"
+        "browse_product(product_name)",
+        "add_to_cart(product_code)",
+        "select_subscription_option(product_code)"
       ],
       "validations": [
-        "validate_product_visible(product_name)",
-        "validate_product_in_stock(product_name, quantity)"
+        "verify_product_visible(product_code)",
+        "verify_minimum_threshold(product_code)"
       ]
     },
-    "ConfirmationPage": {
-      "file_name": "confirmation_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "confirmation_message": {"by": "PLACEHOLDER", "value": "confirmation_message_locator"}
+        "cart_product_name": {"by": "XPATH", "value": "//td[contains(@class, 'cart-product-name')]"},
+        "cart_unit_price": {"by": "XPATH", "value": "//td[contains(@class, 'cart-unit-price')]"},
+        "cart_quantity": {"by": "XPATH", "value": "//input[contains(@class, 'cart-quantity')]"},
+        "cart_subtotal": {"by": "XPATH", "value": "//td[contains(@class, 'cart-subtotal')]"},
+        "min_threshold_indicator": {"by": "XPATH", "value": "//span[contains(@class, 'min-threshold')]"},
+        "subscription_badge": {"by": "XPATH", "value": "//span[contains(@class, 'subscription-badge')]"},
+        "delivery_frequency": {"by": "ID", "value": "deliveryFrequency"}
       },
-      "actions": [],
+      "actions": [
+        "view_cart()"
+      ],
       "validations": [
-        "validate_confirmation_message(expected_message)"
+        "verify_cart_details(product_code)",
+        "verify_minimum_threshold_in_cart(product_code)",
+        "verify_subscription_badge(product_code)",
+        "verify_delivery_frequency(product_code)"
       ]
     }
   }
