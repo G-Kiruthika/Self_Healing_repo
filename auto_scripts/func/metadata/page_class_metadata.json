@@ -1,39 +1,26 @@
 {
   "pages": {
-    "ProductPage": {
-      "file_name": "product_page.py",
-      "locators": {
-        "out_of_stock_indicator": {"by": "xpath", "value": "//span[contains(text(), 'Out of Stock')]"},
-        "add_to_cart_button": {"by": "id", "value": "add-to-cart-btn"},
-        "error_message": {"by": "css selector", "value": ".error-message"}
-      },
-      "actions": [
-        "view_product(product_id)",
-        "click_add_to_cart()"
-      ],
-      "validations": [
-        "is_out_of_stock_displayed()",
-        "is_add_to_cart_disabled()",
-        "is_error_message_displayed()"
-      ]
-    },
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_item": {"by": "xpath", "value": "//div[@class='cart-item' and @data-product='TD-02']"},
-        "quantity_field": {"by": "css selector", "value": ".quantity-input"},
-        "decrement_button": {"by": "id", "value": "decrement-btn"},
-        "validation_error_message": {"by": "css selector", "value": ".validation-error"}
+        "product_name": {"by": "XPATH", "value": "//td[@class='product-name']"},
+        "unit_price": {"by": "XPATH", "value": "//td[@class='unit-price']"},
+        "quantity_field": {"by": "XPATH", "value": "//input[@class='quantity-input']"},
+        "subtotal": {"by": "XPATH", "value": "//td[@class='subtotal']"},
+        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
+        "success_message": {"by": "XPATH", "value": "//div[contains(@class, 'success-message')]"},
+        "update_button": {"by": "XPATH", "value": "//button[@id='update-cart']"}
       },
       "actions": [
-        "set_cart_product_quantity(product_id, quantity)",
-        "click_decrement_button(product_id)"
+        "navigate_to_cart()",
+        "enter_quantity(product, quantity)",
+        "click_update_cart()"
       ],
       "validations": [
-        "is_cart_item_present(product_id)",
-        "is_quantity_displayed(product_id, quantity)",
-        "is_decrement_disabled(product_id)",
-        "is_validation_error_displayed()"
+        "verify_products_in_cart(product_list)",
+        "verify_product_details(product)",
+        "verify_cart_total(expected_total)",
+        "verify_success_message(expected_message)"
       ]
     }
   }
