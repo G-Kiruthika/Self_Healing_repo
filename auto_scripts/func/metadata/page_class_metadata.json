@@ -1,67 +1,25 @@
 {
   "pages": {
-    "LoginPage": {
-      "file_name": "login_page.py",
-      "locators": {
-        "username_input": {"by": "ID", "value": "username"},
-        "password_input": {"by": "ID", "value": "password"},
-        "login_button": {"by": "ID", "value": "login-btn"},
-        "subscription_badge": {"by": "XPATH", "value": "//span[@class='subscription-badge']"}
-      },
-      "actions": [
-        "login_as_user(username, password)",
-        "login_as_premium_user(username, password)"
-      ],
-      "validations": [
-        "verify_user_logged_in()",
-        "verify_premium_subscription()"
-      ]
-    },
-    "ProductCatalogPage": {
-      "file_name": "product_catalog_page.py",
-      "locators": {
-        "product_search_box": {"by": "ID", "value": "search-box"},
-        "product_list": {"by": "XPATH", "value": "//div[@class='product-list']"},
-        "premium_coffee_beans": {"by": "XPATH", "value": "//div[text()='Premium Coffee Beans - 1kg']"},
-        "organic_green_tea": {"by": "XPATH", "value": "//div[text()='Organic Green Tea - 100g']"},
-        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(@class,'add-to-cart')]"},
-        "subscription_option": {"by": "XPATH", "value": "//input[@type='checkbox' and @name='subscription']"},
-        "min_threshold_indicator": {"by": "XPATH", "value": "//span[contains(@class,'min-threshold')]"}
-      },
-      "actions": [
-        "search_product(product_name)",
-        "locate_product(product_code)",
-        "select_subscription_option()",
-        "add_to_cart(product_code, quantity)"
-      ],
-      "validations": [
-        "verify_product_visible(product_code)",
-        "verify_min_threshold_indicator(product_code)"
-      ]
-    },
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_product_name": {"by": "XPATH", "value": "//td[@class='cart-product-name']"},
-        "cart_unit_price": {"by": "XPATH", "value": "//td[@class='cart-unit-price']"},
-        "cart_quantity": {"by": "XPATH", "value": "//input[@class='cart-quantity']"},
-        "cart_subtotal": {"by": "XPATH", "value": "//td[@class='cart-subtotal']"},
-        "min_threshold_indicator": {"by": "XPATH", "value": "//span[contains(@class,'min-threshold')]"},
-        "subscription_badge": {"by": "XPATH", "value": "//span[@class='subscription-badge']"},
-        "subscription_pricing": {"by": "XPATH", "value": "//span[@class='subscription-price']"},
-        "delivery_frequency_option": {"by": "XPATH", "value": "//select[@name='delivery-frequency']"}
+        "product_line_item": {"by": "PLACEHOLDER", "value": "//div[@data-product-id='{product_id}']"},
+        "quantity_input": {"by": "PLACEHOLDER", "value": "//input[@data-product-id='{product_id}']"},
+        "increment_button": {"by": "PLACEHOLDER", "value": "//button[@data-action='increment'][@data-product-id='{product_id}']"},
+        "delete_button": {"by": "PLACEHOLDER", "value": "//button[@data-action='delete'][@data-product-id='{product_id}']"},
+        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
+        "confirmation_message": {"by": "PLACEHOLDER", "value": "//div[@class='cart-message']"}
       },
       "actions": [
-        "view_cart()",
-        "update_quantity(product_code, quantity)"
+        "set_product_quantity(product_id, quantity)",
+        "click_increment(product_id)",
+        "click_delete(product_id)"
       ],
       "validations": [
-        "verify_cart_empty()",
-        "verify_product_in_cart(product_code, quantity)",
-        "verify_cart_details(product_code)",
-        "verify_min_threshold_indicator(product_code)",
-        "verify_subscription_pricing(product_code)",
-        "verify_delivery_frequency_option(product_code)"
+        "validate_cart_contains(product_id, quantity, subtotal)",
+        "validate_cart_total(total)",
+        "validate_no_page_reload()",
+        "validate_confirmation_message(message)"
       ]
     }
   }

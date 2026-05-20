@@ -1,102 +1,55 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1499": {
-      "test_name": "test_add_premium_coffee_beans_to_cart_min_threshold",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
-      "pages_used": [
-        "LoginPage",
-        "ProductCatalogPage",
-        "CartPage"
-      ],
+    "1501": {
+      "test_name": "test_increment_quantity_updates_cart",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "LoginPage", "action": "login_as_user", "data_ref": "user_john_doe"},
-        {"page": "CartPage", "assertion": "verify_cart_empty"},
-        {"page": "ProductCatalogPage", "action": "locate_product", "data_ref": "product_td_02"},
-        {"page": "ProductCatalogPage", "assertion": "verify_min_threshold_indicator"},
-        {"page": "ProductCatalogPage", "action": "add_to_cart", "data_ref": "product_td_02_min5"},
-        {"page": "CartPage", "assertion": "verify_product_in_cart"},
-        {"page": "CartPage", "assertion": "verify_cart_details"},
-        {"page": "CartPage", "assertion": "verify_min_threshold_indicator"}
+        {"page": "CartPage", "action": "validate_cart_contains", "data_ref": "TD-01-1"},
+        {"page": "CartPage", "action": "click_increment", "data_ref": "TD-01"},
+        {"page": "CartPage", "action": "validate_cart_contains", "data_ref": "TD-01-2"},
+        {"page": "CartPage", "action": "validate_cart_total", "data_ref": "cart_total_25.98"},
+        {"page": "CartPage", "action": "validate_no_page_reload", "data_ref": null}
       ],
       "test_data": {
-        "user_john_doe": {
-          "username": "John Doe",
-          "password": "<password>"
-        },
-        "product_td_02": {
-          "product_code": "TD-02",
-          "product_name": "Premium Coffee Beans - 1kg"
-        },
-        "product_td_02_min5": {
-          "product_code": "TD-02",
-          "quantity": 5,
-          "min_threshold": 5
-        }
+        "TD-01-1": {"product_id": "TD-01", "quantity": 1, "subtotal": 12.99},
+        "TD-01-2": {"product_id": "TD-01", "quantity": 2, "subtotal": 25.98},
+        "cart_total_25.98": {"total": 25.98}
       }
     },
-    "1500": {
-      "test_name": "test_add_subscription_green_tea_to_cart",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
-      "pages_used": [
-        "LoginPage",
-        "ProductCatalogPage",
-        "CartPage"
-      ],
+    "1502": {
+      "test_name": "test_delete_product_and_recalculate_cart",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "LoginPage", "action": "login_as_premium_user", "data_ref": "user_john_doe_premium"},
-        {"page": "LoginPage", "assertion": "verify_premium_subscription"},
-        {"page": "ProductCatalogPage", "action": "locate_product", "data_ref": "product_td_01"},
-        {"page": "ProductCatalogPage", "assertion": "verify_product_visible"},
-        {"page": "ProductCatalogPage", "action": "select_subscription_option", "data_ref": null},
-        {"page": "ProductCatalogPage", "action": "add_to_cart", "data_ref": "product_td_01_subscription"},
-        {"page": "CartPage", "assertion": "verify_product_in_cart"},
-        {"page": "CartPage", "assertion": "verify_subscription_pricing"},
-        {"page": "CartPage", "assertion": "verify_delivery_frequency_option"}
+        {"page": "CartPage", "action": "validate_cart_contains", "data_ref": "TD-01-2_and_TD-02-5"},
+        {"page": "CartPage", "action": "validate_cart_total", "data_ref": "cart_total_150.93"},
+        {"page": "CartPage", "action": "click_delete", "data_ref": "TD-01"},
+        {"page": "CartPage", "action": "validate_cart_contains", "data_ref": "TD-02-5_only"},
+        {"page": "CartPage", "action": "validate_cart_total", "data_ref": "cart_total_124.95"},
+        {"page": "CartPage", "action": "validate_confirmation_message", "data_ref": "item_removed"}
       ],
       "test_data": {
-        "user_john_doe_premium": {
-          "username": "John Doe",
-          "password": "<password>",
-          "subscription": "Premium"
-        },
-        "product_td_01": {
-          "product_code": "TD-01",
-          "product_name": "Organic Green Tea - 100g"
-        },
-        "product_td_01_subscription": {
-          "product_code": "TD-01",
-          "subscription": true
-        }
+        "TD-01-2_and_TD-02-5": {"products": [{"product_id": "TD-01", "quantity": 2, "subtotal": 25.98}, {"product_id": "TD-02", "quantity": 5, "subtotal": 124.95}]},
+        "cart_total_150.93": {"total": 150.93},
+        "TD-02-5_only": {"products": [{"product_id": "TD-02", "quantity": 5, "subtotal": 124.95}]},
+        "cart_total_124.95": {"total": 124.95},
+        "item_removed": {"message": "Item removed from cart"}
       }
     }
   },
   "framework": {
     "architecture": "python-ui-api-automation-framework",
     "type": "ui",
-    "base_classes_required": [
-      "BasePage"
-    ],
-    "core_dependencies": [
-      "core/driver_factory.py",
-      "core/selenium_wrapper.py"
-    ],
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
     "api_dependencies": [],
-    "config_dependencies": [
-      "config/config.yaml"
-    ],
+    "config_dependencies": ["config/config.yaml"],
     "utils_dependencies": [],
-    "external_libraries": [
-      "selenium",
-      "pytest",
-      "pyyaml"
-    ],
-    "required_imports": [
-      "pages.",
-      "core.driver_factory",
-      "pages.base_page"
-    ]
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
   }
 }
