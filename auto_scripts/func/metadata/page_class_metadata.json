@@ -3,39 +3,26 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_c_row": {"by": "PLACEHOLDER", "value": "//row[contains(text(), 'Laptop Stand')]"},
-        "product_c_qty_input": {"by": "PLACEHOLDER", "value": "//input[@name='quantity']"},
-        "update_qty_button": {"by": "PLACEHOLDER", "value": "//button[contains(text(), 'Update')]"},
-        "cart_total": {"by": "PLACEHOLDER", "value": "//div[@id='cart-total']"},
-        "inventory_error_message": {"by": "PLACEHOLDER", "value": "//div[@class='error-message']"}
+        "product_c_row": {"by": "XPATH", "value": "//tr[.//td[contains(text(),'Laptop Stand')]]"},
+        "product_b_row": {"by": "XPATH", "value": "//tr[.//td[contains(text(),'Coffee Subscription')]]"},
+        "quantity_input": {"by": "XPATH", "value": "//input[@name='quantity']"},
+        "line_item_subtotal": {"by": "XPATH", "value": "//td[@class='subtotal']"},
+        "inventory_error": {"by": "XPATH", "value": "//div[contains(@class,'error-message')]"},
+        "warning_message": {"by": "XPATH", "value": "//div[contains(@class,'warning-message')]"}
       },
       "actions": [
         "ensure_product_in_cart(product_name, quantity)",
         "update_product_quantity(product_name, quantity)",
-        "check_cart_totals()"
+        "get_line_item_subtotal(product_name)",
+        "check_for_inventory_error()",
+        "check_for_warning_message()"
       ],
       "validations": [
-        "validate_product_in_cart(product_name, quantity, stock)",
-        "validate_inventory_error_displayed()",
-        "validate_cart_totals(expected_total)"
-      ]
-    },
-    "ProductCatalogPage": {
-      "file_name": "product_catalog_page.py",
-      "locators": {
-        "product_e_row": {"by": "PLACEHOLDER", "value": "//row[contains(text(), 'USB Cable')]"},
-        "add_to_cart_button": {"by": "PLACEHOLDER", "value": "//button[contains(text(), 'Add to cart')]"},
-        "stock_info": {"by": "PLACEHOLDER", "value": "//span[@class='stock-info']"}
-      },
-      "actions": [
-        "navigate_to_product_catalog()",
-        "locate_product(product_name)",
-        "attempt_add_to_cart(product_name)"
-      ],
-      "validations": [
-        "validate_product_visible(product_name)",
-        "validate_stock_info(product_name, stock)",
-        "validate_inventory_error_displayed()"
+        "validate_product_present(product_name)",
+        "validate_quantity(product_name, expected_quantity)",
+        "validate_line_item_subtotal(product_name, expected_subtotal)",
+        "validate_no_inventory_error()",
+        "validate_warning_message(expected_message)"
       ]
     }
   }
