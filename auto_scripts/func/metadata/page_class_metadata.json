@@ -1,53 +1,49 @@
 {
   "pages": {
-    "LoginPage": {
-      "file_name": "login_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "username_field": {"by": "ID", "value": "username"},
-        "password_field": {"by": "ID", "value": "password"},
-        "login_button": {"by": "ID", "value": "loginBtn"}
+        "product_c_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'Laptop Stand')]]"},
+        "quantity_input": {"by": "XPATH", "value": "//input[@name='quantity']"},
+        "update_button": {"by": "XPATH", "value": "//button[contains(text(),'Update')]"},
+        "cart_total": {"by": "XPATH", "value": "//div[@id='cart-total']"},
+        "inventory_error": {"by": "XPATH", "value": "//div[contains(@class,'error') and contains(text(),'inventory')]"}
       },
       "actions": [
-        "login(username, password)"
+        "set_quantity(product_name, quantity)",
+        "click_update(product_name)"
       ],
       "validations": [
-        "is_logged_in()"
+        "verify_product_in_cart(product_name, quantity)",
+        "verify_inventory_error_displayed()",
+        "verify_cart_total(expected_total)"
       ]
     },
     "ProductCatalogPage": {
       "file_name": "product_catalog_page.py",
       "locators": {
-        "product_d_card": {"by": "XPATH", "value": "//div[@data-product-name='Vitamin Pack']"},
-        "add_to_cart_button": {"by": "XPATH", "value": "//div[@data-product-name='Vitamin Pack']//button[contains(text(),'Add to Cart')]"}
+        "product_e_row": {"by": "XPATH", "value": "//tr[td[contains(text(),'USB Cable')]]"},
+        "stock_info": {"by": "XPATH", "value": "//td[contains(@class,'stock-info')]"},
+        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(text(),'Add to Cart')]"},
+        "inventory_error": {"by": "XPATH", "value": "//div[contains(@class,'error') and contains(text(),'inventory')]"}
       },
       "actions": [
-        "navigate_to()",
-        "add_product_to_cart(product_name, quantity)"
+        "add_product_to_cart(product_name)"
       ],
       "validations": [
-        "is_product_visible(product_name)",
-        "is_subscription_indicator_visible(product_name)"
+        "verify_product_visible(product_name)",
+        "verify_stock_info(product_name, expected_stock)",
+        "verify_inventory_error_displayed()"
       ]
     },
-    "CartPage": {
-      "file_name": "cart_page.py",
+    "HeaderPage": {
+      "file_name": "header_page.py",
       "locators": {
-        "cart_item_row": {"by": "XPATH", "value": "//tr[@data-product-name='Vitamin Pack']"},
-        "subscription_indicator": {"by": "XPATH", "value": "//tr[@data-product-name='Vitamin Pack']//span[contains(@class,'subscription')]"},
-        "quantity_input": {"by": "XPATH", "value": "//tr[@data-product-name='Vitamin Pack']//input[@type='number']"},
-        "line_item_subtotal": {"by": "XPATH", "value": "//tr[@data-product-name='Vitamin Pack']//td[@class='subtotal']"},
-        "cart_total": {"by": "ID", "value": "cartTotal"}
+        "cart_count": {"by": "XPATH", "value": "//span[@id='cart-count']"}
       },
-      "actions": [
-        "increase_quantity(product_name, amount)",
-        "get_line_item_subtotal(product_name)",
-        "get_cart_total()"
-      ],
+      "actions": [],
       "validations": [
-        "is_product_in_cart(product_name)",
-        "is_subscription_indicator_displayed(product_name)",
-        "verify_subtotal(product_name, expected_subtotal)",
-        "verify_cart_total(expected_total)"
+        "verify_cart_count(expected_count)"
       ]
     }
   }

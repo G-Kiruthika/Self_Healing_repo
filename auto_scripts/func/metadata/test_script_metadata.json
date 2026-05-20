@@ -1,64 +1,42 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1485": {
-      "test_name": "test_add_subscription_product_to_cart",
-      "feature": "Product Catalog and Cart",
-      "target_file": "test_product_cart_subscription.py",
-      "pages_used": [
-        "LoginPage",
-        "ProductCatalogPage",
-        "CartPage"
-      ],
+    "1491": {
+      "test_name": "test_cart_quantity_update_validation",
+      "feature": "CartQuantityValidation",
+      "target_file": "test_cart_quantity_update_validation.py",
+      "pages_used": ["CartPage", "HeaderPage"],
       "flow": [
-        {"page": "LoginPage", "action": "login", "data_ref": "customer_credentials"},
-        {"page": "ProductCatalogPage", "action": "navigate_to", "data_ref": null},
-        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_d_min_subscription"},
-        {"page": "ProductCatalogPage", "assertion": "is_product_visible"},
-        {"page": "CartPage", "assertion": "is_product_in_cart"},
-        {"page": "CartPage", "assertion": "is_subscription_indicator_displayed"},
-        {"page": "CartPage", "assertion": "verify_subtotal"}
-      ],
-      "test_data": {
-        "customer_credentials": {
-          "username": "customer_user",
-          "password": "customer_pass"
-        },
-        "product_d_min_subscription": {
-          "product_name": "Vitamin Pack",
-          "quantity": 2
-        },
-        "expected_subtotal": {
-          "product_name": "Vitamin Pack",
-          "expected_subtotal": "$91.00"
-        }
-      }
-    },
-    "1488": {
-      "test_name": "test_update_subscription_product_quantity",
-      "feature": "Cart Quantity Update",
-      "target_file": "test_product_cart_subscription.py",
-      "pages_used": [
-        "CartPage"
-      ],
-      "flow": [
-        {"page": "CartPage", "assertion": "is_product_in_cart"},
-        {"page": "CartPage", "action": "increase_quantity", "data_ref": "update_quantity_to_6"},
-        {"page": "CartPage", "assertion": "verify_subtotal"},
+        {"page": "CartPage", "action": "verify_product_in_cart", "data_ref": "product_c"},
+        {"page": "CartPage", "action": "set_quantity", "data_ref": "update_quantity_attempt"},
+        {"page": "CartPage", "action": "click_update", "data_ref": "product_c"},
+        {"page": "CartPage", "assertion": "verify_inventory_error_displayed"},
+        {"page": "CartPage", "assertion": "verify_product_in_cart"},
+        {"page": "HeaderPage", "assertion": "verify_cart_count"},
         {"page": "CartPage", "assertion": "verify_cart_total"}
       ],
       "test_data": {
-        "update_quantity_to_6": {
-          "product_name": "Vitamin Pack",
-          "quantity": 6
-        },
-        "expected_subtotal": {
-          "product_name": "Vitamin Pack",
-          "expected_subtotal": "$273.00"
-        },
-        "expected_cart_total": {
-          "expected_total": "$273.00"
-        }
+        "product_c": {"product_name": "Laptop Stand", "quantity": 2, "available_stock": 5},
+        "update_quantity_attempt": {"product_name": "Laptop Stand", "quantity": 10},
+        "expected_cart_count": 1,
+        "expected_cart_total": "unchanged"
+      }
+    },
+    "1492": {
+      "test_name": "test_add_out_of_stock_product",
+      "feature": "AddToCartInventoryValidation",
+      "target_file": "test_add_out_of_stock_product.py",
+      "pages_used": ["ProductCatalogPage", "CartPage", "HeaderPage"],
+      "flow": [
+        {"page": "ProductCatalogPage", "action": "verify_product_visible", "data_ref": "product_e"},
+        {"page": "ProductCatalogPage", "action": "verify_stock_info", "data_ref": "product_e"},
+        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_e"},
+        {"page": "ProductCatalogPage", "assertion": "verify_inventory_error_displayed"},
+        {"page": "HeaderPage", "assertion": "verify_cart_count"}
+      ],
+      "test_data": {
+        "product_e": {"product_name": "USB Cable", "available_stock": 0},
+        "expected_cart_count": 0
       }
     }
   },
