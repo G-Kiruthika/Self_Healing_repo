@@ -1,1 +1,51 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "LoginPage": {
+      "file_name": "login_page.py",
+      "locators": {
+        "username_input": {"by": "ID", "value": "username"},
+        "password_input": {"by": "ID", "value": "password"},
+        "login_button": {"by": "ID", "value": "login-btn"}
+      },
+      "actions": [
+        "login(username, password)"
+      ],
+      "validations": [
+        "is_logged_in()"
+      ]
+    },
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "product_a_card": {"by": "XPATH", "value": "//div[contains(text(), 'Wireless Mouse')]"},
+        "product_b_card": {"by": "XPATH", "value": "//div[contains(text(), 'Coffee Subscription')]"},
+        "add_to_cart_product_a": {"by": "XPATH", "value": "//div[contains(text(), 'Wireless Mouse')]/following-sibling::button[contains(text(), 'Add to Cart')]"},
+        "add_to_cart_product_b": {"by": "XPATH", "value": "//div[contains(text(), 'Coffee Subscription')]/following-sibling::button[contains(text(), 'Add to Cart')]"}
+      },
+      "actions": [
+        "navigate_to_catalog()",
+        "add_product_to_cart(product_name, quantity)"
+      ],
+      "validations": [
+        "is_catalog_displayed()",
+        "is_product_visible(product_name)"
+      ]
+    },
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "cart_icon": {"by": "ID", "value": "cart-icon"},
+        "cart_item_count": {"by": "ID", "value": "cart-count"},
+        "subtotal_label": {"by": "XPATH", "value": "//span[@class='subtotal']"}
+      },
+      "actions": [
+        "open_cart()",
+        "get_cart_items()"
+      ],
+      "validations": [
+        "is_cart_icon_updated(expected_count)",
+        "is_subtotal_correct(product_name, expected_subtotal)"
+      ]
+    }
+  }
+}
