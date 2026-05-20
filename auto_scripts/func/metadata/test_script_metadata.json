@@ -1,49 +1,73 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1495": {
-      "test_name": "test_delete_product_and_validate_empty_cart",
-      "feature": "ShoppingCart",
-      "target_file": "test_cart_page.py",
+    "1497": {
+      "test_name": "test_remove_product_from_cart",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "validate_product_in_cart", "data_ref": "product_a"},
-        {"page": "CartPage", "action": "delete_product", "data_ref": "product_a"},
-        {"page": "CartPage", "assertion": "validate_product_not_in_cart", "data_ref": "product_a"},
-        {"page": "CartPage", "assertion": "validate_empty_cart_message", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": "zero_total"}
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_a_in_cart"},
+        {"page": "CartPage", "action": "change_product_quantity", "data_ref": "change_quantity_to_zero"},
+        {"page": "CartPage", "assertion": "validate_product_removed"},
+        {"page": "CartPage", "action": "check_cart_totals", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_cart_totals"},
+        {"page": "CartPage", "assertion": "validate_empty_cart_message"}
       ],
       "test_data": {
-        "product_a": {"product_name": "Wireless Mouse"},
-        "zero_total": {"expected_total": "$0.00"}
+        "product_a_in_cart": {
+          "product_name": "Wireless Mouse",
+          "quantity": 3
+        },
+        "change_quantity_to_zero": {
+          "product_name": "Wireless Mouse",
+          "quantity": 0
+        }
       }
     },
-    "1496": {
-      "test_name": "test_add_multiple_products_and_validate_totals",
-      "feature": "ShoppingCart",
-      "target_file": "test_cart_page.py",
-      "pages_used": ["CartPage"],
+    "1498": {
+      "test_name": "test_add_product_to_cart",
+      "feature": "ProductCatalog",
+      "target_file": "test_product_catalog.py",
+      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage", "ConfirmationPage"],
       "flow": [
-        {"page": "CartPage", "action": "add_product", "data_ref": "product_a"},
-        {"page": "CartPage", "action": "add_product", "data_ref": "product_b"},
-        {"page": "CartPage", "action": "add_product", "data_ref": "product_c"},
-        {"page": "CartPage", "action": "navigate_to_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "product_a"},
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "product_b"},
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "product_c"},
-        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": "product_a_subtotal"},
-        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": "product_b_subtotal"},
-        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": "product_c_subtotal"},
-        {"page": "CartPage", "assertion": "validate_cart_total", "data_ref": "overall_total"}
+        {"page": "LoginPage", "action": "login", "data_ref": "user_login"},
+        {"page": "LoginPage", "assertion": "validate_login_success"},
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "ensure_cart_empty"},
+        {"page": "ProductCatalogPage", "action": "browse_products", "data_ref": null},
+        {"page": "ProductCatalogPage", "action": "locate_product", "data_ref": "product_td01"},
+        {"page": "ProductCatalogPage", "assertion": "validate_product_visible"},
+        {"page": "ProductCatalogPage", "assertion": "validate_product_in_stock"},
+        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "product_td01"},
+        {"page": "CartPage", "action": "ensure_product_in_cart", "data_ref": "product_td01_in_cart"},
+        {"page": "CartPage", "assertion": "validate_product_present"},
+        {"page": "CartPage", "assertion": "validate_cart_totals"},
+        {"page": "ConfirmationPage", "assertion": "validate_confirmation_message"}
       ],
       "test_data": {
-        "product_a": {"product_name": "Product A", "quantity": 2},
-        "product_b": {"product_name": "Product B", "quantity": 3},
-        "product_c": {"product_name": "Product C", "quantity": 1},
-        "product_a_subtotal": {"product_name": "Product A", "expected_subtotal": "computed"},
-        "product_b_subtotal": {"product_name": "Product B", "expected_subtotal": "computed"},
-        "product_c_subtotal": {"product_name": "Product C", "expected_subtotal": "computed"},
-        "overall_total": {"expected_total": "$187.96"}
+        "user_login": {
+          "username": "Jane Smith",
+          "password": "PLACEHOLDER"
+        },
+        "ensure_cart_empty": {
+          "product_name": null,
+          "quantity": 0
+        },
+        "product_td01": {
+          "product_name": "Organic Green Tea - 100g",
+          "product_code": "TD-01",
+          "quantity": 1,
+          "in_stock": 50,
+          "unit_price": 12.99,
+          "subtotal": 12.99
+        },
+        "product_td01_in_cart": {
+          "product_name": "Organic Green Tea - 100g",
+          "quantity": 1
+        },
+        "confirmation_message": {
+          "expected_message": "Product added to cart"
+        }
       }
     }
   },
