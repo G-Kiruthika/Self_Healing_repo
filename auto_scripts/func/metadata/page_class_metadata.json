@@ -3,31 +3,38 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_row": {"by": "xpath", "value": "//tr[@data-product-id]"},
-        "quantity_field": {"by": "id", "value": "quantity_input"},
-        "update_button": {"by": "id", "value": "update_button"},
-        "validation_message": {"by": "css selector", "value": ".validation-error"},
-        "cart_totals": {"by": "id", "value": "cart_totals"},
-        "decrement_button": {"by": "css selector", "value": ".decrement-btn"},
-        "increment_button": {"by": "css selector", "value": ".increment-btn"},
-        "threshold_indicator": {"by": "css selector", "value": ".threshold-indicator"},
-        "subtotal": {"by": "css selector", "value": ".line-subtotal"}
+        "cart_item_td_03": {"by": "xpath", "value": "//div[@data-sku='TD-03']"},
+        "cart_item_td_01": {"by": "xpath", "value": "//div[@data-sku='TD-01']"},
+        "quantity_input": {"by": "css selector", "value": ".cart-quantity-input"},
+        "increment_button": {"by": "css selector", "value": ".cart-increment-btn"},
+        "decrement_button": {"by": "css selector", "value": ".cart-decrement-btn"},
+        "max_quantity_message": {"by": "css selector", "value": ".max-quantity-message"},
+        "subtotal_label": {"by": "css selector", "value": ".cart-item-subtotal"},
+        "confirmation_message": {"by": "css selector", "value": ".confirmation-message"}
       },
       "actions": [
-        "enter_quantity(product_id, quantity)",
-        "click_update(product_id)",
-        "get_cart_totals()",
-        "get_quantity(product_id)",
-        "is_decrement_disabled(product_id)",
-        "is_increment_enabled(product_id)"
+        "set_cart_item_quantity(sku, quantity)",
+        "increment_quantity(sku)",
+        "decrement_quantity(sku)"
       ],
       "validations": [
-        "validate_quantity(product_id, expected_quantity)",
-        "validate_validation_message(expected_message)",
-        "validate_cart_totals(expected_totals)",
-        "validate_threshold_indicator(product_id, expected_threshold)",
-        "validate_subtotal(product_id, expected_subtotal)"
+        "verify_cart_item_quantity(sku, expected_quantity)",
+        "verify_increment_button_disabled(sku)",
+        "verify_max_quantity_message_displayed()",
+        "verify_subtotal(sku, expected_subtotal)",
+        "verify_confirmation_message(message)"
       ]
+    },
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "add_to_cart_button": {"by": "css selector", "value": ".add-to-cart-btn"},
+        "product_td_01": {"by": "xpath", "value": "//div[@data-sku='TD-01']"}
+      },
+      "actions": [
+        "click_add_to_cart(sku)"
+      ],
+      "validations": []
     }
   }
 }
