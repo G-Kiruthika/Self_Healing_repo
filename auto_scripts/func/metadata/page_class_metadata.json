@@ -1,63 +1,25 @@
 {
   "pages": {
-    "LoginPage": {
-      "file_name": "login_page.py",
-      "locators": {
-        "username_input": {"by": "ID", "value": "username"},
-        "password_input": {"by": "ID", "value": "password"},
-        "login_button": {"by": "ID", "value": "login-btn"},
-        "subscription_badge": {"by": "XPATH", "value": "//span[@class='subscription-badge']"}
-      },
-      "actions": [
-        "login_as_user(username, password)",
-        "login_with_subscription(username, password, subscription_type)"
-      ],
-      "validations": [
-        "validate_user_logged_in()",
-        "validate_subscription_badge(subscription_type)"
-      ]
-    },
-    "ProductCatalogPage": {
-      "file_name": "product_catalog_page.py",
-      "locators": {
-        "product_search_box": {"by": "ID", "value": "product-search"},
-        "product_td_02": {"by": "XPATH", "value": "//div[@data-product-id='TD-02']"},
-        "product_td_01": {"by": "XPATH", "value": "//div[@data-product-id='TD-01']"},
-        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(@class,'add-to-cart')]"},
-        "subscription_option": {"by": "XPATH", "value": "//input[@type='checkbox' and @name='subscription']"},
-        "min_threshold_indicator": {"by": "CLASS_NAME", "value": "min-threshold"}
-      },
-      "actions": [
-        "search_product(product_name)",
-        "select_subscription_option(product_id)",
-        "add_to_cart(product_id)"
-      ],
-      "validations": [
-        "validate_product_visible(product_id)",
-        "validate_min_threshold_indicator(product_id)"
-      ]
-    },
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_items": {"by": "ID", "value": "cart-items"},
-        "product_name": {"by": "XPATH", "value": "//td[@class='product-name']"},
-        "unit_price": {"by": "XPATH", "value": "//td[@class='unit-price']"},
-        "quantity": {"by": "XPATH", "value": "//input[@class='cart-qty']"},
-        "subtotal": {"by": "XPATH", "value": "//td[@class='subtotal']"},
-        "min_threshold_indicator": {"by": "CLASS_NAME", "value": "min-threshold"},
-        "subscription_badge": {"by": "CLASS_NAME", "value": "subscription-badge"},
-        "delivery_frequency": {"by": "ID", "value": "delivery-frequency"},
-        "subscription_pricing": {"by": "ID", "value": "subscription-pricing"}
+        "product_row": {"by": "PLACEHOLDER", "value": "//tr[@data-product-id='{product_id}']"},
+        "quantity_input": {"by": "PLACEHOLDER", "value": "//input[@data-product-id='{product_id}']"},
+        "increment_button": {"by": "PLACEHOLDER", "value": "//button[@data-action='increment'][@data-product-id='{product_id}']"},
+        "delete_button": {"by": "PLACEHOLDER", "value": "//button[@data-action='delete'][@data-product-id='{product_id}']"},
+        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"},
+        "confirmation_message": {"by": "PLACEHOLDER", "value": "//div[@class='confirmation-message']"}
       },
       "actions": [
-        "view_cart()"
+        "ensure_cart_contains(product_id, quantity, subtotal)",
+        "click_increment(product_id)",
+        "click_delete(product_id)"
       ],
       "validations": [
-        "validate_cart_item_details(product_id, expected_details)",
-        "validate_min_threshold_in_cart(product_id)",
-        "validate_subscription_badge_in_cart(product_id)",
-        "validate_subscription_pricing_and_frequency(product_id)"
+        "validate_cart_item(product_id, quantity, subtotal)",
+        "validate_cart_total(total)",
+        "validate_no_page_reload()",
+        "validate_confirmation_message(message)"
       ]
     }
   }
