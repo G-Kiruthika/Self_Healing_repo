@@ -1,47 +1,43 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "1507": {
-      "test_name": "test_cart_displays_multiple_products",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
-      "pages_used": ["ShoppingCartPage"],
+    "1509": {
+      "test_name": "test_cart_negative_quantity_validation",
+      "feature": "Cart Quantity Validation",
+      "target_file": "test_cart_negative_quantity_validation.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "ShoppingCartPage", "action": "navigate_to_cart_page", "data_ref": null},
-        {"page": "ShoppingCartPage", "assertion": "verify_product_in_cart", "data_ref": {"product_id": "TD-01", "expected_qty": 1}},
-        {"page": "ShoppingCartPage", "assertion": "verify_product_in_cart", "data_ref": {"product_id": "TD-02", "expected_qty": 1}},
-        {"page": "ShoppingCartPage", "assertion": "verify_product_fields", "data_ref": {"product_id": "TD-01"}},
-        {"page": "ShoppingCartPage", "assertion": "verify_product_fields", "data_ref": {"product_id": "TD-02"}},
-        {"page": "ShoppingCartPage", "assertion": "verify_cart_total", "data_ref": {"expected_total": "$150.93"}}
+        {"page": "CartPage", "action": "validate_cart_item_quantity", "data_ref": {"item": "TD-01", "quantity": 2}},
+        {"page": "CartPage", "action": "set_quantity", "data_ref": {"quantity": -5}},
+        {"page": "CartPage", "action": "click_update_button", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_error_message", "data_ref": {"expected_message": "Quantity must be a positive number"}},
+        {"page": "CartPage", "assertion": "validate_cart_item_quantity", "data_ref": {"item": "TD-01", "quantity": 2}},
+        {"page": "CartPage", "assertion": "validate_cart_totals", "data_ref": {"expected_totals": "unchanged"}}
       ],
       "test_data": {
-        "cart_items": {
-          "TD-01": {"quantity": 1, "unit_price": null},
-          "TD-02": {"quantity": 1, "unit_price": null}
-        },
-        "expected_total": "$150.93"
+        "valid_cart_item": {"item": "TD-01", "quantity": 2},
+        "invalid_quantity": {"quantity": -5},
+        "expected_error": {"message": "Quantity must be a positive number"},
+        "expected_totals": {"status": "unchanged"}
       }
     },
-    "1508": {
-      "test_name": "test_update_quantity_in_cart",
-      "feature": "ShoppingCart",
-      "target_file": "test_shopping_cart.py",
-      "pages_used": ["ShoppingCartPage"],
+    "1510": {
+      "test_name": "test_cart_minimum_threshold_controls",
+      "feature": "Cart Minimum Threshold Controls",
+      "target_file": "test_cart_minimum_threshold_controls.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "ShoppingCartPage", "action": "navigate_to_cart_page", "data_ref": null},
-        {"page": "ShoppingCartPage", "assertion": "verify_product_in_cart", "data_ref": {"product_id": "TD-01", "expected_qty": 1}},
-        {"page": "ShoppingCartPage", "action": "update_quantity", "data_ref": {"product_id": "TD-01", "quantity": 10}},
-        {"page": "ShoppingCartPage", "assertion": "verify_product_in_cart", "data_ref": {"product_id": "TD-01", "expected_qty": 10}},
-        {"page": "ShoppingCartPage", "assertion": "verify_cart_total", "data_ref": {"expected_total": "$129.90"}},
-        {"page": "ShoppingCartPage", "assertion": "verify_success_message", "data_ref": {"expected_message": "Quantity updated"}}
+        {"page": "CartPage", "action": "validate_cart_item_quantity", "data_ref": {"item": "TD-02", "quantity": 5}},
+        {"page": "CartPage", "assertion": "validate_button_state", "data_ref": {"button": "decrement", "expected_state": "disabled"}},
+        {"page": "CartPage", "assertion": "validate_button_state", "data_ref": {"button": "increment", "expected_state": "enabled"}},
+        {"page": "CartPage", "assertion": "validate_line_item_subtotal", "data_ref": {"item": "TD-02", "expected_subtotal": 124.95}},
+        {"page": "CartPage", "assertion": "validate_threshold_indicator", "data_ref": {"item": "TD-02", "expected_indicator": "Min: 5 units"}}
       ],
       "test_data": {
-        "cart_items": {
-          "TD-01": {"quantity": 1, "unit_price": null, "stock": 50}
-        },
-        "update_quantity": 10,
-        "expected_total": "$129.90",
-        "expected_message": "Quantity updated"
+        "valid_cart_item": {"item": "TD-02", "quantity": 5, "threshold": 5},
+        "expected_button_states": {"decrement": "disabled", "increment": "enabled"},
+        "expected_subtotal": {"item": "TD-02", "subtotal": 124.95},
+        "expected_indicator": {"item": "TD-02", "indicator": "Min: 5 units"}
       }
     }
   },

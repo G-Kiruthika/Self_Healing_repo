@@ -1,28 +1,32 @@
 {
   "pages": {
-    "ShoppingCartPage": {
-      "file_name": "shopping_cart_page.py",
+    "CartPage": {
+      "file_name": "cart_page.py",
       "locators": {
-        "product_row": {"by": "XPATH", "value": "//div[@class='cart-item-row']"},
-        "product_name": {"by": "XPATH", "value": ".//span[@class='item-name']"},
-        "unit_price": {"by": "XPATH", "value": ".//span[@class='unit-price']"},
-        "quantity_field": {"by": "XPATH", "value": ".//input[@class='quantity-input']"},
-        "subtotal": {"by": "XPATH", "value": ".//span[@class='subtotal']"},
-        "cart_total": {"by": "XPATH", "value": "//span[@id='cart-total']"},
-        "success_message": {"by": "XPATH", "value": "//div[@class='message-success']"},
-        "update_quantity_button": {"by": "XPATH", "value": ".//button[@class='update-qty']"}
+        "cart_item_td_01": {"by": "id", "value": "cart-item-td-01"},
+        "cart_item_td_02": {"by": "id", "value": "cart-item-td-02"},
+        "quantity_field": {"by": "id", "value": "quantity-field"},
+        "update_button": {"by": "id", "value": "update-btn"},
+        "validation_error_message": {"by": "id", "value": "error-msg"},
+        "cart_totals": {"by": "id", "value": "cart-totals"},
+        "decrement_button": {"by": "id", "value": "decrement-btn"},
+        "increment_button": {"by": "id", "value": "increment-btn"},
+        "line_item_subtotal": {"by": "id", "value": "line-item-subtotal"},
+        "threshold_indicator": {"by": "id", "value": "threshold-indicator"}
       },
       "actions": [
-        "navigate_to_cart_page()",
-        "update_quantity(product_id, quantity)",
-        "get_product_details(product_id)",
-        "get_cart_total()"
+        "set_quantity(quantity)",
+        "click_update_button()",
+        "click_decrement_button()",
+        "click_increment_button()"
       ],
       "validations": [
-        "verify_product_in_cart(product_id, expected_qty)",
-        "verify_product_fields(product_id)",
-        "verify_cart_total(expected_total)",
-        "verify_success_message(expected_message)"
+        "validate_cart_item_quantity(item, quantity)",
+        "validate_error_message(expected_message)",
+        "validate_cart_totals(expected_totals)",
+        "validate_button_state(button, expected_state)",
+        "validate_line_item_subtotal(item, expected_subtotal)",
+        "validate_threshold_indicator(item, expected_indicator)"
       ]
     }
   }
