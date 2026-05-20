@@ -3,32 +3,38 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_item_td_01": {"by": "PLACEHOLDER", "value": "//div[@data-sku='TD-01']"},
-        "cart_item_td_02": {"by": "PLACEHOLDER", "value": "//div[@data-sku='TD-02']"},
-        "quantity_field": {"by": "PLACEHOLDER", "value": "//input[@name='quantity']"},
-        "update_button": {"by": "PLACEHOLDER", "value": "//button[@id='update-cart']"},
-        "validation_error_message": {"by": "PLACEHOLDER", "value": "//div[@class='error-message']"},
-        "decrement_button": {"by": "PLACEHOLDER", "value": "//button[@aria-label='decrement']"},
-        "increment_button": {"by": "PLACEHOLDER", "value": "//button[@aria-label='increment']"},
-        "cart_totals": {"by": "PLACEHOLDER", "value": "//div[@id='cart-totals']"},
-        "line_item_subtotal": {"by": "PLACEHOLDER", "value": "//div[@class='line-item-subtotal']"},
-        "threshold_indicator": {"by": "PLACEHOLDER", "value": "//span[contains(@class,'min-threshold-indicator')]"}
+        "cart_item_td_03": {"by": "xpath", "value": "//div[@data-product='TD-03']"},
+        "cart_item_td_01": {"by": "xpath", "value": "//div[@data-product='TD-01']"},
+        "quantity_field": {"by": "xpath", "value": "//input[@class='quantity-input']"},
+        "increment_button": {"by": "xpath", "value": "//button[@aria-label='Increment']"},
+        "decrement_button": {"by": "xpath", "value": "//button[@aria-label='Decrement']"},
+        "line_item_subtotal": {"by": "xpath", "value": "//span[@class='line-item-subtotal']"},
+        "max_quantity_message": {"by": "xpath", "value": "//div[contains(text(),'Maximum available quantity reached')]"},
+        "confirmation_message": {"by": "xpath", "value": "//div[contains(text(),'Quantity updated in cart')]"}
       },
       "actions": [
-        "set_quantity(product_sku, quantity)",
-        "click_update_cart()",
-        "click_increment_button(product_sku)",
-        "click_decrement_button(product_sku)"
+        "ensure_cart_contains(product_code, quantity, stock)",
+        "increment_quantity(product_code)",
+        "navigate_to_cart()"
       ],
       "validations": [
-        "is_item_in_cart(product_sku, quantity)",
-        "is_error_message_displayed()",
-        "is_cart_totals_unchanged()",
-        "is_decrement_button_disabled(product_sku)",
-        "is_increment_button_enabled(product_sku)",
-        "is_line_item_subtotal_displayed(product_sku, subtotal)",
-        "is_threshold_indicator_displayed(product_sku, min_threshold)"
+        "verify_cart_item(product_code, quantity)",
+        "verify_increment_button_disabled(product_code)",
+        "verify_max_quantity_message_displayed()",
+        "verify_line_item_subtotal(product_code, expected_subtotal)",
+        "verify_confirmation_message_displayed()"
       ]
+    },
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "add_to_cart_button_td_01": {"by": "xpath", "value": "//button[@data-product='TD-01' and contains(text(),'Add to Cart')]"}
+      },
+      "actions": [
+        "navigate_to_product_catalog()",
+        "add_to_cart(product_code)"
+      ],
+      "validations": []
     }
   }
 }
