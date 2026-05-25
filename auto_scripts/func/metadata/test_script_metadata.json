@@ -1,1 +1,51 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"UI_TC_02": {"test_name": "test_invalid_password_login", "feature": "Login", "target_file": "test_saucedemo_login.py", "pages_used": ["SauceDemoLoginPage"], "flow": [{"page": "SauceDemoLoginPage", "action": "open", "data_ref": null}, {"page": "SauceDemoLoginPage", "action": "enter_username", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "enter_password", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "click_login", "data_ref": null}, {"page": "SauceDemoLoginPage", "assertion": "is_error_displayed"}], "test_data": {"invalid_password_user": {"username": "standard_user", "password": "wrong_password"}}}}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "TC_68": {
+      "test_name": "test_create_your_own_shortcut_arrow_navigation",
+      "feature": "Add New Shortcut Navigation",
+      "target_file": "test_create_your_own_shortcut_arrow_navigation.py",
+      "pages_used": [
+        "RootViewPage",
+        "DeviceDetailsPage",
+        "ShortcutsPage",
+        "AddNewShortcutsPage",
+        "AddShortcutPage"
+      ],
+      "flow": [
+        {"page": "RootViewPage", "action": "click_printer_icon", "data_ref": null},
+        {"page": "DeviceDetailsPage", "action": "click_shortcuts_tile", "data_ref": null},
+        {"page": "ShortcutsPage", "action": "click_add_new_shortcuts", "data_ref": null},
+        {"page": "AddNewShortcutsPage", "action": "click_create_own_shortcut_arrow", "data_ref": null},
+        {"page": "AddShortcutPage", "assertion": "verify_add_shortcut_screen_displayed"}
+      ],
+      "test_data": {}
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": [
+      "BasePage"
+    ],
+    "core_dependencies": [
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py"
+    ],
+    "api_dependencies": [],
+    "config_dependencies": [
+      "config/config.yaml"
+    ],
+    "utils_dependencies": [],
+    "external_libraries": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ],
+    "required_imports": [
+      "pages.",
+      "core.driver_factory",
+      "pages.base_page"
+    ]
+  }
+}
