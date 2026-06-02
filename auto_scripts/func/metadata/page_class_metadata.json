@@ -1,1 +1,52 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "RootViewScreen": {
+      "file_name": "root_view_screen.py",
+      "locators": {
+        "printer_icon": {"by": "id", "value": "placeholder_printer_icon"}
+      },
+      "actions": [
+        "click_printer_icon()"
+      ],
+      "validations": []
+    },
+    "DeviceDetailsPage": {
+      "file_name": "device_details_page.py",
+      "locators": {
+        "shortcuts_tile": {"by": "id", "value": "placeholder_shortcuts_tile"}
+      },
+      "actions": [
+        "click_shortcuts_tile()"
+      ],
+      "validations": []
+    },
+    "ShortcutsScreen": {
+      "file_name": "shortcuts_screen.py",
+      "locators": {
+        "add_new_shortcuts": {"by": "id", "value": "placeholder_add_new_shortcuts"}
+      },
+      "actions": [
+        "click_add_new_shortcuts()"
+      ],
+      "validations": []
+    },
+    "AddNewShortcutsScreen": {
+      "file_name": "add_new_shortcuts_screen.py",
+      "locators": {
+        "create_your_own_shortcut_arrow": {"by": "id", "value": "placeholder_create_your_own_shortcut_arrow"}
+      },
+      "actions": [
+        "click_create_your_own_shortcut_arrow()"
+      ],
+      "validations": []
+    },
+    "AddShortcutScreen": {
+      "file_name": "add_shortcut_screen.py",
+      "locators": {},
+      "actions": [],
+      "validations": [
+        "verify_user_navigated_to_add_shortcut_screen()"
+      ]
+    }
+  }
+}
