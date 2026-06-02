@@ -1,1 +1,63 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"UI_TC_02": {"test_name": "test_invalid_password_login", "feature": "Login", "target_file": "test_saucedemo_login.py", "pages_used": ["SauceDemoLoginPage"], "flow": [{"page": "SauceDemoLoginPage", "action": "open", "data_ref": null}, {"page": "SauceDemoLoginPage", "action": "enter_username", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "enter_password", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "click_login", "data_ref": null}, {"page": "SauceDemoLoginPage", "assertion": "is_error_displayed"}], "test_data": {"invalid_password_user": {"username": "standard_user", "password": "wrong_password"}}}}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "258": {
+      "test_name": "test_verify_successful_login_with_valid_credentials_via_ui",
+      "feature": "Login",
+      "target_file": "test_login.py",
+      "pages_used": ["LoginPage", "DashboardPage"],
+      "flow": [
+        {"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": null},
+        {"page": "LoginPage", "action": "enter_email", "data_ref": "valid_email"},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": "valid_password"},
+        {"page": "LoginPage", "action": "click_sign_in", "data_ref": null},
+        {"page": "LoginPage", "assertion": "is_authenticated"},
+        {"page": "DashboardPage", "assertion": "is_dashboard_displayed"},
+        {"page": "DashboardPage", "assertion": "is_session_cookie_present"},
+        {"page": "DashboardPage", "assertion": "is_profile_name_correct"}
+      ],
+      "test_data": {
+        "valid_email": {
+          "email": "<valid_email>"
+        },
+        "valid_password": {
+          "password": "<valid_password>"
+        }
+      }
+    },
+    "259": {
+      "test_name": "test_verify_standard_error_messaging_on_login_failure_invalid_password",
+      "feature": "Login",
+      "target_file": "test_login.py",
+      "pages_used": ["LoginPage"],
+      "flow": [
+        {"page": "LoginPage", "action": "clear_inputs", "data_ref": null},
+        {"page": "LoginPage", "action": "enter_email", "data_ref": "valid_email"},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": "invalid_password"},
+        {"page": "LoginPage", "action": "click_sign_in", "data_ref": null},
+        {"page": "LoginPage", "assertion": "is_error_banner_displayed"},
+        {"page": "LoginPage", "assertion": "is_password_cleared"},
+        {"page": "LoginPage", "assertion": "are_fields_highlighted_for_error"}
+      ],
+      "test_data": {
+        "valid_email": {
+          "email": "<valid_email>"
+        },
+        "invalid_password": {
+          "password": "<invalid_password>"
+        }
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "api_dependencies": [],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}
