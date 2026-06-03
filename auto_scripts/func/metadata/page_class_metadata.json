@@ -1,36 +1,26 @@
 {
   "pages": {
-    "ProductPage": {
-      "file_name": "product_page.py",
-      "locators": {
-        "available_stock_label": {"by": "xpath", "value": "//span[@id='available_stock']"},
-        "product_quantity_input": {"by": "xpath", "value": "//input[@id='quantity']"},
-        "add_to_cart_button": {"by": "xpath", "value": "//button[@id='add_to_cart']"},
-        "minimum_procurement_label": {"by": "xpath", "value": "//span[@id='min_procurement']"}
-      },
-      "actions": [
-        "check_available_stock(product_name)",
-        "set_quantity(quantity)",
-        "add_to_cart()",
-        "check_minimum_procurement(product_name)"
-      ],
-      "validations": [
-        "validate_available_stock(expected_stock)",
-        "validate_minimum_procurement(expected_threshold)"
-      ]
-    },
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_contents": {"by": "xpath", "value": "//div[@id='cart_contents']"},
-        "cart_product_quantity": {"by": "xpath", "value": "//span[@class='product_quantity']"}
+        "cart_empty_message": {"by": "xpath", "value": "//div[@id='cart-empty-message']"},
+        "product_row": {"by": "xpath", "value": "//tr[contains(@class,'cart-product-row')]"},
+        "add_to_cart_button": {"by": "xpath", "value": "//button[contains(@class,'add-to-cart')]"},
+        "remove_from_cart_button": {"by": "xpath", "value": "//button[contains(@class,'remove-from-cart')]"},
+        "cart_total": {"by": "xpath", "value": "//span[@id='cart-total']"}
       },
       "actions": [
+        "empty_cart()",
+        "add_product_to_cart(product_name)",
+        "remove_product_from_cart(product_name)",
         "view_cart()"
       ],
       "validations": [
-        "validate_product_in_cart(product_name, quantity)",
-        "validate_cart_quantity(product_name, expected_quantity)"
+        "is_cart_empty()",
+        "is_product_in_cart(product_name)",
+        "verify_product_details(product_name, unit_price, quantity, subtotal)",
+        "verify_cart_total(expected_total)",
+        "is_cart_empty_message_displayed()"
       ]
     }
   }
