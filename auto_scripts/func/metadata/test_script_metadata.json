@@ -1,66 +1,38 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "277": {
-      "test_name": "test_login_and_add_subscription_product",
-      "feature": "SubscriptionProductCart",
-      "target_file": "test_subscription_product_cart.py",
-      "pages_used": ["LoginPage", "ProductPage"],
+    "279": {
+      "test_name": "test_add_and_update_quantity_wireless_mouse",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "LoginPage", "action": "login", "data_ref": "subscriber_credentials"},
-        {"page": "LoginPage", "assertion": "is_logged_in_as_subscriber"},
-        {"page": "ProductPage", "action": "add_product_to_cart", "data_ref": "wireless_mouse"},
-        {"page": "ProductPage", "assertion": "is_product_added_to_cart"},
-        {"page": "ProductPage", "action": "increase_quantity", "data_ref": "subscription_quantity"},
-        {"page": "ProductPage", "assertion": "is_quantity_updated"}
+        {"page": "CartPage", "action": "add_wireless_mouse_to_cart", "data_ref": "add_3"},
+        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "add_3"},
+        {"page": "CartPage", "action": "change_quantity", "data_ref": "update_5"},
+        {"page": "CartPage", "assertion": "validate_quantity_updated", "data_ref": "update_5"},
+        {"page": "CartPage", "assertion": "validate_line_item_subtotal_updates", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_cart_total_updates", "data_ref": null}
       ],
       "test_data": {
-        "subscriber_credentials": {
-          "username": "subscriber_user",
-          "password": "password123"
-        },
-        "wireless_mouse": {
-          "product_name": "Wireless Mouse"
-        },
-        "subscription_quantity": {
-          "product_name": "Wireless Mouse",
-          "amount": "as_per_subscription_rules"
-        }
+        "add_3": {"product": "Wireless Mouse", "quantity": 3},
+        "update_5": {"quantity": 5}
       }
     },
-    "278": {
-      "test_name": "test_cart_multiple_products_details",
-      "feature": "CartProductDetails",
-      "target_file": "test_cart_product_details.py",
-      "pages_used": ["ProductPage", "CartPage"],
+    "280": {
+      "test_name": "test_delete_wireless_mouse_and_check_totals",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "ProductPage", "action": "add_product_to_cart", "data_ref": "wireless_mouse"},
-        {"page": "ProductPage", "action": "add_product_to_cart", "data_ref": "keyboard"},
-        {"page": "CartPage", "action": "view_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": "wireless_mouse"},
-        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": "keyboard"},
-        {"page": "CartPage", "assertion": "is_cart_item_details_correct", "data_ref": "wireless_mouse_details"},
-        {"page": "CartPage", "assertion": "is_cart_item_details_correct", "data_ref": "keyboard_details"}
+        {"page": "CartPage", "action": "add_wireless_mouse_to_cart", "data_ref": "add_1"},
+        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "add_1"},
+        {"page": "CartPage", "action": "delete_wireless_mouse_from_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "validate_product_removed", "data_ref": "add_1"},
+        {"page": "CartPage", "assertion": "validate_cart_totals_recalculated", "data_ref": null}
       ],
       "test_data": {
-        "wireless_mouse": {
-          "product_name": "Wireless Mouse"
-        },
-        "keyboard": {
-          "product_name": "Keyboard"
-        },
-        "wireless_mouse_details": {
-          "product_name": "Wireless Mouse",
-          "unit_price": "auto_fetched_or_expected",
-          "quantity": "auto_fetched_or_expected",
-          "subtotal": "auto_fetched_or_expected"
-        },
-        "keyboard_details": {
-          "product_name": "Keyboard",
-          "unit_price": "auto_fetched_or_expected",
-          "quantity": "auto_fetched_or_expected",
-          "subtotal": "auto_fetched_or_expected"
-        }
+        "add_1": {"product": "Wireless Mouse", "quantity": 1}
       }
     }
   },
