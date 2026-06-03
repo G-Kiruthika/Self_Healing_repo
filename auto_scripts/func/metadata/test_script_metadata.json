@@ -1,38 +1,26 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "287": {
-      "test_name": "test_prevent_zero_quantity_addition",
-      "feature": "Cart Functionality",
-      "target_file": "test_cart_functionality.py",
+    "289": {
+      "test_name": "test_add_and_update_cart_instant_ui",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "set_product_quantity", "data_ref": "zero_quantity"},
-        {"page": "CartPage", "action": "click_add_to_cart", "data_ref": "wireless_mouse"},
-        {"page": "CartPage", "action": "submit_cart_update", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_no_zero_quantity_product"},
-        {"page": "CartPage", "assertion": "validate_quantity_unchanged", "data_ref": "wireless_mouse"}
+        {"page": "CartPage", "action": "add_product_to_cart", "data_ref": "product_data"},
+        {"page": "CartPage", "assertion": "is_product_in_cart"},
+        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "product_update_data"},
+        {"page": "CartPage", "assertion": "is_cart_updated_instantly"},
+        {"page": "CartPage", "assertion": "is_no_page_refresh"}
       ],
       "test_data": {
-        "wireless_mouse": {"product_name": "Wireless Mouse"},
-        "zero_quantity": {"quantity": 0}
-      }
-    },
-    "288": {
-      "test_name": "test_prevent_negative_quantity_addition",
-      "feature": "Cart Functionality",
-      "target_file": "test_cart_functionality.py",
-      "pages_used": ["CartPage"],
-      "flow": [
-        {"page": "CartPage", "action": "set_product_quantity", "data_ref": "negative_quantity"},
-        {"page": "CartPage", "action": "click_add_to_cart", "data_ref": "wireless_mouse"},
-        {"page": "CartPage", "action": "submit_cart_update", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_no_negative_quantity_product"},
-        {"page": "CartPage", "assertion": "validate_quantity_unchanged", "data_ref": "wireless_mouse"}
-      ],
-      "test_data": {
-        "wireless_mouse": {"product_name": "Wireless Mouse"},
-        "negative_quantity": {"quantity": -1}
+        "product_data": {
+          "product_name": "Wireless Mouse"
+        },
+        "product_update_data": {
+          "product_name": "Wireless Mouse",
+          "quantity": "updated or removed"
+        }
       }
     }
   },
