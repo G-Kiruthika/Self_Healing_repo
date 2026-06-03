@@ -1,1 +1,25 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "add_to_cart_button": {"by": "xpath", "value": "//button[contains(text(), 'Add to Cart')]"},
+        "cart_item": {"by": "xpath", "value": "//div[contains(@class, 'cart-item')]"},
+        "quantity_input": {"by": "xpath", "value": "//input[@type='number']"},
+        "remove_button": {"by": "xpath", "value": "//button[contains(text(), 'Remove')]"},
+        "cart_update_message": {"by": "xpath", "value": "//div[contains(@class, 'update-msg')]"}
+      },
+      "actions": [
+        "add_product_to_cart(product_name)",
+        "update_product_quantity(product_name, quantity)",
+        "remove_product_from_cart(product_name)",
+        "submit_cart_update()"
+      ],
+      "validations": [
+        "is_product_in_cart(product_name)",
+        "is_cart_updated_instantly()",
+        "is_no_negative_quantity()"
+      ]
+    }
+  }
+} 
