@@ -3,24 +3,20 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_empty_message": {"by": "xpath", "value": "//div[@id='cart-empty-message']"},
-        "product_row": {"by": "xpath", "value": "//tr[contains(@class,'cart-product-row')]"},
-        "add_to_cart_button": {"by": "xpath", "value": "//button[contains(@class,'add-to-cart')]"},
-        "remove_from_cart_button": {"by": "xpath", "value": "//button[contains(@class,'remove-from-cart')]"},
-        "cart_total": {"by": "xpath", "value": "//span[@id='cart-total']"}
+        "product_quantity_input": {"by": "id", "value": "product_quantity_input"},
+        "add_to_cart_button": {"by": "id", "value": "add_to_cart_btn"},
+        "cart_update_button": {"by": "id", "value": "cart_update_btn"},
+        "cart_contents_section": {"by": "id", "value": "cart_contents"}
       },
       "actions": [
-        "empty_cart()",
-        "add_product_to_cart(product_name)",
-        "remove_product_from_cart(product_name)",
-        "view_cart()"
+        "set_product_quantity(product_name, quantity)",
+        "click_add_to_cart(product_name)",
+        "submit_cart_update()"
       ],
       "validations": [
-        "is_cart_empty()",
-        "is_product_in_cart(product_name)",
-        "verify_product_details(product_name, unit_price, quantity, subtotal)",
-        "verify_cart_total(expected_total)",
-        "is_cart_empty_message_displayed()"
+        "validate_no_zero_quantity_product()",
+        "validate_no_negative_quantity_product()",
+        "validate_quantity_unchanged(product_name, quantity)"
       ]
     }
   }
