@@ -1,1 +1,51 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"UI_TC_02": {"test_name": "test_invalid_password_login", "feature": "Login", "target_file": "test_saucedemo_login.py", "pages_used": ["SauceDemoLoginPage"], "flow": [{"page": "SauceDemoLoginPage", "action": "open", "data_ref": null}, {"page": "SauceDemoLoginPage", "action": "enter_username", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "enter_password", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "click_login", "data_ref": null}, {"page": "SauceDemoLoginPage", "assertion": "is_error_displayed"}], "test_data": {"invalid_password_user": {"username": "standard_user", "password": "wrong_password"}}}}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "290": {
+      "test_name": "test_add_and_update_cart_instant_ui",
+      "feature": "Cart Operations",
+      "target_file": "test_cart_operations.py",
+      "pages_used": ["CartPage"],
+      "flow": [
+        {"page": "CartPage", "action": "add_product_to_cart", "data_ref": "product_data_1"},
+        {"page": "CartPage", "assertion": "is_product_in_cart"},
+        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "product_data_2"},
+        {"page": "CartPage", "assertion": "is_cart_updated_instantly"},
+        {"page": "CartPage", "action": "observe_cart_ui", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_no_page_refresh"}
+      ],
+      "test_data": {
+        "product_data_1": {"product_name": "Wireless Mouse", "quantity": 1},
+        "product_data_2": {"product_name": "Wireless Mouse", "quantity": 2}
+      }
+    },
+    "291": {
+      "test_name": "test_prevent_negative_quantity_in_cart",
+      "feature": "Cart Operations",
+      "target_file": "test_cart_operations.py",
+      "pages_used": ["CartPage"],
+      "flow": [
+        {"page": "CartPage", "action": "add_product_to_cart", "data_ref": "negative_product_data"},
+        {"page": "CartPage", "assertion": "is_negative_quantity_prevented"},
+        {"page": "CartPage", "action": "update_product_quantity", "data_ref": "negative_product_data"},
+        {"page": "CartPage", "assertion": "is_cart_quantity_unchanged"},
+        {"page": "CartPage", "action": "observe_cart_ui", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_no_page_refresh"}
+      ],
+      "test_data": {
+        "negative_product_data": {"product_name": "Wireless Mouse", "quantity": -1}
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "api_dependencies": [],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}

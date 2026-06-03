@@ -1,1 +1,27 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "product_name_input": {"by": "ID", "value": "product_name_input"},
+        "add_to_cart_button": {"by": "ID", "value": "add_to_cart_btn"},
+        "cart_quantity_input": {"by": "ID", "value": "cart_quantity_input"},
+        "remove_product_button": {"by": "ID", "value": "remove_product_btn"},
+        "cart_ui": {"by": "ID", "value": "cart_ui"}
+      },
+      "actions": [
+        "add_product_to_cart(product_name)",
+        "update_product_quantity(product_name, quantity)",
+        "remove_product_from_cart(product_name)",
+        "observe_cart_ui()"
+      ],
+      "validations": [
+        "is_product_in_cart(product_name)",
+        "is_cart_updated_instantly()",
+        "is_no_page_refresh()",
+        "is_negative_quantity_prevented(product_name)",
+        "is_cart_quantity_unchanged(product_name)"
+      ]
+    }
+  }
+}
