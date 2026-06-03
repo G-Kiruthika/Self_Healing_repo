@@ -1,1 +1,25 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(text(),'Add to Cart')]"},
+        "cart_item": {"by": "XPATH", "value": "//div[contains(@class,'cart-item') and .//span[text()='Wireless Mouse']]"},
+        "quantity_input": {"by": "XPATH", "value": "//input[@name='quantity']"},
+        "remove_button": {"by": "XPATH", "value": "//button[contains(text(),'Remove')]"},
+        "cart_update_message": {"by": "XPATH", "value": "//div[contains(@class,'update-message')]"}
+      },
+      "actions": [
+        "add_product_to_cart(product_name)",
+        "update_quantity(product_name, quantity)",
+        "remove_product(product_name)"
+      ],
+      "validations": [
+        "is_product_in_cart(product_name)",
+        "is_cart_updated_instantly()",
+        "is_negative_quantity_prevented(product_name)",
+        "is_quantity_unchanged(product_name)"
+      ]
+    }
+  }
+}
