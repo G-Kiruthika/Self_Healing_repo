@@ -3,24 +3,23 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "wireless_mouse_add_button": {"by": "PLACEHOLDER", "value": "//button[@data-product='Wireless Mouse']"},
-        "quantity_input": {"by": "PLACEHOLDER", "value": "//input[@name='quantity']"},
-        "delete_button": {"by": "PLACEHOLDER", "value": "//button[@class='delete']"},
-        "line_item_subtotal": {"by": "PLACEHOLDER", "value": "//span[@class='line-subtotal']"},
-        "cart_total": {"by": "PLACEHOLDER", "value": "//span[@id='cart-total']"}
+        "cart_empty_message": {"by": "xpath", "value": "//div[contains(text(),'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "id", "value": "return-to-catalog-btn"},
+        "cart_item": {"by": "css selector", "value": ".cart-item"},
+        "quantity_field": {"by": "name", "value": "quantity"},
+        "error_message": {"by": "class name", "value": "inventory-error"}
       },
       "actions": [
-        "add_wireless_mouse_to_cart(quantity)",
-        "change_quantity(quantity)",
-        "delete_wireless_mouse_from_cart()"
+        "open_cart_page()",
+        "add_item_to_cart(item_name, quantity)",
+        "increase_quantity(item_name, quantity)",
+        "click_return_to_catalog()"
       ],
       "validations": [
-        "validate_product_in_cart(product, quantity)",
-        "validate_quantity_updated(quantity)",
-        "validate_line_item_subtotal_updates()",
-        "validate_cart_total_updates()",
-        "validate_product_removed(product)",
-        "validate_cart_totals_recalculated()"
+        "is_cart_empty()",
+        "is_cart_page_displayed()",
+        "is_item_in_cart(item_name, quantity)",
+        "is_error_message_displayed()"
       ]
     }
   }

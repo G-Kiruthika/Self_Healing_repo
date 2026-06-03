@@ -1,38 +1,37 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "279": {
-      "test_name": "test_add_and_update_quantity_wireless_mouse",
+    "281": {
+      "test_name": "test_cart_empty_state",
       "feature": "Cart",
       "target_file": "test_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "add_wireless_mouse_to_cart", "data_ref": "add_3"},
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "add_3"},
-        {"page": "CartPage", "action": "change_quantity", "data_ref": "update_5"},
-        {"page": "CartPage", "assertion": "validate_quantity_updated", "data_ref": "update_5"},
-        {"page": "CartPage", "assertion": "validate_line_item_subtotal_updates", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_cart_total_updates", "data_ref": null}
+        {"page": "CartPage", "action": "open_cart_page", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_cart_empty"},
+        {"page": "CartPage", "assertion": "is_cart_page_displayed"}
       ],
-      "test_data": {
-        "add_3": {"product": "Wireless Mouse", "quantity": 3},
-        "update_5": {"quantity": 5}
-      }
+      "test_data": {}
     },
-    "280": {
-      "test_name": "test_delete_wireless_mouse_and_check_totals",
+    "282": {
+      "test_name": "test_cart_quantity_limit",
       "feature": "Cart",
       "target_file": "test_cart.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "add_wireless_mouse_to_cart", "data_ref": "add_1"},
-        {"page": "CartPage", "assertion": "validate_product_in_cart", "data_ref": "add_1"},
-        {"page": "CartPage", "action": "delete_wireless_mouse_from_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_product_removed", "data_ref": "add_1"},
-        {"page": "CartPage", "assertion": "validate_cart_totals_recalculated", "data_ref": null}
+        {"page": "CartPage", "action": "add_item_to_cart", "data_ref": "add_mouse_10"},
+        {"page": "CartPage", "action": "increase_quantity", "data_ref": "increase_mouse_11"},
+        {"page": "CartPage", "assertion": "is_error_message_displayed"}
       ],
       "test_data": {
-        "add_1": {"product": "Wireless Mouse", "quantity": 1}
+        "add_mouse_10": {
+          "item_name": "Wireless Mouse",
+          "quantity": 10
+        },
+        "increase_mouse_11": {
+          "item_name": "Wireless Mouse",
+          "quantity": 11
+        }
       }
     }
   },
