@@ -1,37 +1,48 @@
 {
   "pages": {
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "product_list": {"by": "xpath", "value": "//div[@class='product-list']"},
+        "wireless_mouse_add_to_cart_button": {"by": "xpath", "value": "//button[@data-product='Wireless Mouse']"},
+        "cart_link": {"by": "id", "value": "cart-link"}
+      },
+      "actions": [
+        "navigate_to()",
+        "add_product_to_cart(product_name)",
+        "view_cart()"
+      ],
+      "validations": [
+        "is_catalog_displayed()"
+      ]
+    },
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "cart_items": {"by": "xpath", "value": "//div[@class='cart-item']"},
+        "quantity_field": {"by": "xpath", "value": "//input[@name='quantity']"},
+        "wireless_mouse_cart_item": {"by": "xpath", "value": "//div[@data-product='Wireless Mouse']"}
+      },
+      "actions": [
+        "get_product_quantity(product_name)"
+      ],
+      "validations": [
+        "is_product_in_cart(product_name)",
+        "is_quantity_set(product_name, expected_quantity)"
+      ]
+    },
     "LoginPage": {
       "file_name": "login_page.py",
       "locators": {
-        "email_input": {"by": "ID", "value": "email"},
-        "password_input": {"by": "ID", "value": "password"},
-        "sign_in_button": {"by": "XPATH", "value": "//button[text()='Sign In']"},
-        "error_banner": {"by": "CSS_SELECTOR", "value": ".error-banner"}
+        "username_field": {"by": "id", "value": "username"},
+        "password_field": {"by": "id", "value": "password"},
+        "login_button": {"by": "id", "value": "login-btn"}
       },
       "actions": [
-        "navigate_to_login_page()",
-        "enter_email(email)",
-        "enter_password(password)",
-        "click_sign_in()",
-        "clear_inputs()"
+        "login(username, password)"
       ],
       "validations": [
-        "is_authenticated()",
-        "is_error_banner_displayed()",
-        "is_password_field_cleared()",
-        "is_input_highlighted_with_error()"
-      ]
-    },
-    "DashboardPage": {
-      "file_name": "dashboard_page.py",
-      "locators": {
-        "sidebar_avatar": {"by": "CSS_SELECTOR", "value": ".sidebar-avatar"},
-        "profile_name": {"by": "CSS_SELECTOR", "value": ".sidebar-profile-name"}
-      },
-      "actions": [],
-      "validations": [
-        "is_dashboard_loaded()",
-        "is_avatar_and_profile_displayed()"
+        "is_logged_in_as(role)"
       ]
     }
   }
