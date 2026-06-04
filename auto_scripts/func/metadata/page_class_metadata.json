@@ -3,23 +3,24 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "add_to_cart_button": {"by": "XPATH", "value": "//button[contains(text(), 'Add to Cart')]"},
-        "quantity_input": {"by": "XPATH", "value": "//input[@name='quantity']"},
-        "cart_item": {"by": "XPATH", "value": "//div[contains(@class, 'cart-item') and contains(., 'Wireless Mouse')]"},
-        "delete_button": {"by": "XPATH", "value": "//button[contains(text(), 'Delete')]"},
-        "cart_total": {"by": "XPATH", "value": "//div[@id='cart-total']"},
-        "line_item_subtotal": {"by": "XPATH", "value": "//span[@class='line-item-subtotal']"}
+        "empty_cart_message": {"by": "xpath", "value": "//div[contains(text(), 'Your cart is empty')]"},
+        "return_to_catalog_button": {"by": "xpath", "value": "//button[contains(text(), 'Return to catalog')]"},
+        "cart_item": {"by": "css_selector", "value": ".cart-item"},
+        "quantity_input": {"by": "css_selector", "value": ".cart-item-qty-input"},
+        "increase_quantity_button": {"by": "css_selector", "value": ".cart-item-increase-btn"},
+        "inventory_error_message": {"by": "xpath", "value": "//div[contains(@class, 'inventory-error')]"}
       },
       "actions": [
-        "add_to_cart(product_name, quantity)",
-        "set_quantity(product_name, quantity)",
-        "delete_item(product_name)",
-        "view_cart()"
+        "open_cart_page()",
+        "add_item_to_cart(item_name, quantity)",
+        "increase_item_quantity(item_name)",
+        "return_to_catalog()"
       ],
       "validations": [
-        "is_product_in_cart(product_name, quantity)",
-        "is_cart_total_updated()",
-        "is_line_item_subtotal_updated(product_name)"
+        "is_cart_empty()",
+        "is_cart_page_displayed()",
+        "is_item_in_cart(item_name, quantity)",
+        "is_inventory_error_displayed()"
       ]
     }
   }
