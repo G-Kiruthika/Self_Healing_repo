@@ -1,47 +1,52 @@
 {
   "pages": {
-    "ProductCatalogPage": {
-      "file_name": "product_catalog_page.py",
-      "locators": {
-        "catalog_section": {"by": "id", "value": "catalog-section"},
-        "wireless_mouse_add_to_cart_button": {"by": "xpath", "value": "//button[contains(text(),'Add to Cart') and ancestor::div[contains(.,'Wireless Mouse')]]"}
-      },
-      "actions": [
-        "navigate_to_catalog()",
-        "add_product_to_cart(product_name)",
-        "view_cart()"
-      ],
-      "validations": [
-        "is_catalog_displayed()"
-      ]
-    },
-    "CartPage": {
-      "file_name": "cart_page.py",
-      "locators": {
-        "cart_item_wireless_mouse": {"by": "xpath", "value": "//div[contains(@class, 'cart-item') and contains(.,'Wireless Mouse')]"},
-        "quantity_label": {"by": "xpath", "value": "//div[contains(@class, 'cart-item')]//span[@class='quantity']"}
-      },
-      "actions": [
-        "view_cart()"
-      ],
-      "validations": [
-        "is_product_in_cart(product_name)",
-        "is_quantity_set(product_name, quantity)"
-      ]
-    },
     "LoginPage": {
       "file_name": "login_page.py",
       "locators": {
-        "username_input": {"by": "id", "value": "username"},
-        "password_input": {"by": "id", "value": "password"},
-        "login_button": {"by": "id", "value": "login-button"}
+        "username_input": {"by": "ID", "value": "username_field"},
+        "password_input": {"by": "ID", "value": "password_field"},
+        "login_button": {"by": "ID", "value": "login_btn"}
       },
       "actions": [
         "login(username, password)"
       ],
       "validations": [
-        "is_logged_in_as(user_type)"
+        "is_logged_in_as_subscriber()"
+      ]
+    },
+    "ProductPage": {
+      "file_name": "product_page.py",
+      "locators": {
+        "product_item": {"by": "XPATH", "value": "//div[@class='product-item' and .='Wireless Mouse']"},
+        "add_to_cart_button": {"by": "ID", "value": "add_to_cart_btn"},
+        "quantity_field": {"by": "ID", "value": "quantity_input"},
+        "increase_quantity_button": {"by": "ID", "value": "increase_qty_btn"}
+      },
+      "actions": [
+        "add_product_to_cart(product_name)",
+        "increase_quantity(product_name, amount)"
+      ],
+      "validations": [
+        "is_product_added(product_name)",
+        "is_quantity_increased(product_name, expected_qty)"
+      ]
+    },
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "cart_items_list": {"by": "ID", "value": "cart_items"},
+        "product_name": {"by": "XPATH", "value": "//div[@class='cart-item']//span[@class='product-name']"},
+        "unit_price": {"by": "XPATH", "value": "//div[@class='cart-item']//span[@class='unit-price']"},
+        "quantity": {"by": "XPATH", "value": "//div[@class='cart-item']//input[@class='quantity']"},
+        "subtotal": {"by": "XPATH", "value": "//div[@class='cart-item']//span[@class='subtotal']"}
+      },
+      "actions": [
+        "view_cart()"
+      ],
+      "validations": [
+        "is_cart_displayed()",
+        "verify_product_details(product_name, unit_price, quantity, subtotal)"
       ]
     }
   }
-}
+} 
