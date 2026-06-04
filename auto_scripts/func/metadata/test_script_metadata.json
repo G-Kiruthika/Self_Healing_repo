@@ -1,39 +1,54 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "283": {
-      "test_name": "test_check_stock_and_add_max_quantity",
-      "feature": "Inventory and Cart Management",
-      "target_file": "test_inventory_cart.py",
-      "pages_used": ["InventoryPage", "CartPage"],
+    "285": {
+      "test_name": "test_cart_addition_and_verification",
+      "feature": "Cart",
+      "target_file": "test_cart_addition_and_verification.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "InventoryPage", "action": "check_stock_quantity", "data_ref": "product_data"},
-        {"page": "InventoryPage", "assertion": "validate_stock_quantity"},
-        {"page": "InventoryPage", "action": "set_quantity", "data_ref": "max_quantity_data"},
-        {"page": "InventoryPage", "action": "add_product_to_cart", "data_ref": "max_quantity_data"},
-        {"page": "InventoryPage", "action": "open_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_cart_contains_product"}
+        {"page": "CartPage", "action": "ensure_cart_is_empty", "data_ref": null},
+        {"page": "CartPage", "action": "add_product_to_cart", "data_ref": "Wireless Mouse"},
+        {"page": "CartPage", "action": "add_product_to_cart", "data_ref": "Keyboard"},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": "Wireless Mouse"},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": "Keyboard"},
+        {"page": "CartPage", "assertion": "verify_product_details", "data_ref": "Wireless Mouse"},
+        {"page": "CartPage", "assertion": "verify_product_details", "data_ref": "Keyboard"},
+        {"page": "CartPage", "assertion": "verify_cart_total", "data_ref": "expected_total"}
       ],
       "test_data": {
-        "product_data": {"product_name": "Wireless Mouse"},
-        "max_quantity_data": {"product_name": "Wireless Mouse", "quantity": 10, "expected_quantity": 10}
+        "Wireless Mouse": {
+          "product_name": "Wireless Mouse",
+          "unit_price": "inferred_or_placeholder",
+          "quantity": 1,
+          "subtotal": "inferred_or_placeholder"
+        },
+        "Keyboard": {
+          "product_name": "Keyboard",
+          "unit_price": "inferred_or_placeholder",
+          "quantity": 1,
+          "subtotal": "inferred_or_placeholder"
+        },
+        "expected_total": {
+          "value": "inferred_or_placeholder"
+        }
       }
     },
-    "284": {
-      "test_name": "test_check_min_procurement_and_add_to_cart",
-      "feature": "Inventory and Cart Management",
-      "target_file": "test_inventory_cart.py",
-      "pages_used": ["InventoryPage", "CartPage"],
+    "286": {
+      "test_name": "test_cart_removal_and_empty_state",
+      "feature": "Cart",
+      "target_file": "test_cart_removal_and_empty_state.py",
+      "pages_used": ["CartPage"],
       "flow": [
-        {"page": "InventoryPage", "action": "check_procurement_threshold", "data_ref": "product_data"},
-        {"page": "InventoryPage", "assertion": "validate_procurement_threshold"},
-        {"page": "InventoryPage", "action": "add_product_to_cart", "data_ref": "min_quantity_data"},
-        {"page": "InventoryPage", "action": "open_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_cart_contains_product"}
+        {"page": "CartPage", "action": "add_product_to_cart", "data_ref": "Wireless Mouse"},
+        {"page": "CartPage", "action": "remove_product_from_cart", "data_ref": "Wireless Mouse"},
+        {"page": "CartPage", "assertion": "is_cart_empty", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_cart_empty_message_displayed", "data_ref": null}
       ],
       "test_data": {
-        "product_data": {"product_name": "Wireless Mouse"},
-        "min_quantity_data": {"product_name": "Wireless Mouse", "quantity": 3, "expected_quantity": 3}
+        "Wireless Mouse": {
+          "product_name": "Wireless Mouse"
+        }
       }
     }
   },
