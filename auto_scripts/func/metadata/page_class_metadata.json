@@ -1,40 +1,46 @@
 {
   "pages": {
+    "ProductCatalogPage": {
+      "file_name": "product_catalog_page.py",
+      "locators": {
+        "catalog_section": {"by": "id", "value": "catalog-section"},
+        "wireless_mouse_add_to_cart_button": {"by": "xpath", "value": "//button[contains(text(),'Add to Cart') and ancestor::div[contains(.,'Wireless Mouse')]]"}
+      },
+      "actions": [
+        "navigate_to_catalog()",
+        "add_product_to_cart(product_name)",
+        "view_cart()"
+      ],
+      "validations": [
+        "is_catalog_displayed()"
+      ]
+    },
+    "CartPage": {
+      "file_name": "cart_page.py",
+      "locators": {
+        "cart_item_wireless_mouse": {"by": "xpath", "value": "//div[contains(@class, 'cart-item') and contains(.,'Wireless Mouse')]"},
+        "quantity_label": {"by": "xpath", "value": "//div[contains(@class, 'cart-item')]//span[@class='quantity']"}
+      },
+      "actions": [
+        "view_cart()"
+      ],
+      "validations": [
+        "is_product_in_cart(product_name)",
+        "is_quantity_set(product_name, quantity)"
+      ]
+    },
     "LoginPage": {
       "file_name": "login_page.py",
       "locators": {
-        "email_input": {"by": "ID", "value": "email"},
-        "password_input": {"by": "ID", "value": "password"},
-        "sign_in_button": {"by": "ID", "value": "sign_in"},
-        "error_banner": {"by": "CSS_SELECTOR", "value": ".error-banner"}
+        "username_input": {"by": "id", "value": "username"},
+        "password_input": {"by": "id", "value": "password"},
+        "login_button": {"by": "id", "value": "login-button"}
       },
       "actions": [
-        "navigate_to_login_page()",
-        "enter_email(email)",
-        "enter_password(password)",
-        "click_sign_in()",
-        "clear_inputs()"
+        "login(username, password)"
       ],
       "validations": [
-        "verify_authenticated()",
-        "verify_error_banner(expected_text)",
-        "verify_password_cleared()",
-        "verify_input_error_highlight()"
-      ]
-    },
-    "DashboardPage": {
-      "file_name": "dashboard_page.py",
-      "locators": {
-        "sidebar_avatar": {"by": "CSS_SELECTOR", "value": ".sidebar-avatar"},
-        "profile_name": {"by": "CSS_SELECTOR", "value": ".profile-name"}
-      },
-      "actions": [
-        "is_at_dashboard()"
-      ],
-      "validations": [
-        "verify_dashboard_loaded()",
-        "verify_user_avatar_displayed()",
-        "verify_profile_name(expected_name)"
+        "is_logged_in_as(user_type)"
       ]
     }
   }

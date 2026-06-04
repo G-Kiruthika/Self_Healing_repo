@@ -1,48 +1,48 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "258": {
-      "test_name": "test_successful_login_valid_credentials",
-      "feature": "Login",
-      "target_file": "test_login.py",
-      "pages_used": ["LoginPage", "DashboardPage"],
+    "275": {
+      "test_name": "test_product_catalog_add_to_cart_as_guest",
+      "feature": "Product Catalog",
+      "target_file": "test_product_catalog.py",
+      "pages_used": ["ProductCatalogPage", "CartPage"],
       "flow": [
-        {"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": null},
-        {"page": "LoginPage", "action": "enter_email", "data_ref": "valid_credentials"},
-        {"page": "LoginPage", "action": "enter_password", "data_ref": "valid_credentials"},
-        {"page": "LoginPage", "action": "click_sign_in", "data_ref": null},
-        {"page": "LoginPage", "assertion": "verify_authenticated"},
-        {"page": "DashboardPage", "assertion": "verify_dashboard_loaded"},
-        {"page": "DashboardPage", "assertion": "verify_user_avatar_displayed"},
-        {"page": "DashboardPage", "assertion": "verify_profile_name"}
+        {"page": "ProductCatalogPage", "action": "navigate_to_catalog", "data_ref": null},
+        {"page": "ProductCatalogPage", "assertion": "is_catalog_displayed"},
+        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "wireless_mouse"},
+        {"page": "CartPage", "action": "view_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": "wireless_mouse"},
+        {"page": "CartPage", "assertion": "is_quantity_set", "data_ref": {"product_name": "Wireless Mouse", "quantity": 3}}
       ],
       "test_data": {
-        "valid_credentials": {
-          "email": "user@example.com",
-          "password": "valid_password"
+        "wireless_mouse": {
+          "product_name": "Wireless Mouse",
+          "quantity": 3
         }
       }
     },
-    "259": {
-      "test_name": "test_error_message_login_invalid_password",
-      "feature": "Login",
-      "target_file": "test_login.py",
-      "pages_used": ["LoginPage"],
+    "276": {
+      "test_name": "test_add_to_cart_as_non_subscriber",
+      "feature": "Cart",
+      "target_file": "test_cart.py",
+      "pages_used": ["LoginPage", "ProductCatalogPage", "CartPage"],
       "flow": [
-        {"page": "LoginPage", "action": "clear_inputs", "data_ref": null},
-        {"page": "LoginPage", "action": "enter_email", "data_ref": "valid_credentials"},
-        {"page": "LoginPage", "action": "enter_password", "data_ref": "invalid_password"},
-        {"page": "LoginPage", "action": "click_sign_in", "data_ref": null},
-        {"page": "LoginPage", "assertion": "verify_error_banner"},
-        {"page": "LoginPage", "assertion": "verify_password_cleared"},
-        {"page": "LoginPage", "assertion": "verify_input_error_highlight"}
+        {"page": "LoginPage", "action": "login", "data_ref": "non_subscriber_user"},
+        {"page": "LoginPage", "assertion": "is_logged_in_as", "data_ref": "non_subscriber"},
+        {"page": "ProductCatalogPage", "action": "add_product_to_cart", "data_ref": "wireless_mouse"},
+        {"page": "CartPage", "action": "view_cart", "data_ref": null},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": "wireless_mouse"},
+        {"page": "CartPage", "assertion": "is_quantity_set", "data_ref": {"product_name": "Wireless Mouse", "quantity": 3}}
       ],
       "test_data": {
-        "valid_credentials": {
-          "email": "user@example.com"
+        "non_subscriber_user": {
+          "username": "non_sub_user",
+          "password": "password123",
+          "user_type": "non_subscriber"
         },
-        "invalid_password": {
-          "password": "wrong_password"
+        "wireless_mouse": {
+          "product_name": "Wireless Mouse",
+          "quantity": 3
         }
       }
     }
