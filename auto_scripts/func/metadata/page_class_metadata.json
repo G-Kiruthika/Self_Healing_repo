@@ -3,29 +3,20 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "cart_empty_message": {"by": "xpath", "value": "//div[@id='cart-empty-message']"},
-        "product_row": {"by": "xpath", "value": "//tr[contains(@class, 'cart-product-row')]"},
-        "add_to_cart_button": {"by": "xpath", "value": "//button[@data-product-name]"},
-        "remove_button": {"by": "xpath", "value": "//button[@class='remove-item']"},
-        "product_name": {"by": "xpath", "value": "//td[@class='product-name']"},
-        "unit_price": {"by": "xpath", "value": "//td[@class='unit-price']"},
-        "quantity_input": {"by": "xpath", "value": "//input[@class='quantity']"},
-        "subtotal": {"by": "xpath", "value": "//td[@class='subtotal']"},
-        "total": {"by": "xpath", "value": "//span[@id='cart-total']"}
+        "product_quantity_input": {"by": "ID", "value": "product-quantity-input"},
+        "add_to_cart_button": {"by": "ID", "value": "add-to-cart-btn"},
+        "update_cart_button": {"by": "ID", "value": "update-cart-btn"},
+        "cart_contents": {"by": "ID", "value": "cart-contents"}
       },
       "actions": [
-        "ensure_cart_is_empty()",
-        "add_product_to_cart(product_name)",
-        "remove_product_from_cart(product_name)",
-        "view_cart()"
+        "set_product_quantity(product_name, quantity)",
+        "click_add_to_cart(product_name)",
+        "click_update_cart()"
       ],
       "validations": [
-        "is_cart_empty()",
-        "is_product_in_cart(product_name)",
-        "verify_product_details(product_name, unit_price, quantity, subtotal)",
-        "verify_cart_total(expected_total)",
-        "is_cart_empty_message_displayed()"
+        "validate_quantity_not_changed(product_name)",
+        "validate_no_product_with_quantity(product_name, quantity)"
       ]
     }
   }
-} 
+}
