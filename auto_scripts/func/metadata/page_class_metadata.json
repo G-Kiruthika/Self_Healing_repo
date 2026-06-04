@@ -1,1 +1,41 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "LoginPage": {
+      "file_name": "login_page.py",
+      "locators": {
+        "email_input": {"by": "ID", "value": "email"},
+        "password_input": {"by": "ID", "value": "password"},
+        "sign_in_button": {"by": "ID", "value": "sign_in"},
+        "error_banner": {"by": "CSS_SELECTOR", "value": ".error-banner"}
+      },
+      "actions": [
+        "navigate_to_login_page()",
+        "enter_email(email)",
+        "enter_password(password)",
+        "click_sign_in()",
+        "clear_inputs()"
+      ],
+      "validations": [
+        "verify_authenticated()",
+        "verify_error_banner(expected_text)",
+        "verify_password_cleared()",
+        "verify_input_error_highlight()"
+      ]
+    },
+    "DashboardPage": {
+      "file_name": "dashboard_page.py",
+      "locators": {
+        "sidebar_avatar": {"by": "CSS_SELECTOR", "value": ".sidebar-avatar"},
+        "profile_name": {"by": "CSS_SELECTOR", "value": ".profile-name"}
+      },
+      "actions": [
+        "is_at_dashboard()"
+      ],
+      "validations": [
+        "verify_dashboard_loaded()",
+        "verify_user_avatar_displayed()",
+        "verify_profile_name(expected_name)"
+      ]
+    }
+  }
+}
