@@ -1,50 +1,50 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "287": {
-      "test_name": "test_prevent_adding_zero_quantity_to_cart",
-      "feature": "CartValidation",
-      "target_file": "test_cart_validation.py",
+    "289": {
+      "test_name": "test_add_and_update_cart",
+      "feature": "Cart Functionality",
+      "target_file": "test_cart_functionality.py",
       "pages_used": ["CartPage"],
       "flow": [
-        {"page": "CartPage", "action": "set_product_quantity", "data_ref": "zero_quantity"},
-        {"page": "CartPage", "action": "click_add_to_cart", "data_ref": "wireless_mouse"},
-        {"page": "CartPage", "action": "click_update_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_quantity_not_changed"},
-        {"page": "CartPage", "assertion": "validate_no_product_with_quantity"}
+        {"page": "CartPage", "action": "add_product_to_cart", "data_ref": {"product_name": "Wireless Mouse"}},
+        {"page": "CartPage", "assertion": "is_product_in_cart", "data_ref": {"product_name": "Wireless Mouse"}},
+        {"page": "CartPage", "action": "update_product_quantity", "data_ref": {"product_name": "Wireless Mouse", "quantity": "updated_quantity"}},
+        {"page": "CartPage", "action": "remove_product_from_cart", "data_ref": {"product_name": "Wireless Mouse"}},
+        {"page": "CartPage", "assertion": "is_cart_updated_without_refresh", "data_ref": null}
       ],
       "test_data": {
-        "zero_quantity": {"product_name": "Wireless Mouse", "quantity": 0},
-        "wireless_mouse": {"product_name": "Wireless Mouse"}
-      }
-    },
-    "288": {
-      "test_name": "test_prevent_adding_negative_quantity_to_cart",
-      "feature": "CartValidation",
-      "target_file": "test_cart_validation.py",
-      "pages_used": ["CartPage"],
-      "flow": [
-        {"page": "CartPage", "action": "set_product_quantity", "data_ref": "negative_quantity"},
-        {"page": "CartPage", "action": "click_add_to_cart", "data_ref": "wireless_mouse"},
-        {"page": "CartPage", "action": "click_update_cart", "data_ref": null},
-        {"page": "CartPage", "assertion": "validate_quantity_not_changed"},
-        {"page": "CartPage", "assertion": "validate_no_product_with_quantity"}
-      ],
-      "test_data": {
-        "negative_quantity": {"product_name": "Wireless Mouse", "quantity": -1},
-        "wireless_mouse": {"product_name": "Wireless Mouse"}
+        "cart_update": {
+          "product_name": "Wireless Mouse",
+          "quantity": "2"
+        }
       }
     }
   },
   "framework": {
     "architecture": "python-ui-api-automation-framework",
     "type": "ui",
-    "base_classes_required": ["BasePage"],
-    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "base_classes_required": [
+      "BasePage"
+    ],
+    "core_dependencies": [
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py"
+    ],
     "api_dependencies": [],
-    "config_dependencies": ["config/config.yaml"],
+    "config_dependencies": [
+      "config/config.yaml"
+    ],
     "utils_dependencies": [],
-    "external_libraries": ["selenium", "pytest", "pyyaml"],
-    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+    "external_libraries": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ],
+    "required_imports": [
+      "pages.",
+      "core.driver_factory",
+      "pages.base_page"
+    ]
   }
 }

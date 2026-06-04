@@ -3,19 +3,21 @@
     "CartPage": {
       "file_name": "cart_page.py",
       "locators": {
-        "product_quantity_input": {"by": "ID", "value": "product-quantity-input"},
-        "add_to_cart_button": {"by": "ID", "value": "add-to-cart-btn"},
-        "update_cart_button": {"by": "ID", "value": "update-cart-btn"},
-        "cart_contents": {"by": "ID", "value": "cart-contents"}
+        "product_item": {"by": "PLACEHOLDER", "value": "//div[@class='product-item' and .='Wireless Mouse']"},
+        "add_to_cart_button": {"by": "PLACEHOLDER", "value": "//button[contains(@class, 'add-to-cart')]"},
+        "cart_quantity_input": {"by": "PLACEHOLDER", "value": "//input[@class='cart-qty']"},
+        "remove_product_button": {"by": "PLACEHOLDER", "value": "//button[contains(@class, 'remove-product')]"},
+        "cart_icon": {"by": "PLACEHOLDER", "value": "//div[@id='cart-icon']"},
+        "cart_ui": {"by": "PLACEHOLDER", "value": "//div[@id='cart-ui']"}
       },
       "actions": [
-        "set_product_quantity(product_name, quantity)",
-        "click_add_to_cart(product_name)",
-        "click_update_cart()"
+        "add_product_to_cart(product_name)",
+        "update_product_quantity(product_name, quantity)",
+        "remove_product_from_cart(product_name)"
       ],
       "validations": [
-        "validate_quantity_not_changed(product_name)",
-        "validate_no_product_with_quantity(product_name, quantity)"
+        "is_product_in_cart(product_name)",
+        "is_cart_updated_without_refresh()"
       ]
     }
   }
