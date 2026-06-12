@@ -1,1 +1,46 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"UI_TC_02": {"test_name": "test_invalid_password_login", "feature": "Login", "target_file": "test_saucedemo_login.py", "pages_used": ["SauceDemoLoginPage"], "flow": [{"page": "SauceDemoLoginPage", "action": "open", "data_ref": null}, {"page": "SauceDemoLoginPage", "action": "enter_username", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "enter_password", "data_ref": "invalid_password_user"}, {"page": "SauceDemoLoginPage", "action": "click_login", "data_ref": null}, {"page": "SauceDemoLoginPage", "assertion": "is_error_displayed"}], "test_data": {"invalid_password_user": {"username": "standard_user", "password": "wrong_password"}}}}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "1032": {
+      "test_name": "test_design_assets_figma_reference",
+      "feature": "DesignAssets",
+      "target_file": "test_design_assets.py",
+      "pages_used": ["DesignAssetsPage"],
+      "flow": [
+        {"page": "DesignAssetsPage", "action": "access_design_assets", "data_ref": null},
+        {"page": "DesignAssetsPage", "action": "open_figma_reference", "data_ref": null},
+        {"page": "DesignAssetsPage", "action": "generate_test_scenarios", "data_ref": null},
+        {"page": "DesignAssetsPage", "assertion": "validate_design_assets_accessible"},
+        {"page": "DesignAssetsPage", "assertion": "validate_scenarios_reference_figma"},
+        {"page": "DesignAssetsPage", "assertion": "validate_alignment_with_figma_specs"}
+      ],
+      "test_data": {}
+    },
+    "1033": {
+      "test_name": "test_jira_story_context_ingestion",
+      "feature": "JiraStoryIngestion",
+      "target_file": "test_jira_story.py",
+      "pages_used": ["JiraStoryPage"],
+      "flow": [
+        {"page": "JiraStoryPage", "action": "initiate_context_ingestion", "data_ref": null},
+        {"page": "JiraStoryPage", "action": "verify_api_credentials", "data_ref": null},
+        {"page": "JiraStoryPage", "action": "extract_jira_data", "data_ref": null},
+        {"page": "JiraStoryPage", "assertion": "validate_context_ingestion_started"},
+        {"page": "JiraStoryPage", "assertion": "validate_api_credentials_verified"},
+        {"page": "JiraStoryPage", "assertion": "validate_jira_data_extracted"}
+      ],
+      "test_data": {}
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "api_dependencies": [],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}

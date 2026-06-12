@@ -1,1 +1,39 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "DesignAssetsPage": {
+      "file_name": "design_assets_page.py",
+      "locators": {
+        "figma_reference_link": {"by": "LINK_TEXT", "value": "Figma Design Reference"},
+        "design_asset_list": {"by": "CSS_SELECTOR", "value": ".design-assets-list"}
+      },
+      "actions": [
+        "access_design_assets()",
+        "open_figma_reference()",
+        "generate_test_scenarios()"
+      ],
+      "validations": [
+        "validate_design_assets_accessible()",
+        "validate_scenarios_reference_figma()",
+        "validate_alignment_with_figma_specs()"
+      ]
+    },
+    "JiraStoryPage": {
+      "file_name": "jira_story_page.py",
+      "locators": {
+        "context_ingest_button": {"by": "ID", "value": "context-ingest-btn"},
+        "jira_api_credentials_field": {"by": "NAME", "value": "jira-api-credentials"},
+        "jira_data_panel": {"by": "CSS_SELECTOR", "value": ".jira-data-panel"}
+      },
+      "actions": [
+        "initiate_context_ingestion()",
+        "verify_api_credentials()",
+        "extract_jira_data()"
+      ],
+      "validations": [
+        "validate_context_ingestion_started()",
+        "validate_api_credentials_verified()",
+        "validate_jira_data_extracted()"
+      ]
+    }
+  }
+}
