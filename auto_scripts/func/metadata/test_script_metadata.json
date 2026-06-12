@@ -1,15 +1,16 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "94": {
-      "test_name": "test_experian_homepage_verify_credit_navigation_menu_item_is_visible",
-      "feature": "Homepage Navigation",
-      "target_file": "test_experian_homepage_navigation.py",
+    "96": {
+      "test_name": "test_experian_homepage_verify_money_navigation_menu_item_is_visible",
+      "feature": "Experian Homepage",
+      "target_file": "test_experian_homepage.py",
       "pages_used": ["ExperianHomePage"],
       "flow": [
         {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": "homepage_url"},
         {"page": "ExperianHomePage", "action": "locate_header_navigation", "data_ref": null},
-        {"page": "ExperianHomePage", "assertion": "is_credit_menu_button_visible"}
+        {"page": "ExperianHomePage", "action": "locate_money_menu_button", "data_ref": null},
+        {"page": "ExperianHomePage", "assertion": "is_money_menu_button_visible"}
       ],
       "test_data": {
         "homepage_url": {
@@ -17,15 +18,16 @@
         }
       }
     },
-    "95": {
-      "test_name": "test_experian_homepage_verify_protection_navigation_menu_item_is_visible",
-      "feature": "Homepage Navigation",
-      "target_file": "test_experian_homepage_navigation.py",
+    "97": {
+      "test_name": "test_experian_homepage_verify_credit_cards_navigation_menu_item_is_visible",
+      "feature": "Experian Homepage",
+      "target_file": "test_experian_homepage.py",
       "pages_used": ["ExperianHomePage"],
       "flow": [
         {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": "homepage_url"},
         {"page": "ExperianHomePage", "action": "locate_header_navigation", "data_ref": null},
-        {"page": "ExperianHomePage", "assertion": "is_protection_menu_button_visible"}
+        {"page": "ExperianHomePage", "action": "locate_credit_cards_menu_button", "data_ref": null},
+        {"page": "ExperianHomePage", "assertion": "is_credit_cards_menu_button_visible"}
       ],
       "test_data": {
         "homepage_url": {

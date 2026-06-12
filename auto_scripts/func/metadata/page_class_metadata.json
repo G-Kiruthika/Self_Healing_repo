@@ -3,17 +3,19 @@
     "ExperianHomePage": {
       "file_name": "experian_home_page.py",
       "locators": {
-        "header_navigation": {"by": "XPATH", "value": "//header//nav"},
-        "credit_menu_button": {"by": "XPATH", "value": "//nav//a[contains(text(), 'Credit')]"},
-        "protection_menu_button": {"by": "XPATH", "value": "//nav//a[contains(text(), 'Protection')]"}
+        "header_navigation": {"by": "XPATH", "value": "//header[@id='header-navigation']"},
+        "money_menu_button": {"by": "XPATH", "value": "//a[contains(text(),'Money')]"},
+        "credit_cards_menu_button": {"by": "XPATH", "value": "//a[contains(text(),'Credit Cards')]"}
       },
       "actions": [
         "navigate_to_homepage(url)",
-        "locate_header_navigation()"
+        "locate_header_navigation()",
+        "locate_money_menu_button()",
+        "locate_credit_cards_menu_button()"
       ],
       "validations": [
-        "is_credit_menu_button_visible()",
-        "is_protection_menu_button_visible()"
+        "is_money_menu_button_visible()",
+        "is_credit_cards_menu_button_visible()"
       ]
     }
   }
