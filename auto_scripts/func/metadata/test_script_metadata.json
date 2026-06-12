@@ -1,39 +1,29 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "96": {
-      "test_name": "test_experian_homepage_verify_money_navigation_menu_item_is_visible",
-      "feature": "Experian Homepage",
-      "target_file": "test_experian_homepage.py",
-      "pages_used": ["ExperianHomePage"],
+    "98": {
+      "test_name": "test_experian_homepage_loans_menu_visible",
+      "feature": "ExperianHomepage",
+      "target_file": "test_experian_homepage_loans_menu_visible.py",
+      "pages_used": ["ExperianHomepage"],
       "flow": [
-        {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": "homepage_url"},
-        {"page": "ExperianHomePage", "action": "locate_header_navigation", "data_ref": null},
-        {"page": "ExperianHomePage", "action": "locate_money_menu_button", "data_ref": null},
-        {"page": "ExperianHomePage", "assertion": "is_money_menu_button_visible"}
+        {"page": "ExperianHomepage", "action": "navigate_to_homepage", "data_ref": null},
+        {"page": "ExperianHomepage", "action": "locate_header_navigation", "data_ref": null},
+        {"page": "ExperianHomepage", "assertion": "is_loans_menu_visible"}
       ],
-      "test_data": {
-        "homepage_url": {
-          "url": "https://www.experian.com/"
-        }
-      }
+      "test_data": {}
     },
-    "97": {
-      "test_name": "test_experian_homepage_verify_credit_cards_navigation_menu_item_is_visible",
-      "feature": "Experian Homepage",
-      "target_file": "test_experian_homepage.py",
-      "pages_used": ["ExperianHomePage"],
+    "99": {
+      "test_name": "test_experian_homepage_insurance_menu_visible",
+      "feature": "ExperianHomepage",
+      "target_file": "test_experian_homepage_insurance_menu_visible.py",
+      "pages_used": ["ExperianHomepage"],
       "flow": [
-        {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": "homepage_url"},
-        {"page": "ExperianHomePage", "action": "locate_header_navigation", "data_ref": null},
-        {"page": "ExperianHomePage", "action": "locate_credit_cards_menu_button", "data_ref": null},
-        {"page": "ExperianHomePage", "assertion": "is_credit_cards_menu_button_visible"}
+        {"page": "ExperianHomepage", "action": "navigate_to_homepage", "data_ref": null},
+        {"page": "ExperianHomepage", "action": "locate_header_navigation", "data_ref": null},
+        {"page": "ExperianHomepage", "assertion": "is_insurance_menu_visible"}
       ],
-      "test_data": {
-        "homepage_url": {
-          "url": "https://www.experian.com/"
-        }
-      }
+      "test_data": {}
     }
   },
   "framework": {
