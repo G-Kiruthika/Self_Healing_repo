@@ -3,27 +3,19 @@
     "ExperianHomePage": {
       "file_name": "experian_home_page.py",
       "locators": {
-        "footer_section": {"by": "XPATH", "value": "//footer"},
-        "support_header": {"by": "XPATH", "value": "//footer//*[text()='Support']"},
-        "education_advice_header": {"by": "XPATH", "value": "//footer//*[text()='Education & advice']"},
-        "credit_resources_header": {"by": "XPATH", "value": "//footer//*[text()='Credit resources']"},
-        "experian_for_businesses_header": {"by": "XPATH", "value": "//footer//*[text()='Experian for businesses']"},
-        "how_can_we_help_section": {"by": "XPATH", "value": "//*[text()='How can we help?']"},
-        "security_freeze_card_link": {"by": "XPATH", "value": "//a[contains(@href, '/help/credit-freeze/')]"}
+        "how_can_we_help_section": {"by": "xpath", "value": "//section[contains(., 'How can we help?')]"},
+        "disputes_card_link": {"by": "xpath", "value": "//a[contains(., 'Disputes')]"},
+        "fraud_alert_card_link": {"by": "xpath", "value": "//a[contains(., 'Fraud alert')]"}
       },
       "actions": [
         "navigate_to_homepage(url)",
-        "scroll_to_footer()",
         "scroll_to_how_can_we_help_section()",
-        "click_security_freeze_card_link()"
+        "click_disputes_card()",
+        "click_fraud_alert_card()"
       ],
       "validations": [
-        "is_footer_section_visible()",
-        "is_support_header_visible()",
-        "is_education_advice_header_visible()",
-        "is_credit_resources_header_visible()",
-        "is_experian_for_businesses_header_visible()",
-        "is_on_security_freeze_page()"
+        "validate_on_disputes_page()",
+        "validate_on_fraud_alert_page()"
       ]
     }
   }
