@@ -1,38 +1,32 @@
 {
   "pages": {
-    "DesignAssetsPage": {
-      "file_name": "design_assets_page.py",
+    "RequirementsAnalysisPage": {
+      "file_name": "requirements_analysis_page.py",
       "locators": {
-        "figma_reference_link": {"by": "LINK_TEXT", "value": "Figma Design Reference"},
-        "design_asset_list": {"by": "CSS_SELECTOR", "value": ".design-assets-list"}
+        "requirements_section": {"by": "ID", "value": "requirements-section"},
+        "test_scenarios_list": {"by": "ID", "value": "test-scenarios-list"}
       },
       "actions": [
-        "access_design_assets()",
-        "open_figma_reference()",
+        "analyze_requirements()",
         "generate_test_scenarios()"
       ],
       "validations": [
-        "validate_design_assets_accessible()",
-        "validate_scenarios_reference_figma()",
-        "validate_alignment_with_figma_specs()"
+        "validate_requirements_analyzed()",
+        "validate_test_scenarios_generated()"
       ]
     },
-    "JiraStoryPage": {
-      "file_name": "jira_story_page.py",
+    "TestRailPublishingPage": {
+      "file_name": "test_rail_publishing_page.py",
       "locators": {
-        "context_ingest_button": {"by": "ID", "value": "context-ingest-btn"},
-        "jira_api_credentials_field": {"by": "NAME", "value": "jira-api-credentials"},
-        "jira_data_panel": {"by": "CSS_SELECTOR", "value": ".jira-data-panel"}
+        "publish_button": {"by": "ID", "value": "publish-btn"},
+        "formatting_status": {"by": "ID", "value": "formatting-status"}
       },
       "actions": [
-        "initiate_context_ingestion()",
-        "verify_api_credentials()",
-        "extract_jira_data()"
+        "publish_test_cases()"
       ],
       "validations": [
-        "validate_context_ingestion_started()",
-        "validate_api_credentials_verified()",
-        "validate_jira_data_extracted()"
+        "validate_test_cases_published()",
+        "validate_formatting()"
       ]
     }
   }
