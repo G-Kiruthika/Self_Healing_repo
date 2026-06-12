@@ -1,40 +1,65 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "88": {
-      "test_name": "test_experian_homepage_verify_big_financial_friend_section_is_visible",
+    "90": {
+      "test_name": "test_experian_homepage_verify_footer_section_headers_are_visible",
       "feature": "Experian Homepage",
-      "target_file": "test_experian_homepage.py",
+      "target_file": "test_experian_homepage_footer_section.py",
       "pages_used": ["ExperianHomePage"],
       "flow": [
-        {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": null},
-        {"page": "ExperianHomePage", "action": "scroll_to_bff_section", "data_ref": null},
-        {"page": "ExperianHomePage", "assertion": "is_bff_section_heading_visible"}
+        {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": "homepage_url"},
+        {"page": "ExperianHomePage", "action": "scroll_to_footer", "data_ref": null},
+        {"page": "ExperianHomePage", "assertion": "is_support_header_visible"},
+        {"page": "ExperianHomePage", "assertion": "is_education_advice_header_visible"},
+        {"page": "ExperianHomePage", "assertion": "is_credit_resources_header_visible"},
+        {"page": "ExperianHomePage", "assertion": "is_experian_for_businesses_header_visible"}
       ],
-      "test_data": {}
+      "test_data": {
+        "homepage_url": {
+          "url": "https://www.experian.com/"
+        }
+      }
     },
-    "89": {
-      "test_name": "test_experian_homepage_verify_how_can_we_help_section_is_visible",
+    "91": {
+      "test_name": "test_experian_homepage_navigate_to_security_freeze_via_credit_support_card",
       "feature": "Experian Homepage",
-      "target_file": "test_experian_homepage.py",
+      "target_file": "test_experian_homepage_security_freeze.py",
       "pages_used": ["ExperianHomePage"],
       "flow": [
-        {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": null},
+        {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": "homepage_url"},
         {"page": "ExperianHomePage", "action": "scroll_to_how_can_we_help_section", "data_ref": null},
-        {"page": "ExperianHomePage", "assertion": "is_how_can_we_help_section_heading_visible"}
+        {"page": "ExperianHomePage", "action": "click_security_freeze_card_link", "data_ref": null},
+        {"page": "ExperianHomePage", "assertion": "is_on_security_freeze_page"}
       ],
-      "test_data": {}
+      "test_data": {
+        "homepage_url": {
+          "url": "https://www.experian.com/"
+        }
+      }
     }
   },
   "framework": {
     "architecture": "python-ui-api-automation-framework",
     "type": "ui",
     "base_classes_required": ["BasePage"],
-    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "core_dependencies": [
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py"
+    ],
     "api_dependencies": [],
-    "config_dependencies": ["config/config.yaml"],
+    "config_dependencies": [
+      "config/config.yaml"
+    ],
     "utils_dependencies": [],
-    "external_libraries": ["selenium", "pytest", "pyyaml"],
-    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+    "external_libraries": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ],
+    "required_imports": [
+      "pages.",
+      "core.driver_factory",
+      "pages.base_page"
+    ]
   }
 }
