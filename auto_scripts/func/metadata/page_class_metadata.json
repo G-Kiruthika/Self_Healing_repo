@@ -1,21 +1,19 @@
 {
   "pages": {
-    "ExperianHomepage": {
-      "file_name": "experian_homepage.py",
+    "ExperianHomePage": {
+      "file_name": "experian_home_page.py",
       "locators": {
-        "hero_heading": {"by": "xpath", "value": "//h1[contains(text(), 'Reach your credit and money goals')]"},
-        "credit_score_tab": {"by": "xpath", "value": "//button[contains(text(), 'Get a credit report & FICO Score')]"},
-        "hero_tab_list": {"by": "xpath", "value": "//div[contains(@class, 'tablist')]"}
+        "bff_section_heading": {"by": "xpath", "value": "//h2[contains(text(), 'Big Financial Friend')]"},
+        "how_can_we_help_section_heading": {"by": "xpath", "value": "//h2[contains(text(), 'How can we help?')]"}
       },
       "actions": [
         "navigate_to_homepage()",
-        "locate_hero_tab_list()"
+        "scroll_to_bff_section()",
+        "scroll_to_how_can_we_help_section()"
       ],
       "validations": [
-        "verify_url(expected_url)",
-        "verify_title_contains(expected_title)",
-        "is_hero_heading_visible()",
-        "is_credit_score_tab_visible()"
+        "is_bff_section_heading_visible()",
+        "is_how_can_we_help_section_heading_visible()"
       ]
     }
   }

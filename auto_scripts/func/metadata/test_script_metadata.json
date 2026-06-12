@@ -1,39 +1,29 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "86": {
-      "test_name": "test_experian_homepage_loads_and_hero_heading_visible",
+    "88": {
+      "test_name": "test_experian_homepage_verify_big_financial_friend_section_is_visible",
       "feature": "Experian Homepage",
       "target_file": "test_experian_homepage.py",
-      "pages_used": ["ExperianHomepage"],
+      "pages_used": ["ExperianHomePage"],
       "flow": [
-        {"page": "ExperianHomepage", "action": "navigate_to_homepage", "data_ref": null},
-        {"page": "ExperianHomepage", "assertion": "verify_url"},
-        {"page": "ExperianHomepage", "assertion": "verify_title_contains"},
-        {"page": "ExperianHomepage", "assertion": "is_hero_heading_visible"}
+        {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": null},
+        {"page": "ExperianHomePage", "action": "scroll_to_bff_section", "data_ref": null},
+        {"page": "ExperianHomePage", "assertion": "is_bff_section_heading_visible"}
       ],
-      "test_data": {
-        "homepage": {
-          "expected_url": "https://www.experian.com/",
-          "expected_title": "Experian"
-        }
-      }
+      "test_data": {}
     },
-    "87": {
-      "test_name": "test_experian_homepage_credit_score_tab_visible",
+    "89": {
+      "test_name": "test_experian_homepage_verify_how_can_we_help_section_is_visible",
       "feature": "Experian Homepage",
       "target_file": "test_experian_homepage.py",
-      "pages_used": ["ExperianHomepage"],
+      "pages_used": ["ExperianHomePage"],
       "flow": [
-        {"page": "ExperianHomepage", "action": "navigate_to_homepage", "data_ref": null},
-        {"page": "ExperianHomepage", "action": "locate_hero_tab_list", "data_ref": null},
-        {"page": "ExperianHomepage", "assertion": "is_credit_score_tab_visible"}
+        {"page": "ExperianHomePage", "action": "navigate_to_homepage", "data_ref": null},
+        {"page": "ExperianHomePage", "action": "scroll_to_how_can_we_help_section", "data_ref": null},
+        {"page": "ExperianHomePage", "assertion": "is_how_can_we_help_section_heading_visible"}
       ],
-      "test_data": {
-        "credit_score_tab": {
-          "tab_name": "Get a credit report & FICO Score"
-        }
-      }
+      "test_data": {}
     }
   },
   "framework": {
