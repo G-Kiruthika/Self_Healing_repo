@@ -3,19 +3,17 @@
     "ExperianHomePage": {
       "file_name": "experian_home_page.py",
       "locators": {
-        "how_can_we_help_section": {"by": "xpath", "value": "//section[contains(., 'How can we help?')]"},
-        "disputes_card_link": {"by": "xpath", "value": "//a[contains(., 'Disputes')]"},
-        "fraud_alert_card_link": {"by": "xpath", "value": "//a[contains(., 'Fraud alert')]"}
+        "header_navigation": {"by": "XPATH", "value": "//header//nav"},
+        "credit_menu_button": {"by": "XPATH", "value": "//nav//a[contains(text(), 'Credit')]"},
+        "protection_menu_button": {"by": "XPATH", "value": "//nav//a[contains(text(), 'Protection')]"}
       },
       "actions": [
         "navigate_to_homepage(url)",
-        "scroll_to_how_can_we_help_section()",
-        "click_disputes_card()",
-        "click_fraud_alert_card()"
+        "locate_header_navigation()"
       ],
       "validations": [
-        "validate_on_disputes_page()",
-        "validate_on_fraud_alert_page()"
+        "is_credit_menu_button_visible()",
+        "is_protection_menu_button_visible()"
       ]
     }
   }
