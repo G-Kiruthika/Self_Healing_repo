@@ -1,1 +1,22 @@
-{"pages": {"SauceDemoLoginPage": {"file_name": "saucedemo_login_page.py", "locators": {"username_input": {"by": "ID", "value": "user-name"}, "password_input": {"by": "ID", "value": "password"}, "login_button": {"by": "ID", "value": "login-button"}, "error_message": {"by": "CSS_SELECTOR", "value": ".error-message"}}, "actions": ["open()", "enter_username(username)", "enter_password(password)", "click_login()", "login(username, password)"], "validations": ["is_logged_in()", "is_error_displayed()"]}}}
+{
+  "pages": {
+    "ExperianHomepage": {
+      "file_name": "experian_homepage.py",
+      "locators": {
+        "hero_heading": {"by": "xpath", "value": "//h1[contains(text(), 'Reach your credit and money goals')]"},
+        "credit_score_tab": {"by": "xpath", "value": "//button[contains(text(), 'Get a credit report & FICO Score')]"},
+        "hero_tab_list": {"by": "xpath", "value": "//div[contains(@class, 'tablist')]"}
+      },
+      "actions": [
+        "navigate_to_homepage()",
+        "locate_hero_tab_list()"
+      ],
+      "validations": [
+        "verify_url(expected_url)",
+        "verify_title_contains(expected_title)",
+        "is_hero_heading_visible()",
+        "is_credit_score_tab_visible()"
+      ]
+    }
+  }
+}
